@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Notes for Case Studies in Health Big Data</title>
+  <title>Chapter 1 Mixed Models for Longitudinal Data Analysis | Notes for Case Studies in Health Big Data</title>
   <meta name="description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Notes for Case Studies in Health Big Data" />
+  <meta property="og:title" content="Chapter 1 Mixed Models for Longitudinal Data Analysis | Notes for Case Studies in Health Big Data" />
   <meta property="og:type" content="book" />
   <meta property="og:url" content="https://nchenderson.github.io/HDS629notes/" />
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="nchenderson/HDS629notes" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Notes for Case Studies in Health Big Data" />
+  <meta name="twitter:title" content="Chapter 1 Mixed Models for Longitudinal Data Analysis | Notes for Case Studies in Health Big Data" />
   
   <meta name="twitter:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
+<link rel="prev" href="index.html"/>
 
-<link rel="next" href="mixed-models.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -97,23 +97,116 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Notes for Case Studies in Health Big Data</h1>
-<p class="author"><em>Nicholas Henderson</em></p>
-<p class="date"><em>2021-01-20</em></p>
+<div id="mixed-models" class="section level1">
+<h1><span class="header-section-number">Chapter 1</span> Mixed Models for Longitudinal Data Analysis</h1>
+<hr />
+<div id="sec:methods-overview" class="section level2">
+<h2><span class="header-section-number">1.1</span> Methods for Analyzing Longitudinal Data</h2>
+<ul>
+<li><strong>Longitudinal data</strong> refers to data that:
+<ul>
+<li><p>Has multiple individuals/subjects.</p></li>
+<li><p>Each individual has multiple observations that were taken across time.</p></li>
+</ul></li>
+<li>Typically the outcomes of interest are denoted as <span class="math inline">\(Y_{ij}\)</span>.
+<ul>
+<li><p><span class="math inline">\(Y_{ij}\)</span> - outcome for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{j}\)</span>.</p></li>
+<li><p>The <span class="math inline">\(i^{th}\)</span> individual has <span class="math inline">\(n_{i}\)</span> observations: <span class="math inline">\(Y_{i1}, \ldots, Y_{in_{i}}\)</span>.</p></li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>Most of the well-known methods for analyzing longitudinal
+data can be classified into one of the three following
+categories:
+<ul>
+<li><strong>Random effects/mixed models</strong>,</li>
+<li><strong>Marginal models</strong>,</li>
+<li><strong>Transition models</strong></li>
+</ul></li>
+<li><strong>Random effects/Mixed Models</strong>
+<ul>
+<li>“Random effects” are added to the regression model describing
+the outcomes for each individual.</li>
+</ul></li>
+<li><strong>Marginal models</strong>
+<ul>
+<li>Only mean of <span class="math inline">\(Y_{ij}\)</span> and correlation structure of <span class="math inline">\((Y_{i1}, \ldots, Y_{in_{i}})\)</span> is
+modeled. Generalized estimating equations (GEEs) are used for estimating model parameters.</li>
+</ul></li>
+<li><strong>Transition models</strong></li>
+</ul>
 </div>
-<div id="preface" class="section level1 unnumbered">
-<h1>Preface</h1>
-<p>This will contain some of the course notes for Biostatistics 629, Winter 2021.</p>
+<div id="mixed-models-for-continuous-outcomes" class="section level2">
+<h2><span class="header-section-number">1.2</span> Mixed Models for Continuous Outcomes</h2>
+<ul>
+<li><p>If each <span class="math inline">\(Y_{ij}\)</span> is a <strong>continuous outcome</strong> and we were to
+build a regression model without any random effects, we might assume something like:
+<span class="math display">\[\begin{equation}
+Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
+\end{equation}\]</span></p></li>
+<li><p><span class="math inline">\(\mathbf{x}_{ij} = (x_{i1}, \ldots, x_{ip_{i}})\)</span> is the vector
+of covariates for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(j\)</span>.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>The regression model () assumes that the same
+mean function holds for all individuals in the study.</p></li>
+<li><p>This often ignores</p></li>
+</ul>
+</div>
+<div id="advantages-of-using-random-effects" class="section level2">
+<h2><span class="header-section-number">1.3</span> Advantages of using random effects</h2>
+<ul>
+<li><p>BLUPs</p></li>
+<li><p>Automatically accounts for within-subject correlation</p></li>
+<li><p>Flexibility of regression plus “regularization”</p></li>
+</ul>
+</div>
+<div id="generalized-linear-mixed-models-glmms" class="section level2">
+<h2><span class="header-section-number">1.4</span> Generalized linear mixed models (GLMMs)</h2>
+<ul>
+<li><p>Generalized linear models (GLMs) are used to handle “non-continuous” data
+that can’t be reasonably modeled with a Gaussian distribution.</p></li>
+<li><p>The most common cases encountered in practice where GLMs are needed: <strong>binary</strong> outcomes
+and <strong>count</strong> outcomes.</p></li>
+<li><p>For <strong>binary</strong> outcomes, responses are assumed to follow a Binomial distribution
+and the log-odds for this Binomial distribution is modeled with a linear regression.</p></li>
+<li><p>For <strong>count</strong> outcomes, responses are assumed to follow a Poisson or a negative binomial distribution
+and the log of the mean is modeled with a linear regression.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>In a GLMM with binary outcomes, one</p></li>
+<li><p><span class="math inline">\(Y_{ij}|u_{i} \sim \textrm{Binomial}( p_{ij} )\)</span>.</p></li>
+</ul>
+<p><span class="math display">\[\begin{equation}
+\log\Big( \frac{ p_{ij} }{1 - p_{ij} } \Big) = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{i}^{T}\mathbf{u}_{i}
+\end{equation}\]</span></p>
+<ul>
+<li>Count data <span class="math inline">\(Y_{ij}|u_{i} \sim \textrm{Poisson}(\mu_{ij})\)</span>
+<span class="math display">\[\begin{equation}
+\log( \mu_{ij} ) = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{i}^{T}\mathbf{u}_{i}
+\end{equation}\]</span></li>
+</ul>
+</div>
+<div id="fitting-mixed-models-and-glmms-in-r" class="section level2">
+<h2><span class="header-section-number">1.5</span> Fitting Mixed Models and GLMMs in <strong>R</strong></h2>
+<ul>
+<li><p>The <strong>lme4</strong> package is probably the most general package
+for fitting mixed models and GLMMs.</p></li>
+<li><p>aa</p></li>
+</ul>
 
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
+<a href="index.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
-<a href="mixed-models.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

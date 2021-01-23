@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-01-20" />
+<meta name="date" content="2021-01-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -52,6 +52,68 @@
 
 
 
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -74,8 +136,13 @@
 <li class="chapter" data-level="1.1" data-path="mixed-models.html"><a href="mixed-models.html#sec:methods-overview"><i class="fa fa-check"></i><b>1.1</b> Methods for Analyzing Longitudinal Data</a></li>
 <li class="chapter" data-level="1.2" data-path="mixed-models.html"><a href="mixed-models.html#mixed-models-for-continuous-outcomes"><i class="fa fa-check"></i><b>1.2</b> Mixed Models for Continuous Outcomes</a></li>
 <li class="chapter" data-level="1.3" data-path="mixed-models.html"><a href="mixed-models.html#advantages-of-using-random-effects"><i class="fa fa-check"></i><b>1.3</b> Advantages of using random effects</a></li>
-<li class="chapter" data-level="1.4" data-path="mixed-models.html"><a href="mixed-models.html#generalized-linear-mixed-models-glmms"><i class="fa fa-check"></i><b>1.4</b> Generalized linear mixed models (GLMMs)</a></li>
-<li class="chapter" data-level="1.5" data-path="mixed-models.html"><a href="mixed-models.html#fitting-mixed-models-and-glmms-in-r"><i class="fa fa-check"></i><b>1.5</b> Fitting Mixed Models and GLMMs in <strong>R</strong></a></li>
+<li class="chapter" data-level="1.4" data-path="mixed-models.html"><a href="mixed-models.html#generalized-linear-mixed-models-glmms"><i class="fa fa-check"></i><b>1.4</b> Generalized linear mixed models (GLMMs)</a><ul>
+<li class="chapter" data-level="1.4.1" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-binary-outcomes"><i class="fa fa-check"></i><b>1.4.1</b> GLMMs with Binary Outcomes</a></li>
+<li class="chapter" data-level="1.4.2" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-count-outcomes"><i class="fa fa-check"></i><b>1.4.2</b> GLMMs with Count Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="mixed-models.html"><a href="mixed-models.html#fitting-linear-mixed-models-lmms-and-glmms-in-r"><i class="fa fa-check"></i><b>1.5</b> Fitting Linear Mixed Models (LMMs) and GLMMs in <strong>R</strong></a><ul>
+<li class="chapter" data-level="1.5.1" data-path="mixed-models.html"><a href="mixed-models.html#fitting-lmms-with-the-sleepstudy-data"><i class="fa fa-check"></i><b>1.5.1</b> Fitting LMMs with the sleepstudy data</a></li>
+</ul></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -108,16 +175,27 @@
 <li><p>Has multiple individuals/subjects.</p></li>
 <li><p>Each individual has multiple observations that were taken across time.</p></li>
 </ul></li>
-<li>Typically the outcomes of interest are denoted as <span class="math inline">\(Y_{ij}\)</span>.
+<li>We will denote the outcomes of interest with <span class="math inline">\(Y_{ij}\)</span>.
 <ul>
-<li><p><span class="math inline">\(Y_{ij}\)</span> - outcome for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{j}\)</span>.</p></li>
+<li><p><span class="math inline">\(Y_{ij}\)</span> - outcome for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
 <li><p>The <span class="math inline">\(i^{th}\)</span> individual has <span class="math inline">\(n_{i}\)</span> observations: <span class="math inline">\(Y_{i1}, \ldots, Y_{in_{i}}\)</span>.</p></li>
+</ul></li>
+</ul>
+<hr />
+<p><img src="01-Introduction_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<ul>
+<li><p>The above figure shows an example of outcomes from a longitudinal study (the <strong>sleepstudy</strong> data in the <strong>lme4</strong> package).</p></li>
+<li><p>In the <strong>sleepstudy</strong> data:</p>
+<ul>
+<li><p>The time points of observation <span class="math inline">\(t_{ij}\)</span> are the same for each individual <span class="math inline">\(i\)</span>. So, we can say <span class="math inline">\(t_{ij} = t_{j}\)</span> for all <span class="math inline">\(i\)</span>.</p></li>
+<li><p>The outcome <span class="math inline">\(Y_{ij}\)</span> is the <strong>reaction time</strong> for the <span class="math inline">\(i^{th}\)</span> individual at time point <span class="math inline">\(t_{j}\)</span>.</p></li>
+<li><p>The 10 time points are <span class="math inline">\((t_{1}, \ldots, t_{10}) = (0, 1, \ldots, 9)\)</span>.</p></li>
 </ul></li>
 </ul>
 <hr />
 <ul>
 <li>Most of the well-known methods for analyzing longitudinal
-data can be classified into one of the three following
+data can be classified (see <span class="citation">Diggle et al. (<a href="#ref-diggle2013">2013</a>)</span>) into one of the three following
 categories:
 <ul>
 <li><strong>Random effects/mixed models</strong>,</li>
@@ -131,8 +209,10 @@ the outcomes for each individual.</li>
 </ul></li>
 <li><strong>Marginal models</strong>
 <ul>
-<li>Only mean of <span class="math inline">\(Y_{ij}\)</span> and correlation structure of <span class="math inline">\((Y_{i1}, \ldots, Y_{in_{i}})\)</span> is
-modeled. Generalized estimating equations (GEEs) are used for estimating model parameters.</li>
+<li><p>Regression coefficients have a “population average” interpretation.</p></li>
+<li><p>Only mean of <span class="math inline">\(Y_{ij}\)</span> and correlation structure of <span class="math inline">\((Y_{i1}, \ldots, Y_{in_{i}})\)</span> is
+modeled.</p></li>
+<li><p>Generalized estimating equations (GEEs) are used for estimating model parameters.</p></li>
 </ul></li>
 <li><strong>Transition models</strong></li>
 </ul>
@@ -142,16 +222,17 @@ modeled. Generalized estimating equations (GEEs) are used for estimating model p
 <ul>
 <li><p>If each <span class="math inline">\(Y_{ij}\)</span> is a <strong>continuous outcome</strong> and we were to
 build a regression model without any random effects, we might assume something like:
-<span class="math display">\[\begin{equation}
+<span class="math display" id="eq:fixed-reg-model">\[\begin{equation}
 Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
+\tag{1.1}
 \end{equation}\]</span></p></li>
 <li><p><span class="math inline">\(\mathbf{x}_{ij} = (x_{i1}, \ldots, x_{ip_{i}})\)</span> is the vector
 of covariates for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(j\)</span>.</p></li>
 </ul>
 <hr />
 <ul>
-<li><p>The regression model () assumes that the same
-mean function holds for all individuals in the study.</p></li>
+<li><p>The regression model <a href="mixed-models.html#eq:fixed-reg-model">(1.1)</a> assumes the same
+linear model <span class="math inline">\(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}\)</span> holds for all individuals in the study.</p></li>
 <li><p>This often ignores</p></li>
 </ul>
 </div>
@@ -168,36 +249,357 @@ mean function holds for all individuals in the study.</p></li>
 <ul>
 <li><p>Generalized linear models (GLMs) are used to handle “non-continuous” data
 that can’t be reasonably modeled with a Gaussian distribution.</p></li>
-<li><p>The most common cases encountered in practice where GLMs are needed: <strong>binary</strong> outcomes
-and <strong>count</strong> outcomes.</p></li>
-<li><p>For <strong>binary</strong> outcomes, responses are assumed to follow a Binomial distribution
-and the log-odds for this Binomial distribution is modeled with a linear regression.</p></li>
-<li><p>For <strong>count</strong> outcomes, responses are assumed to follow a Poisson or a negative binomial distribution
-and the log of the mean is modeled with a linear regression.</p></li>
+<li><p>The most common scenarios where you would use GLMs in practice
+are <strong>binary</strong>, <strong>count</strong>, and perhaps multinomial outcomes.</p></li>
+<li><p>With a generalized linear mixed model (GLMM), you assume that
+a GLM holds conditional on the value of the random effects.</p></li>
+</ul>
+<div id="glmms-with-binary-outcomes" class="section level3">
+<h3><span class="header-section-number">1.4.1</span> GLMMs with Binary Outcomes</h3>
+<ul>
+<li><p>Under the GLM framework, the usual approach for handling binary outcomes is <strong>logistic regression</strong>.</p></li>
+<li>The assumptions underying logistic regression are:
+<ul>
+<li><p>The outcomes are <strong>independent</strong></p></li>
+<li><p>Each outcome follows a <strong>Bernoulli</strong> distribution.</p></li>
+<li><p>The <strong>log-odds parameter</strong> is assumed to be a linear combination of the covariates.</p></li>
+</ul></li>
 </ul>
 <hr />
 <ul>
-<li><p>In a GLMM with binary outcomes, one</p></li>
-<li><p><span class="math inline">\(Y_{ij}|u_{i} \sim \textrm{Binomial}( p_{ij} )\)</span>.</p></li>
-</ul>
-<p><span class="math display">\[\begin{equation}
-\log\Big( \frac{ p_{ij} }{1 - p_{ij} } \Big) = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{i}^{T}\mathbf{u}_{i}
-\end{equation}\]</span></p>
+<li>With the GLMM version of logistic regression, we will make almost the same assumptions as the regular GLM
+version of logistic regression.
 <ul>
-<li>Count data <span class="math inline">\(Y_{ij}|u_{i} \sim \textrm{Poisson}(\mu_{ij})\)</span>
+<li>The main difference is that each assumption in the GLMM will be <strong>conditional</strong> on the values of the random effects.</li>
+</ul></li>
+<li>To be specific, for longitudinal binary outcomes <span class="math inline">\(Y_{ij}\)</span>,
+the GLMM version of logistic regression assumes the following:
+<ol style="list-style-type: decimal">
+<li><p><strong>Conditional</strong> on the vector of random effects <span class="math inline">\(\mathbf{u}_{i}\)</span>
 <span class="math display">\[\begin{equation}
-\log( \mu_{ij} ) = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{i}^{T}\mathbf{u}_{i}
-\end{equation}\]</span></li>
+Y_{i1}, \ldots, Y_{in_{i}}|\mathbf{u}_{i}  \textrm{ are independent }
+\end{equation}\]</span></p></li>
+<li><p><strong>Conditional</strong> on <span class="math inline">\(\mathbf{u}_{i}\)</span>, each <span class="math inline">\(Y_{ij}\)</span> has a Bernoulli distribution
+<span class="math display">\[\begin{equation}
+Y_{ij}|\mathbf{u}_{i} \sim \textrm{Bernoulli}\big( p_{ij}(\mathbf{u}_{i}) \big)
+\end{equation}\]</span>
+so that <span class="math inline">\(p_{ij}( \mathbf{u}_{i} ) = P(Y_{ij} = 1| \mathbf{u}_{i})\)</span>.</p></li>
+<li><p>The “<strong>conditional</strong>” log-odds term <span class="math inline">\(\log\{ p_{ij}(\mathbf{u}_{i})/[1 - p_{ij}(\mathbf{u}_{i})] \}\)</span>
+is a linear combination of the covariates and the random effects vector <span class="math inline">\(\mathbf{u}_{i}\)</span>:
+<span class="math display">\[\begin{equation}
+\textrm{logit}\{ p_{ij}(\mathbf{u}_{i}) \} = \log\Big( \frac{ p_{ij}(\mathbf{u}_{i})}{ 1 - p_{ij}(\mathbf{u}_{i}) } \Big)
+= \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}
+\end{equation}\]</span></p></li>
+<li><p>As with a linear mixed model, we assume that the random-effects vector <span class="math inline">\(\mathbf{u}_{i}\)</span> has a <strong>multivariate normal distribution</strong> with mean zero and covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}_{\tau}\)</span>
+<span class="math display">\[\begin{equation}
+ \mathbf{u}_{i} \sim \textrm{Normal}( \mathbf{0}, \boldsymbol{\Sigma}_{\tau})
+  \end{equation}\]</span></p></li>
+</ol></li>
 </ul>
 </div>
-<div id="fitting-mixed-models-and-glmms-in-r" class="section level2">
-<h2><span class="header-section-number">1.5</span> Fitting Mixed Models and GLMMs in <strong>R</strong></h2>
+<div id="glmms-with-count-outcomes" class="section level3">
+<h3><span class="header-section-number">1.4.2</span> GLMMs with Count Outcomes</h3>
 <ul>
-<li><p>The <strong>lme4</strong> package is probably the most general package
-for fitting mixed models and GLMMs.</p></li>
-<li><p>aa</p></li>
+<li><p>For <strong>count</strong> outcomes, responses are assumed to follow a Poisson or a negative binomial distribution
+and the log of the mean is modeled with a linear regression.</p></li>
+<li><p>Count data <span class="math inline">\(Y_{ij}|u_{i} \sim \textrm{Poisson}(\mu_{ij})\)</span>
+<span class="math display">\[\begin{equation}
+\log( \mu_{ij} ) = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{i}^{T}\mathbf{u}_{i}
+\end{equation}\]</span></p></li>
 </ul>
+</div>
+</div>
+<div id="fitting-linear-mixed-models-lmms-and-glmms-in-r" class="section level2">
+<h2><span class="header-section-number">1.5</span> Fitting Linear Mixed Models (LMMs) and GLMMs in <strong>R</strong></h2>
+<ul>
+<li>The <strong>lme4</strong> package is probably the most general package
+for fitting LMMs and GLMMs.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(lme4)</a></code></pre></div>
+<div id="fitting-lmms-with-the-sleepstudy-data" class="section level3">
+<h3><span class="header-section-number">1.5.1</span> Fitting LMMs with the sleepstudy data</h3>
+<ul>
+<li>To start off, let’s use the <strong>sleepstudy</strong> longitudinal data in <strong>lme4</strong>
+and look at the data from the first two individuals in this data.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">data</span>(sleepstudy) </a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">dim</span>(sleepstudy) <span class="co"># 18 individuals, each with 10 observations</span></a></code></pre></div>
+<pre><code>## [1] 180   3</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">sleepstudy[<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>,] <span class="co"># Data from the subjects with ids: 308 and 309</span></a></code></pre></div>
+<pre><code>##    Reaction Days Subject
+## 1  249.5600    0     308
+## 2  258.7047    1     308
+## 3  250.8006    2     308
+## 4  321.4398    3     308
+## 5  356.8519    4     308
+## 6  414.6901    5     308
+## 7  382.2038    6     308
+## 8  290.1486    7     308
+## 9  430.5853    8     308
+## 10 466.3535    9     308
+## 11 222.7339    0     309
+## 12 205.2658    1     309
+## 13 202.9778    2     309
+## 14 204.7070    3     309
+## 15 207.7161    4     309
+## 16 215.9618    5     309
+## 17 213.6303    6     309
+## 18 217.7272    7     309
+## 19 224.2957    8     309
+## 20 237.3142    9     309</code></pre>
+<ul>
+<li>The <strong>sleepstudy</strong> data is an example of longitudinal data stored in <strong>long format</strong>
+(as opposed to “wide” format).
+<ul>
+<li>In <strong>long format</strong>, each row of the dataset corresponds to an observation from one individual at one time point.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>The <strong>lmer</strong> function in <strong>lme4</strong> fits linear mixed models.
+<ul>
+<li>This has many of the same features as the <strong>lm</strong> function in <strong>R</strong>.</li>
+</ul></li>
+<li><p>To fit an LMM with <strong>lmer</strong>, the main thing to do is to specify
+the “X” part of the model (i.e., the fixed effects) and the “Z” part of the
+model (i.e., the random effects).</p></li>
+<li><p>The “X” part of the model is done using
+the exact same “formula notation” used in the <strong>lm</strong> function.</p></li>
+<li><p>The “Z” part of the model is done using the following type of syntax:</p></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">(formula <span class="op">|</span><span class="st"> </span>group_var)</a></code></pre></div>
+<ul>
+<li><code>group_var</code> is the “grouping variable” used for the random effects
+<ul>
+<li>This would be the variable telling you which</li>
+</ul></li>
+</ul>
+<div id="lmm-with-a-single-random-intercept-for-each-subject" class="section level4">
+<h4><span class="header-section-number">1.5.1.1</span> LMM with a single, random intercept for each subject</h4>
+<ul>
+<li><p>Let’s fit an LMM where there is a fixed slope for time
+and only a random intercept for each <code>Subject</code>
+<span class="math display" id="eq:lmm-intercept-sleep">\[\begin{equation}
+Y_{ij} = \beta_{0} + \beta_{1}t_{j} + u_{i} + e_{ij}
+\tag{1.2}
+\end{equation}\]</span></p></li>
+<li>For the “X” part of this model, we use <code>Reaction ~ Days</code>.
+<ul>
+<li>This gives us a fixed intercept and a fixed slope for the <code>Days</code> variable.</li>
+</ul></li>
+<li>For the “Z” part of this model, we just add <code>(1|Subject)</code>.
+<ul>
+<li>This says that there is only a random intercept within the grouping variable <code>Subject</code>.</li>
+</ul></li>
+<li><p>Putting these two together, we can fit the LMM <a href="mixed-models.html#eq:lmm-intercept-sleep">(1.2)</a> using the following code:</p></li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">lmm.sleep.intercept &lt;-<span class="st"> </span><span class="kw">lmer</span>(Reaction <span class="op">~</span><span class="st"> </span>Days <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>Subject), <span class="dt">data =</span> sleepstudy)</a></code></pre></div>
+<hr />
+<ul>
+<li><p>You can always use the <code>model.matrix</code> method on
+the fitted <code>lmer</code> object to check that the “X” and “Z” matrices
+correspond to the model you want.</p></li>
+<li><p>Let’s look at the first 5 rows of the “X” matrix from <code>lmm.sleep.intercept</code></p></li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">x.mat &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(lmm.sleep.intercept)</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="co">## This design matrix should have an intercept column</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="co">## and a column which stores the &quot;Days&quot; variable</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">x.mat[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>,]</a></code></pre></div>
+<pre><code>##   (Intercept) Days
+## 1           1    0
+## 2           1    1
+## 3           1    2
+## 4           1    3
+## 5           1    4</code></pre>
+<ul>
+<li>Let’s look at the first 20 rows of the “Z” matrix from <code>lmm.intercept</code></li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co">## Use argument type = &quot;random&quot; to get random-effects design matrix</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">z.mat &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(lmm.sleep.intercept, <span class="dt">type=</span><span class="st">&quot;random&quot;</span>)</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">z.mat[<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>,] <span class="co"># The . values in zmat correspond to zeros</span></a></code></pre></div>
+<pre><code>## 20 x 18 sparse Matrix of class &quot;dgCMatrix&quot;</code></pre>
+<pre><code>##    [[ suppressing 18 column names &#39;308&#39;, &#39;309&#39;, &#39;310&#39; ... ]]</code></pre>
+<pre><code>##                                       
+## 1  1 . . . . . . . . . . . . . . . . .
+## 2  1 . . . . . . . . . . . . . . . . .
+## 3  1 . . . . . . . . . . . . . . . . .
+## 4  1 . . . . . . . . . . . . . . . . .
+## 5  1 . . . . . . . . . . . . . . . . .
+## 6  1 . . . . . . . . . . . . . . . . .
+## 7  1 . . . . . . . . . . . . . . . . .
+## 8  1 . . . . . . . . . . . . . . . . .
+## 9  1 . . . . . . . . . . . . . . . . .
+## 10 1 . . . . . . . . . . . . . . . . .
+## 11 . 1 . . . . . . . . . . . . . . . .
+## 12 . 1 . . . . . . . . . . . . . . . .
+## 13 . 1 . . . . . . . . . . . . . . . .
+## 14 . 1 . . . . . . . . . . . . . . . .
+## 15 . 1 . . . . . . . . . . . . . . . .
+## 16 . 1 . . . . . . . . . . . . . . . .
+## 17 . 1 . . . . . . . . . . . . . . . .
+## 18 . 1 . . . . . . . . . . . . . . . .
+## 19 . 1 . . . . . . . . . . . . . . . .
+## 20 . 1 . . . . . . . . . . . . . . . .</code></pre>
+<ul>
+<li><p>The <code>.</code> values in <code>z.mat</code> are just zeros.</p></li>
+<li>Notice that each <code>Subject</code> has its own “intercept” column.
+<ul>
+<li>This what we want - each <code>Subject</code> has its own intercept.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>Let’s look at the <strong>estimated parameters</strong> from the LMM
+with random intercepts using <code>summary</code></li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">summary</span>(lmm.sleep.intercept)</a></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: Reaction ~ Days + (1 | Subject)
+##    Data: sleepstudy
+## 
+## REML criterion at convergence: 1786.5
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.2257 -0.5529  0.0109  0.5188  4.2506 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  Subject  (Intercept) 1378.2   37.12   
+##  Residual              960.5   30.99   
+## Number of obs: 180, groups:  Subject, 18
+## 
+## Fixed effects:
+##             Estimate Std. Error t value
+## (Intercept) 251.4051     9.7467   25.79
+## Days         10.4673     0.8042   13.02
+## 
+## Correlation of Fixed Effects:
+##      (Intr)
+## Days -0.371</code></pre>
+<ul>
+<li><p>The estimated fixed-effects intercept is <span class="math inline">\(\hat{\beta}_{0} = 251.4\)</span>,
+and the estimated fixed-effects slope is <span class="math inline">\(\hat{\beta}_{1} = 10.5\)</span>.</p></li>
+<li>The estimated variance of the random intercept is <span class="math inline">\(\hat{\tau}^{2} = 1378.2\)</span>
+(standard deviation is <span class="math inline">\(\hat{\tau} = 37.1\)</span>).
+<ul>
+<li>i.e., it is estimated that <span class="math inline">\(u_{i} \sim \textrm{Normal}(0, 1378.2)\)</span>.</li>
+</ul></li>
+</ul>
+</div>
+<div id="lmm-with-both-a-random-intercept-and-slope-for-each-subject" class="section level4">
+<h4><span class="header-section-number">1.5.1.2</span> LMM with both a random intercept and slope for each subject</h4>
+<ul>
+<li><p>Now, let’s fit an LMM where there is a fixed slope for time
+and both a random intercept and slope for each <code>Subject</code>
+<span class="math display" id="eq:lmm-slope-sleep">\[\begin{equation}
+Y_{ij} = \beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
+\tag{1.3}
+\end{equation}\]</span></p></li>
+<li><p>This is done with <code>lmer</code> using the following code:</p></li>
+</ul>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">lmm.sleep.slope &lt;-<span class="st"> </span><span class="kw">lmer</span>(Reaction <span class="op">~</span><span class="st"> </span>Days <span class="op">+</span><span class="st"> </span>(Days<span class="op">|</span>Subject), <span class="dt">data =</span> sleepstudy)</a></code></pre></div>
+<ul>
+<li>Again, let’s check the “X” and “Z” matrices from
+<code>lmm.sleep.slope</code> to double-check that everything makes sense</li>
+</ul>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">x.mat2 &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(lmm.sleep.slope)</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2"><span class="co">## This design matrix should be the same as that from lmm.sleep.intercept</span></a>
+<a class="sourceLine" id="cb17-3" data-line-number="3">x.mat2[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>,]</a></code></pre></div>
+<pre><code>##   (Intercept) Days
+## 1           1    0
+## 2           1    1
+## 3           1    2
+## 4           1    3
+## 5           1    4</code></pre>
+<ul>
+<li>First 20 rows of the “Z” matrix from <code>lmm.sleep.slope</code>:</li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="co">## Use argument type = &quot;random&quot; to get random-effects design matrix</span></a>
+<a class="sourceLine" id="cb19-2" data-line-number="2">z.mat2 &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(lmm.sleep.slope, <span class="dt">type=</span><span class="st">&quot;random&quot;</span>)</a>
+<a class="sourceLine" id="cb19-3" data-line-number="3">z.mat2[<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>,] <span class="co"># The . values in zmat2 correspond to zeros</span></a></code></pre></div>
+<pre><code>## 20 x 36 sparse Matrix of class &quot;dgCMatrix&quot;</code></pre>
+<pre><code>##    [[ suppressing 36 column names &#39;308&#39;, &#39;308&#39;, &#39;309&#39; ... ]]</code></pre>
+<pre><code>##                                                                           
+## 1  1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 2  1 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 3  1 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 4  1 3 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 5  1 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 6  1 5 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 7  1 6 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 8  1 7 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 9  1 8 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 10 1 9 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 11 . . 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 12 . . 1 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 13 . . 1 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 14 . . 1 3 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 15 . . 1 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 16 . . 1 5 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 17 . . 1 6 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 18 . . 1 7 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 19 . . 1 8 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 20 . . 1 9 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</code></pre>
+<ul>
+<li>Note that the two columns for each <code>Subject</code> in <code>z.mat2</code>
+are of the form <span class="math inline">\((1, t_{j})\)</span>, which is what we want.</li>
+</ul>
+<hr />
+<ul>
+<li>Let’s look at the <strong>estimated parameters</strong> from <code>lmm.sleep.slope</code></li>
+</ul>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw">summary</span>(lmm.sleep.slope)</a></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: Reaction ~ Days + (Days | Subject)
+##    Data: sleepstudy
+## 
+## REML criterion at convergence: 1743.6
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.9536 -0.4634  0.0231  0.4634  5.1793 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev. Corr
+##  Subject  (Intercept) 612.10   24.741       
+##           Days         35.07    5.922   0.07
+##  Residual             654.94   25.592       
+## Number of obs: 180, groups:  Subject, 18
+## 
+## Fixed effects:
+##             Estimate Std. Error t value
+## (Intercept)  251.405      6.825  36.838
+## Days          10.467      1.546   6.771
+## 
+## Correlation of Fixed Effects:
+##      (Intr)
+## Days -0.138</code></pre>
+<ul>
+<li><p>The estimated fixed-effects intercept is <span class="math inline">\(\hat{\beta}_{0} = 251.4\)</span>,
+and the estimated fixed-effects slope is <span class="math inline">\(\hat{\beta}_{1} = 10.5\)</span>.</p></li>
+<li>The estimated standard deviation and correlation of the random effects are
+<ul>
+<li><p>Estimated standard deviation of <span class="math inline">\(u_{i0}\)</span> is <span class="math inline">\(24.7\)</span>.</p></li>
+<li><p>Estimated standard deviation of <span class="math inline">\(u_{i1}\)</span> is <span class="math inline">\(5.9\)</span>.</p></li>
+<li><p>Estimated correlation between <span class="math inline">\(u_{i0}\)</span> and <span class="math inline">\(u_{i1}\)</span> is <span class="math inline">\(0.07\)</span>.</p></li>
+</ul></li>
+</ul>
+<hr />
 
+<div id="refs" class="references">
+<div>
+<p>Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-diggle2013">
+<p>Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.</p>
 </div>
 </div>
             </section>

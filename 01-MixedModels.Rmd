@@ -444,7 +444,7 @@ and $\hat{\beta}_{1} = 10.5$ respectively.
 
 ---
 
-### Fitting a Binary GLMM with the Ohio data
+### Fitting Binary GLMMs using the Ohio data
 
 * To use the **ohio** data, we will first load the **geepack** R package:
 ```{r, echo=TRUE}
@@ -457,8 +457,54 @@ data(ohio)
 head(ohio, 12) # look at first 12 rows of ohio
 ```
 
-* The outcome of interest is "wheezing status": 1 - yes, 0 - no.
-    + wheezing status is represented by the **resp** variable in the **ohio** dataset.
+* The outcome of interest in **ohio** is "wheezing status": 1 - yes, 0 - no.
+    + The **resp** variable contains wheezing status.
+
+* The **id** variable contains the unique identifier for each individual.
+
+* The **age** in the **ohio** dataset is the time variable.
+    + The age variable is recorded as: (**age in years** - 9).
+    
+    + Each individual starts the study at 7 years of age.
+    
+* The **smoke** variable is an indicator of maternal smoking at the starting year of the study.
 
 ---
 
+* In **lme4**, fitting a GLMM with binary responses can be done with the **glmer** function.
+
+* The **glmer** function has the following syntax:
+```{r, echo=TRUE, eval=FALSE}
+glmer(formula, data, family)
+```
+
+* The `formula` argument uses the same syntax as `lmer`
+
+* When handling binary outcomes, you need to specify the family argument as: `family = binomial`.
+
+---
+
+* Put table of proportions here.
+
+---
+
+* Let's use a GLMM to explore the relationship between wheezing status and the:
+    + **age** of the child
+    + maternal **smoking status** 
+    
+* A GLMM for wheezing status which has age and smoking status as fixed effects and 
+random individual-specific intercepts can be expressed as
+
+\begin{equation}
+\textrm{logit}\{ p_{ij}(u_{i}) \}  = \beta_{0} + \beta_{age}\textrm{age}_{ij}
++ \beta_{smk}\textrm{smoke}_{i} + u_{i} 
+(\#eq:ohio-intercept)
+\end{equation}
+
+* Model \@ref(eq:ohio-intercept) can be fit with the following code
+```{r, echo=TRUE}
+# id is the grouping variable
+ohio.intercept <- glmer(resp ~ age + smoke + (1 | id), data = ohio, family = binomial)
+```
+
+---

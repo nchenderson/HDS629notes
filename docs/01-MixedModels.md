@@ -14,10 +14,12 @@
     + $Y_{ij}$ - outcome for individual $i$ at time $t_{ij}$.
     
     + The $i^{th}$ individual has $n_{i}$ observations: $Y_{i1}, \ldots, Y_{in_{i}}$.
+    
+    + There will be $m$ individuals in the study.
 
 ---
 
-<img src="01-Introduction_files/figure-html/unnamed-chunk-1-1.png" width="672" />
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-1-1.png" width="672" />
 
 * The above figure shows an example of outcomes from a longitudinal study (the **sleepstudy** data in the **lme4** package).
    
@@ -72,7 +74,8 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
 * $\mathbf{x}_{ij} = (x_{i1}, \ldots, x_{ip})$ is the vector
 of covariates for individual $i$ at time $j$.
 
-* The vector $\mathbf{x}_{ij}$ 
+* The vector $\mathbf{x}_{ij}$ could contain some of the time points: $t_{ij}, t_{ij-1}, ...$
+or transformations of these time points.
 
 ---
 
@@ -80,21 +83,116 @@ of covariates for individual $i$ at time $j$.
 mean function $\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}$ holds for all individuals in the study.
 
 * It is often reasonable to assume that the regression coefficients across vary across individuals. 
+    + This can often better account for heterogeneity across individuals.
 
+* The figure below shows 3 different regression lines from the **sleepstudy** data.
+    + Each regression line was estimated using only data from one individual.
 
 
 <div class="figure">
-<img src="01-Introduction_files/figure-html/unnamed-chunk-2-1.png" alt="Hello" width="672" />
-<p class="caption">(\#fig:unnamed-chunk-2)Hello</p>
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-2-1.png" alt="Separately estimated regression lines for 3 subjects in the sleepstudy data." width="672" />
+<p class="caption">(\#fig:unnamed-chunk-2)Separately estimated regression lines for 3 subjects in the sleepstudy data.</p>
 </div>
+
+---
+
+* Figure 1.1 suggests there is some heterogeneity in the **relationship**
+between **study day** and **response time** across individuals.
+
+* The response time of Subject 309 changes very little over time.
+
+* For Subject 309, there is a more clear positive association between
+response time and day of study.
+
+---
+
+* For the **sleepstudy** data, a linear regression for **reaction time** vs. **study day**
+which assumes that 
+    + Expected response time is a linear function of study day 
+    + All individuals have the same regression coefficient 
+would have the form:
+\begin{equation}
+Y_{ij} = \beta_{0} + \beta_{1} t_{j} + e_{ij}
+\end{equation}
+
+* If we allowed each individual to have his/her **own intercept and slope**, we 
+could instead consider the following model
+\begin{equation}
+Y_{ij} = \beta_{0} + \beta_{1} t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
+(\#eq:mixed-sleep)
+\end{equation}
+
+* $\beta_{0} + u_{i0}$ - intercept for individual $i$.
+* $\beta_{1} + u_{i1}$ - intercept for individual $i$.
+
+---
+
+* If we assume $(u_{i0}, u_{i1})$ are sampled from some distribution, $u_{i0}$ and 
+$u_{i1}$ are referred to as **random effects**.
+
+* Typically, it is assumed that $(u_{i0}, u_{i1})$ are sampled from a multivariate normal distribution
+with mean zero:
+\begin{equation}
+(u_{i0}, u_{i1}) \sim \textrm{Normal}( \mathbf{0}, \boldsymbol{\Sigma}_{\tau} )
+\end{equation}
+
+* Model \@ref(eq:mixed-sleep) is called a **mixed model** because 
+it contains both **fixed effects** $(\beta_{0}, \beta_{1})$
+and **random effects** $(u_{i0}, u_{i1})$.
+
+---
+
+* More generally, a **linear mixed model** (LMM) for longitudinal data will have the form:
+\begin{equation}
+Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}\mathbf{u}_{i} + e_{ij}
+(\#eq:lmm-generalform)
+\end{equation}
+    + $\boldsymbol{\beta}$ - vector of fixed effects
+    + $\mathbf{u}_{i}$ - vector of random effects
+
+* If we stack the responses into a long vector $\mathbf{Y}$ and random effects into a long vector $\mathbf{u}$
+    + $\mathbf{Y} = (Y_{11}, Y_{12}, ...., Y_{mn_{m}})$ - this vector has length $\sum_{k=1}^{m} n_{k}$
+    + $\mathbf{u} = (u_{10}, u_{11}, ...., u_{mq})$ - this vector has length $m \times (q + 1)$.
+
+* Then, we can write the general form \@ref(eq:lmm-generalform) of the LMM as
+\begin{equation}
+\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{Z}\mathbf{u} + \mathbf{e}
+\end{equation}
+    + $i^{th}$ row of $\mathbf{X}$ is $(1, \mathbf{x}_{ij}^{T})$.
+    + $i^{th}$ row of $\mathbf{Z}$ is $\mathbf{z}_{ij}^{T}$.
+
+* Constructing an LMM can be thought of as choosing the desired "X" matrix and "Z" matrix.
 
 ## Advantages of using random effects
 
+* Using an LMM automatically accounts for "within-subject" correlation.
+
+* This is because observations on the same individual "share" common random effects.
+
+* The correlation between the $j^{th}$ and $k^{th}$ observation from individual $i$ is
+\begin{equation}
+\textrm{Corr}(Y_{ij}, Y_{ik}) = \frac{ \mathbf{z}_{ij}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ik}  }{ \sqrt{\mathbf{z}_{ij}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ij}}\sqrt{\mathbf{z}_{ik}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ik}}}
+\end{equation}
+
+---
+
+* One of the goals of the data analysis may be to characterize
+the **heterogeneity** in the relationship between the outcome
+and some of the covariates across individuals.
+
+* Looking at the estimated variance components of the random effects
+can help to address this goal. 
+
+* An estimate of $\textrm{Var}( u_{ij} )$ "substantially greater than zero" 
+is an indication that there is variability in the regression coefficient corresponding to $u_{ij}$
+across individuals.
+
+---
+
 * BLUPs
 
-* Automatically accounts for within-subject correlation 
 
-* Flexibility of regression plus "regularization" 
+
 
 ## Generalized linear mixed models (GLMMs)
 
@@ -161,7 +259,7 @@ and the log of the mean is modeled with a linear regression.
 \log( \mu_{ij} ) = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{i}^{T}\mathbf{u}_{i}
 \end{equation}
 
-## Fitting Linear Mixed Models (LMMs) and GLMMs in **R**
+## Fitting Linear Mixed Models (LMMs) and Generalized Linear Mixed models (GLMMs) in **R**
 
 * The **lme4** package is probably the most general package
 for fitting LMMs and GLMMs.
@@ -500,3 +598,40 @@ and $\hat{\beta}_{1} = 10.5$ respectively.
 * How to extract coefficients and random effects parameters?
 
 ---
+
+### Fitting a Binary GLMM with the Ohio data
+
+* To use the **ohio** data, we will first load the **geepack** R package:
+
+```r
+library(geepack)
+```
+
+* This dataset has 2148 observations from 537 individuals
+
+```r
+data(ohio)
+head(ohio, 12) # look at first 12 rows of ohio
+```
+
+```
+##    resp id age smoke
+## 1     0  0  -2     0
+## 2     0  0  -1     0
+## 3     0  0   0     0
+## 4     0  0   1     0
+## 5     0  1  -2     0
+## 6     0  1  -1     0
+## 7     0  1   0     0
+## 8     0  1   1     0
+## 9     0  2  -2     0
+## 10    0  2  -1     0
+## 11    0  2   0     0
+## 12    0  2   1     0
+```
+
+* The outcome of interest is "wheezing status": 1 - yes, 0 - no.
+    + wheezing status is represented by the **resp** variable in the **ohio** dataset.
+
+---
+

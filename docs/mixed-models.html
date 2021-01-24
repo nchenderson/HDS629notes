@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-01-23" />
+<meta name="date" content="2021-01-24" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -140,8 +140,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.4.1" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-binary-outcomes"><i class="fa fa-check"></i><b>1.4.1</b> GLMMs with Binary Outcomes</a></li>
 <li class="chapter" data-level="1.4.2" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-count-outcomes"><i class="fa fa-check"></i><b>1.4.2</b> GLMMs with Count Outcomes</a></li>
 </ul></li>
-<li class="chapter" data-level="1.5" data-path="mixed-models.html"><a href="mixed-models.html#fitting-linear-mixed-models-lmms-and-glmms-in-r"><i class="fa fa-check"></i><b>1.5</b> Fitting Linear Mixed Models (LMMs) and GLMMs in <strong>R</strong></a><ul>
+<li class="chapter" data-level="1.5" data-path="mixed-models.html"><a href="mixed-models.html#fitting-linear-mixed-models-lmms-and-generalized-linear-mixed-models-glmms-in-r"><i class="fa fa-check"></i><b>1.5</b> Fitting Linear Mixed Models (LMMs) and Generalized Linear Mixed models (GLMMs) in <strong>R</strong></a><ul>
 <li class="chapter" data-level="1.5.1" data-path="mixed-models.html"><a href="mixed-models.html#fitting-lmms-with-the-sleepstudy-data"><i class="fa fa-check"></i><b>1.5.1</b> Fitting LMMs with the sleepstudy data</a></li>
+<li class="chapter" data-level="1.5.2" data-path="mixed-models.html"><a href="mixed-models.html#fitting-a-binary-glmm-with-the-ohio-data"><i class="fa fa-check"></i><b>1.5.2</b> Fitting a Binary GLMM with the Ohio data</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -179,10 +180,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li><p><span class="math inline">\(Y_{ij}\)</span> - outcome for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
 <li><p>The <span class="math inline">\(i^{th}\)</span> individual has <span class="math inline">\(n_{i}\)</span> observations: <span class="math inline">\(Y_{i1}, \ldots, Y_{in_{i}}\)</span>.</p></li>
+<li><p>There will be <span class="math inline">\(m\)</span> individuals in the study.</p></li>
 </ul></li>
 </ul>
 <hr />
-<p><img src="01-Introduction_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <ul>
 <li><p>The above figure shows an example of outcomes from a longitudinal study (the <strong>sleepstudy</strong> data in the <strong>lme4</strong> package).</p></li>
 <li><p>In the <strong>sleepstudy</strong> data:</p>
@@ -194,7 +196,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <hr />
 <ul>
-<li>Most of the well-known methods for analyzing longitudinal
+<li>Most of the well-known regression-based methods for analyzing longitudinal
 data can be classified (see <span class="citation">Diggle et al. (<a href="#ref-diggle2013">2013</a>)</span>) into one of the three following
 categories:
 <ul>
@@ -204,17 +206,21 @@ categories:
 </ul></li>
 <li><strong>Random effects/Mixed Models</strong>
 <ul>
-<li>“Random effects” are added to the regression model describing
-the outcomes for each individual.</li>
+<li><p>“Random effects” are added to the regression model describing
+the outcomes for each individual.</p></li>
+<li><p>These “random regression coefficients” are viewed as a sample from some distribution.</p></li>
 </ul></li>
 <li><strong>Marginal models</strong>
 <ul>
 <li><p>Regression coefficients have a “population average” interpretation.</p></li>
-<li><p>Only mean of <span class="math inline">\(Y_{ij}\)</span> and correlation structure of <span class="math inline">\((Y_{i1}, \ldots, Y_{in_{i}})\)</span> is
-modeled.</p></li>
-<li><p>Generalized estimating equations (GEEs) are used for estimating model parameters.</p></li>
+<li><p>Only mean of <span class="math inline">\(Y_{ij}\)</span> and correlation structure of <span class="math inline">\((Y_{i1}, \ldots, Y_{in_{i}})\)</span> are modeled.</p></li>
+<li><p>Generalized estimating equations (GEEs) are often used for estimating model parameters.</p></li>
 </ul></li>
-<li><strong>Transition models</strong></li>
+<li><strong>Transition models</strong>
+<ul>
+<li>Uses a probability model for the distribution of <span class="math inline">\(Y_{ij}\)</span> given the value of the outcome
+at the previous time point <span class="math inline">\(Y_{ij-1}\)</span>.</li>
+</ul></li>
 </ul>
 </div>
 <div id="mixed-models-for-continuous-outcomes" class="section level2">
@@ -226,22 +232,123 @@ build a regression model without any random effects, we might assume something l
 Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
 \tag{1.1}
 \end{equation}\]</span></p></li>
-<li><p><span class="math inline">\(\mathbf{x}_{ij} = (x_{i1}, \ldots, x_{ip_{i}})\)</span> is the vector
+<li><p><span class="math inline">\(\mathbf{x}_{ij} = (x_{i1}, \ldots, x_{ip})\)</span> is the vector
 of covariates for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(j\)</span>.</p></li>
+<li><p>The vector <span class="math inline">\(\mathbf{x}_{ij}\)</span> could contain some of the time points: <span class="math inline">\(t_{ij}, t_{ij-1}, ...\)</span>
+or transformations of these time points.</p></li>
 </ul>
 <hr />
 <ul>
 <li><p>The regression model <a href="mixed-models.html#eq:fixed-reg-model">(1.1)</a> assumes the same
-linear model <span class="math inline">\(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}\)</span> holds for all individuals in the study.</p></li>
-<li><p>This often ignores</p></li>
+mean function <span class="math inline">\(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}\)</span> holds for all individuals in the study.</p></li>
+<li>It is often reasonable to assume that the regression coefficients across vary across individuals.
+<ul>
+<li>This can often better account for heterogeneity across individuals.</li>
+</ul></li>
+<li>The figure below shows 3 different regression lines from the <strong>sleepstudy</strong> data.
+<ul>
+<li>Each regression line was estimated using only data from one individual.</li>
+</ul></li>
+</ul>
+<div class="figure"><span id="fig:unnamed-chunk-2"></span>
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-2-1.png" alt="Separately estimated regression lines for 3 subjects in the sleepstudy data." width="672" />
+<p class="caption">
+Figure 1.1: Separately estimated regression lines for 3 subjects in the sleepstudy data.
+</p>
+</div>
+<hr />
+<ul>
+<li><p>Figure 1.1 suggests there is some heterogeneity in the <strong>relationship</strong>
+between <strong>study day</strong> and <strong>response time</strong> across individuals.</p></li>
+<li><p>The response time of Subject 309 changes very little over time.</p></li>
+<li><p>For Subject 309, there is a more clear positive association between
+response time and day of study.</p></li>
+</ul>
+<hr />
+<ul>
+<li>For the <strong>sleepstudy</strong> data, a linear regression for <strong>reaction time</strong> vs. <strong>study day</strong>
+which assumes that
+<ul>
+<li>Expected response time is a linear function of study day</li>
+<li>All individuals have the same regression coefficient
+would have the form:
+<span class="math display">\[\begin{equation}
+Y_{ij} = \beta_{0} + \beta_{1} t_{j} + e_{ij}
+\end{equation}\]</span></li>
+</ul></li>
+<li><p>If we allowed each individual to have his/her <strong>own intercept and slope</strong>, we
+could instead consider the following model
+<span class="math display" id="eq:mixed-sleep">\[\begin{equation}
+Y_{ij} = \beta_{0} + \beta_{1} t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
+\tag{1.2}
+\end{equation}\]</span></p></li>
+<li><span class="math inline">\(\beta_{0} + u_{i0}\)</span> - intercept for individual <span class="math inline">\(i\)</span>.</li>
+<li><p><span class="math inline">\(\beta_{1} + u_{i1}\)</span> - intercept for individual <span class="math inline">\(i\)</span>.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>If we assume <span class="math inline">\((u_{i0}, u_{i1})\)</span> are sampled from some distribution, <span class="math inline">\(u_{i0}\)</span> and
+<span class="math inline">\(u_{i1}\)</span> are referred to as <strong>random effects</strong>.</p></li>
+<li><p>Typically, it is assumed that <span class="math inline">\((u_{i0}, u_{i1})\)</span> are sampled from a multivariate normal distribution
+with mean zero:
+<span class="math display">\[\begin{equation}
+(u_{i0}, u_{i1}) \sim \textrm{Normal}( \mathbf{0}, \boldsymbol{\Sigma}_{\tau} )
+\end{equation}\]</span></p></li>
+<li><p>Model <a href="mixed-models.html#eq:mixed-sleep">(1.2)</a> is called a <strong>mixed model</strong> because
+it contains both <strong>fixed effects</strong> <span class="math inline">\((\beta_{0}, \beta_{1})\)</span>
+and <strong>random effects</strong> <span class="math inline">\((u_{i0}, u_{i1})\)</span>.</p></li>
+</ul>
+<hr />
+<ul>
+<li>More generally, a <strong>linear mixed model</strong> (LMM) for longitudinal data will have the form:
+<span class="math display" id="eq:lmm-generalform">\[\begin{equation}
+Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}\mathbf{u}_{i} + e_{ij}
+\tag{1.3}
+\end{equation}\]</span>
+<ul>
+<li><span class="math inline">\(\boldsymbol{\beta}\)</span> - vector of fixed effects</li>
+<li><span class="math inline">\(\mathbf{u}_{i}\)</span> - vector of random effects</li>
+</ul></li>
+<li>If we stack the responses into a long vector <span class="math inline">\(\mathbf{Y}\)</span> and random effects into a long vector <span class="math inline">\(\mathbf{u}\)</span>
+<ul>
+<li><span class="math inline">\(\mathbf{Y} = (Y_{11}, Y_{12}, ...., Y_{mn_{m}})\)</span> - this vector has length <span class="math inline">\(\sum_{k=1}^{m} n_{k}\)</span></li>
+<li><span class="math inline">\(\mathbf{u} = (u_{10}, u_{11}, ...., u_{mq})\)</span> - this vector has length <span class="math inline">\(m \times (q + 1)\)</span>.</li>
+</ul></li>
+<li>Then, we can write the general form <a href="mixed-models.html#eq:lmm-generalform">(1.3)</a> of the LMM as
+<span class="math display">\[\begin{equation}
+\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{Z}\mathbf{u} + \mathbf{e}
+\end{equation}\]</span>
+<ul>
+<li><span class="math inline">\(i^{th}\)</span> row of <span class="math inline">\(\mathbf{X}\)</span> is <span class="math inline">\((1, \mathbf{x}_{ij}^{T})\)</span>.</li>
+<li><span class="math inline">\(i^{th}\)</span> row of <span class="math inline">\(\mathbf{Z}\)</span> is <span class="math inline">\(\mathbf{z}_{ij}^{T}\)</span>.</li>
+</ul></li>
+<li>Constructing an LMM can be thought of as choosing the desired “X” matrix and “Z” matrix.</li>
 </ul>
 </div>
 <div id="advantages-of-using-random-effects" class="section level2">
 <h2><span class="header-section-number">1.3</span> Advantages of using random effects</h2>
 <ul>
-<li><p>BLUPs</p></li>
-<li><p>Automatically accounts for within-subject correlation</p></li>
-<li><p>Flexibility of regression plus “regularization”</p></li>
+<li><p>Using an LMM automatically accounts for “within-subject” correlation.</p></li>
+<li><p>This is because observations on the same individual “share” common random effects.</p></li>
+<li><p>The correlation between the <span class="math inline">\(j^{th}\)</span> and <span class="math inline">\(k^{th}\)</span> observation from individual <span class="math inline">\(i\)</span> is
+<span class="math display">\[\begin{equation}
+\textrm{Corr}(Y_{ij}, Y_{ik}) = \frac{ \mathbf{z}_{ij}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ik}  }{ \sqrt{\mathbf{z}_{ij}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ij}}\sqrt{\mathbf{z}_{ik}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ik}}}
+\end{equation}\]</span></p></li>
+</ul>
+<hr />
+<ul>
+<li><p>One of the goals of the data analysis may be to characterize
+the <strong>heterogeneity</strong> in the relationship between the outcome
+and some of the covariates across individuals.</p></li>
+<li><p>Looking at the estimated variance components of the random effects
+can help to address this goal.</p></li>
+<li><p>An estimate of <span class="math inline">\(\textrm{Var}( u_{ij} )\)</span> “substantially greater than zero”
+is an indication that there is variability in the regression coefficient corresponding to <span class="math inline">\(u_{ij}\)</span>
+across individuals.</p></li>
+</ul>
+<hr />
+<ul>
+<li>BLUPs</li>
 </ul>
 </div>
 <div id="generalized-linear-mixed-models-glmms" class="section level2">
@@ -309,8 +416,8 @@ and the log of the mean is modeled with a linear regression.</p></li>
 </ul>
 </div>
 </div>
-<div id="fitting-linear-mixed-models-lmms-and-glmms-in-r" class="section level2">
-<h2><span class="header-section-number">1.5</span> Fitting Linear Mixed Models (LMMs) and GLMMs in <strong>R</strong></h2>
+<div id="fitting-linear-mixed-models-lmms-and-generalized-linear-mixed-models-glmms-in-r" class="section level2">
+<h2><span class="header-section-number">1.5</span> Fitting Linear Mixed Models (LMMs) and Generalized Linear Mixed models (GLMMs) in <strong>R</strong></h2>
 <ul>
 <li>The <strong>lme4</strong> package is probably the most general package
 for fitting LMMs and GLMMs.</li>
@@ -381,7 +488,7 @@ the exact same “formula notation” used in the <strong>lm</strong> function.<
 and only a random intercept for each <code>Subject</code>
 <span class="math display" id="eq:lmm-intercept-sleep">\[\begin{equation}
 Y_{ij} = \beta_{0} + \beta_{1}t_{j} + u_{i} + e_{ij}
-\tag{1.2}
+\tag{1.4}
 \end{equation}\]</span></p></li>
 <li>For the “X” part of this model, we use <code>Reaction ~ Days</code>.
 <ul>
@@ -391,7 +498,7 @@ Y_{ij} = \beta_{0} + \beta_{1}t_{j} + u_{i} + e_{ij}
 <ul>
 <li>This says that there is only a random intercept within the grouping variable <code>Subject</code>.</li>
 </ul></li>
-<li><p>Putting these two together, we can fit the LMM <a href="mixed-models.html#eq:lmm-intercept-sleep">(1.2)</a> using the following code:</p></li>
+<li><p>Putting these two together, we can fit the LMM <a href="mixed-models.html#eq:lmm-intercept-sleep">(1.4)</a> using the following code:</p></li>
 </ul>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">lmm.sleep.intercept &lt;-<span class="st"> </span><span class="kw">lmer</span>(Reaction <span class="op">~</span><span class="st"> </span>Days <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>Subject), <span class="dt">data =</span> sleepstudy)</a></code></pre></div>
 <hr />
@@ -494,7 +601,7 @@ and the estimated fixed-effects slope is <span class="math inline">\(\hat{\beta}
 and both a random intercept and slope for each <code>Subject</code>
 <span class="math display" id="eq:lmm-slope-sleep">\[\begin{equation}
 Y_{ij} = \beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
-\tag{1.3}
+\tag{1.5}
 \end{equation}\]</span></p></li>
 <li><p>This is done with <code>lmer</code> using the following code:</p></li>
 </ul>
@@ -576,8 +683,8 @@ are of the form <span class="math inline">\((1, t_{j})\)</span>, which is what w
 ##      (Intr)
 ## Days -0.138</code></pre>
 <ul>
-<li><p>The estimated fixed-effects intercept is <span class="math inline">\(\hat{\beta}_{0} = 251.4\)</span>,
-and the estimated fixed-effects slope is <span class="math inline">\(\hat{\beta}_{1} = 10.5\)</span>.</p></li>
+<li><p>The estimated fixed-effects coefficients are <span class="math inline">\(\hat{\beta}_{0} = 251.4\)</span>,
+and <span class="math inline">\(\hat{\beta}_{1} = 10.5\)</span> respectively.</p></li>
 <li>The estimated standard deviation and correlation of the random effects are
 <ul>
 <li><p>Estimated standard deviation of <span class="math inline">\(u_{i0}\)</span> is <span class="math inline">\(24.7\)</span>.</p></li>
@@ -586,11 +693,47 @@ and the estimated fixed-effects slope is <span class="math inline">\(\hat{\beta}
 </ul></li>
 </ul>
 <hr />
+<ul>
+<li>How to extract coefficients and random effects parameters?</li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="fitting-a-binary-glmm-with-the-ohio-data" class="section level3">
+<h3><span class="header-section-number">1.5.2</span> Fitting a Binary GLMM with the Ohio data</h3>
+<ul>
+<li>To use the <strong>ohio</strong> data, we will first load the <strong>geepack</strong> R package:</li>
+</ul>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">library</span>(geepack)</a></code></pre></div>
+<ul>
+<li>This dataset has 2148 observations from 537 individuals</li>
+</ul>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">data</span>(ohio)</a>
+<a class="sourceLine" id="cb26-2" data-line-number="2"><span class="kw">head</span>(ohio, <span class="dv">12</span>) <span class="co"># look at first 12 rows of ohio</span></a></code></pre></div>
+<pre><code>##    resp id age smoke
+## 1     0  0  -2     0
+## 2     0  0  -1     0
+## 3     0  0   0     0
+## 4     0  0   1     0
+## 5     0  1  -2     0
+## 6     0  1  -1     0
+## 7     0  1   0     0
+## 8     0  1   1     0
+## 9     0  2  -2     0
+## 10    0  2  -1     0
+## 11    0  2   0     0
+## 12    0  2   1     0</code></pre>
+<ul>
+<li>The outcome of interest is “wheezing status”: 1 - yes, 0 - no.
+<ul>
+<li>wheezing status is represented by the <strong>resp</strong> variable in the <strong>ohio</strong> dataset.</li>
+</ul></li>
+</ul>
+<hr />
 
 <div id="refs" class="references">
 <div>
 <p>Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.</p>
-</div>
 </div>
 </div>
 </div>

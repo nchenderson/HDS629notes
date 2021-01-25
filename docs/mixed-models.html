@@ -694,8 +694,27 @@ and <span class="math inline">\(\hat{\beta}_{1} = 10.5\)</span> respectively.</p
 </ul>
 <hr />
 <ul>
-<li>How to extract coefficients and random effects parameters?</li>
+<li>Rather than always printing out the entire summary, you can directly extract the estimates of the fixed effects with</li>
 </ul>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">coef</span>( <span class="kw">summary</span>(lmm.sleep.slope) )</a></code></pre></div>
+<pre><code>##              Estimate Std. Error   t value
+## (Intercept) 251.40510   6.824597 36.838090
+## Days         10.46729   1.545790  6.771481</code></pre>
+<ul>
+<li>To directly extract the estimates of the variance (or standard deviation) of the
+random effects, you can use:</li>
+</ul>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw">VarCorr</span>( lmm.sleep.slope )</a></code></pre></div>
+<pre><code>##  Groups   Name        Std.Dev. Corr 
+##  Subject  (Intercept) 24.7407       
+##           Days         5.9221  0.066
+##  Residual             25.5918</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="co">## using as.numeric( VarCorr( lmm.sleep.slope ) ) will give</span></a>
+<a class="sourceLine" id="cb29-2" data-line-number="2"><span class="co">## the value of the estimated variance</span></a>
+<a class="sourceLine" id="cb29-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb29-4" data-line-number="4"><span class="co">#as.numeric( VarCorr( lmm.sleep.slope ) )</span></a>
+<a class="sourceLine" id="cb29-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb29-6" data-line-number="6"><span class="co">#sqrt( as.numeric( VarCorr( lmm.sleep.slope ) ) )</span></a></code></pre></div>
 <hr />
 </div>
 </div>
@@ -704,12 +723,12 @@ and <span class="math inline">\(\hat{\beta}_{1} = 10.5\)</span> respectively.</p
 <ul>
 <li>To use the <strong>ohio</strong> data, we will first load the <strong>geepack</strong> R package:</li>
 </ul>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">library</span>(geepack)</a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw">library</span>(geepack)</a></code></pre></div>
 <ul>
 <li>This dataset has 2148 observations from 537 individuals</li>
 </ul>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">data</span>(ohio)</a>
-<a class="sourceLine" id="cb26-2" data-line-number="2"><span class="kw">head</span>(ohio, <span class="dv">12</span>) <span class="co"># look at first 12 rows of ohio</span></a></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw">data</span>(ohio)</a>
+<a class="sourceLine" id="cb31-2" data-line-number="2"><span class="kw">head</span>(ohio, <span class="dv">12</span>) <span class="co"># look at first 12 rows of ohio</span></a></code></pre></div>
 <pre><code>##    resp id age smoke
 ## 1     0  0  -2     0
 ## 2     0  0  -1     0
@@ -741,7 +760,7 @@ and <span class="math inline">\(\hat{\beta}_{1} = 10.5\)</span> respectively.</p
 <li><p>In <strong>lme4</strong>, fitting a GLMM with binary responses can be done with the <strong>glmer</strong> function.</p></li>
 <li><p>The <strong>glmer</strong> function has the following syntax:</p></li>
 </ul>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw">glmer</span>(formula, data, family)</a></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="kw">glmer</span>(formula, data, family)</a></code></pre></div>
 <ul>
 <li><p>The <code>formula</code> argument uses the same syntax as <code>lmer</code></p></li>
 <li><p>When handling binary outcomes, you need to specify the family argument as: <code>family = binomial</code>.</p></li>
@@ -750,7 +769,8 @@ and <span class="math inline">\(\hat{\beta}_{1} = 10.5\)</span> respectively.</p
 <ul>
 <li>Put table of proportions here.</li>
 </ul>
-<hr />
+<div id="a-random-intercept-model" class="section level4">
+<h4><span class="header-section-number">1.5.2.1</span> A Random Intercept Model</h4>
 <ul>
 <li>Let’s use a GLMM to explore the relationship between wheezing status and the:
 <ul>
@@ -768,13 +788,37 @@ random individual-specific intercepts can be expressed as</li>
 <ul>
 <li>Model <a href="mixed-models.html#eq:ohio-intercept">(1.6)</a> can be fit with the following code</li>
 </ul>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="co"># id is the grouping variable</span></a>
-<a class="sourceLine" id="cb29-2" data-line-number="2">ohio.intercept &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> ohio, <span class="dt">family =</span> binomial)</a></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="co"># id is the grouping variable</span></a>
+<a class="sourceLine" id="cb34-2" data-line-number="2">ohio.intercept &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> ohio, <span class="dt">family =</span> binomial)</a></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.intercept))</a></code></pre></div>
+<pre><code>##               Estimate Std. Error    z value     Pr(&gt;|z|)
+## (Intercept) -3.3739539 0.27497502 -12.270038 1.311914e-34
+## age         -0.1767645 0.06796698  -2.600741 9.302258e-03
+## smoke        0.4147806 0.28704052   1.445024 1.484510e-01</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">VarCorr</span>(ohio.intercept)</a></code></pre></div>
+<pre><code>##  Groups Name        Std.Dev.
+##  id     (Intercept) 2.3432</code></pre>
+<hr />
+<ul>
+<li>Plotting</li>
+</ul>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1">beta.hat &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.intercept))[,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb39-2" data-line-number="2">age.vec &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">1000</span>)</a>
+<a class="sourceLine" id="cb39-3" data-line-number="3"><span class="kw">plot</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">2</span>,<span class="dv">1</span>), <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dt">las=</span><span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb39-4" data-line-number="4">     <span class="dt">xlab =</span> <span class="st">&quot;Age in Years - 9 Years&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Wheezing Probability&quot;</span>)</a>
+<a class="sourceLine" id="cb39-5" data-line-number="5"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">50</span>) {</a>
+<a class="sourceLine" id="cb39-6" data-line-number="6">  u.draw1 &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1</span>, <span class="dt">mean=</span><span class="dv">0</span>, <span class="dt">sd=</span><span class="fl">2.34</span>)</a>
+<a class="sourceLine" id="cb39-7" data-line-number="7">  u.draw2 &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1</span>, <span class="dt">mean=</span><span class="dv">0</span>, <span class="dt">sd=</span><span class="fl">2.34</span>)</a>
+<a class="sourceLine" id="cb39-8" data-line-number="8">  <span class="kw">lines</span>(age.vec, <span class="kw">plogis</span>(u.draw1 <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>]<span class="op">*</span>age.vec <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]))</a>
+<a class="sourceLine" id="cb39-9" data-line-number="9">  <span class="kw">lines</span>(age.vec, <span class="kw">plogis</span>(u.draw2 <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>]<span class="op">*</span>age.vec), <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb39-10" data-line-number="10">}</a></code></pre></div>
+<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <hr />
 
 <div id="refs" class="references">
 <div>
 <p>Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.</p>
+</div>
 </div>
 </div>
 </div>

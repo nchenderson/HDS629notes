@@ -440,7 +440,25 @@ and $\hat{\beta}_{1} = 10.5$ respectively.
 
 ---
 
-* How to extract coefficients and random effects parameters?
+* Rather than always printing out the entire summary, you can directly extract the estimates of the fixed effects with
+```{r, echo=TRUE}
+coef( summary(lmm.sleep.slope) )
+```
+
+* To directly extract the estimates of the variance (or standard deviation) of the
+random effects, you can use:
+```{r, echo=TRUE}
+VarCorr( lmm.sleep.slope )
+
+## using as.numeric( VarCorr( lmm.sleep.slope ) ) will give
+## the value of the estimated variance
+
+#as.numeric( VarCorr( lmm.sleep.slope ) )
+
+#sqrt( as.numeric( VarCorr( lmm.sleep.slope ) ) )
+```
+
+
 
 ---
 
@@ -486,7 +504,7 @@ glmer(formula, data, family)
 
 * Put table of proportions here.
 
----
+#### A Random Intercept Model
 
 * Let's use a GLMM to explore the relationship between wheezing status and the:
     + **age** of the child
@@ -506,5 +524,32 @@ random individual-specific intercepts can be expressed as
 # id is the grouping variable
 ohio.intercept <- glmer(resp ~ age + smoke + (1 | id), data = ohio, family = binomial)
 ```
+
+
+```{r, echo=TRUE}
+coef(summary(ohio.intercept))
+```
+
+```{r, echo=TRUE}
+VarCorr(ohio.intercept)
+```
+
+---
+
+* Plotting
+
+```{r, echo=TRUE}
+beta.hat <- coef(summary(ohio.intercept))[,1]
+age.vec <- seq(-2, 1, length.out = 1000)
+plot(0,0, type="n", xlim=c(-2,1), ylim=c(0,1), las=1,
+     xlab = "Age in Years - 9 Years", ylab = "Wheezing Probability")
+for(k in 1:50) {
+  u.draw1 <- rnorm(1, mean=0, sd=2.34)
+  u.draw2 <- rnorm(1, mean=0, sd=2.34)
+  lines(age.vec, plogis(u.draw1 + beta.hat[1] + beta.hat[2]*age.vec + beta.hat[3]))
+  lines(age.vec, plogis(u.draw2 + beta.hat[1] + beta.hat[2]*age.vec), col="red")
+}
+```
+
 
 ---

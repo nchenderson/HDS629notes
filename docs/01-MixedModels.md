@@ -595,7 +595,42 @@ and $\hat{\beta}_{1} = 10.5$ respectively.
 
 ---
 
-* How to extract coefficients and random effects parameters?
+* Rather than always printing out the entire summary, you can directly extract the estimates of the fixed effects with
+
+```r
+coef( summary(lmm.sleep.slope) )
+```
+
+```
+##              Estimate Std. Error   t value
+## (Intercept) 251.40510   6.824597 36.838090
+## Days         10.46729   1.545790  6.771481
+```
+
+* To directly extract the estimates of the variance (or standard deviation) of the
+random effects, you can use:
+
+```r
+VarCorr( lmm.sleep.slope )
+```
+
+```
+##  Groups   Name        Std.Dev. Corr 
+##  Subject  (Intercept) 24.7407       
+##           Days         5.9221  0.066
+##  Residual             25.5918
+```
+
+```r
+## using as.numeric( VarCorr( lmm.sleep.slope ) ) will give
+## the value of the estimated variance
+
+#as.numeric( VarCorr( lmm.sleep.slope ) )
+
+#sqrt( as.numeric( VarCorr( lmm.sleep.slope ) ) )
+```
+
+
 
 ---
 
@@ -660,7 +695,7 @@ glmer(formula, data, family)
 
 * Put table of proportions here.
 
----
+#### A Random Intercept Model
 
 * Let's use a GLMM to explore the relationship between wheezing status and the:
     + **age** of the child
@@ -681,5 +716,49 @@ random individual-specific intercepts can be expressed as
 # id is the grouping variable
 ohio.intercept <- glmer(resp ~ age + smoke + (1 | id), data = ohio, family = binomial)
 ```
+
+
+
+```r
+coef(summary(ohio.intercept))
+```
+
+```
+##               Estimate Std. Error    z value     Pr(>|z|)
+## (Intercept) -3.3739539 0.27497502 -12.270038 1.311914e-34
+## age         -0.1767645 0.06796698  -2.600741 9.302258e-03
+## smoke        0.4147806 0.28704052   1.445024 1.484510e-01
+```
+
+
+```r
+VarCorr(ohio.intercept)
+```
+
+```
+##  Groups Name        Std.Dev.
+##  id     (Intercept) 2.3432
+```
+
+---
+
+* Plotting
+
+
+```r
+beta.hat <- coef(summary(ohio.intercept))[,1]
+age.vec <- seq(-2, 1, length.out = 1000)
+plot(0,0, type="n", xlim=c(-2,1), ylim=c(0,1), las=1,
+     xlab = "Age in Years - 9 Years", ylab = "Wheezing Probability")
+for(k in 1:50) {
+  u.draw1 <- rnorm(1, mean=0, sd=2.34)
+  u.draw2 <- rnorm(1, mean=0, sd=2.34)
+  lines(age.vec, plogis(u.draw1 + beta.hat[1] + beta.hat[2]*age.vec + beta.hat[3]))
+  lines(age.vec, plogis(u.draw2 + beta.hat[1] + beta.hat[2]*age.vec), col="red")
+}
+```
+
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-22-1.png" width="672" />
+
 
 ---

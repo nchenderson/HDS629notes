@@ -388,10 +388,8 @@ to additional days of sleep deprivation <strong>varies considerably</strong> acr
 <li><p>Some individuals respond strongly to additional days of little sleep.</p></li>
 </ul></li>
 </ul>
-<hr />
-<ul>
-<li></li>
-</ul>
+<!--* When interpreting the estimated values of the random-effects variances, 
+one thing you could report is the variation explained -->
 </div>
 <div id="best-linear-unbiased-prediction" class="section level3">
 <h3><span class="header-section-number">1.3.3</span> Best Linear Unbiased Prediction</h3>
@@ -404,20 +402,37 @@ of a given individual.</p></li>
 \end{equation}\]</span></p></li>
 <li><p>The “Best Linear Unbiased Predictor” (BLUP) of this is
 <span class="math display">\[\begin{equation}
-\textrm{BLUP}_{i} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})
+\textrm{BLUP}_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})
 \end{equation}\]</span></p></li>
 </ul>
 <hr />
 <ul>
-<li><p>I would think of <span class="math inline">\(\textrm{BLUP}_{i}\)</span> as an estimate of the “true trajectory” (i.e., the true mean) of
-the <span class="math inline">\(i^{th}\)</span> individual.</p></li>
-<li><p>The observed longitudinal outcomes are a “noisy estimate” of that individual’s true trajectory.</p></li>
-<li><p>The BLUPs are more stable <strong>“shrinkage” estimates</strong> of the trajectory.</p></li>
-<li><p><span class="math inline">\(\textrm{BLUP}_{i}\)</span> will have the following form</p></li>
+<li><p>I would think of the values of <span class="math inline">\(\textrm{BLUP}_{ij}\)</span> (for different values of <span class="math inline">\(j\)</span>) as an estimate of the “true trajectory” (i.e., the true mean) of the <span class="math inline">\(i^{th}\)</span> individual.</p></li>
+<li><p>The observed longitudinal outcomes from individual <span class="math inline">\(i\)</span> are a “noisy estimate” of that individual’s true trajectory.</p></li>
+<li>The BLUPs are more stable <strong>“shrinkage” estimates</strong> of the trajectory of individual <span class="math inline">\(i\)</span>.
+<ul>
+<li>These are called shrinkage estimates because <span class="math inline">\(\textrm{BLUP}_{ij}\)</span> often shrinks the estimate from data only from individual <span class="math inline">\(i\)</span> towards the “overall” estimate <span class="math inline">\(\mathbf{x}_{ij}^{T}\boldsymbol{\beta}\)</span>.</li>
+</ul></li>
 </ul>
 <hr />
 <ul>
-<li><p>You can also think of <span class="math inline">\(\textrm{BLUP}_{i}\)</span> as a prediction of what the observed
+<li><p>For example, if we had the intercept-only model <span class="math inline">\(Y_{ij} = \beta_{0} + u_{i} + e_{ij}\)</span>,
+the value of <span class="math inline">\(\textrm{BLUP}_{ij}\)</span> is
+<span class="math display">\[\begin{equation}
+\textrm{BLUP}_{ij} = \frac{n_{i}\sigma_{u}^{2}}{\sigma^{2} + n_{i}\sigma_{u}^{2} }\bar{Y}_{i.} + \Big(1 -  \frac{n_{i}\sigma_{u}^{2}}{\sigma^{2} + n_{i}\sigma_{u}^{2} }\Big)\bar{Y}_{..}
+\end{equation}\]</span></p></li>
+<li><span class="math inline">\(\bar{Y}_{i.}\)</span> is the sample mean from individual-<span class="math inline">\(i\)</span> data
+<ul>
+<li>This would be the estimate of the intercept if we only looked at data from the <span class="math inline">\(i^{th}\)</span> individual.</li>
+</ul></li>
+<li><span class="math inline">\(\bar{Y}_{..}\)</span> - overall mean
+<ul>
+<li>This would be the estimate of the intercept if we ignored variation in intercepts across individuals.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>You can also think of <span class="math inline">\(\textrm{BLUP}_{ij}\)</span> as a prediction of what the observed
 trajectory for individual <span class="math inline">\(i\)</span> would be if that individual
 were in a future study under the same conditions.</p></li>
 <li><p>Say <span class="math inline">\(Y_{i1}&#39;, \ldots, Y_{in_{i}}&#39;\)</span> are the observations for individual <span class="math inline">\(i\)</span> in a future study.</p></li>
@@ -428,7 +443,7 @@ Y_{ij}&#39; = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij
 <li><p>The expectation of <span class="math inline">\(Y_{ij}&#39;\)</span> given the observed data in our longitudinal study is
 <span class="math display">\[\begin{eqnarray}
 E(Y_{ij}&#39;|Y_{i1}, \ldots, Y_{in_{i}}) &amp;=&amp; \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})  \nonumber \\
-&amp;=&amp; \textrm{BLUP}_{i} \nonumber
+&amp;=&amp; \textrm{BLUP}_{ij} \nonumber
 \end{eqnarray}\]</span></p></li>
 </ul>
 </div>
@@ -824,6 +839,39 @@ random effects, you can use:</li>
 <a class="sourceLine" id="cb29-5" data-line-number="5"></a>
 <a class="sourceLine" id="cb29-6" data-line-number="6"><span class="co">#sqrt( as.numeric( VarCorr( lmm.sleep.slope ) ) )</span></a></code></pre></div>
 <hr />
+<ul>
+<li>To get the “BLUPs” of <span class="math inline">\(E(u_{ih}|Y_{i1}, \ldots, Y_{in_{i}})\)</span> of the random effects <span class="math inline">\(u_{i0}\)</span> and <span class="math inline">\(u_{i1}\)</span>,
+use <code>ranef</code></li>
+</ul>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">blups.slope &lt;-<span class="st"> </span><span class="kw">ranef</span>( lmm.sleep.slope )</a></code></pre></div>
+<ul>
+<li>To plot these, use <code>dotplot</code> (you will need to load the <code>lattice</code> package first)</li>
+</ul>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw">library</span>(lattice)</a>
+<a class="sourceLine" id="cb31-2" data-line-number="2"><span class="kw">dotplot</span>(blups.slope)</a></code></pre></div>
+<pre><code>## $Subject</code></pre>
+<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="co">## This plots things sorted by individual-specific estimates of intercepts</span></a></code></pre></div>
+<hr />
+<ul>
+<li>To extract the “predicted” random effects into a <code>DataFrame</code> use</li>
+</ul>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1">ranef.df &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>( blups.slope)</a>
+<a class="sourceLine" id="cb34-2" data-line-number="2"><span class="kw">head</span>(ranef.df)</a></code></pre></div>
+<pre><code>##    grpvar        term grp    condval   condsd
+## 1 Subject (Intercept) 308   2.258551 12.07086
+## 2 Subject (Intercept) 309 -40.398738 12.07086
+## 3 Subject (Intercept) 310 -38.960409 12.07086
+## 4 Subject (Intercept) 330  23.690620 12.07086
+## 5 Subject (Intercept) 331  22.260313 12.07086
+## 6 Subject (Intercept) 332   9.039568 12.07086</code></pre>
+<hr />
+<ul>
+<li>What we discussed earlier in Section 1.3, were the BLUPs
+for <span class="math inline">\(\mathbf{x}_{ij}^{T}\bbeta + \mathbf{z}_{ij}\mathbf{u}_{i}\)</span> not
+just the individual components of <span class="math inline">\(\mathbf{u}_{i}\)</span>.</li>
+</ul>
+<hr />
 </div>
 </div>
 <div id="fitting-binary-glmms-using-the-ohio-data" class="section level3">
@@ -831,12 +879,12 @@ random effects, you can use:</li>
 <ul>
 <li>To use the <strong>ohio</strong> data, we will first load the <strong>geepack</strong> R package:</li>
 </ul>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw">library</span>(geepack)</a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1"><span class="kw">library</span>(geepack)</a></code></pre></div>
 <ul>
 <li>This dataset has 2148 observations from 537 individuals</li>
 </ul>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw">data</span>(ohio)</a>
-<a class="sourceLine" id="cb31-2" data-line-number="2"><span class="kw">head</span>(ohio, <span class="dv">12</span>) <span class="co"># look at first 12 rows of ohio</span></a></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">data</span>(ohio)</a>
+<a class="sourceLine" id="cb37-2" data-line-number="2"><span class="kw">head</span>(ohio, <span class="dv">12</span>) <span class="co"># look at first 12 rows of ohio</span></a></code></pre></div>
 <pre><code>##    resp id age smoke
 ## 1     0  0  -2     0
 ## 2     0  0  -1     0
@@ -868,7 +916,7 @@ random effects, you can use:</li>
 <li><p>In <strong>lme4</strong>, fitting a GLMM with binary responses can be done with the <strong>glmer</strong> function.</p></li>
 <li><p>The <strong>glmer</strong> function has the following syntax:</p></li>
 </ul>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="kw">glmer</span>(formula, data, family)</a></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"><span class="kw">glmer</span>(formula, data, family)</a></code></pre></div>
 <ul>
 <li><p>The <code>formula</code> argument uses the same syntax as <code>lmer</code></p></li>
 <li><p>When handling binary outcomes, you need to specify the family argument as: <code>family = binomial</code>.</p></li>
@@ -896,31 +944,31 @@ random individual-specific intercepts can be expressed as</li>
 <ul>
 <li>Model <a href="mixed-models.html#eq:ohio-intercept">(1.6)</a> can be fit with the following code</li>
 </ul>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="co"># id is the grouping variable</span></a>
-<a class="sourceLine" id="cb34-2" data-line-number="2">ohio.intercept &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> ohio, <span class="dt">family =</span> binomial)</a></code></pre></div>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.intercept))</a></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" data-line-number="1"><span class="co"># id is the grouping variable</span></a>
+<a class="sourceLine" id="cb40-2" data-line-number="2">ohio.intercept &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> ohio, <span class="dt">family =</span> binomial)</a></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.intercept))</a></code></pre></div>
 <pre><code>##               Estimate Std. Error    z value     Pr(&gt;|z|)
 ## (Intercept) -3.3739539 0.27497502 -12.270038 1.311914e-34
 ## age         -0.1767645 0.06796698  -2.600741 9.302258e-03
 ## smoke        0.4147806 0.28704052   1.445024 1.484510e-01</code></pre>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">VarCorr</span>(ohio.intercept)</a></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1"><span class="kw">VarCorr</span>(ohio.intercept)</a></code></pre></div>
 <pre><code>##  Groups Name        Std.Dev.
 ##  id     (Intercept) 2.3432</code></pre>
 <hr />
 <ul>
 <li>Plotting</li>
 </ul>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1">beta.hat &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.intercept))[,<span class="dv">1</span>]</a>
-<a class="sourceLine" id="cb39-2" data-line-number="2">age.vec &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">1000</span>)</a>
-<a class="sourceLine" id="cb39-3" data-line-number="3"><span class="kw">plot</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">2</span>,<span class="dv">1</span>), <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dt">las=</span><span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb39-4" data-line-number="4">     <span class="dt">xlab =</span> <span class="st">&quot;Age in Years - 9 Years&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Wheezing Probability&quot;</span>)</a>
-<a class="sourceLine" id="cb39-5" data-line-number="5"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">50</span>) {</a>
-<a class="sourceLine" id="cb39-6" data-line-number="6">  u.draw1 &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1</span>, <span class="dt">mean=</span><span class="dv">0</span>, <span class="dt">sd=</span><span class="fl">2.34</span>)</a>
-<a class="sourceLine" id="cb39-7" data-line-number="7">  u.draw2 &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1</span>, <span class="dt">mean=</span><span class="dv">0</span>, <span class="dt">sd=</span><span class="fl">2.34</span>)</a>
-<a class="sourceLine" id="cb39-8" data-line-number="8">  <span class="kw">lines</span>(age.vec, <span class="kw">plogis</span>(u.draw1 <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>]<span class="op">*</span>age.vec <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]))</a>
-<a class="sourceLine" id="cb39-9" data-line-number="9">  <span class="kw">lines</span>(age.vec, <span class="kw">plogis</span>(u.draw2 <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>]<span class="op">*</span>age.vec), <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
-<a class="sourceLine" id="cb39-10" data-line-number="10">}</a></code></pre></div>
-<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" data-line-number="1">beta.hat &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.intercept))[,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb45-2" data-line-number="2">age.vec &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">1000</span>)</a>
+<a class="sourceLine" id="cb45-3" data-line-number="3"><span class="kw">plot</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">2</span>,<span class="dv">1</span>), <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dt">las=</span><span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb45-4" data-line-number="4">     <span class="dt">xlab =</span> <span class="st">&quot;Age in Years - 9 Years&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Wheezing Probability&quot;</span>)</a>
+<a class="sourceLine" id="cb45-5" data-line-number="5"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">50</span>) {</a>
+<a class="sourceLine" id="cb45-6" data-line-number="6">  u.draw1 &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1</span>, <span class="dt">mean=</span><span class="dv">0</span>, <span class="dt">sd=</span><span class="fl">2.34</span>)</a>
+<a class="sourceLine" id="cb45-7" data-line-number="7">  u.draw2 &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1</span>, <span class="dt">mean=</span><span class="dv">0</span>, <span class="dt">sd=</span><span class="fl">2.34</span>)</a>
+<a class="sourceLine" id="cb45-8" data-line-number="8">  <span class="kw">lines</span>(age.vec, <span class="kw">plogis</span>(u.draw1 <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>]<span class="op">*</span>age.vec <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]))</a>
+<a class="sourceLine" id="cb45-9" data-line-number="9">  <span class="kw">lines</span>(age.vec, <span class="kw">plogis</span>(u.draw2 <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>]<span class="op">*</span>age.vec), <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb45-10" data-line-number="10">}</a></code></pre></div>
+<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 <hr />
 
 <div id="refs" class="references">

@@ -215,9 +215,9 @@ to additional days of sleep deprivation **varies considerably** across individua
     
     + Some individuals respond strongly to additional days of little sleep.
     
----
 
-* 
+<!--* When interpreting the estimated values of the random-effects variances, 
+one thing you could report is the variation explained --> 
 
 
 ### Best Linear Unbiased Prediction
@@ -232,24 +232,35 @@ of a given individual.
 
 * The "Best Linear Unbiased Predictor" (BLUP) of this is 
 \begin{equation}
-\textrm{BLUP}_{i} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})
+\textrm{BLUP}_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})
 \end{equation}
 
 ---
 
-* I would think of $\textrm{BLUP}_{i}$ as an estimate of the "true trajectory" (i.e., the true mean) of 
-the $i^{th}$ individual.
+* I would think of the values of $\textrm{BLUP}_{ij}$ (for different values of $j$) as an estimate of the "true trajectory" (i.e., the true mean) of the $i^{th}$ individual.
 
-* The observed longitudinal outcomes are a "noisy estimate" of that individual's true trajectory.
+* The observed longitudinal outcomes from individual $i$ are a "noisy estimate" of that individual's true trajectory.
 
-* The BLUPs are more stable **"shrinkage" estimates** of the trajectory.
-
-* $\textrm{BLUP}_{i}$ will have the following form
-
+* The BLUPs are more stable **"shrinkage" estimates** of the trajectory of individual $i$.
+     + These are called shrinkage estimates because $\textrm{BLUP}_{ij}$ often shrinks the estimate from data only from individual $i$ towards the "overall" estimate $\mathbf{x}_{ij}^{T}\boldsymbol{\beta}$.
 
 ---
 
-* You can also think of $\textrm{BLUP}_{i}$ as a prediction of what the observed
+* For example, if we had the intercept-only model $Y_{ij} = \beta_{0} + u_{i} + e_{ij}$, 
+the value of $\textrm{BLUP}_{ij}$ is
+\begin{equation}
+\textrm{BLUP}_{ij} = \frac{n_{i}\sigma_{u}^{2}}{\sigma^{2} + n_{i}\sigma_{u}^{2} }\bar{Y}_{i.} + \Big(1 -  \frac{n_{i}\sigma_{u}^{2}}{\sigma^{2} + n_{i}\sigma_{u}^{2} }\Big)\bar{Y}_{..}
+\end{equation}
+
+* $\bar{Y}_{i.}$ is the sample mean from individual-$i$ data
+     + This would be the estimate of the intercept if we only looked at data from the $i^{th}$ individual.
+
+* $\bar{Y}_{..}$ - overall mean
+     + This would be the estimate of the intercept if we ignored variation in intercepts across individuals.
+
+---
+
+* You can also think of $\textrm{BLUP}_{ij}$ as a prediction of what the observed
 trajectory for individual $i$ would be if that individual 
 were in a future study under the same conditions.
 
@@ -263,7 +274,7 @@ Y_{ij}' = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T
 * The expectation of $Y_{ij}'$ given the observed data in our longitudinal study is
 \begin{eqnarray}
 E(Y_{ij}'|Y_{i1}, \ldots, Y_{in_{i}}) &=& \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})  \nonumber \\
-&=& \textrm{BLUP}_{i} \nonumber
+&=& \textrm{BLUP}_{ij} \nonumber
 \end{eqnarray}
 
 
@@ -732,7 +743,56 @@ VarCorr( lmm.sleep.slope )
 #sqrt( as.numeric( VarCorr( lmm.sleep.slope ) ) )
 ```
 
+---
 
+* To get the "BLUPs" of $E(u_{ih}|Y_{i1}, \ldots, Y_{in_{i}})$ of the random effects $u_{i0}$ and $u_{i1}$,
+use `ranef`
+
+```r
+blups.slope <- ranef( lmm.sleep.slope )
+```
+
+* To plot these, use `dotplot` (you will need to load the `lattice` package first)
+
+```r
+library(lattice)
+dotplot(blups.slope)
+```
+
+```
+## $Subject
+```
+
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-17-1.png" width="672" />
+
+```r
+## This plots things sorted by individual-specific estimates of intercepts
+```
+
+---
+
+* To extract the "predicted" random effects into a `DataFrame` use
+
+```r
+ranef.df <- as.data.frame( blups.slope)
+head(ranef.df)
+```
+
+```
+##    grpvar        term grp    condval   condsd
+## 1 Subject (Intercept) 308   2.258551 12.07086
+## 2 Subject (Intercept) 309 -40.398738 12.07086
+## 3 Subject (Intercept) 310 -38.960409 12.07086
+## 4 Subject (Intercept) 330  23.690620 12.07086
+## 5 Subject (Intercept) 331  22.260313 12.07086
+## 6 Subject (Intercept) 332   9.039568 12.07086
+```
+
+---
+
+* What we discussed earlier in Section 1.3, were the BLUPs 
+for $\mathbf{x}_{ij}^{T}\bbeta + \mathbf{z}_{ij}\mathbf{u}_{i}$ not 
+just the individual components of $\mathbf{u}_{i}$.
 
 ---
 
@@ -860,7 +920,7 @@ for(k in 1:50) {
 }
 ```
 
-<img src="01-MixedModels_files/figure-html/unnamed-chunk-22-1.png" width="672" />
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-25-1.png" width="672" />
 
 
 ---

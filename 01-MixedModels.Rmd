@@ -297,7 +297,7 @@ E(Y_{ij}'|Y_{i1}, \ldots, Y_{in_{i}}) &=& \beta_{0} + \mathbf{x}_{ij}^{T}\boldsy
 that can't be reasonably modeled with a Gaussian distribution.
 
 * The most common scenarios where you would use GLMs in practice
-are **binary**, **count**, and perhaps multinomial outcomes.
+are **binary**, **count**, and **multinomial** outcomes.
 
 * With a generalized linear mixed model (GLMM), you assume that
 a GLM holds conditional on the value of the random effects.
@@ -348,18 +348,42 @@ is a linear combination of the covariates and the random effects vector $\mathbf
     
 ### GLMMs with Count Outcomes
 
-* For **count** outcomes, responses are typically assumed to follow a **Poisson** or a **negative binomial** distribution - conditional on the values of the random effects model.
+* For **count** outcomes, responses are typically assumed to follow a **Poisson** distribution and sometimes a **negative binomial** distribution - conditional on the values of the random effects model.
 
-* If $Y_{ij}|\mathbf{u}_{i} \sim \textrm{Poisson}\{ \mu_{ij}( \mathbf{u}_{i} ) \}$,
+* For the Poisson model, we assume $Y_{ij}|\mathbf{u}_{i} \sim \textrm{Poisson}\{ \mu_{ij}( \mathbf{u}_{i} ) \}$,
 \begin{equation}
 E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad 
 \textrm{Var}( Y_{ij}| \mathbf{u}_{i} ) = \mu_{ij}(\mathbf{u}_{i})
 \end{equation}
 
-* The log of the conditional mean $\mu_{ij}(\mathbf{u}_{i})$ is modeled with a linear regression:
+* One common problem with the Poisson distribution is **overdispersion**. 
+    + The variance of the Poisson equals the mean.
+    
+    + While the **marginal** variance will not equal the mean, requiring the
+    conditional means and variances to be equal could lead to a poor fit.
+    
+* For the **negative binomial** model, we assume     
+$Y_{ij}|\mathbf{u}_{i} \sim \textrm{NB}\{ \mu_{ij}( \mathbf{u}_{i}, \phi ) \}$,
+\begin{equation}
+E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad 
+\textrm{Var}( Y_{ij}| \mathbf{u}_{i} ) = \mu_{ij}(\mathbf{u}_{i}) + \phi\mu_{ij}^{2}(\mathbf{u}_{i})
+\end{equation}
+   + $\phi$ is often referred to as the overdispersion parameter.
+   
+   
+---
+
+* With a GLMM model for **count data**, it is typical to model the **log** of the conditional mean $\mu_{ij}(\mathbf{u}_{i})$ with a linear regression:
 \begin{equation}
 \log\{ \mu_{ij}(\mathbf{u}_{i}) \} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}
 \end{equation}
+
+* Again, for the Poisson GLMM, the usual assumption for the random effects is that
+ \begin{equation}
+        \mathbf{u}_{i} \sim \textrm{Normal}( \mathbf{0}, \boldsymbol{\Sigma}_{\tau})
+  \end{equation}
+
+
 
 ## Fitting Linear Mixed Models (LMMs) and Generalized Linear Mixed models (GLMMs) in **R**
 

@@ -439,7 +439,7 @@ E(Y_{ij}&#39;|Y_{i1}, \ldots, Y_{in_{i}}) &amp;=&amp; \beta_{0} + \mathbf{x}_{ij
 <li><p>Generalized linear models (GLMs) are used to handle “non-continuous” data
 that can’t be reasonably modeled with a Gaussian distribution.</p></li>
 <li><p>The most common scenarios where you would use GLMs in practice
-are <strong>binary</strong>, <strong>count</strong>, and perhaps multinomial outcomes.</p></li>
+are <strong>binary</strong>, <strong>count</strong>, and <strong>multinomial</strong> outcomes.</p></li>
 <li><p>With a generalized linear mixed model (GLMM), you assume that
 a GLM holds conditional on the value of the random effects.</p></li>
 </ul>
@@ -489,15 +489,37 @@ is a linear combination of the covariates and the random effects vector <span cl
 <div id="glmms-with-count-outcomes" class="section level3">
 <h3><span class="header-section-number">1.4.2</span> GLMMs with Count Outcomes</h3>
 <ul>
-<li><p>For <strong>count</strong> outcomes, responses are typically assumed to follow a <strong>Poisson</strong> or a <strong>negative binomial</strong> distribution - conditional on the values of the random effects model.</p></li>
-<li><p>If <span class="math inline">\(Y_{ij}|\mathbf{u}_{i} \sim \textrm{Poisson}\{ \mu_{ij}( \mathbf{u}_{i} ) \}\)</span>,
+<li><p>For <strong>count</strong> outcomes, responses are typically assumed to follow a <strong>Poisson</strong> distribution and sometimes a <strong>negative binomial</strong> distribution - conditional on the values of the random effects model.</p></li>
+<li><p>For the Poisson model, we assume <span class="math inline">\(Y_{ij}|\mathbf{u}_{i} \sim \textrm{Poisson}\{ \mu_{ij}( \mathbf{u}_{i} ) \}\)</span>,
 <span class="math display">\[\begin{equation}
 E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad 
 \textrm{Var}( Y_{ij}| \mathbf{u}_{i} ) = \mu_{ij}(\mathbf{u}_{i})
 \end{equation}\]</span></p></li>
-<li><p>The log of the conditional mean <span class="math inline">\(\mu_{ij}(\mathbf{u}_{i})\)</span> is modeled with a linear regression:
+<li>One common problem with the Poisson distribution is <strong>overdispersion</strong>.
+<ul>
+<li><p>The variance of the Poisson equals the mean.</p></li>
+<li><p>While the <strong>marginal</strong> variance will not equal the mean, requiring the
+conditional means and variances to be equal could lead to a poor fit.</p></li>
+</ul></li>
+<li>For the <strong>negative binomial</strong> model, we assume<br />
+<span class="math inline">\(Y_{ij}|\mathbf{u}_{i} \sim \textrm{NB}\{ \mu_{ij}( \mathbf{u}_{i}, \phi ) \}\)</span>,
+<span class="math display">\[\begin{equation}
+E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad 
+\textrm{Var}( Y_{ij}| \mathbf{u}_{i} ) = \mu_{ij}(\mathbf{u}_{i}) + \phi\mu_{ij}^{2}(\mathbf{u}_{i})
+\end{equation}\]</span>
+<ul>
+<li><span class="math inline">\(\phi\)</span> is often referred to as the overdispersion parameter.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>With a GLMM model for <strong>count data</strong>, it is typical to model the <strong>log</strong> of the conditional mean <span class="math inline">\(\mu_{ij}(\mathbf{u}_{i})\)</span> with a linear regression:
 <span class="math display">\[\begin{equation}
 \log\{ \mu_{ij}(\mathbf{u}_{i}) \} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}
+\end{equation}\]</span></p></li>
+<li><p>Again, for the Poisson GLMM, the usual assumption for the random effects is that
+<span class="math display">\[\begin{equation}
+      \mathbf{u}_{i} \sim \textrm{Normal}( \mathbf{0}, \boldsymbol{\Sigma}_{\tau})
 \end{equation}\]</span></p></li>
 </ul>
 </div>

@@ -173,31 +173,98 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}
 
 * The correlation between the $j^{th}$ and $k^{th}$ observation from individual $i$ is
 \begin{equation}
-\textrm{Corr}(Y_{ij}, Y_{ik}) = \frac{ \mathbf{z}_{ij}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ik}  }{ \sqrt{\mathbf{z}_{ij}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ij}}\sqrt{\mathbf{z}_{ik}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ik}}}
+\textrm{Corr}(Y_{ij}, Y_{ik}) = \frac{ \mathbf{z}_{ij}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ik}  }{ \sqrt{\sigma^{2} + \mathbf{z}_{ij}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ij}}\sqrt{\sigma^{2} \mathbf{z}_{ik}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ik}}}
 \end{equation}
 
 ---
 
-* 
+* When using **only a random intercept**, the correlation between $Y_{ij}$ and $Y_{ik}$ is
+\begin{equation}
+\textrm{Corr}(Y_{ij}, Y_{ik}) = \frac{ \sigma_{u}^{2}  }{ \sigma^{2} + \sigma_{u}^{2} }
+\end{equation}
+   + In this case, $\mathbf{z}_{ij} = 1$ and $u_{i} \sim \textrm{Normal}(0, \sigma_{u}^{2})$
+   + $\sigma^{2}$ is the variance of the residual term $e_{ij}$
 
-#### Inference about Heterogeneity - Variance of Random Effects
+* For longitudinal data, one criticism of the random intercept model is that the within-subject
+correlation **does not vary** across time.
+
+
+### Inference about Heterogeneity - Variance of Random Effects
 
 * One of the goals of the data analysis may be to characterize
 the **heterogeneity** in the relationship between the outcome
 and some of the covariates across individuals.
 
 * Looking at the estimates of the variance of the random effects
-can help to address this goal. 
+is one way of addressing this goal. 
 
 * An estimate of $\textrm{Var}( u_{ih} )$ "substantially greater than zero" 
-is an indication that there is variability in the regression coefficient corresponding to $u_{ij}$
+is an indication that there is variability in the covariate corresponding to $u_{ih}$
 across individuals.
 
-#### BLUPs
+---
 
-* BLUPs
+* For example, with the random intercept and slope model for the **sleepstudy** data
+\begin{equation}
+Y_{ij} = \beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
+\end{equation}
+
+* If $\textrm{Var}( u_{i1} )$ is "large", this implies that the response
+to additional days of sleep deprivation **varies considerably** across individuals.
+    + The response time of some individuals is not impacted much by additional days of little sleep.
+    
+    + Some individuals respond strongly to additional days of little sleep.
+    
+---
+
+* 
 
 
+### Best Linear Unbiased Prediction
+
+* You may want to estimate or **"predict"** the mean function/trajectory
+of a given individual.
+
+* This means you want to estimate/predict the following quantity:
+\begin{equation}
+\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}
+\end{equation}
+
+* The "Best Linear Unbiased Predictor" (BLUP) of this is 
+\begin{equation}
+\textrm{BLUP}_{i} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})
+\end{equation}
+
+---
+
+* I would think of $\textrm{BLUP}_{i}$ as an estimate of the "true trajectory" (i.e., the true mean) of 
+the $i^{th}$ individual.
+
+* The observed longitudinal outcomes are a "noisy estimate" of that individual's true trajectory.
+
+* The BLUPs are more stable **"shrinkage" estimates** of the trajectory.
+
+* $\textrm{BLUP}_{i}$ will have the following form
+
+
+---
+
+* You can also think of $\textrm{BLUP}_{i}$ as a prediction of what the observed
+trajectory for individual $i$ would be if that individual 
+were in a future study under the same conditions.
+
+* Say $Y_{i1}', \ldots, Y_{in_{i}}'$ are the observations for individual $i$ in a future study.
+
+* The outcomes in the future study are determined by
+\begin{equation}
+Y_{ij}' = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i} + e_{ij}'
+\end{equation}
+
+* The expectation of $Y_{ij}'$ given the observed data in our longitudinal study is
+\begin{eqnarray}
+E(Y_{ij}'|Y_{i1}, \ldots, Y_{in_{i}}) &=& \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})  \nonumber \\
+&=& \textrm{BLUP}_{i} \nonumber
+\end{eqnarray}
 
 
 ## Generalized linear mixed models (GLMMs)
@@ -237,7 +304,7 @@ Y_{i1}, \ldots, Y_{in_{i}}|\mathbf{u}_{i}  \textrm{ are independent }
     
     2. **Conditional** on $\mathbf{u}_{i}$, each $Y_{ij}$ has a Bernoulli distribution
 \begin{equation}
-Y_{ij}|\mathbf{u}_{i} \sim \textrm{Bernoulli}\big( p_{ij}(\mathbf{u}_{i}) \big)
+Y_{ij}|\mathbf{u}_{i} \sim \textrm{Bernoulli}\big\{ p_{ij}(\mathbf{u}_{i}) \big\}
 \end{equation}
 so that $p_{ij}( \mathbf{u}_{i} ) = P(Y_{ij} = 1| \mathbf{u}_{i})$.
 

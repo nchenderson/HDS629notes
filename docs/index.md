@@ -1,7 +1,7 @@
 --- 
 title: "Notes for Case Studies in Health Big Data"
 author: "Nicholas Henderson"
-date: "2021-01-24"
+date: "2021-01-26"
 site: bookdown::bookdown_site
 documentclass: book
 bibliography: ["book.bib"]

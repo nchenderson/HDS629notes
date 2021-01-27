@@ -15,7 +15,7 @@
     
     + The $i^{th}$ individual has $n_{i}$ observations: $Y_{i1}, \ldots, Y_{in_{i}}$.
     
-    + There will be $m$ individuals in the study.
+    + There will be $m$ individuals in the study (so $1 \leq j \leq m$).
 
 ---
 
@@ -30,9 +30,6 @@
     + The outcome $Y_{ij}$ is the **reaction time** for the $i^{th}$ individual at time point $t_{j}$.
 
     + The 10 time points are $(t_{1}, \ldots, t_{10}) = (0, 1, \ldots, 9)$.
-    
-    
-
 
 ---
 
@@ -74,7 +71,8 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
 * $\mathbf{x}_{ij} = (x_{i1}, \ldots, x_{ip})$ is the vector
 of covariates for individual $i$ at time $j$.
 
-* The vector $\mathbf{x}_{ij}$ could contain some of the time points: $t_{ij}, t_{ij-1}, ...$
+* The vector $\mathbf{x}_{ij}$ could contain individual information such as smoking status or age. 
+    + $\mathbf{x}_{ij}$ could also contain some of the actual time points: $t_{ij}, t_{ij-1}, ...$
 or transformations of these time points.
 
 ---
@@ -99,17 +97,18 @@ mean function $\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}$ holds for all 
 * Figure 1.1 suggests there is some heterogeneity in the **relationship**
 between **study day** and **response time** across individuals.
 
-* The response time of Subject 309 changes very little over time.
+* The response time of **Subject 309** changes very little over time.
 
-* For Subject 309, there is a more clear positive association between
+* For **Subject 308**, there is a more clear positive association between
 response time and day of study.
 
 ---
 
 * For the **sleepstudy** data, a linear regression for **reaction time** vs. **study day**
 which assumes that 
-    + Expected response time is a linear function of study day 
-    + All individuals have the same regression coefficient 
+    1. Expected response time is a linear function of study day, 
+    2. All individuals have the same regression coefficients, 
+
 would have the form:
 \begin{equation}
 Y_{ij} = \beta_{0} + \beta_{1} t_{j} + e_{ij}
@@ -144,7 +143,7 @@ and **random effects** $(u_{i0}, u_{i1})$.
 
 * More generally, a **linear mixed model** (LMM) for longitudinal data will have the form:
 \begin{equation}
-Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}\mathbf{u}_{i} + e_{ij}
+Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i} + e_{ij}
 (\#eq:lmm-generalform)
 \end{equation}
     + $\boldsymbol{\beta}$ - vector of fixed effects
@@ -161,13 +160,16 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}\mat
     + $i^{th}$ row of $\mathbf{X}$ is $(1, \mathbf{x}_{ij}^{T})$.
     + $i^{th}$ row of $\mathbf{Z}$ is $\mathbf{z}_{ij}^{T}$.
 
-* Constructing an LMM can be thought of as choosing the desired "X" matrix and "Z" matrix.
+* Constructing an LMM can be thought of as choosing the desired "$\mathbf{X}$" and "$\mathbf{Z}$" matrices.
 
 ## Advantages of using random effects
 
-* Using an LMM automatically accounts for "within-subject" correlation.
+### Within-subject correlation
 
-* This is because observations on the same individual "share" common random effects.
+* Using an LMM automatically accounts for the "**within-subject**" correlation.
+    + That is, the correlation between two observations from the same individual.
+
+* This correlation arises because observations on the same individual "share" **common** random effects.
 
 * The correlation between the $j^{th}$ and $k^{th}$ observation from individual $i$ is
 \begin{equation}
@@ -176,18 +178,22 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}\mat
 
 ---
 
+* 
+
+#### Inference about Heterogeneity - Variance of Random Effects
+
 * One of the goals of the data analysis may be to characterize
 the **heterogeneity** in the relationship between the outcome
 and some of the covariates across individuals.
 
-* Looking at the estimated variance components of the random effects
+* Looking at the estimates of the variance of the random effects
 can help to address this goal. 
 
-* An estimate of $\textrm{Var}( u_{ij} )$ "substantially greater than zero" 
+* An estimate of $\textrm{Var}( u_{ih} )$ "substantially greater than zero" 
 is an indication that there is variability in the regression coefficient corresponding to $u_{ij}$
 across individuals.
 
----
+#### BLUPs
 
 * BLUPs
 
@@ -251,12 +257,17 @@ is a linear combination of the covariates and the random effects vector $\mathbf
     
 ### GLMMs with Count Outcomes
 
-* For **count** outcomes, responses are assumed to follow a Poisson or a negative binomial distribution
-and the log of the mean is modeled with a linear regression.
+* For **count** outcomes, responses are typically assumed to follow a **Poisson** or a **negative binomial** distribution - conditional on the values of the random effects model.
 
-* Count data $Y_{ij}|u_{i} \sim \textrm{Poisson}(\mu_{ij})$
+* If $Y_{ij}|\mathbf{u}_{i} \sim \textrm{Poisson}\{ \mu_{ij}( \mathbf{u}_{i} ) \}$,
 \begin{equation}
-\log( \mu_{ij} ) = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{i}^{T}\mathbf{u}_{i}
+E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad 
+\textrm{Var}( Y_{ij}| \mathbf{u}_{i} ) = \mu_{ij}(\mathbf{u}_{i})
+\end{equation}
+
+* The log of the conditional mean $\mu_{ij}(\mathbf{u}_{i})$ is modeled with a linear regression:
+\begin{equation}
+\log\{ \mu_{ij}(\mathbf{u}_{i}) \} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}
 \end{equation}
 
 ## Fitting Linear Mixed Models (LMMs) and Generalized Linear Mixed models (GLMMs) in **R**

@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-01-24" />
+<meta name="date" content="2021-01-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -135,7 +135,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1" data-path="mixed-models.html"><a href="mixed-models.html"><i class="fa fa-check"></i><b>1</b> Mixed Models for Longitudinal Data Analysis</a><ul>
 <li class="chapter" data-level="1.1" data-path="mixed-models.html"><a href="mixed-models.html#sec:methods-overview"><i class="fa fa-check"></i><b>1.1</b> Methods for Analyzing Longitudinal Data</a></li>
 <li class="chapter" data-level="1.2" data-path="mixed-models.html"><a href="mixed-models.html#mixed-models-for-continuous-outcomes"><i class="fa fa-check"></i><b>1.2</b> Mixed Models for Continuous Outcomes</a></li>
-<li class="chapter" data-level="1.3" data-path="mixed-models.html"><a href="mixed-models.html#advantages-of-using-random-effects"><i class="fa fa-check"></i><b>1.3</b> Advantages of using random effects</a></li>
+<li class="chapter" data-level="1.3" data-path="mixed-models.html"><a href="mixed-models.html#advantages-of-using-random-effects"><i class="fa fa-check"></i><b>1.3</b> Advantages of using random effects</a><ul>
+<li class="chapter" data-level="1.3.1" data-path="mixed-models.html"><a href="mixed-models.html#within-subject-correlation"><i class="fa fa-check"></i><b>1.3.1</b> Within-subject correlation</a></li>
+</ul></li>
 <li class="chapter" data-level="1.4" data-path="mixed-models.html"><a href="mixed-models.html#generalized-linear-mixed-models-glmms"><i class="fa fa-check"></i><b>1.4</b> Generalized linear mixed models (GLMMs)</a><ul>
 <li class="chapter" data-level="1.4.1" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-binary-outcomes"><i class="fa fa-check"></i><b>1.4.1</b> GLMMs with Binary Outcomes</a></li>
 <li class="chapter" data-level="1.4.2" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-count-outcomes"><i class="fa fa-check"></i><b>1.4.2</b> GLMMs with Count Outcomes</a></li>
@@ -180,7 +182,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li><p><span class="math inline">\(Y_{ij}\)</span> - outcome for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
 <li><p>The <span class="math inline">\(i^{th}\)</span> individual has <span class="math inline">\(n_{i}\)</span> observations: <span class="math inline">\(Y_{i1}, \ldots, Y_{in_{i}}\)</span>.</p></li>
-<li><p>There will be <span class="math inline">\(m\)</span> individuals in the study.</p></li>
+<li><p>There will be <span class="math inline">\(m\)</span> individuals in the study (so <span class="math inline">\(1 \leq j \leq m\)</span>).</p></li>
 </ul></li>
 </ul>
 <hr />
@@ -234,8 +236,11 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
 \end{equation}\]</span></p></li>
 <li><p><span class="math inline">\(\mathbf{x}_{ij} = (x_{i1}, \ldots, x_{ip})\)</span> is the vector
 of covariates for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(j\)</span>.</p></li>
-<li><p>The vector <span class="math inline">\(\mathbf{x}_{ij}\)</span> could contain some of the time points: <span class="math inline">\(t_{ij}, t_{ij-1}, ...\)</span>
-or transformations of these time points.</p></li>
+<li>The vector <span class="math inline">\(\mathbf{x}_{ij}\)</span> could contain individual information such as smoking status or age.
+<ul>
+<li><span class="math inline">\(\mathbf{x}_{ij}\)</span> could also contain some of the actual time points: <span class="math inline">\(t_{ij}, t_{ij-1}, ...\)</span>
+or transformations of these time points.</li>
+</ul></li>
 </ul>
 <hr />
 <ul>
@@ -260,22 +265,24 @@ Figure 1.1: Separately estimated regression lines for 3 subjects in the sleepstu
 <ul>
 <li><p>Figure 1.1 suggests there is some heterogeneity in the <strong>relationship</strong>
 between <strong>study day</strong> and <strong>response time</strong> across individuals.</p></li>
-<li><p>The response time of Subject 309 changes very little over time.</p></li>
-<li><p>For Subject 309, there is a more clear positive association between
+<li><p>The response time of <strong>Subject 309</strong> changes very little over time.</p></li>
+<li><p>For <strong>Subject 308</strong>, there is a more clear positive association between
 response time and day of study.</p></li>
 </ul>
 <hr />
 <ul>
 <li>For the <strong>sleepstudy</strong> data, a linear regression for <strong>reaction time</strong> vs. <strong>study day</strong>
 which assumes that
-<ul>
-<li>Expected response time is a linear function of study day</li>
-<li>All individuals have the same regression coefficient
-would have the form:
+<ol style="list-style-type: decimal">
+<li>Expected response time is a linear function of study day,</li>
+<li>All individuals have the same regression coefficients,</li>
+</ol></li>
+</ul>
+<p>would have the form:
 <span class="math display">\[\begin{equation}
 Y_{ij} = \beta_{0} + \beta_{1} t_{j} + e_{ij}
-\end{equation}\]</span></li>
-</ul></li>
+\end{equation}\]</span></p>
+<ul>
 <li><p>If we allowed each individual to have his/her <strong>own intercept and slope</strong>, we
 could instead consider the following model
 <span class="math display" id="eq:mixed-sleep">\[\begin{equation}
@@ -302,7 +309,7 @@ and <strong>random effects</strong> <span class="math inline">\((u_{i0}, u_{i1})
 <ul>
 <li>More generally, a <strong>linear mixed model</strong> (LMM) for longitudinal data will have the form:
 <span class="math display" id="eq:lmm-generalform">\[\begin{equation}
-Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}\mathbf{u}_{i} + e_{ij}
+Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i} + e_{ij}
 \tag{1.3}
 \end{equation}\]</span>
 <ul>
@@ -322,14 +329,19 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}\mat
 <li><span class="math inline">\(i^{th}\)</span> row of <span class="math inline">\(\mathbf{X}\)</span> is <span class="math inline">\((1, \mathbf{x}_{ij}^{T})\)</span>.</li>
 <li><span class="math inline">\(i^{th}\)</span> row of <span class="math inline">\(\mathbf{Z}\)</span> is <span class="math inline">\(\mathbf{z}_{ij}^{T}\)</span>.</li>
 </ul></li>
-<li>Constructing an LMM can be thought of as choosing the desired “X” matrix and “Z” matrix.</li>
+<li>Constructing an LMM can be thought of as choosing the desired “<span class="math inline">\(\mathbf{X}\)</span>” and “<span class="math inline">\(\mathbf{Z}\)</span>” matrices.</li>
 </ul>
 </div>
 <div id="advantages-of-using-random-effects" class="section level2">
 <h2><span class="header-section-number">1.3</span> Advantages of using random effects</h2>
+<div id="within-subject-correlation" class="section level3">
+<h3><span class="header-section-number">1.3.1</span> Within-subject correlation</h3>
 <ul>
-<li><p>Using an LMM automatically accounts for “within-subject” correlation.</p></li>
-<li><p>This is because observations on the same individual “share” common random effects.</p></li>
+<li>Using an LMM automatically accounts for the “<strong>within-subject</strong>” correlation.
+<ul>
+<li>That is, the correlation between two observations from the same individual.</li>
+</ul></li>
+<li><p>This correlation arises because observations on the same individual “share” <strong>common</strong> random effects.</p></li>
 <li><p>The correlation between the <span class="math inline">\(j^{th}\)</span> and <span class="math inline">\(k^{th}\)</span> observation from individual <span class="math inline">\(i\)</span> is
 <span class="math display">\[\begin{equation}
 \textrm{Corr}(Y_{ij}, Y_{ik}) = \frac{ \mathbf{z}_{ij}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ik}  }{ \sqrt{\mathbf{z}_{ij}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ij}}\sqrt{\mathbf{z}_{ik}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ik}}}
@@ -337,19 +349,28 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}\mat
 </ul>
 <hr />
 <ul>
+<li></li>
+</ul>
+<div id="inference-about-heterogeneity---variance-of-random-effects" class="section level4">
+<h4><span class="header-section-number">1.3.1.1</span> Inference about Heterogeneity - Variance of Random Effects</h4>
+<ul>
 <li><p>One of the goals of the data analysis may be to characterize
 the <strong>heterogeneity</strong> in the relationship between the outcome
 and some of the covariates across individuals.</p></li>
-<li><p>Looking at the estimated variance components of the random effects
+<li><p>Looking at the estimates of the variance of the random effects
 can help to address this goal.</p></li>
-<li><p>An estimate of <span class="math inline">\(\textrm{Var}( u_{ij} )\)</span> “substantially greater than zero”
+<li><p>An estimate of <span class="math inline">\(\textrm{Var}( u_{ih} )\)</span> “substantially greater than zero”
 is an indication that there is variability in the regression coefficient corresponding to <span class="math inline">\(u_{ij}\)</span>
 across individuals.</p></li>
 </ul>
-<hr />
+</div>
+<div id="blups" class="section level4">
+<h4><span class="header-section-number">1.3.1.2</span> BLUPs</h4>
 <ul>
 <li>BLUPs</li>
 </ul>
+</div>
+</div>
 </div>
 <div id="generalized-linear-mixed-models-glmms" class="section level2">
 <h2><span class="header-section-number">1.4</span> Generalized linear mixed models (GLMMs)</h2>
@@ -407,11 +428,15 @@ is a linear combination of the covariates and the random effects vector <span cl
 <div id="glmms-with-count-outcomes" class="section level3">
 <h3><span class="header-section-number">1.4.2</span> GLMMs with Count Outcomes</h3>
 <ul>
-<li><p>For <strong>count</strong> outcomes, responses are assumed to follow a Poisson or a negative binomial distribution
-and the log of the mean is modeled with a linear regression.</p></li>
-<li><p>Count data <span class="math inline">\(Y_{ij}|u_{i} \sim \textrm{Poisson}(\mu_{ij})\)</span>
+<li><p>For <strong>count</strong> outcomes, responses are typically assumed to follow a <strong>Poisson</strong> or a <strong>negative binomial</strong> distribution - conditional on the values of the random effects model.</p></li>
+<li><p>If <span class="math inline">\(Y_{ij}|\mathbf{u}_{i} \sim \textrm{Poisson}\{ \mu_{ij}( \mathbf{u}_{i} ) \}\)</span>,
 <span class="math display">\[\begin{equation}
-\log( \mu_{ij} ) = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{i}^{T}\mathbf{u}_{i}
+E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad 
+\textrm{Var}( Y_{ij}| \mathbf{u}_{i} ) = \mu_{ij}(\mathbf{u}_{i})
+\end{equation}\]</span></p></li>
+<li><p>The log of the conditional mean <span class="math inline">\(\mu_{ij}(\mathbf{u}_{i})\)</span> is modeled with a linear regression:
+<span class="math display">\[\begin{equation}
+\log\{ \mu_{ij}(\mathbf{u}_{i}) \} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}
 \end{equation}\]</span></p></li>
 </ul>
 </div>

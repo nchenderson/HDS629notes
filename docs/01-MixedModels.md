@@ -734,15 +734,6 @@ VarCorr( lmm.sleep.slope )
 ##  Residual             25.5918
 ```
 
-```r
-## using as.numeric( VarCorr( lmm.sleep.slope ) ) will give
-## the value of the estimated variance
-
-#as.numeric( VarCorr( lmm.sleep.slope ) )
-
-#sqrt( as.numeric( VarCorr( lmm.sleep.slope ) ) )
-```
-
 ---
 
 * To get the "BLUPs" the intercepts and slopes $\textrm{BLUP}(u_{i0})$ and $\textrm{BLUP}(u_{i1})$,
@@ -794,7 +785,7 @@ along with a "standard error" for each BLUP.
 ---
 
 * What we discussed earlier in Section 1.3, were the BLUPs 
-for $\mathbf{x}_{ij}^{T}\bbeta + \mathbf{z}_{ij}\mathbf{u}_{i}$ not 
+for $\mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}\mathbf{u}_{i}$ not 
 just the individual components of $\mathbf{u}_{i}$.
 
 * For this random intercept and slope model, this is 
@@ -808,6 +799,19 @@ blup.full <- fitted( lmm.sleep.slope )  # Should be a vector of length 180
 
 * If we plot $\textrm{BLUP}(\beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j})$ as a function of time for all individuals, it will look like the following:
 
+```r
+library(ggplot2)
+# First add the BLUPs to the sleepstudy data as a separate variable
+sleepstudy$blups <- blup.full
+
+# Now plot BLUPs vs. study data for each subject
+ggplot(sleepstudy, aes(x=Days, y=blups, group=Subject)) +
+  geom_line(aes(color=Subject)) + 
+  labs(title = "BLUPs in Random Intercept + Random Slope Model",
+       y = "Reaction Time")
+```
+
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-20-1.png" width="672" />
 
 ---
 
@@ -870,7 +874,35 @@ glmer(formula, data, family)
 
 ---
 
-* Put table of proportions here.
+* Just exploring this data by looking at the raw proportions, it appears that
+     + probability of wheezing **decreases** as age increases (within each level of smoking)
+     + maternal smoking **increases** the probability of wheezing at each age
+
+
+```r
+library(dplyr)
+prop_summary_ohio <- ohio %>% 
+                     group_by(smoke, age) %>% 
+                     summarize( prop_wheeze = mean(resp) )
+prop_summary_ohio
+```
+
+```
+## # A tibble: 8 x 3
+## # Groups:   smoke [2]
+##   smoke   age prop_wheeze
+##   <int> <int>       <dbl>
+## 1     0    -2       0.16 
+## 2     0    -1       0.149
+## 3     0     0       0.143
+## 4     0     1       0.106
+## 5     1    -2       0.166
+## 6     1    -1       0.209
+## 7     1     0       0.187
+## 8     1     1       0.139
+```
+
+* So, we are probably going to want to include both **age** and **smoke** in our model.
 
 #### A Random Intercept Model
 
@@ -919,23 +951,51 @@ VarCorr(ohio.intercept)
 
 ---
 
-* Plotting
+* For a binary GLMM, the **estimated standard deviation** for the random intercept can be a little hard to interpret, 
+though this value seems rather large to me.
+
+* One way to help interpret this **visually** is to randomly generate 
+many values of $p_{ij}( u_{i} )$ using the estimated distribution of $u_{i}$ to simulate the values of $u_{i}$.
+   + This can help us to get a sense of how much **variability** there is in wheezing probability **across individuals**.
+   
+* To do this, I simulated values of $p_{ij}( u_{i} )$ for each combination of age/smoking status and
+plotted the results in 8 densities in 4 panels.
+    + It would probably be better to use some sort of bounded density estimator for these plots.
+
 
 
 ```r
 beta.hat <- coef(summary(ohio.intercept))[,1]
-age.vec <- seq(-2, 1, length.out = 1000)
-plot(0,0, type="n", xlim=c(-2,1), ylim=c(0,1), las=1,
-     xlab = "Age in Years - 9 Years", ylab = "Wheezing Probability")
-for(k in 1:50) {
-  u.draw1 <- rnorm(1, mean=0, sd=2.34)
-  u.draw2 <- rnorm(1, mean=0, sd=2.34)
-  lines(age.vec, plogis(u.draw1 + beta.hat[1] + beta.hat[2]*age.vec + beta.hat[3]))
-  lines(age.vec, plogis(u.draw2 + beta.hat[1] + beta.hat[2]*age.vec), col="red")
-}
+n <- 500
+pneg2.smoke <- plogis(rnorm(n, sd=2.34) + beta.hat[1] - 2*beta.hat[2] + beta.hat[3]) #age -2 with smoke
+pneg2 <- plogis(rnorm(n, sd=2.34) + beta.hat[1] - 2*beta.hat[2]) #age -2 w/o smoke
+pneg1.smoke <- plogis(rnorm(n, sd=2.34) + beta.hat[1] - 1*beta.hat[2] + beta.hat[3]) # age -1 with smoke
+pneg1 <- plogis(rnorm(n, sd=2.34) + beta.hat[1] - 1*beta.hat[2]) # age -1 w/o smoke
+p0.smoke <- plogis(rnorm(n, sd=2.34) + beta.hat[1] + beta.hat[3]) # age 0 with smoke
+p0 <- plogis(rnorm(n, sd=2.34) + beta.hat[1]) # age 0 w/o smoke
+p1.smoke <- plogis(rnorm(n, sd=2.34) + beta.hat[1] + beta.hat[2] + beta.hat[3]) # age 1 with smoke
+p1 <- plogis(rnorm(n, sd=2.34) + beta.hat[1] + beta.hat[2]) # age 1 w/o smoke
+
+par(mfrow=c(2,2), mar=c(4.1, 4.1, .5, .5))
+plot(density(pneg2.smoke), lwd=2, xlab = "Probability of Wheezing at Age 7", main="")
+d <- density(pneg2)
+lines(d$x, d$y, col="red", lwd=2)
+legend("topright", legend = c("Smoke", "No Smoke"), col=c("black", "red"), bty='n', lwd=2)
+plot(density(pneg1.smoke), lwd=2, xlab = "Probability of Wheezing at Age 8", main="")
+d <- density(pneg1)
+lines(d$x, d$y, col="red", lwd=2)
+legend("topright", legend = c("Smoke", "No Smoke"), col=c("black", "red"), bty='n', lwd=2)
+plot(density(p0.smoke), lwd=2, xlab = "Probability of Wheezing at Age 9", main="")
+d <- density(p0)
+lines(d$x, d$y, col="red", lwd=2)
+legend("topright", legend = c("Smoke", "No Smoke"), col=c("black", "red"), bty='n', lwd=2)
+plot(density(p1.smoke), lwd=2, xlab = "Probability of Wheezing at Age 10", main="")
+d <- density(p1)
+lines(d$x, d$y, col="red", lwd=2)
+legend("topright", legend = c("Smoke", "No Smoke"), col=c("black", "red"), bty='n', lwd=2)
 ```
 
-<img src="01-MixedModels_files/figure-html/unnamed-chunk-26-1.png" width="672" />
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-28-1.png" width="672" />
 
 
 ---

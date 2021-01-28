@@ -195,7 +195,7 @@ correlation **does not vary** across time.
 the **heterogeneity** in the relationship between the outcome
 and some of the covariates across individuals.
 
-* Looking at the estimates of the variance of the random effects
+* Looking at the **estimates of the variance** of the random effects
 is one way of addressing this goal. 
 
 * An estimate of $\textrm{Var}( u_{ih} )$ "substantially greater than zero" 
@@ -232,12 +232,12 @@ of a given individual.
 
 * The "Best Linear Unbiased Predictor" (BLUP) of this is 
 \begin{equation}
-\textrm{BLUP}_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})
+\textrm{BLUP}(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}) = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})
 \end{equation}
 
 ---
 
-* I would think of the values of $\textrm{BLUP}_{ij}$ (for different values of $j$) as an estimate of the "true trajectory" (i.e., the true mean) of the $i^{th}$ individual.
+* I would think of the values of $\textrm{BLUP}(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i})$ (for different values of $j$) as an estimate of the "true trajectory" (i.e., the true mean) of the $i^{th}$ individual.
 
 * The observed longitudinal outcomes from individual $i$ are a "noisy estimate" of that individual's true trajectory.
 
@@ -247,20 +247,20 @@ of a given individual.
 ---
 
 * For example, if we had the intercept-only model $Y_{ij} = \beta_{0} + u_{i} + e_{ij}$, 
-the value of $\textrm{BLUP}_{ij}$ is
+the value of the BLUPs is
 \begin{equation}
-\textrm{BLUP}_{ij} = \frac{n_{i}\sigma_{u}^{2}}{\sigma^{2} + n_{i}\sigma_{u}^{2} }\bar{Y}_{i.} + \Big(1 -  \frac{n_{i}\sigma_{u}^{2}}{\sigma^{2} + n_{i}\sigma_{u}^{2} }\Big)\bar{Y}_{..}
+\textrm{BLUP}(\beta_{0} + u_{i}) = \frac{n_{i}\sigma_{u}^{2}}{\sigma^{2} + n_{i}\sigma_{u}^{2} }\bar{Y}_{i.} + \Big(1 -  \frac{n_{i}\sigma_{u}^{2}}{\sigma^{2} + n_{i}\sigma_{u}^{2} }\Big)\bar{Y}_{..}
 \end{equation}
 
 * $\bar{Y}_{i.}$ is the sample mean from individual-$i$ data
-     + This would be the estimate of the intercept if we only looked at data from the $i^{th}$ individual.
+     + $\bar{Y}_{i.}$ would be the estimate of the intercept if we only looked at data from the $i^{th}$ individual.
 
 * $\bar{Y}_{..}$ - overall mean
-     + This would be the estimate of the intercept if we ignored variation in intercepts across individuals.
+     + $\bar{Y}_{..}$ would be the estimate of the intercept if we ignored variation in intercepts across individuals.
 
 ---
 
-* You can also think of $\textrm{BLUP}_{ij}$ as a prediction of what the observed
+* You can also think of $\textrm{BLUP}(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i})$ as a prediction of what the observed
 trajectory for individual $i$ would be if that individual 
 were in a future study under the same conditions.
 
@@ -274,7 +274,7 @@ Y_{ij}' = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T
 * The expectation of $Y_{ij}'$ given the observed data in our longitudinal study is
 \begin{eqnarray}
 E(Y_{ij}'|Y_{i1}, \ldots, Y_{in_{i}}) &=& \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})  \nonumber \\
-&=& \textrm{BLUP}_{ij} \nonumber
+&=& \textrm{BLUP}(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}) \nonumber
 \end{eqnarray}
 
 
@@ -287,7 +287,7 @@ that can't be reasonably modeled with a Gaussian distribution.
 are **binary**, **count**, and **multinomial** outcomes.
 
 * With a generalized linear mixed model (GLMM), you assume that
-a GLM holds conditional on the value of the random effects.
+a GLM holds **conditional** on the value of the random effects.
 
 ### GLMMs with Binary Outcomes
 
@@ -350,7 +350,7 @@ E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad
     conditional means and variances to be equal could lead to a poor fit.
     
 * For the **negative binomial** model, we assume     
-$Y_{ij}|\mathbf{u}_{i} \sim \textrm{NB}\{ \mu_{ij}( \mathbf{u}_{i}, \phi ) \}$,
+$Y_{ij}|\mathbf{u}_{i} \sim \textrm{NB}\{ \mu_{ij}( \mathbf{u}_{i}) , \phi  \}$,
 \begin{equation}
 E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad 
 \textrm{Var}( Y_{ij}| \mathbf{u}_{i} ) = \mu_{ij}(\mathbf{u}_{i}) + \phi\mu_{ij}^{2}(\mathbf{u}_{i})
@@ -745,7 +745,7 @@ VarCorr( lmm.sleep.slope )
 
 ---
 
-* To get the "BLUPs" of $E(u_{ih}|Y_{i1}, \ldots, Y_{in_{i}})$ of the random effects $u_{i0}$ and $u_{i1}$,
+* To get the "BLUPs" the intercepts and slopes $\textrm{BLUP}(u_{i0})$ and $\textrm{BLUP}(u_{i1})$,
 use `ranef`
 
 ```r
@@ -766,7 +766,7 @@ dotplot(blups.slope)
 <img src="01-MixedModels_files/figure-html/unnamed-chunk-17-1.png" width="672" />
 
 ```r
-## This plots things sorted by individual-specific estimates of intercepts
+## This plots subjects sorted by individual-specific estimates of intercepts
 ```
 
 ---
@@ -788,11 +788,26 @@ head(ranef.df)
 ## 6 Subject (Intercept) 332   9.039568 12.07086
 ```
 
+* This returns a data frame of the BLUPs for each random effect 
+along with a "standard error" for each BLUP. 
+
 ---
 
 * What we discussed earlier in Section 1.3, were the BLUPs 
 for $\mathbf{x}_{ij}^{T}\bbeta + \mathbf{z}_{ij}\mathbf{u}_{i}$ not 
 just the individual components of $\mathbf{u}_{i}$.
+
+* For this random intercept and slope model, this is 
+$\textrm{BLUP}(\beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j})$
+
+* These are obtained by using the `fitted` method
+
+```r
+blup.full <- fitted( lmm.sleep.slope )  # Should be a vector of length 180
+```
+
+* If we plot $\textrm{BLUP}(\beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j})$ as a function of time for all individuals, it will look like the following:
+
 
 ---
 
@@ -920,7 +935,7 @@ for(k in 1:50) {
 }
 ```
 
-<img src="01-MixedModels_files/figure-html/unnamed-chunk-25-1.png" width="672" />
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-26-1.png" width="672" />
 
 
 ---

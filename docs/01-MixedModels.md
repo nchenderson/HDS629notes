@@ -78,9 +78,10 @@ or transformations of these time points.
 ---
 
 * The regression model \@ref(eq:fixed-reg-model) assumes the same
-mean function $\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}$ holds for all individuals in the study.
+mean function $\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}$ holds for all individuals that
+have the same value of $\mathbf{x}_{ij}$.
 
-* It is often reasonable to assume that the regression coefficients across vary across individuals. 
+* It is often reasonable to assume that the regression coefficients vary across individuals. 
     + This can often better account for heterogeneity across individuals.
 
 * The figure below shows 3 different regression lines from the **sleepstudy** data.
@@ -122,7 +123,7 @@ Y_{ij} = \beta_{0} + \beta_{1} t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
 \end{equation}
 
 * $\beta_{0} + u_{i0}$ - intercept for individual $i$.
-* $\beta_{1} + u_{i1}$ - intercept for individual $i$.
+* $\beta_{1} + u_{i1}$ - slope for individual $i$.
 
 ---
 
@@ -155,10 +156,11 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}
 
 * Then, we can write the general form \@ref(eq:lmm-generalform) of the LMM as
 \begin{equation}
-\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{Z}\mathbf{u} + \mathbf{e}
+\mathbf{Y} = \mathbf{X}\tilde{\boldsymbol{\beta}} + \mathbf{Z}\mathbf{u} + \mathbf{e}
 \end{equation}
     + $i^{th}$ row of $\mathbf{X}$ is $(1, \mathbf{x}_{ij}^{T})$.
     + $i^{th}$ row of $\mathbf{Z}$ is $\mathbf{z}_{ij}^{T}$.
+    + $\tilde{\boldsymbol{\beta}} = (1, \boldsymbol{\beta})$.
 
 * Constructing an LMM can be thought of as choosing the desired "$\mathbf{X}$" and "$\mathbf{Z}$" matrices.
 
@@ -199,7 +201,7 @@ and some of the covariates across individuals.
 is one way of addressing this goal. 
 
 * An estimate of $\textrm{Var}( u_{ih} )$ "substantially greater than zero" 
-is an indication that there is variability in the covariate corresponding to $u_{ih}$
+is an indication that there is variability in the regression coefficient corresponding to $u_{ih}$
 across individuals.
 
 ---
@@ -242,7 +244,7 @@ of a given individual.
 * The observed longitudinal outcomes from individual $i$ are a "noisy estimate" of that individual's true trajectory.
 
 * The BLUPs are more stable **"shrinkage" estimates** of the trajectory of individual $i$.
-     + These are called shrinkage estimates because $\textrm{BLUP}_{ij}$ often shrinks the estimate from data only from individual $i$ towards the "overall" estimate $\mathbf{x}_{ij}^{T}\boldsymbol{\beta}$.
+     + These are called shrinkage estimates because often shrinks the estimate that would be obtained using only data from individual $i$ towards the "overall" estimate $\mathbf{x}_{ij}^{T}\boldsymbol{\beta}$.
 
 ---
 
@@ -335,7 +337,7 @@ is a linear combination of the covariates and the random effects vector $\mathbf
     
 ### GLMMs with Count Outcomes
 
-* For **count** outcomes, responses are typically assumed to follow a **Poisson** distribution and sometimes a **negative binomial** distribution - conditional on the values of the random effects model.
+* For **count** outcomes, responses are typically assumed to follow a **Poisson** distribution and sometimes a **negative binomial** distribution - conditional on the values of the random effects.
 
 * For the Poisson model, we assume $Y_{ij}|\mathbf{u}_{i} \sim \textrm{Poisson}\{ \mu_{ij}( \mathbf{u}_{i} ) \}$,
 \begin{equation}
@@ -343,10 +345,10 @@ E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad
 \textrm{Var}( Y_{ij}| \mathbf{u}_{i} ) = \mu_{ij}(\mathbf{u}_{i})
 \end{equation}
 
-* One common problem with the Poisson distribution is **overdispersion**. 
+* One common problem with the Poisson distribution is **overdispersion** (i.e., variance is greater than the mean). 
     + The variance of the Poisson equals the mean.
     
-    + While the **marginal** variance will not equal the mean, requiring the
+    + While the **marginal** variance will not equal the mean in a GLMM, requiring the
     conditional means and variances to be equal could lead to a poor fit.
     
 * For the **negative binomial** model, we assume     
@@ -966,36 +968,39 @@ plotted the results in 8 densities in 4 panels.
 
 ```r
 beta.hat <- coef(summary(ohio.intercept))[,1]
-n <- 500
-pneg2.smoke <- plogis(rnorm(n, sd=2.34) + beta.hat[1] - 2*beta.hat[2] + beta.hat[3]) #age -2 with smoke
+n <- 1000
+pneg2.smoke <- plogis(rnorm(n,sd=2.34) + beta.hat[1] - 2*beta.hat[2] + beta.hat[3]) #age -2 with smoke
 pneg2 <- plogis(rnorm(n, sd=2.34) + beta.hat[1] - 2*beta.hat[2]) #age -2 w/o smoke
-pneg1.smoke <- plogis(rnorm(n, sd=2.34) + beta.hat[1] - 1*beta.hat[2] + beta.hat[3]) # age -1 with smoke
+pneg1.smoke <- plogis(rnorm(n,sd=2.34) + beta.hat[1] - 1*beta.hat[2] + beta.hat[3]) #age -1 with smoke
 pneg1 <- plogis(rnorm(n, sd=2.34) + beta.hat[1] - 1*beta.hat[2]) # age -1 w/o smoke
 p0.smoke <- plogis(rnorm(n, sd=2.34) + beta.hat[1] + beta.hat[3]) # age 0 with smoke
 p0 <- plogis(rnorm(n, sd=2.34) + beta.hat[1]) # age 0 w/o smoke
-p1.smoke <- plogis(rnorm(n, sd=2.34) + beta.hat[1] + beta.hat[2] + beta.hat[3]) # age 1 with smoke
+p1.smoke <- plogis(rnorm(n,sd=2.34) + beta.hat[1] + beta.hat[2] + beta.hat[3]) # age 1 with smoke
 p1 <- plogis(rnorm(n, sd=2.34) + beta.hat[1] + beta.hat[2]) # age 1 w/o smoke
 
 par(mfrow=c(2,2), mar=c(4.1, 4.1, .5, .5))
-plot(density(pneg2.smoke), lwd=2, xlab = "Probability of Wheezing at Age 7", main="")
-d <- density(pneg2)
-lines(d$x, d$y, col="red", lwd=2)
+plot(density(pneg2), lwd=2, xlab = "Probability of Wheezing at Age 7", main="", col="red")
+d <- density(pneg2.smoke)
+lines(d$x, d$y, lwd=2)
 legend("topright", legend = c("Smoke", "No Smoke"), col=c("black", "red"), bty='n', lwd=2)
-plot(density(pneg1.smoke), lwd=2, xlab = "Probability of Wheezing at Age 8", main="")
-d <- density(pneg1)
-lines(d$x, d$y, col="red", lwd=2)
+plot(density(pneg1), lwd=2, xlab = "Probability of Wheezing at Age 8", main="", col="red")
+d <- density(pneg1.smoke)
+lines(d$x, d$y, lwd=2)
 legend("topright", legend = c("Smoke", "No Smoke"), col=c("black", "red"), bty='n', lwd=2)
-plot(density(p0.smoke), lwd=2, xlab = "Probability of Wheezing at Age 9", main="")
-d <- density(p0)
-lines(d$x, d$y, col="red", lwd=2)
+plot(density(p0), lwd=2, xlab = "Probability of Wheezing at Age 9", main="", col="red")
+d <- density(p0.smoke)
+lines(d$x, d$y, lwd=2)
 legend("topright", legend = c("Smoke", "No Smoke"), col=c("black", "red"), bty='n', lwd=2)
-plot(density(p1.smoke), lwd=2, xlab = "Probability of Wheezing at Age 10", main="")
-d <- density(p1)
-lines(d$x, d$y, col="red", lwd=2)
+plot(density(p1), lwd=2, xlab = "Probability of Wheezing at Age 10", main="", col="red")
+d <- density(p1.smoke)
+lines(d$x, d$y, lwd=2)
 legend("topright", legend = c("Smoke", "No Smoke"), col=c("black", "red"), bty='n', lwd=2)
 ```
 
-<img src="01-MixedModels_files/figure-html/unnamed-chunk-28-1.png" width="672" />
+<div class="figure">
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-28-1.png" alt="Distribution of Wheezing probability across individuals for different values of age and smoking status" width="672" />
+<p class="caption">(\#fig:unnamed-chunk-28)Distribution of Wheezing probability across individuals for different values of age and smoking status</p>
+</div>
 
 
 ---

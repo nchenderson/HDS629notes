@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-01-27" />
+<meta name="date" content="2021-01-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -247,8 +247,9 @@ or transformations of these time points.</li>
 <hr />
 <ul>
 <li><p>The regression model <a href="mixed-models.html#eq:fixed-reg-model">(1.1)</a> assumes the same
-mean function <span class="math inline">\(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}\)</span> holds for all individuals in the study.</p></li>
-<li>It is often reasonable to assume that the regression coefficients across vary across individuals.
+mean function <span class="math inline">\(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}\)</span> holds for all individuals that
+have the same value of <span class="math inline">\(\mathbf{x}_{ij}\)</span>.</p></li>
+<li>It is often reasonable to assume that the regression coefficients vary across individuals.
 <ul>
 <li>This can often better account for heterogeneity across individuals.</li>
 </ul></li>
@@ -292,7 +293,7 @@ Y_{ij} = \beta_{0} + \beta_{1} t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
 \tag{1.2}
 \end{equation}\]</span></p></li>
 <li><span class="math inline">\(\beta_{0} + u_{i0}\)</span> - intercept for individual <span class="math inline">\(i\)</span>.</li>
-<li><p><span class="math inline">\(\beta_{1} + u_{i1}\)</span> - intercept for individual <span class="math inline">\(i\)</span>.</p></li>
+<li><p><span class="math inline">\(\beta_{1} + u_{i1}\)</span> - slope for individual <span class="math inline">\(i\)</span>.</p></li>
 </ul>
 <hr />
 <ul>
@@ -325,11 +326,12 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}
 </ul></li>
 <li>Then, we can write the general form <a href="mixed-models.html#eq:lmm-generalform">(1.3)</a> of the LMM as
 <span class="math display">\[\begin{equation}
-\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{Z}\mathbf{u} + \mathbf{e}
+\mathbf{Y} = \mathbf{X}\tilde{\boldsymbol{\beta}} + \mathbf{Z}\mathbf{u} + \mathbf{e}
 \end{equation}\]</span>
 <ul>
 <li><span class="math inline">\(i^{th}\)</span> row of <span class="math inline">\(\mathbf{X}\)</span> is <span class="math inline">\((1, \mathbf{x}_{ij}^{T})\)</span>.</li>
 <li><span class="math inline">\(i^{th}\)</span> row of <span class="math inline">\(\mathbf{Z}\)</span> is <span class="math inline">\(\mathbf{z}_{ij}^{T}\)</span>.</li>
+<li><span class="math inline">\(\tilde{\boldsymbol{\beta}} = (1, \boldsymbol{\beta})\)</span>.</li>
 </ul></li>
 <li>Constructing an LMM can be thought of as choosing the desired “<span class="math inline">\(\mathbf{X}\)</span>” and “<span class="math inline">\(\mathbf{Z}\)</span>” matrices.</li>
 </ul>
@@ -372,7 +374,7 @@ and some of the covariates across individuals.</p></li>
 <li><p>Looking at the <strong>estimates of the variance</strong> of the random effects
 is one way of addressing this goal.</p></li>
 <li><p>An estimate of <span class="math inline">\(\textrm{Var}( u_{ih} )\)</span> “substantially greater than zero”
-is an indication that there is variability in the covariate corresponding to <span class="math inline">\(u_{ih}\)</span>
+is an indication that there is variability in the regression coefficient corresponding to <span class="math inline">\(u_{ih}\)</span>
 across individuals.</p></li>
 </ul>
 <hr />
@@ -411,7 +413,7 @@ of a given individual.</p></li>
 <li><p>The observed longitudinal outcomes from individual <span class="math inline">\(i\)</span> are a “noisy estimate” of that individual’s true trajectory.</p></li>
 <li>The BLUPs are more stable <strong>“shrinkage” estimates</strong> of the trajectory of individual <span class="math inline">\(i\)</span>.
 <ul>
-<li>These are called shrinkage estimates because <span class="math inline">\(\textrm{BLUP}_{ij}\)</span> often shrinks the estimate from data only from individual <span class="math inline">\(i\)</span> towards the “overall” estimate <span class="math inline">\(\mathbf{x}_{ij}^{T}\boldsymbol{\beta}\)</span>.</li>
+<li>These are called shrinkage estimates because often shrinks the estimate that would be obtained using only data from individual <span class="math inline">\(i\)</span> towards the “overall” estimate <span class="math inline">\(\mathbf{x}_{ij}^{T}\boldsymbol{\beta}\)</span>.</li>
 </ul></li>
 </ul>
 <hr />
@@ -504,16 +506,16 @@ is a linear combination of the covariates and the random effects vector <span cl
 <div id="glmms-with-count-outcomes" class="section level3">
 <h3><span class="header-section-number">1.4.2</span> GLMMs with Count Outcomes</h3>
 <ul>
-<li><p>For <strong>count</strong> outcomes, responses are typically assumed to follow a <strong>Poisson</strong> distribution and sometimes a <strong>negative binomial</strong> distribution - conditional on the values of the random effects model.</p></li>
+<li><p>For <strong>count</strong> outcomes, responses are typically assumed to follow a <strong>Poisson</strong> distribution and sometimes a <strong>negative binomial</strong> distribution - conditional on the values of the random effects.</p></li>
 <li><p>For the Poisson model, we assume <span class="math inline">\(Y_{ij}|\mathbf{u}_{i} \sim \textrm{Poisson}\{ \mu_{ij}( \mathbf{u}_{i} ) \}\)</span>,
 <span class="math display">\[\begin{equation}
 E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad 
 \textrm{Var}( Y_{ij}| \mathbf{u}_{i} ) = \mu_{ij}(\mathbf{u}_{i})
 \end{equation}\]</span></p></li>
-<li>One common problem with the Poisson distribution is <strong>overdispersion</strong>.
+<li>One common problem with the Poisson distribution is <strong>overdispersion</strong> (i.e., variance is greater than the mean).
 <ul>
 <li><p>The variance of the Poisson equals the mean.</p></li>
-<li><p>While the <strong>marginal</strong> variance will not equal the mean, requiring the
+<li><p>While the <strong>marginal</strong> variance will not equal the mean in a GLMM, requiring the
 conditional means and variances to be equal could lead to a poor fit.</p></li>
 </ul></li>
 <li>For the <strong>negative binomial</strong> model, we assume<br />
@@ -1009,34 +1011,39 @@ plotted the results in 8 densities in 4 panels.
 </ul></li>
 </ul>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" data-line-number="1">beta.hat &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.intercept))[,<span class="dv">1</span>]</a>
-<a class="sourceLine" id="cb48-2" data-line-number="2">n &lt;-<span class="st"> </span><span class="dv">500</span></a>
-<a class="sourceLine" id="cb48-3" data-line-number="3">pneg2.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">2</span><span class="op">*</span>beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co">#age -2 with smoke</span></a>
+<a class="sourceLine" id="cb48-2" data-line-number="2">n &lt;-<span class="st"> </span><span class="dv">1000</span></a>
+<a class="sourceLine" id="cb48-3" data-line-number="3">pneg2.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n,<span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">2</span><span class="op">*</span>beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co">#age -2 with smoke</span></a>
 <a class="sourceLine" id="cb48-4" data-line-number="4">pneg2 &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">2</span><span class="op">*</span>beta.hat[<span class="dv">2</span>]) <span class="co">#age -2 w/o smoke</span></a>
-<a class="sourceLine" id="cb48-5" data-line-number="5">pneg1.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">1</span><span class="op">*</span>beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co"># age -1 with smoke</span></a>
+<a class="sourceLine" id="cb48-5" data-line-number="5">pneg1.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n,<span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">1</span><span class="op">*</span>beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co">#age -1 with smoke</span></a>
 <a class="sourceLine" id="cb48-6" data-line-number="6">pneg1 &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">1</span><span class="op">*</span>beta.hat[<span class="dv">2</span>]) <span class="co"># age -1 w/o smoke</span></a>
 <a class="sourceLine" id="cb48-7" data-line-number="7">p0.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co"># age 0 with smoke</span></a>
 <a class="sourceLine" id="cb48-8" data-line-number="8">p0 &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>]) <span class="co"># age 0 w/o smoke</span></a>
-<a class="sourceLine" id="cb48-9" data-line-number="9">p1.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co"># age 1 with smoke</span></a>
+<a class="sourceLine" id="cb48-9" data-line-number="9">p1.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n,<span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co"># age 1 with smoke</span></a>
 <a class="sourceLine" id="cb48-10" data-line-number="10">p1 &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>]) <span class="co"># age 1 w/o smoke</span></a>
 <a class="sourceLine" id="cb48-11" data-line-number="11"></a>
 <a class="sourceLine" id="cb48-12" data-line-number="12"><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">2</span>), <span class="dt">mar=</span><span class="kw">c</span>(<span class="fl">4.1</span>, <span class="fl">4.1</span>, <span class="fl">.5</span>, <span class="fl">.5</span>))</a>
-<a class="sourceLine" id="cb48-13" data-line-number="13"><span class="kw">plot</span>(<span class="kw">density</span>(pneg2.smoke), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 7&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</a>
-<a class="sourceLine" id="cb48-14" data-line-number="14">d &lt;-<span class="st"> </span><span class="kw">density</span>(pneg2)</a>
-<a class="sourceLine" id="cb48-15" data-line-number="15"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb48-13" data-line-number="13"><span class="kw">plot</span>(<span class="kw">density</span>(pneg2), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 7&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb48-14" data-line-number="14">d &lt;-<span class="st"> </span><span class="kw">density</span>(pneg2.smoke)</a>
+<a class="sourceLine" id="cb48-15" data-line-number="15"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb48-16" data-line-number="16"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb48-17" data-line-number="17"><span class="kw">plot</span>(<span class="kw">density</span>(pneg1.smoke), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 8&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</a>
-<a class="sourceLine" id="cb48-18" data-line-number="18">d &lt;-<span class="st"> </span><span class="kw">density</span>(pneg1)</a>
-<a class="sourceLine" id="cb48-19" data-line-number="19"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb48-17" data-line-number="17"><span class="kw">plot</span>(<span class="kw">density</span>(pneg1), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 8&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb48-18" data-line-number="18">d &lt;-<span class="st"> </span><span class="kw">density</span>(pneg1.smoke)</a>
+<a class="sourceLine" id="cb48-19" data-line-number="19"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb48-20" data-line-number="20"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb48-21" data-line-number="21"><span class="kw">plot</span>(<span class="kw">density</span>(p0.smoke), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 9&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</a>
-<a class="sourceLine" id="cb48-22" data-line-number="22">d &lt;-<span class="st"> </span><span class="kw">density</span>(p0)</a>
-<a class="sourceLine" id="cb48-23" data-line-number="23"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb48-21" data-line-number="21"><span class="kw">plot</span>(<span class="kw">density</span>(p0), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 9&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb48-22" data-line-number="22">d &lt;-<span class="st"> </span><span class="kw">density</span>(p0.smoke)</a>
+<a class="sourceLine" id="cb48-23" data-line-number="23"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb48-24" data-line-number="24"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb48-25" data-line-number="25"><span class="kw">plot</span>(<span class="kw">density</span>(p1.smoke), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 10&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</a>
-<a class="sourceLine" id="cb48-26" data-line-number="26">d &lt;-<span class="st"> </span><span class="kw">density</span>(p1)</a>
-<a class="sourceLine" id="cb48-27" data-line-number="27"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb48-25" data-line-number="25"><span class="kw">plot</span>(<span class="kw">density</span>(p1), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 10&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb48-26" data-line-number="26">d &lt;-<span class="st"> </span><span class="kw">density</span>(p1.smoke)</a>
+<a class="sourceLine" id="cb48-27" data-line-number="27"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb48-28" data-line-number="28"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a></code></pre></div>
-<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<div class="figure"><span id="fig:unnamed-chunk-28"></span>
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-28-1.png" alt="Distribution of Wheezing probability across individuals for different values of age and smoking status" width="672" />
+<p class="caption">
+Figure 1.2: Distribution of Wheezing probability across individuals for different values of age and smoking status
+</p>
+</div>
 <hr />
 
 <div id="refs" class="references">

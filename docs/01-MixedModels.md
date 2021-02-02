@@ -15,7 +15,7 @@
     
     + The $i^{th}$ individual has $n_{i}$ observations: $Y_{i1}, \ldots, Y_{in_{i}}$.
     
-    + There will be $m$ individuals in the study (so $1 \leq j \leq m$).
+    + There will be $m$ individuals in the study (so $1 \leq i \leq m$).
 
 ---
 
@@ -738,6 +738,55 @@ VarCorr( lmm.sleep.slope )
 
 ---
 
+**Interpreting the estimated variance of the random effects**  
+    
+* One way I like to think about the magnitude of the variance components is to look
+at the 5th and 95th percentiles of the random effects distribution. 
+    + For example, if you only have a random intercept term, then roughly $90\%$ of individuals will have an intercept that falls in the interval $[\hat{\beta}_{0} - 1.64\hat{\sigma}_{u0}, \hat{\beta}_{0} + 1.64\hat{\sigma}_{u0}]$. 
+
+    + If you have a random slope term, then roughly $90\%$ of individuals will have an intercept that falls in the interval $[\hat{\beta}_{1} - 1.64\hat{\sigma}_{u1}, \hat{\beta}_{1} + 1.64\hat{\sigma}_{u1}]$. 
+    
+* Another idea for helping to interpret the magnitude of the random effects is to plot many random trajectories 
+for specific choices of the covariate vector $\mathbf{x}_{i}$ (if the $\mathbf{x}_{i}$ vary across individuals).
+  +  For example, in the **sleepstudy** data, you could plot $\hat{\beta}_{0} + u_{i0} + \hat{\beta}_{1}t_{j} + u_{i1}t_{j}$
+  where the pairs $(u_{i0}, u_{i1})$ are generated from the estimated joint Normal distribution.
+
+
+```r
+Sigma.hat <- VarCorr( lmm.sleep.slope )$Subject # This is the random-effects 
+                                                # covariance matrix
+ndraws <- 100
+Sigma.hat.sqrt <- chol(Sigma.hat)
+beta.hat <- coef( summary(lmm.sleep.slope) )[,1]  # estimated fixed effects
+print(beta.hat)
+```
+
+```
+## (Intercept)        Days 
+##   251.40510    10.46729
+```
+
+```r
+plot(sleepstudy$Days, sleepstudy$Reaction, type="n", xlab="Days", ylab="Response", 
+     las=1, main="sleepstudy: Variation in subject-specific trajectories")
+for(k in 1:ndraws) {
+   uvec.draw <- Sigma.hat.sqrt%*%rnorm(2)  # draw random (ui0, ui1) pair
+   trajectory <- beta.hat[1] + uvec.draw[1] + (0:9)*(beta.hat[2] + uvec.draw[2])
+   lines(0:9, trajectory)
+}
+```
+
+<div class="figure">
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-16-1.png" alt="Random trajectories for sleepstudy data using the estimated intercept and slope random-effects variances." width="672" />
+<p class="caption">(\#fig:unnamed-chunk-16)Random trajectories for sleepstudy data using the estimated intercept and slope random-effects variances.</p>
+</div>
+      
+<!-- * You may also find it useful to report it in terms of "variance explained" by thinking of the vari -->
+
+
+
+#### Extracting BLUPs in lme4
+
 * To get the "BLUPs" the intercepts and slopes $\textrm{BLUP}(u_{i0})$ and $\textrm{BLUP}(u_{i1})$,
 use `ranef`
 
@@ -756,7 +805,7 @@ dotplot(blups.slope)
 ## $Subject
 ```
 
-<img src="01-MixedModels_files/figure-html/unnamed-chunk-17-1.png" width="672" />
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-18-1.png" width="672" />
 
 ```r
 ## This plots subjects sorted by individual-specific estimates of intercepts
@@ -813,7 +862,7 @@ ggplot(sleepstudy, aes(x=Days, y=blups, group=Subject)) +
        y = "Reaction Time")
 ```
 
-<img src="01-MixedModels_files/figure-html/unnamed-chunk-20-1.png" width="672" />
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-21-1.png" width="672" />
 
 ---
 
@@ -956,7 +1005,11 @@ VarCorr(ohio.intercept)
 * For a binary GLMM, the **estimated standard deviation** for the random intercept can be a little hard to interpret, 
 though this value seems rather large to me.
 
-* One way to help interpret this **visually** is to randomly generate 
+* One way to report this is to look at the **variation** in $p_{ij}(u_{i})$ for different values of **age** and **smoking status**.
+    + For this purpose, you could report the interval $\textrm{expit}\big(\hat{\beta}_{0} + \hat{\beta}_{age}\times \textrm{age} + \hat{\beta}_{smk}\times \textrm{smoke} \pm 1.64\hat{\sigma}_{u0} \big)$,
+    where $\textrm{expit}(x) = 1/(1 + e^{-x})$
+
+* One way to interpret the variation **visually** is to randomly generate 
 many values of $p_{ij}( u_{i} )$ using the estimated distribution of $u_{i}$ to simulate the values of $u_{i}$.
    + This can help us to get a sense of how much **variability** there is in wheezing probability **across individuals**.
    
@@ -998,8 +1051,8 @@ legend("topright", legend = c("Smoke", "No Smoke"), col=c("black", "red"), bty='
 ```
 
 <div class="figure">
-<img src="01-MixedModels_files/figure-html/unnamed-chunk-28-1.png" alt="Distribution of Wheezing probability across individuals for different values of age and smoking status" width="672" />
-<p class="caption">(\#fig:unnamed-chunk-28)Distribution of Wheezing probability across individuals for different values of age and smoking status</p>
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-29-1.png" alt="Distribution of Wheezing probability across individuals for different values of age and smoking status" width="672" />
+<p class="caption">(\#fig:unnamed-chunk-29)Distribution of Wheezing probability across individuals for different values of age and smoking status</p>
 </div>
 
 

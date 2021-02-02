@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-01-28" />
+<meta name="date" content="2021-02-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -184,7 +184,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li><p><span class="math inline">\(Y_{ij}\)</span> - outcome for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
 <li><p>The <span class="math inline">\(i^{th}\)</span> individual has <span class="math inline">\(n_{i}\)</span> observations: <span class="math inline">\(Y_{i1}, \ldots, Y_{in_{i}}\)</span>.</p></li>
-<li><p>There will be <span class="math inline">\(m\)</span> individuals in the study (so <span class="math inline">\(1 \leq j \leq m\)</span>).</p></li>
+<li><p>There will be <span class="math inline">\(m\)</span> individuals in the study (so <span class="math inline">\(1 \leq i \leq m\)</span>).</p></li>
 </ul></li>
 </ul>
 <hr />
@@ -835,25 +835,65 @@ random effects, you can use:</li>
 ##           Days         5.9221  0.066
 ##  Residual             25.5918</code></pre>
 <hr />
+<p><strong>Interpreting the estimated variance of the random effects</strong></p>
+<ul>
+<li>One way I like to think about the magnitude of the variance components is to look
+at the 5th and 95th percentiles of the random effects distribution.
+<ul>
+<li><p>For example, if you only have a random intercept term, then roughly <span class="math inline">\(90\%\)</span> of individuals will have an intercept that falls in the interval <span class="math inline">\([\hat{\beta}_{0} - 1.64\hat{\sigma}_{u0}, \hat{\beta}_{0} + 1.64\hat{\sigma}_{u0}]\)</span>.</p></li>
+<li><p>If you have a random slope term, then roughly <span class="math inline">\(90\%\)</span> of individuals will have an intercept that falls in the interval <span class="math inline">\([\hat{\beta}_{1} - 1.64\hat{\sigma}_{u1}, \hat{\beta}_{1} + 1.64\hat{\sigma}_{u1}]\)</span>.</p></li>
+</ul></li>
+<li>Another idea for helping to interpret the magnitude of the random effects is to plot many random trajectories
+for specific choices of the covariate vector <span class="math inline">\(\mathbf{x}_{i}\)</span> (if the <span class="math inline">\(\mathbf{x}_{i}\)</span> vary across individuals).
+<ul>
+<li>For example, in the <strong>sleepstudy</strong> data, you could plot <span class="math inline">\(\hat{\beta}_{0} + u_{i0} + \hat{\beta}_{1}t_{j} + u_{i1}t_{j}\)</span>
+where the pairs <span class="math inline">\((u_{i0}, u_{i1})\)</span> are generated from the estimated joint Normal distribution.</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">Sigma.hat &lt;-<span class="st"> </span><span class="kw">VarCorr</span>( lmm.sleep.slope )<span class="op">$</span>Subject <span class="co"># This is the random-effects </span></a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">                                                <span class="co"># covariance matrix</span></a>
+<a class="sourceLine" id="cb29-3" data-line-number="3">ndraws &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">Sigma.hat.sqrt &lt;-<span class="st"> </span><span class="kw">chol</span>(Sigma.hat)</a>
+<a class="sourceLine" id="cb29-5" data-line-number="5">beta.hat &lt;-<span class="st"> </span><span class="kw">coef</span>( <span class="kw">summary</span>(lmm.sleep.slope) )[,<span class="dv">1</span>]  <span class="co"># estimated fixed effects</span></a>
+<a class="sourceLine" id="cb29-6" data-line-number="6"><span class="kw">print</span>(beta.hat)</a></code></pre></div>
+<pre><code>## (Intercept)        Days 
+##   251.40510    10.46729</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw">plot</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Days&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Response&quot;</span>, </a>
+<a class="sourceLine" id="cb31-2" data-line-number="2">     <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">main=</span><span class="st">&quot;sleepstudy: Variation in subject-specific trajectories&quot;</span>)</a>
+<a class="sourceLine" id="cb31-3" data-line-number="3"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>ndraws) {</a>
+<a class="sourceLine" id="cb31-4" data-line-number="4">   uvec.draw &lt;-<span class="st"> </span>Sigma.hat.sqrt<span class="op">%*%</span><span class="kw">rnorm</span>(<span class="dv">2</span>)  <span class="co"># draw random (ui0, ui1) pair</span></a>
+<a class="sourceLine" id="cb31-5" data-line-number="5">   trajectory &lt;-<span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>uvec.draw[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>(<span class="dv">0</span><span class="op">:</span><span class="dv">9</span>)<span class="op">*</span>(beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>uvec.draw[<span class="dv">2</span>])</a>
+<a class="sourceLine" id="cb31-6" data-line-number="6">   <span class="kw">lines</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">9</span>, trajectory)</a>
+<a class="sourceLine" id="cb31-7" data-line-number="7">}</a></code></pre></div>
+<div class="figure"><span id="fig:unnamed-chunk-16"></span>
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-16-1.png" alt="Random trajectories for sleepstudy data using the estimated intercept and slope random-effects variances." width="672" />
+<p class="caption">
+Figure 1.2: Random trajectories for sleepstudy data using the estimated intercept and slope random-effects variances.
+</p>
+</div>
+<!-- * You may also find it useful to report it in terms of "variance explained" by thinking of the vari -->
+</div>
+<div id="extracting-blups-in-lme4" class="section level4">
+<h4><span class="header-section-number">1.5.1.3</span> Extracting BLUPs in lme4</h4>
 <ul>
 <li>To get the “BLUPs” the intercepts and slopes <span class="math inline">\(\textrm{BLUP}(u_{i0})\)</span> and <span class="math inline">\(\textrm{BLUP}(u_{i1})\)</span>,
 use <code>ranef</code></li>
 </ul>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">blups.slope &lt;-<span class="st"> </span><span class="kw">ranef</span>( lmm.sleep.slope )</a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1">blups.slope &lt;-<span class="st"> </span><span class="kw">ranef</span>( lmm.sleep.slope )</a></code></pre></div>
 <ul>
 <li>To plot these, use <code>dotplot</code> (you will need to load the <code>lattice</code> package first)</li>
 </ul>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw">library</span>(lattice)</a>
-<a class="sourceLine" id="cb30-2" data-line-number="2"><span class="kw">dotplot</span>(blups.slope)</a></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="kw">library</span>(lattice)</a>
+<a class="sourceLine" id="cb33-2" data-line-number="2"><span class="kw">dotplot</span>(blups.slope)</a></code></pre></div>
 <pre><code>## $Subject</code></pre>
-<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="co">## This plots subjects sorted by individual-specific estimates of intercepts</span></a></code></pre></div>
+<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="co">## This plots subjects sorted by individual-specific estimates of intercepts</span></a></code></pre></div>
 <hr />
 <ul>
 <li>To extract the “predicted” random effects into a <code>DataFrame</code> use</li>
 </ul>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1">ranef.df &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>( blups.slope)</a>
-<a class="sourceLine" id="cb33-2" data-line-number="2"><span class="kw">head</span>(ranef.df)</a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1">ranef.df &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>( blups.slope)</a>
+<a class="sourceLine" id="cb36-2" data-line-number="2"><span class="kw">head</span>(ranef.df)</a></code></pre></div>
 <pre><code>##    grpvar        term grp    condval   condsd
 ## 1 Subject (Intercept) 308   2.258551 12.07086
 ## 2 Subject (Intercept) 309 -40.398738 12.07086
@@ -874,20 +914,20 @@ just the individual components of <span class="math inline">\(\mathbf{u}_{i}\)</
 <span class="math inline">\(\textrm{BLUP}(\beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j})\)</span></p></li>
 <li><p>These are obtained by using the <code>fitted</code> method</p></li>
 </ul>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1">blup.full &lt;-<span class="st"> </span><span class="kw">fitted</span>( lmm.sleep.slope )  <span class="co"># Should be a vector of length 180</span></a></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1">blup.full &lt;-<span class="st"> </span><span class="kw">fitted</span>( lmm.sleep.slope )  <span class="co"># Should be a vector of length 180</span></a></code></pre></div>
 <ul>
 <li>If we plot <span class="math inline">\(\textrm{BLUP}(\beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j})\)</span> as a function of time for all individuals, it will look like the following:</li>
 </ul>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb36-2" data-line-number="2"><span class="co"># First add the BLUPs to the sleepstudy data as a separate variable</span></a>
-<a class="sourceLine" id="cb36-3" data-line-number="3">sleepstudy<span class="op">$</span>blups &lt;-<span class="st"> </span>blup.full</a>
-<a class="sourceLine" id="cb36-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb36-5" data-line-number="5"><span class="co"># Now plot BLUPs vs. study data for each subject</span></a>
-<a class="sourceLine" id="cb36-6" data-line-number="6"><span class="kw">ggplot</span>(sleepstudy, <span class="kw">aes</span>(<span class="dt">x=</span>Days, <span class="dt">y=</span>blups, <span class="dt">group=</span>Subject)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb36-7" data-line-number="7"><span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">color=</span>Subject)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb36-8" data-line-number="8"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;BLUPs in Random Intercept + Random Slope Model&quot;</span>,</a>
-<a class="sourceLine" id="cb36-9" data-line-number="9">       <span class="dt">y =</span> <span class="st">&quot;Reaction Time&quot;</span>)</a></code></pre></div>
-<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb39-2" data-line-number="2"><span class="co"># First add the BLUPs to the sleepstudy data as a separate variable</span></a>
+<a class="sourceLine" id="cb39-3" data-line-number="3">sleepstudy<span class="op">$</span>blups &lt;-<span class="st"> </span>blup.full</a>
+<a class="sourceLine" id="cb39-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb39-5" data-line-number="5"><span class="co"># Now plot BLUPs vs. study data for each subject</span></a>
+<a class="sourceLine" id="cb39-6" data-line-number="6"><span class="kw">ggplot</span>(sleepstudy, <span class="kw">aes</span>(<span class="dt">x=</span>Days, <span class="dt">y=</span>blups, <span class="dt">group=</span>Subject)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb39-7" data-line-number="7"><span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">color=</span>Subject)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb39-8" data-line-number="8"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;BLUPs in Random Intercept + Random Slope Model&quot;</span>,</a>
+<a class="sourceLine" id="cb39-9" data-line-number="9">       <span class="dt">y =</span> <span class="st">&quot;Reaction Time&quot;</span>)</a></code></pre></div>
+<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <hr />
 </div>
 </div>
@@ -896,12 +936,12 @@ just the individual components of <span class="math inline">\(\mathbf{u}_{i}\)</
 <ul>
 <li>To use the <strong>ohio</strong> data, we will first load the <strong>geepack</strong> R package:</li>
 </ul>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">library</span>(geepack)</a></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" data-line-number="1"><span class="kw">library</span>(geepack)</a></code></pre></div>
 <ul>
 <li>This dataset has 2148 observations from 537 individuals</li>
 </ul>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1"><span class="kw">data</span>(ohio)</a>
-<a class="sourceLine" id="cb38-2" data-line-number="2"><span class="kw">head</span>(ohio, <span class="dv">12</span>) <span class="co"># look at first 12 rows of ohio</span></a></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="kw">data</span>(ohio)</a>
+<a class="sourceLine" id="cb41-2" data-line-number="2"><span class="kw">head</span>(ohio, <span class="dv">12</span>) <span class="co"># look at first 12 rows of ohio</span></a></code></pre></div>
 <pre><code>##    resp id age smoke
 ## 1     0  0  -2     0
 ## 2     0  0  -1     0
@@ -933,7 +973,7 @@ just the individual components of <span class="math inline">\(\mathbf{u}_{i}\)</
 <li><p>In <strong>lme4</strong>, fitting a GLMM with binary responses can be done with the <strong>glmer</strong> function.</p></li>
 <li><p>The <strong>glmer</strong> function has the following syntax:</p></li>
 </ul>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" data-line-number="1"><span class="kw">glmer</span>(formula, data, family)</a></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1"><span class="kw">glmer</span>(formula, data, family)</a></code></pre></div>
 <ul>
 <li><p>The <code>formula</code> argument uses the same syntax as <code>lmer</code></p></li>
 <li><p>When handling binary outcomes, you need to specify the family argument as: <code>family = binomial</code>.</p></li>
@@ -946,11 +986,11 @@ just the individual components of <span class="math inline">\(\mathbf{u}_{i}\)</
 <li>maternal smoking <strong>increases</strong> the probability of wheezing at each age</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb41-2" data-line-number="2">prop_summary_ohio &lt;-<span class="st"> </span>ohio <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb41-3" data-line-number="3"><span class="st">                     </span><span class="kw">group_by</span>(smoke, age) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb41-4" data-line-number="4"><span class="st">                     </span><span class="kw">summarize</span>( <span class="dt">prop_wheeze =</span> <span class="kw">mean</span>(resp) )</a>
-<a class="sourceLine" id="cb41-5" data-line-number="5">prop_summary_ohio</a></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" data-line-number="1"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb44-2" data-line-number="2">prop_summary_ohio &lt;-<span class="st"> </span>ohio <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb44-3" data-line-number="3"><span class="st">                     </span><span class="kw">group_by</span>(smoke, age) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb44-4" data-line-number="4"><span class="st">                     </span><span class="kw">summarize</span>( <span class="dt">prop_wheeze =</span> <span class="kw">mean</span>(resp) )</a>
+<a class="sourceLine" id="cb44-5" data-line-number="5">prop_summary_ohio</a></code></pre></div>
 <pre><code>## # A tibble: 8 x 3
 ## # Groups:   smoke [2]
 ##   smoke   age prop_wheeze
@@ -985,21 +1025,26 @@ random individual-specific intercepts can be expressed as</li>
 <ul>
 <li>Model <a href="mixed-models.html#eq:ohio-intercept">(1.6)</a> can be fit with the following code</li>
 </ul>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1"><span class="co"># id is the grouping variable</span></a>
-<a class="sourceLine" id="cb43-2" data-line-number="2">ohio.intercept &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> ohio, <span class="dt">family =</span> binomial)</a></code></pre></div>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" data-line-number="1"><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.intercept))</a></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" data-line-number="1"><span class="co"># id is the grouping variable</span></a>
+<a class="sourceLine" id="cb46-2" data-line-number="2">ohio.intercept &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> ohio, <span class="dt">family =</span> binomial)</a></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" data-line-number="1"><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.intercept))</a></code></pre></div>
 <pre><code>##               Estimate Std. Error    z value     Pr(&gt;|z|)
 ## (Intercept) -3.3739539 0.27497502 -12.270038 1.311914e-34
 ## age         -0.1767645 0.06796698  -2.600741 9.302258e-03
 ## smoke        0.4147806 0.28704052   1.445024 1.484510e-01</code></pre>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" data-line-number="1"><span class="kw">VarCorr</span>(ohio.intercept)</a></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" data-line-number="1"><span class="kw">VarCorr</span>(ohio.intercept)</a></code></pre></div>
 <pre><code>##  Groups Name        Std.Dev.
 ##  id     (Intercept) 2.3432</code></pre>
 <hr />
 <ul>
 <li><p>For a binary GLMM, the <strong>estimated standard deviation</strong> for the random intercept can be a little hard to interpret,
 though this value seems rather large to me.</p></li>
-<li>One way to help interpret this <strong>visually</strong> is to randomly generate
+<li>One way to report this is to look at the <strong>variation</strong> in <span class="math inline">\(p_{ij}(u_{i})\)</span> for different values of <strong>age</strong> and <strong>smoking status</strong>.
+<ul>
+<li>For this purpose, you could report the interval <span class="math inline">\(\textrm{expit}\big(\hat{\beta}_{0} + \hat{\beta}_{age}\times \textrm{age} + \hat{\beta}_{smk}\times \textrm{smoke} \pm 1.64\hat{\sigma}_{u0} \big)\)</span>,
+where <span class="math inline">\(\textrm{expit}(x) = 1/(1 + e^{-x})\)</span></li>
+</ul></li>
+<li>One way to interpret the variation <strong>visually</strong> is to randomly generate
 many values of <span class="math inline">\(p_{ij}( u_{i} )\)</span> using the estimated distribution of <span class="math inline">\(u_{i}\)</span> to simulate the values of <span class="math inline">\(u_{i}\)</span>.
 <ul>
 <li>This can help us to get a sense of how much <strong>variability</strong> there is in wheezing probability <strong>across individuals</strong>.</li>
@@ -1010,38 +1055,38 @@ plotted the results in 8 densities in 4 panels.
 <li>It would probably be better to use some sort of bounded density estimator for these plots.</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" data-line-number="1">beta.hat &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.intercept))[,<span class="dv">1</span>]</a>
-<a class="sourceLine" id="cb48-2" data-line-number="2">n &lt;-<span class="st"> </span><span class="dv">1000</span></a>
-<a class="sourceLine" id="cb48-3" data-line-number="3">pneg2.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n,<span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">2</span><span class="op">*</span>beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co">#age -2 with smoke</span></a>
-<a class="sourceLine" id="cb48-4" data-line-number="4">pneg2 &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">2</span><span class="op">*</span>beta.hat[<span class="dv">2</span>]) <span class="co">#age -2 w/o smoke</span></a>
-<a class="sourceLine" id="cb48-5" data-line-number="5">pneg1.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n,<span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">1</span><span class="op">*</span>beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co">#age -1 with smoke</span></a>
-<a class="sourceLine" id="cb48-6" data-line-number="6">pneg1 &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">1</span><span class="op">*</span>beta.hat[<span class="dv">2</span>]) <span class="co"># age -1 w/o smoke</span></a>
-<a class="sourceLine" id="cb48-7" data-line-number="7">p0.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co"># age 0 with smoke</span></a>
-<a class="sourceLine" id="cb48-8" data-line-number="8">p0 &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>]) <span class="co"># age 0 w/o smoke</span></a>
-<a class="sourceLine" id="cb48-9" data-line-number="9">p1.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n,<span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co"># age 1 with smoke</span></a>
-<a class="sourceLine" id="cb48-10" data-line-number="10">p1 &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>]) <span class="co"># age 1 w/o smoke</span></a>
-<a class="sourceLine" id="cb48-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb48-12" data-line-number="12"><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">2</span>), <span class="dt">mar=</span><span class="kw">c</span>(<span class="fl">4.1</span>, <span class="fl">4.1</span>, <span class="fl">.5</span>, <span class="fl">.5</span>))</a>
-<a class="sourceLine" id="cb48-13" data-line-number="13"><span class="kw">plot</span>(<span class="kw">density</span>(pneg2), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 7&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
-<a class="sourceLine" id="cb48-14" data-line-number="14">d &lt;-<span class="st"> </span><span class="kw">density</span>(pneg2.smoke)</a>
-<a class="sourceLine" id="cb48-15" data-line-number="15"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb48-16" data-line-number="16"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb48-17" data-line-number="17"><span class="kw">plot</span>(<span class="kw">density</span>(pneg1), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 8&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
-<a class="sourceLine" id="cb48-18" data-line-number="18">d &lt;-<span class="st"> </span><span class="kw">density</span>(pneg1.smoke)</a>
-<a class="sourceLine" id="cb48-19" data-line-number="19"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb48-20" data-line-number="20"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb48-21" data-line-number="21"><span class="kw">plot</span>(<span class="kw">density</span>(p0), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 9&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
-<a class="sourceLine" id="cb48-22" data-line-number="22">d &lt;-<span class="st"> </span><span class="kw">density</span>(p0.smoke)</a>
-<a class="sourceLine" id="cb48-23" data-line-number="23"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb48-24" data-line-number="24"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb48-25" data-line-number="25"><span class="kw">plot</span>(<span class="kw">density</span>(p1), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 10&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
-<a class="sourceLine" id="cb48-26" data-line-number="26">d &lt;-<span class="st"> </span><span class="kw">density</span>(p1.smoke)</a>
-<a class="sourceLine" id="cb48-27" data-line-number="27"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb48-28" data-line-number="28"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a></code></pre></div>
-<div class="figure"><span id="fig:unnamed-chunk-28"></span>
-<img src="01-MixedModels_files/figure-html/unnamed-chunk-28-1.png" alt="Distribution of Wheezing probability across individuals for different values of age and smoking status" width="672" />
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb51-1" data-line-number="1">beta.hat &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.intercept))[,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb51-2" data-line-number="2">n &lt;-<span class="st"> </span><span class="dv">1000</span></a>
+<a class="sourceLine" id="cb51-3" data-line-number="3">pneg2.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n,<span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">2</span><span class="op">*</span>beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co">#age -2 with smoke</span></a>
+<a class="sourceLine" id="cb51-4" data-line-number="4">pneg2 &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">2</span><span class="op">*</span>beta.hat[<span class="dv">2</span>]) <span class="co">#age -2 w/o smoke</span></a>
+<a class="sourceLine" id="cb51-5" data-line-number="5">pneg1.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n,<span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">1</span><span class="op">*</span>beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co">#age -1 with smoke</span></a>
+<a class="sourceLine" id="cb51-6" data-line-number="6">pneg1 &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="dv">1</span><span class="op">*</span>beta.hat[<span class="dv">2</span>]) <span class="co"># age -1 w/o smoke</span></a>
+<a class="sourceLine" id="cb51-7" data-line-number="7">p0.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co"># age 0 with smoke</span></a>
+<a class="sourceLine" id="cb51-8" data-line-number="8">p0 &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>]) <span class="co"># age 0 w/o smoke</span></a>
+<a class="sourceLine" id="cb51-9" data-line-number="9">p1.smoke &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n,<span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">3</span>]) <span class="co"># age 1 with smoke</span></a>
+<a class="sourceLine" id="cb51-10" data-line-number="10">p1 &lt;-<span class="st"> </span><span class="kw">plogis</span>(<span class="kw">rnorm</span>(n, <span class="dt">sd=</span><span class="fl">2.34</span>) <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta.hat[<span class="dv">2</span>]) <span class="co"># age 1 w/o smoke</span></a>
+<a class="sourceLine" id="cb51-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb51-12" data-line-number="12"><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">2</span>), <span class="dt">mar=</span><span class="kw">c</span>(<span class="fl">4.1</span>, <span class="fl">4.1</span>, <span class="fl">.5</span>, <span class="fl">.5</span>))</a>
+<a class="sourceLine" id="cb51-13" data-line-number="13"><span class="kw">plot</span>(<span class="kw">density</span>(pneg2), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 7&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb51-14" data-line-number="14">d &lt;-<span class="st"> </span><span class="kw">density</span>(pneg2.smoke)</a>
+<a class="sourceLine" id="cb51-15" data-line-number="15"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb51-16" data-line-number="16"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb51-17" data-line-number="17"><span class="kw">plot</span>(<span class="kw">density</span>(pneg1), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 8&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb51-18" data-line-number="18">d &lt;-<span class="st"> </span><span class="kw">density</span>(pneg1.smoke)</a>
+<a class="sourceLine" id="cb51-19" data-line-number="19"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb51-20" data-line-number="20"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb51-21" data-line-number="21"><span class="kw">plot</span>(<span class="kw">density</span>(p0), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 9&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb51-22" data-line-number="22">d &lt;-<span class="st"> </span><span class="kw">density</span>(p0.smoke)</a>
+<a class="sourceLine" id="cb51-23" data-line-number="23"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb51-24" data-line-number="24"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb51-25" data-line-number="25"><span class="kw">plot</span>(<span class="kw">density</span>(p1), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 10&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb51-26" data-line-number="26">d &lt;-<span class="st"> </span><span class="kw">density</span>(p1.smoke)</a>
+<a class="sourceLine" id="cb51-27" data-line-number="27"><span class="kw">lines</span>(d<span class="op">$</span>x, d<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb51-28" data-line-number="28"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a></code></pre></div>
+<div class="figure"><span id="fig:unnamed-chunk-29"></span>
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-29-1.png" alt="Distribution of Wheezing probability across individuals for different values of age and smoking status" width="672" />
 <p class="caption">
-Figure 1.2: Distribution of Wheezing probability across individuals for different values of age and smoking status
+Figure 1.3: Distribution of Wheezing probability across individuals for different values of age and smoking status
 </p>
 </div>
 <hr />

@@ -15,7 +15,7 @@
     
     + The $i^{th}$ individual has $n_{i}$ observations: $Y_{i1}, \ldots, Y_{in_{i}}$.
     
-    + There will be $m$ individuals in the study (so $1 \leq j \leq m$).
+    + There will be $m$ individuals in the study (so $1 \leq i \leq m$).
 
 ---
 

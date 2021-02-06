@@ -1,6 +1,6 @@
 # Missing Data and Multiple Imputation {#missing-data}
 
-## Missing Data in R and "Naive Approaches"
+## Missing Data in R and "Direct Approaches" for Handling Missing Data
 
 * In a wide range of datasets, it is very common to encounter missing value.
 
@@ -27,14 +27,80 @@ head( is.na(airquality) )
 
 * Computing the sum of `is.na(airquality)` tells us how many missing values there are in this dataset.
 ```{r, echo=TRUE}
-sum( is.na(airquality) )  ## 44 missing observations in total
-dim( airquality )  ## Dataset has a total of 153 x 6 = 918 observations
+sum( is.na(airquality) )  ## 44 missing entries in total
+dim( airquality )  ## Dataset has a total of 153 x 6 = 918 entries
+```
+
+### Complete Case Analysis (Listwise Deletion)
+
+* Suppose we wanted to run a regression with `Ozone` as the response and `Solar.R`,
+`Wind`, and `Temp` as the covariates.
+
+* If we do this in **R**, we will get the following result:
+```{r, echo=TRUE}
+air.lm1 <- lm( Ozone ~ Solar.R + Wind + Temp, data = airquality )
+summary( air.lm1 )
 ```
 
 ---
 
+* How is **R** handling all the **missing values** in `airquality`.
 
-* Complete Case Analysis or Listwise Deletion.
+* As a default, `lm` conducts a **complete case analysis** (sometimes referred to as listwise deletion).
+     + (This is the default unless you changed the default `na.action` setting with `options(...)`)
+
+* A **complete case analysis** for regression will first **delete all rows** from the dataset if 
+any of the variables used from that row have a missing value.
+    + In this example, a row will be dropped if either the value of `Ozone`, `Solar.R`, `Wind`, or `Temp`
+    is missing. 
+
+* After these observations have been deleted, the usual regression is fit to the remaining "complete" dataset. 
+
+---
+
+* To remove **all rows** where there is at least one missing value, you can use
+`na.omit`:
+```{r, echo=TRUE}
+complete.air <- na.omit( airquality )
+## Check that there are no missing values
+sum( is.na(complete.air) )  # This should be zero
+```
+
+* Because our regression model only uses the variables 
+
+
+---
+
+* Let's now fit a linear regression using the complete dataset `complete.air`
+```{r, echo=TRUE}
+air.lm2 <- lm( Ozone ~ Solar.R + Wind + Temp, data = complete.air )
+```
+
+* The estimated regression coefficients **should be the same** when using 
+the "incomplete dataset" `airquality` as when using the "complete dataset" `complete.air`
+```{r, echo=TRUE}
+## The estimated regression coefficients should be the same
+round(air.lm1$coefficients, 3)
+round(air.lm2$coefficients, 3)
+```
+
+### Other "Direct" Methods
+
+* In general, doing a **complete-case analysis** is **not advisable**.
+    + A complete-case analysis should really only be used if you are confident that the data are missing 
+      completely at random (MCAR).
+
+---
+
+* A few other direct ways of handling missing data that you may have used or seen used in practice include:
+    1. **Mean imputation**. Missing values are replaced by the value of the **mean** of that variable.
+    
+    2. **Regression imputation**. Missing values are replaced by a regression prediction from 
+    the values of the other variables.
+
+
+---
+
 
 ## Multiple Imputation
 
@@ -49,11 +115,33 @@ dim( airquality )  ## Dataset has a total of 153 x 6 = 918 observations
 
 * The nice thing about multiple imputation is that you can always
 use your original analysis approach. 
-    + That is, you can just apply your original analysis method to each of the $K$ complete datasets.
 
-* The tricky part in multiple imputation is generating the $K$ complete datasets in a "valid" way.
+* That is, you can just apply your original analysis method to each of the $K$ complete datasets.
+
+* The complicated part in multiple imputation is generating the $K$ complete datasets in a **"valid"** way.
+
+* Luckily, there are a number of **R** packages that implement different ways of creating
+the $K$ **imputed datasets**.
 
 ---
+
+* I will primarily focus on the **mice** package.
+    + **mice** stands for **"Multivariate Imputation by Chained Equations"**
+
+
+```{r, echo=TRUE, message=FALSE}
+library(mice)
+imputed.airs <- mice(airquality, print=FALSE)
+```
+
+
+```{r, echo=TRUE}
+## Imputed missing ozone values across the five multiple imputations
+head(imputed.airs$imp$Ozone)
+dim(imputed.airs$imp$Ozone)
+sum(is.na(airquality$Ozone))
+```
+
 
 
 ## Different Missing Data Mechanisms

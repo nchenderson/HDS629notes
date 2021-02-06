@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-02-05" />
+<meta name="date" content="2021-02-06" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -150,7 +150,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>2</b> Missing Data and Multiple Imputation</a><ul>
-<li class="chapter" data-level="2.1" data-path="missing-data.html"><a href="missing-data.html#missing-data-in-r-and-naive-approaches"><i class="fa fa-check"></i><b>2.1</b> Missing Data in R and “Naive Approaches”</a></li>
+<li class="chapter" data-level="2.1" data-path="missing-data.html"><a href="missing-data.html#missing-data-in-r-and-direct-approaches-for-handling-missing-data"><i class="fa fa-check"></i><b>2.1</b> Missing Data in R and “Direct Approaches” for Handling Missing Data</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="missing-data.html"><a href="missing-data.html#complete-case-analysis-listwise-deletion"><i class="fa fa-check"></i><b>2.1.1</b> Complete Case Analysis (Listwise Deletion)</a></li>
+<li class="chapter" data-level="2.1.2" data-path="missing-data.html"><a href="missing-data.html#other-direct-methods"><i class="fa fa-check"></i><b>2.1.2</b> Other “Direct” Methods</a></li>
+</ul></li>
 <li class="chapter" data-level="2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation"><i class="fa fa-check"></i><b>2.2</b> Multiple Imputation</a></li>
 <li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#different-missing-data-mechanisms"><i class="fa fa-check"></i><b>2.3</b> Different Missing Data Mechanisms</a><ul>
 <li class="chapter" data-level="2.3.1" data-path="missing-data.html"><a href="missing-data.html#missing-completely-at-random-mcar"><i class="fa fa-check"></i><b>2.3.1</b> Missing Completely at Random (MCAR)</a></li>
@@ -180,8 +183,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="missing-data" class="section level1">
 <h1><span class="header-section-number">Chapter 2</span> Missing Data and Multiple Imputation</h1>
-<div id="missing-data-in-r-and-naive-approaches" class="section level2">
-<h2><span class="header-section-number">2.1</span> Missing Data in R and “Naive Approaches”</h2>
+<div id="missing-data-in-r-and-direct-approaches-for-handling-missing-data" class="section level2">
+<h2><span class="header-section-number">2.1</span> Missing Data in R and “Direct Approaches” for Handling Missing Data</h2>
 <ul>
 <li><p>In a wide range of datasets, it is very common to encounter missing value.</p></li>
 <li><p>In <strong>R</strong>, missing values are stored as <code>NA</code>, meaning “Not Available”.</p></li>
@@ -219,14 +222,104 @@ and the <strong>5th and 6th observations</strong> for the <code>Solar.R</code> v
 <ul>
 <li>Computing the sum of <code>is.na(airquality)</code> tells us how many missing values there are in this dataset.</li>
 </ul>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb56-1" data-line-number="1"><span class="kw">sum</span>( <span class="kw">is.na</span>(airquality) )  <span class="co">## 44 missing observations in total</span></a></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb56-1" data-line-number="1"><span class="kw">sum</span>( <span class="kw">is.na</span>(airquality) )  <span class="co">## 44 missing entries in total</span></a></code></pre></div>
 <pre><code>## [1] 44</code></pre>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" data-line-number="1"><span class="kw">dim</span>( airquality )  <span class="co">## Dataset has a total of 153 x 6 = 918 observations</span></a></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" data-line-number="1"><span class="kw">dim</span>( airquality )  <span class="co">## Dataset has a total of 153 x 6 = 918 entries</span></a></code></pre></div>
 <pre><code>## [1] 153   6</code></pre>
+<div id="complete-case-analysis-listwise-deletion" class="section level3">
+<h3><span class="header-section-number">2.1.1</span> Complete Case Analysis (Listwise Deletion)</h3>
+<ul>
+<li><p>Suppose we wanted to run a regression with <code>Ozone</code> as the response and <code>Solar.R</code>,
+<code>Wind</code>, and <code>Temp</code> as the covariates.</p></li>
+<li><p>If we do this in <strong>R</strong>, we will get the following result:</p></li>
+</ul>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1">air.lm1 &lt;-<span class="st"> </span><span class="kw">lm</span>( Ozone <span class="op">~</span><span class="st"> </span>Solar.R <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Temp, <span class="dt">data =</span> airquality )</a>
+<a class="sourceLine" id="cb60-2" data-line-number="2"><span class="kw">summary</span>( air.lm1 )</a></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Ozone ~ Solar.R + Wind + Temp, data = airquality)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -40.485 -14.219  -3.551  10.097  95.619 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -64.34208   23.05472  -2.791  0.00623 ** 
+## Solar.R       0.05982    0.02319   2.580  0.01124 *  
+## Wind         -3.33359    0.65441  -5.094 1.52e-06 ***
+## Temp          1.65209    0.25353   6.516 2.42e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 21.18 on 107 degrees of freedom
+##   (42 observations deleted due to missingness)
+## Multiple R-squared:  0.6059,	Adjusted R-squared:  0.5948 
+## F-statistic: 54.83 on 3 and 107 DF,  p-value: &lt; 2.2e-16</code></pre>
 <hr />
 <ul>
-<li>Complete Case Analysis or Listwise Deletion.</li>
+<li><p>How is <strong>R</strong> handling all the <strong>missing values</strong> in <code>airquality</code>.</p></li>
+<li>As a default, <code>lm</code> conducts a <strong>complete case analysis</strong> (sometimes referred to as listwise deletion).
+<ul>
+<li>(This is the default unless you changed the default <code>na.action</code> setting with <code>options(...)</code>)</li>
+</ul></li>
+<li>A <strong>complete case analysis</strong> for regression will first <strong>delete all rows</strong> from the dataset if
+any of the variables used from that row have a missing value.
+<ul>
+<li>In this example, a row will be dropped if either the value of <code>Ozone</code>, <code>Solar.R</code>, <code>Wind</code>, or <code>Temp</code>
+is missing.</li>
+</ul></li>
+<li><p>After these observations have been deleted, the usual regression is fit to the remaining “complete” dataset.</p></li>
 </ul>
+<hr />
+<ul>
+<li>To remove <strong>all rows</strong> where there is at least one missing value, you can use
+<code>na.omit</code>:</li>
+</ul>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1">complete.air &lt;-<span class="st"> </span><span class="kw">na.omit</span>( airquality )</a>
+<a class="sourceLine" id="cb62-2" data-line-number="2"><span class="co">## Check that there are no missing values</span></a>
+<a class="sourceLine" id="cb62-3" data-line-number="3"><span class="kw">sum</span>( <span class="kw">is.na</span>(complete.air) )  <span class="co"># This should be zero</span></a></code></pre></div>
+<pre><code>## [1] 0</code></pre>
+<ul>
+<li>Because our regression model only uses the variables</li>
+</ul>
+<hr />
+<ul>
+<li>Let’s now fit a linear regression using the complete dataset <code>complete.air</code></li>
+</ul>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb64-1" data-line-number="1">air.lm2 &lt;-<span class="st"> </span><span class="kw">lm</span>( Ozone <span class="op">~</span><span class="st"> </span>Solar.R <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Temp, <span class="dt">data =</span> complete.air )</a></code></pre></div>
+<ul>
+<li>The estimated regression coefficients <strong>should be the same</strong> when using
+the “incomplete dataset” <code>airquality</code> as when using the “complete dataset” <code>complete.air</code></li>
+</ul>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" data-line-number="1"><span class="co">## The estimated regression coefficients should be the same</span></a>
+<a class="sourceLine" id="cb65-2" data-line-number="2"><span class="kw">round</span>(air.lm1<span class="op">$</span>coefficients, <span class="dv">3</span>)</a></code></pre></div>
+<pre><code>## (Intercept)     Solar.R        Wind        Temp 
+##     -64.342       0.060      -3.334       1.652</code></pre>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb67-1" data-line-number="1"><span class="kw">round</span>(air.lm2<span class="op">$</span>coefficients, <span class="dv">3</span>)</a></code></pre></div>
+<pre><code>## (Intercept)     Solar.R        Wind        Temp 
+##     -64.342       0.060      -3.334       1.652</code></pre>
+</div>
+<div id="other-direct-methods" class="section level3">
+<h3><span class="header-section-number">2.1.2</span> Other “Direct” Methods</h3>
+<ul>
+<li>In general, doing a <strong>complete-case analysis</strong> is <strong>not advisable</strong>.
+<ul>
+<li>A complete-case analysis should really only be used if you are confident that the data are missing
+completely at random (MCAR).</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>A few other direct ways of handling missing data that you may have used or seen used in practice include:
+<ol style="list-style-type: decimal">
+<li><p><strong>Mean imputation</strong>. Missing values are replaced by the value of the <strong>mean</strong> of that variable.</p></li>
+<li><p><strong>Regression imputation</strong>. Missing values are replaced by a regression prediction from
+the values of the other variables.</p></li>
+</ol></li>
+</ul>
+<hr />
+</div>
 </div>
 <div id="multiple-imputation" class="section level2">
 <h2><span class="header-section-number">2.2</span> Multiple Imputation</h2>
@@ -240,14 +333,35 @@ and the <strong>5th and 6th observations</strong> for the <code>Solar.R</code> v
 </ul>
 <hr />
 <ul>
-<li>The nice thing about multiple imputation is that you can always
-use your original analysis approach.
-<ul>
-<li>That is, you can just apply your original analysis method to each of the <span class="math inline">\(K\)</span> complete datasets.</li>
-</ul></li>
-<li>The tricky part in multiple imputation is generating the <span class="math inline">\(K\)</span> complete datasets in a “valid” way.</li>
+<li><p>The nice thing about multiple imputation is that you can always
+use your original analysis approach.</p></li>
+<li><p>That is, you can just apply your original analysis method to each of the <span class="math inline">\(K\)</span> complete datasets.</p></li>
+<li><p>The complicated part in multiple imputation is generating the <span class="math inline">\(K\)</span> complete datasets in a <strong>“valid”</strong> way.</p></li>
+<li><p>Luckily, there are a number of <strong>R</strong> packages that implement different ways of creating
+the <span class="math inline">\(K\)</span> <strong>imputed datasets</strong>.</p></li>
 </ul>
 <hr />
+<ul>
+<li>I will primarily focus on the <strong>mice</strong> package.
+<ul>
+<li><strong>mice</strong> stands for <strong>“Multivariate Imputation by Chained Equations”</strong></li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb69-1" data-line-number="1"><span class="kw">library</span>(mice)</a>
+<a class="sourceLine" id="cb69-2" data-line-number="2">imputed.airs &lt;-<span class="st"> </span><span class="kw">mice</span>(airquality, <span class="dt">print=</span><span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1"><span class="co">## Imputed missing ozone values across the five multiple imputations</span></a>
+<a class="sourceLine" id="cb70-2" data-line-number="2"><span class="kw">head</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Ozone)</a></code></pre></div>
+<pre><code>##     1  2  3  4  5
+## 5  28 19 32 18  8
+## 10 44 16 13 16 16
+## 25 19 19 19  8 18
+## 26  9 18  4 18 18
+## 27 14  7 28 13  9
+## 32 23 16 63 40 35</code></pre>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb72-1" data-line-number="1"><span class="kw">dim</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Ozone)</a></code></pre></div>
+<pre><code>## [1] 37  5</code></pre>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" data-line-number="1"><span class="kw">sum</span>(<span class="kw">is.na</span>(airquality<span class="op">$</span>Ozone))</a></code></pre></div>
+<pre><code>## [1] 37</code></pre>
 </div>
 <div id="different-missing-data-mechanisms" class="section level2">
 <h2><span class="header-section-number">2.3</span> Different Missing Data Mechanisms</h2>

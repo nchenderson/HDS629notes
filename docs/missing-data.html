@@ -154,7 +154,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1.1" data-path="missing-data.html"><a href="missing-data.html#complete-case-analysis-listwise-deletion"><i class="fa fa-check"></i><b>2.1.1</b> Complete Case Analysis (Listwise Deletion)</a></li>
 <li class="chapter" data-level="2.1.2" data-path="missing-data.html"><a href="missing-data.html#other-direct-methods"><i class="fa fa-check"></i><b>2.1.2</b> Other “Direct” Methods</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation"><i class="fa fa-check"></i><b>2.2</b> Multiple Imputation</a></li>
+<li class="chapter" data-level="2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation"><i class="fa fa-check"></i><b>2.2</b> Multiple Imputation</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation-with-mice"><i class="fa fa-check"></i><b>2.2.1</b> Multiple imputation with mice</a></li>
+</ul></li>
 <li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#different-missing-data-mechanisms"><i class="fa fa-check"></i><b>2.3</b> Different Missing Data Mechanisms</a><ul>
 <li class="chapter" data-level="2.3.1" data-path="missing-data.html"><a href="missing-data.html#missing-completely-at-random-mcar"><i class="fa fa-check"></i><b>2.3.1</b> Missing Completely at Random (MCAR)</a></li>
 <li class="chapter" data-level="2.3.2" data-path="missing-data.html"><a href="missing-data.html#missing-at-random-mar"><i class="fa fa-check"></i><b>2.3.2</b> Missing at Random (MAR)</a></li>
@@ -340,28 +342,83 @@ use your original analysis approach.</p></li>
 <li><p>Luckily, there are a number of <strong>R</strong> packages that implement different ways of creating
 the <span class="math inline">\(K\)</span> <strong>imputed datasets</strong>.</p></li>
 </ul>
-<hr />
+<div id="multiple-imputation-with-mice" class="section level3">
+<h3><span class="header-section-number">2.2.1</span> Multiple imputation with mice</h3>
 <ul>
 <li>I will primarily focus on the <strong>mice</strong> package.
 <ul>
 <li><strong>mice</strong> stands for <strong>“Multivariate Imputation by Chained Equations”</strong></li>
 </ul></li>
+<li><p>The <code>mice</code> function within the <strong>mice</strong> package is the primary function
+for performing <strong>multiple imputation</strong>.</p></li>
+<li>To use <code>mice</code>, just use <code>mice(df)</code> where <code>df</code> is the <strong>name</strong> of the dataframe.
+<ul>
+<li>(Set <code>print = FALSE</code> if you don’t want it to print out the number of the iteration).</li>
+<li>Choose a value of <code>seed</code> so that the results are reproducible.</li>
+</ul></li>
 </ul>
 <div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb69-1" data-line-number="1"><span class="kw">library</span>(mice)</a>
-<a class="sourceLine" id="cb69-2" data-line-number="2">imputed.airs &lt;-<span class="st"> </span><span class="kw">mice</span>(airquality, <span class="dt">print=</span><span class="ot">FALSE</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1"><span class="co">## Imputed missing ozone values across the five multiple imputations</span></a>
-<a class="sourceLine" id="cb70-2" data-line-number="2"><span class="kw">head</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Ozone)</a></code></pre></div>
-<pre><code>##     1  2  3  4  5
-## 5  28 19 32 18  8
-## 10 44 16 13 16 16
-## 25 19 19 19  8 18
-## 26  9 18  4 18 18
-## 27 14  7 28 13  9
-## 32 23 16 63 40 35</code></pre>
+<a class="sourceLine" id="cb69-2" data-line-number="2">imputed.airs &lt;-<span class="st"> </span><span class="kw">mice</span>(airquality, <span class="dt">print=</span><span class="ot">FALSE</span>, <span class="dt">seed=</span><span class="dv">101</span>)</a></code></pre></div>
+<hr />
+<ul>
+<li><p>The object returned by <code>mice</code> will have a component called <code>imp</code> which is a list.</p></li>
+<li>Each component of <code>imp</code> is a <strong>dataframe</strong> corresponding to a single variable in the original dataframe
+<ul>
+<li>This dataframe will contain the imputed values for the <strong>missing values</strong> of that variable.</li>
+</ul></li>
+<li><p>For example, <code>imputed.airs$imp</code> will be a <strong>list</strong> with each component of the list being
+one of the variables from <code>airquality</code></p></li>
+</ul>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1"><span class="kw">names</span>( imputed.airs<span class="op">$</span>imp )</a></code></pre></div>
+<pre><code>## [1] &quot;Ozone&quot;   &quot;Solar.R&quot; &quot;Wind&quot;    &quot;Temp&quot;    &quot;Month&quot;   &quot;Day&quot;</code></pre>
+<hr />
+<ul>
+<li>The <code>Ozone</code> component of <code>imputed.airs$imp</code> will be a dataframe with <strong>37 rows</strong> and <strong>5 columns</strong>.
+<ul>
+<li>This is because the <code>Ozone</code> variable had <strong>37 missing values</strong>, and there are <strong>5 multiple imputations</strong> (the default number in <strong>mice</strong>)</li>
+</ul></li>
+</ul>
 <div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb72-1" data-line-number="1"><span class="kw">dim</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Ozone)</a></code></pre></div>
 <pre><code>## [1] 37  5</code></pre>
-<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" data-line-number="1"><span class="kw">sum</span>(<span class="kw">is.na</span>(airquality<span class="op">$</span>Ozone))</a></code></pre></div>
-<pre><code>## [1] 37</code></pre>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" data-line-number="1"><span class="co">## Imputed missing ozone values across the five multiple imputations</span></a>
+<a class="sourceLine" id="cb74-2" data-line-number="2"><span class="kw">head</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Ozone)</a></code></pre></div>
+<pre><code>##     1  2  3  4  5
+## 5   6  8 18  6 37
+## 10 12 18 27 18 30
+## 25  8 14  6 18 18
+## 26 13  1 13 37 13
+## 27 19 18  4 18 34
+## 32 40 47 45 23 18</code></pre>
+<ul>
+<li><p>The <strong>row names</strong> in <code>imputed.airs$imp$Ozone</code> correspond to the index of the observation
+in the original <code>airquality</code> dataframe.</p></li>
+<li><p>For example, the 5th observation of the <code>Ozone</code> variable has 6 in the 1st imputation, 8 in
+the 2nd imputation, 18 in the 3rd imputation, etc. ….</p></li>
+</ul>
+<hr />
+<ul>
+<li>Similarly, the <code>Solar.R</code> component of <code>imputed.airs$imp</code> will be a data frame
+<ul>
+<li>This is because the <code>Ozone</code> variable had <strong>7 missing values</strong>, and there are <strong>5 multiple imputations</strong>.</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" data-line-number="1"><span class="kw">dim</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Solar.R)</a></code></pre></div>
+<pre><code>## [1] 7 5</code></pre>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb78-1" data-line-number="1"><span class="co">## Imputed missing ozone values across the five multiple imputations</span></a>
+<a class="sourceLine" id="cb78-2" data-line-number="2"><span class="kw">head</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Solar.R)</a></code></pre></div>
+<pre><code>##      1   2   3   4   5
+## 5  131 285 274  92 139
+## 6  127 248 175 167 175
+## 11  71  71 238 115 284
+## 27 238   8  49 223 238
+## 96 258 203 229 223 291
+## 97 313 259 274  83 272</code></pre>
+<ul>
+<li>For example, the 5th observation of the <code>Solar.R</code> variable has 131 in the 1st imputation, 285 in
+the 2nd imputation, 274 in the 3rd imputation, etc. ….</li>
+</ul>
+<hr />
+</div>
 </div>
 <div id="different-missing-data-mechanisms" class="section level2">
 <h2><span class="header-section-number">2.3</span> Different Missing Data Mechanisms</h2>

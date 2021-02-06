@@ -202,34 +202,46 @@ use your original analysis approach.
 * Luckily, there are a number of **R** packages that implement different ways of creating
 the $K$ **imputed datasets**.
 
----
+### Multiple imputation with mice
 
 * I will primarily focus on the **mice** package.
     + **mice** stands for **"Multivariate Imputation by Chained Equations"**
 
+* The `mice` function within the **mice** package is the primary function
+for performing **multiple imputation**.
 
+* To use `mice`, just use `mice(df)` where `df` is the **name** of the dataframe.
+    + (Set `print = FALSE` if you don't want it to print out the number of the iteration).
+    + Choose a value of `seed` so that the results are reproducible.
 
 ```r
 library(mice)
-imputed.airs <- mice(airquality, print=FALSE)
+imputed.airs <- mice(airquality, print=FALSE, seed=101)
 ```
 
+---
 
+* The object returned by `mice` will have a component called `imp` which is a list.
+    
+* Each component of `imp` is a **dataframe** corresponding to a single variable in the original dataframe 
+     + This dataframe will contain the imputed values for the **missing values** of that variable.      
+
+* For example, `imputed.airs$imp` will be a **list** with each component of the list being
+one of the variables from `airquality`
 
 ```r
-## Imputed missing ozone values across the five multiple imputations
-head(imputed.airs$imp$Ozone)
+names( imputed.airs$imp )
 ```
 
 ```
-##     1  2  3  4  5
-## 5  28 19 32 18  8
-## 10 44 16 13 16 16
-## 25 19 19 19  8 18
-## 26  9 18  4 18 18
-## 27 14  7 28 13  9
-## 32 23 16 63 40 35
+## [1] "Ozone"   "Solar.R" "Wind"    "Temp"    "Month"   "Day"
 ```
+
+---
+
+* The `Ozone` component of `imputed.airs$imp` will be a dataframe with **37 rows** and **5 columns**.
+    + This is because the `Ozone` variable had **37 missing values**, and there are **5 multiple imputations** (the default number in **mice**) 
+
 
 ```r
 dim(imputed.airs$imp$Ozone)
@@ -240,13 +252,59 @@ dim(imputed.airs$imp$Ozone)
 ```
 
 ```r
-sum(is.na(airquality$Ozone))
+## Imputed missing ozone values across the five multiple imputations
+head(imputed.airs$imp$Ozone)
 ```
 
 ```
-## [1] 37
+##     1  2  3  4  5
+## 5   6  8 18  6 37
+## 10 12 18 27 18 30
+## 25  8 14  6 18 18
+## 26 13  1 13 37 13
+## 27 19 18  4 18 34
+## 32 40 47 45 23 18
 ```
 
+* The **row names** in `imputed.airs$imp$Ozone` correspond to the index of the observation
+in the original `airquality` dataframe.
+
+* For example, the 5th observation of the `Ozone` variable has 6 in the 1st imputation, 8 in
+the 2nd imputation, 18 in the 3rd imputation, etc. ....
+
+---
+
+* Similarly, the `Solar.R` component of `imputed.airs$imp` will be a data frame 
+   + This is because the `Ozone` variable had **7 missing values**, and there are **5 multiple imputations**.
+
+
+```r
+dim(imputed.airs$imp$Solar.R)
+```
+
+```
+## [1] 7 5
+```
+
+```r
+## Imputed missing ozone values across the five multiple imputations
+head(imputed.airs$imp$Solar.R)
+```
+
+```
+##      1   2   3   4   5
+## 5  131 285 274  92 139
+## 6  127 248 175 167 175
+## 11  71  71 238 115 284
+## 27 238   8  49 223 238
+## 96 258 203 229 223 291
+## 97 313 259 274  83 272
+```
+
+* For example, the 5th observation of the `Solar.R` variable has 131 in the 1st imputation, 285 in
+the 2nd imputation, 274 in the 3rd imputation, etc. ....
+
+---
 
 
 ## Different Missing Data Mechanisms

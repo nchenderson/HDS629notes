@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Notes for Case Studies in Health Big Data</title>
+  <title>Chapter 2 Missing Data and Multiple Imputation | Notes for Case Studies in Health Big Data</title>
   <meta name="description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
   <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Notes for Case Studies in Health Big Data" />
+  <meta property="og:title" content="Chapter 2 Missing Data and Multiple Imputation | Notes for Case Studies in Health Big Data" />
   <meta property="og:type" content="book" />
   <meta property="og:url" content="https://nchenderson.github.io/HDS629notes/" />
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="nchenderson/HDS629notes" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Notes for Case Studies in Health Big Data" />
+  <meta name="twitter:title" content="Chapter 2 Missing Data and Multiple Imputation | Notes for Case Studies in Health Big Data" />
   
   <meta name="twitter:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
+<link rel="prev" href="mixed-models.html"/>
 
-<link rel="next" href="mixed-models.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -178,23 +178,103 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Notes for Case Studies in Health Big Data</h1>
-<p class="author"><em>Nicholas Henderson</em></p>
-<p class="date"><em>2021-02-05</em></p>
+<div id="missing-data" class="section level1">
+<h1><span class="header-section-number">Chapter 2</span> Missing Data and Multiple Imputation</h1>
+<div id="missing-data-in-r-and-naive-approaches" class="section level2">
+<h2><span class="header-section-number">2.1</span> Missing Data in R and “Naive Approaches”</h2>
+<ul>
+<li><p>In a wide range of datasets, it is very common to encounter missing value.</p></li>
+<li><p>In <strong>R</strong>, missing values are stored as <code>NA</code>, meaning “Not Available”.</p></li>
+</ul>
+<hr />
+<ul>
+<li>For example, look at the <code>airquality</code> dataframe available in base <strong>R</strong></li>
+</ul>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" data-line-number="1"><span class="kw">data</span>(airquality)</a>
+<a class="sourceLine" id="cb52-2" data-line-number="2"><span class="kw">head</span>(airquality)</a></code></pre></div>
+<pre><code>##   Ozone Solar.R Wind Temp Month Day
+## 1    41     190  7.4   67     5   1
+## 2    36     118  8.0   72     5   2
+## 3    12     149 12.6   74     5   3
+## 4    18     313 11.5   62     5   4
+## 5    NA      NA 14.3   56     5   5
+## 6    28      NA 14.9   66     5   6</code></pre>
+<ul>
+<li><p>You can see that the <strong>5th observation</strong> for the <code>Ozone</code> variable is missing,
+and the <strong>5th and 6th observations</strong> for the <code>Solar.R</code> variable are missing.</p></li>
+<li>You can use <code>is.na</code> to find which data entries have missing values.
+<ul>
+<li>If <code>is.na</code> returns <code>TRUE</code>, the entry is missing.</li>
+<li>If <code>is.na</code> returns <code>FALSE</code>, the entry is not missing</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" data-line-number="1"><span class="kw">head</span>( <span class="kw">is.na</span>(airquality) )</a></code></pre></div>
+<pre><code>##      Ozone Solar.R  Wind  Temp Month   Day
+## [1,] FALSE   FALSE FALSE FALSE FALSE FALSE
+## [2,] FALSE   FALSE FALSE FALSE FALSE FALSE
+## [3,] FALSE   FALSE FALSE FALSE FALSE FALSE
+## [4,] FALSE   FALSE FALSE FALSE FALSE FALSE
+## [5,]  TRUE    TRUE FALSE FALSE FALSE FALSE
+## [6,] FALSE    TRUE FALSE FALSE FALSE FALSE</code></pre>
+<ul>
+<li>Computing the sum of <code>is.na(airquality)</code> tells us how many missing values there are in this dataset.</li>
+</ul>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb56-1" data-line-number="1"><span class="kw">sum</span>( <span class="kw">is.na</span>(airquality) )  <span class="co">## 44 missing observations in total</span></a></code></pre></div>
+<pre><code>## [1] 44</code></pre>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" data-line-number="1"><span class="kw">dim</span>( airquality )  <span class="co">## Dataset has a total of 153 x 6 = 918 observations</span></a></code></pre></div>
+<pre><code>## [1] 153   6</code></pre>
+<hr />
+<ul>
+<li>Complete Case Analysis or Listwise Deletion.</li>
+</ul>
 </div>
-<div id="preface" class="section level1 unnumbered">
-<h1>Preface</h1>
-<p>This will contain some of the course notes for Biostatistics 629, Winter 2021.</p>
+<div id="multiple-imputation" class="section level2">
+<h2><span class="header-section-number">2.2</span> Multiple Imputation</h2>
+<ul>
+<li>To summarize, <strong>multiple imputation</strong> consists of the following steps:
+<ol style="list-style-type: decimal">
+<li><p>Create <span class="math inline">\(K\)</span> different “complete datasets” which contain no missing data.</p></li>
+<li><p>For each of these <span class="math inline">\(K\)</span> complete datasets, compute the estimates of interest.</p></li>
+<li><p>“Pool” these separate estimates to get a final estimate.</p></li>
+</ol></li>
+</ul>
+<hr />
+<ul>
+<li>The nice thing about multiple imputation is that you can always
+use your original analysis approach.
+<ul>
+<li>That is, you can just apply your original analysis method to each of the <span class="math inline">\(K\)</span> complete datasets.</li>
+</ul></li>
+<li>The tricky part in multiple imputation is generating the <span class="math inline">\(K\)</span> complete datasets in a “valid” way.</li>
+</ul>
+<hr />
+</div>
+<div id="different-missing-data-mechanisms" class="section level2">
+<h2><span class="header-section-number">2.3</span> Different Missing Data Mechanisms</h2>
+<div id="missing-completely-at-random-mcar" class="section level3">
+<h3><span class="header-section-number">2.3.1</span> Missing Completely at Random (MCAR)</h3>
+</div>
+<div id="missing-at-random-mar" class="section level3">
+<h3><span class="header-section-number">2.3.2</span> Missing at Random (MAR)</h3>
+</div>
+<div id="missing-not-at-random-mnar" class="section level3">
+<h3><span class="header-section-number">2.3.3</span> Missing not at Random (MNAR)</h3>
 
+<div id="refs" class="references">
+<div>
+<p>Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
+<a href="mixed-models.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
-<a href="mixed-models.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

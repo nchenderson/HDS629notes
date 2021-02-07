@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-02-06" />
+<meta name="date" content="2021-02-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -155,7 +155,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1.2" data-path="missing-data.html"><a href="missing-data.html#other-direct-methods"><i class="fa fa-check"></i><b>2.1.2</b> Other “Direct” Methods</a></li>
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation"><i class="fa fa-check"></i><b>2.2</b> Multiple Imputation</a><ul>
-<li class="chapter" data-level="2.2.1" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation-with-mice"><i class="fa fa-check"></i><b>2.2.1</b> Multiple imputation with mice</a></li>
+<li class="chapter" data-level="2.2.1" data-path="missing-data.html"><a href="missing-data.html#short-overview-of-multiple-imputation"><i class="fa fa-check"></i><b>2.2.1</b> Short Overview of Multiple Imputation</a></li>
+<li class="chapter" data-level="2.2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation-with-mice"><i class="fa fa-check"></i><b>2.2.2</b> Multiple imputation with mice</a></li>
 </ul></li>
 <li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#different-missing-data-mechanisms"><i class="fa fa-check"></i><b>2.3</b> Different Missing Data Mechanisms</a><ul>
 <li class="chapter" data-level="2.3.1" data-path="missing-data.html"><a href="missing-data.html#missing-completely-at-random-mcar"><i class="fa fa-check"></i><b>2.3.1</b> Missing Completely at Random (MCAR)</a></li>
@@ -325,6 +326,8 @@ the values of the other variables.</p></li>
 </div>
 <div id="multiple-imputation" class="section level2">
 <h2><span class="header-section-number">2.2</span> Multiple Imputation</h2>
+<div id="short-overview-of-multiple-imputation" class="section level3">
+<h3><span class="header-section-number">2.2.1</span> Short Overview of Multiple Imputation</h3>
 <ul>
 <li>To summarize, <strong>multiple imputation</strong> consists of the following steps:
 <ol style="list-style-type: decimal">
@@ -342,8 +345,9 @@ use your original analysis approach.</p></li>
 <li><p>Luckily, there are a number of <strong>R</strong> packages that implement different ways of creating
 the <span class="math inline">\(K\)</span> <strong>imputed datasets</strong>.</p></li>
 </ul>
+</div>
 <div id="multiple-imputation-with-mice" class="section level3">
-<h3><span class="header-section-number">2.2.1</span> Multiple imputation with mice</h3>
+<h3><span class="header-section-number">2.2.2</span> Multiple imputation with mice</h3>
 <ul>
 <li>I will primarily focus on the <strong>mice</strong> package.
 <ul>
@@ -417,7 +421,60 @@ the 2nd imputation, 18 in the 3rd imputation, etc. ….</p></li>
 <li>For example, the 5th observation of the <code>Solar.R</code> variable has 131 in the 1st imputation, 285 in
 the 2nd imputation, 274 in the 3rd imputation, etc. ….</li>
 </ul>
-<hr />
+<div id="with-and-pool" class="section level4">
+<h4><span class="header-section-number">2.2.2.1</span> with() and pool()</h4>
+<ul>
+<li><p>You could use the components of <code>imputed.airs$imp</code> to directly fit <strong>5 separate regression</strong> on the multiply imputed datasets and then average the results.</p></li>
+<li><p>However, this is much easier if you just use the <strong>with</strong> function from <strong>mice</strong></p></li>
+</ul>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb80-1" data-line-number="1">air.multi.imputelm &lt;-<span class="st"> </span><span class="kw">with</span>(imputed.airs, <span class="kw">lm</span>( Ozone <span class="op">~</span><span class="st"> </span>Solar.R <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Temp))</a></code></pre></div>
+<ul>
+<li>This will produce <strong>5 different sets</strong> of estimates of the regression coefficients:</li>
+</ul>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb81-1" data-line-number="1"><span class="kw">summary</span>(air.multi.imputelm)</a></code></pre></div>
+<pre><code>## # A tibble: 20 x 6
+##    term        estimate std.error statistic  p.value  nobs
+##    &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;
+##  1 (Intercept) -90.3      19.1        -4.72 5.44e- 6   153
+##  2 Solar.R       0.0642    0.0199      3.22 1.56e- 3   153
+##  3 Wind         -2.31      0.550      -4.20 4.61e- 5   153
+##  4 Temp          1.83      0.212       8.64 8.13e-15   153
+##  5 (Intercept) -49.4      19.0        -2.60 1.02e- 2   153
+##  6 Solar.R       0.0548    0.0196      2.79 5.92e- 3   153
+##  7 Wind         -3.43      0.545      -6.28 3.44e- 9   153
+##  8 Temp          1.46      0.211       6.92 1.27e-10   153
+##  9 (Intercept) -56.7      19.0        -2.98 3.36e- 3   153
+## 10 Solar.R       0.0646    0.0199      3.25 1.42e- 3   153
+## 11 Wind         -3.22      0.546      -5.90 2.38e- 8   153
+## 12 Temp          1.50      0.211       7.09 4.97e-11   153
+## 13 (Intercept) -58.4      18.9        -3.09 2.41e- 3   153
+## 14 Solar.R       0.0687    0.0199      3.46 7.08e- 4   153
+## 15 Wind         -3.27      0.544      -6.01 1.35e- 8   153
+## 16 Temp          1.57      0.210       7.50 5.33e-12   153
+## 17 (Intercept) -58.9      22.2        -2.66 8.69e- 3   153
+## 18 Solar.R       0.0404    0.0231      1.75 8.27e- 2   153
+## 19 Wind         -3.31      0.636      -5.21 6.11e- 7   153
+## 20 Temp          1.64      0.245       6.68 4.37e-10   153</code></pre>
+<ul>
+<li>To get the “pooled estimates and standard errors” from these 5 different sets of regression coefficients
+use the <strong>pool</strong> function from <strong>mice</strong>:</li>
+</ul>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb83-1" data-line-number="1"><span class="kw">summary</span>( <span class="kw">pool</span>(air.multi.imputelm) )</a></code></pre></div>
+<pre><code>##          term     estimate   std.error statistic       df      p.value
+## 1 (Intercept) -62.73141323 26.25695768 -2.389135 16.63162 2.903387e-02
+## 2     Solar.R   0.05855766  0.02400718  2.439173 36.55628 1.969933e-02
+## 3        Wind  -3.10764673  0.75290758 -4.127527 16.76039 7.227036e-04
+## 4        Temp   1.60026617  0.27155700  5.892929 23.89788 4.511087e-06</code></pre>
+<ul>
+<li><p>The pooled <strong>“final estimates”</strong> of the regression coefficients are just the <strong>means</strong> of the estimated regression
+coefficients from the 5 multiply imputed datasets.</p></li>
+<li><p>The pooled <strong>standard error</strong> for the <span class="math inline">\(j^{th}\)</span> regression coefficient is given by
+<span class="math display">\[\begin{equation}
+\textrm{pooled } SE_{j} = \sqrt{\frac{1}{K}\sum_{k=1}^{K} SE_{jk}}, 
+\end{equation}\]</span>
+where <span class="math inline">\(SE_{jk}\)</span> is the standard error for the <span class="math inline">\(j^{th}\)</span> <strong>regression coefficient</strong> from the <span class="math inline">\(k^{th}\)</span> <strong>complete dataset</strong>.</p></li>
+</ul>
+</div>
 </div>
 </div>
 <div id="different-missing-data-mechanisms" class="section level2">

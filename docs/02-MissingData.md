@@ -183,6 +183,8 @@ round(air.lm2$coefficients, 3)
 
 ## Multiple Imputation
 
+### Short Overview of Multiple Imputation
+
 * To summarize, **multiple imputation** consists of the following steps:
      1. Create $K$ different "complete datasets" which contain no missing data.
      
@@ -304,8 +306,71 @@ head(imputed.airs$imp$Solar.R)
 * For example, the 5th observation of the `Solar.R` variable has 131 in the 1st imputation, 285 in
 the 2nd imputation, 274 in the 3rd imputation, etc. ....
 
----
+#### with() and pool()
 
+* You could use the components of `imputed.airs$imp` to directly fit **5 separate regression** on the multiply imputed datasets and then average the results.
+
+* However, this is much easier if you just use the **with** function from **mice**
+
+```r
+air.multi.imputelm <- with(imputed.airs, lm( Ozone ~ Solar.R + Wind + Temp))
+```
+
+* This will produce **5 different sets** of estimates of the regression coefficients:
+
+```r
+summary(air.multi.imputelm)
+```
+
+```
+## # A tibble: 20 x 6
+##    term        estimate std.error statistic  p.value  nobs
+##    <chr>          <dbl>     <dbl>     <dbl>    <dbl> <int>
+##  1 (Intercept) -90.3      19.1        -4.72 5.44e- 6   153
+##  2 Solar.R       0.0642    0.0199      3.22 1.56e- 3   153
+##  3 Wind         -2.31      0.550      -4.20 4.61e- 5   153
+##  4 Temp          1.83      0.212       8.64 8.13e-15   153
+##  5 (Intercept) -49.4      19.0        -2.60 1.02e- 2   153
+##  6 Solar.R       0.0548    0.0196      2.79 5.92e- 3   153
+##  7 Wind         -3.43      0.545      -6.28 3.44e- 9   153
+##  8 Temp          1.46      0.211       6.92 1.27e-10   153
+##  9 (Intercept) -56.7      19.0        -2.98 3.36e- 3   153
+## 10 Solar.R       0.0646    0.0199      3.25 1.42e- 3   153
+## 11 Wind         -3.22      0.546      -5.90 2.38e- 8   153
+## 12 Temp          1.50      0.211       7.09 4.97e-11   153
+## 13 (Intercept) -58.4      18.9        -3.09 2.41e- 3   153
+## 14 Solar.R       0.0687    0.0199      3.46 7.08e- 4   153
+## 15 Wind         -3.27      0.544      -6.01 1.35e- 8   153
+## 16 Temp          1.57      0.210       7.50 5.33e-12   153
+## 17 (Intercept) -58.9      22.2        -2.66 8.69e- 3   153
+## 18 Solar.R       0.0404    0.0231      1.75 8.27e- 2   153
+## 19 Wind         -3.31      0.636      -5.21 6.11e- 7   153
+## 20 Temp          1.64      0.245       6.68 4.37e-10   153
+```
+
+* To get the "pooled estimates and standard errors" from these 5 different sets of regression coefficients
+use the **pool** function from **mice**:
+
+```r
+summary( pool(air.multi.imputelm) )
+```
+
+```
+##          term     estimate   std.error statistic       df      p.value
+## 1 (Intercept) -62.73141323 26.25695768 -2.389135 16.63162 2.903387e-02
+## 2     Solar.R   0.05855766  0.02400718  2.439173 36.55628 1.969933e-02
+## 3        Wind  -3.10764673  0.75290758 -4.127527 16.76039 7.227036e-04
+## 4        Temp   1.60026617  0.27155700  5.892929 23.89788 4.511087e-06
+```
+
+* The pooled **"final estimates"** of the regression coefficients are just the **means** of the estimated regression
+coefficients from the 5 multiply imputed datasets.
+
+* The pooled **standard error** for the $j^{th}$ regression coefficient is given by
+\begin{equation}
+\textrm{pooled } SE_{j} = \sqrt{\frac{1}{K}\sum_{k=1}^{K} SE_{jk}}, 
+\end{equation}
+where $SE_{jk}$ is the standard error for the $j^{th}$ **regression coefficient** from the $k^{th}$ **complete dataset**.
 
 ## Different Missing Data Mechanisms
 

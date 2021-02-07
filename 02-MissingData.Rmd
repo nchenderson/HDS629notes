@@ -104,6 +104,8 @@ round(air.lm2$coefficients, 3)
 
 ## Multiple Imputation
 
+### Short Overview of Multiple Imputation
+
 * To summarize, **multiple imputation** consists of the following steps:
      1. Create $K$ different "complete datasets" which contain no missing data.
      
@@ -183,8 +185,34 @@ head(imputed.airs$imp$Solar.R)
 * For example, the 5th observation of the `Solar.R` variable has 131 in the 1st imputation, 285 in
 the 2nd imputation, 274 in the 3rd imputation, etc. ....
 
----
+#### with() and pool()
 
+* You could use the components of `imputed.airs$imp` to directly fit **5 separate regression** on the multiply imputed datasets and then average the results.
+
+* However, this is much easier if you just use the **with** function from **mice**
+```{r, echo=TRUE}
+air.multi.imputelm <- with(imputed.airs, lm( Ozone ~ Solar.R + Wind + Temp))
+```
+
+* This will produce **5 different sets** of estimates of the regression coefficients:
+```{r, echo=TRUE}
+summary(air.multi.imputelm)
+```
+
+* To get the "pooled estimates and standard errors" from these 5 different sets of regression coefficients
+use the **pool** function from **mice**:
+```{r, echo=TRUE}
+summary( pool(air.multi.imputelm) )
+```
+
+* The pooled **"final estimates"** of the regression coefficients are just the **means** of the estimated regression
+coefficients from the 5 multiply imputed datasets.
+
+* The pooled **standard error** for the $j^{th}$ regression coefficient is given by
+\begin{equation}
+\textrm{pooled } SE_{j} = \sqrt{\frac{1}{K}\sum_{k=1}^{K} SE_{jk}}, 
+\end{equation}
+where $SE_{jk}$ is the standard error for the $j^{th}$ **regression coefficient** from the $k^{th}$ **complete dataset**.
 
 ## Different Missing Data Mechanisms
 

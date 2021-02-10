@@ -132,7 +132,8 @@ sum( is.na(complete.air) )  # This should be zero
 ## [1] 0
 ```
 
-* Because our regression model only uses the variables 
+<!--* Because our regression model only uses the variables `Ozone`, `Solar.R`, `Wind`, and `Temp`,
+we -->
 
 
 ---
@@ -143,8 +144,7 @@ sum( is.na(complete.air) )  # This should be zero
 air.lm2 <- lm( Ozone ~ Solar.R + Wind + Temp, data = complete.air )
 ```
 
-* The estimated regression coefficients **should be the same** when using 
-the "incomplete dataset" `airquality` as when using the "complete dataset" `complete.air`
+* Because **R** does a complete-case analysis as default, the estimated regression coefficients **should be the same** when using the "incomplete dataset" `airquality` as when using the "complete dataset" `complete.air`
 
 ```r
 ## The estimated regression coefficients should be the same
@@ -170,6 +170,9 @@ round(air.lm2$coefficients, 3)
 * In general, doing a **complete-case analysis** is **not advisable**.
     + A complete-case analysis should really only be used if you are confident that the data are missing 
       completely at random (MCAR).
+      
+    + Roughly speaking, MCAR means that the probability of having a missing value is not related to
+    **missing or observed** values of the data.
 
 ---
 
@@ -178,6 +181,8 @@ round(air.lm2$coefficients, 3)
     
     2. **Regression imputation**. Missing values are replaced by a regression prediction from 
     the values of the other variables.
+
+* Unless the data are **missing completely at random** (MCAR), each of these methods will produce biased estimates of the parameters of interest and generate incorrect standard errors.
 
 
 ---
@@ -197,9 +202,9 @@ round(air.lm2$coefficients, 3)
 ---
 
 * The nice thing about multiple imputation is that you can always
-use your original analysis approach. 
+use your **original analysis approach**. 
 
-* That is, you can just apply your original analysis method to each of the $K$ complete datasets.
+* That is, you can just apply your original analysis method to each of the $K$ **complete datasets**.
 
 * The complicated part in multiple imputation is generating the $K$ complete datasets in a **"valid"** way.
 
@@ -451,12 +456,19 @@ round(colMeans(BetaMat), 3)  # compare with the results from using the "with" fu
 * Let $\mathbf{Z}_{mis}$ denote the collection of missing observations and $\mathbf{Z}_{obs}$
 the collection of observed values, and let $\mathbf{Z} = (\mathbf{Z}_{obs}, \mathbf{Z}_{mis})$.
 
+* Let the vector $\mathbf{Z}_{j} = (Z_{1j}, \ldots, Z_{nj})$ denote all the observations
+from variable $j$.
+
 * The **basic idea behind** multiple imputation is to, in some way, generate samples $\mathbf{Z}_{mis}^{(1)}, \ldots, \mathbf{Z}_{mis}^{(K)}$ from a flexible probability model $p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})$
     + $p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})$ represents the conditional distribution of $\mathbf{Z}_{mis}$ given the observed $\mathbf{Z}_{obs}$.
 
 ---
 
-* The parameter of interest 
+* A valid estimate $\hat{\theta}$ of the parameter of interest $\theta$ can often be thought of as
+a posterior mean:
+    + $\hat{\theta} = E(\theta|\mathbf{Z}_{obs})$ is the expectation of $\theta$ given the observed data $\mathbf{Z}_{obs}$.
+
+* Then, $\hat{\theta}$ can be expressed as:
 \begin{eqnarray}
 \hat{\theta} &=& E( \theta |\mathbf{Z}_{obs}  )
 = \int E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{Z}_{mis} \Big\} p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs}) d\mathbf{Z}_{mis} \nonumber \\ 
@@ -465,14 +477,17 @@ the collection of observed values, and let $\mathbf{Z} = (\mathbf{Z}_{obs}, \mat
 
 ---
 
-* There are two main approaches for setting up a model for which you can sample $\mathbf{Z}_{mis}$ from the conditional
-distribution of $\mathbf{Z}_{mis}|\mathbf{Z}_{obs}$.
+* There are two main approaches for setting up a model for the **conditional distribution** of $\mathbf{Z}_{mis}|\mathbf{Z}_{obs}$.
 
 * One approach is to directly specify a **full joint model** for $\mathbf{Z} = (\mathbf{Z}_{mis}, \mathbf{Z}_{obs})$
-     + For example, assume that $\mathbf{Z}$ follows a multivariate a normal distribution.
+     + For example, you could assume that $\mathbf{Z}$ follows a multivariate a normal distribution.
+     
+     + This approach is not so straightforward when you have variables of **mixed type**: some continuous,some
+     binary, some categorical, etc. ...
      
 * The **fully conditional specification** (FCS) approach specifies the distribution of each variable $\mathbf{Z}_{j}$ conditional on the remaining variables $\mathbf{Z}_{-j}$.
     + The FCS approach is the one used by **mice**.
+    
 
 ---
 
@@ -541,7 +556,7 @@ head(ohio.wide)
 
 ---
 
-* **reshape** from base **R** can also be used to go from long to wide
+* **reshape** from base **R** can also be used to go from **long to wide**
 
 ```r
 # Example of using reshape
@@ -759,16 +774,43 @@ round(colMeans(BetaMat), 4)
 ## [1] -3.6032 -0.1138  0.2501
 ```
 
-* Compare these regression coefficients with those from the complete-case analysis.
+* Compare the above regression coefficients with those from the complete-case analysis.
 
 ## Different Missing Data Mechanisms
 
+* For this section, we will consider the setup where we have **$n$ "observations" and $q$ "variables"**:
+denoted by $Z_{i1}, \ldots, Z_{iq}$, for $i = 1, \ldots, n$.
+
+* Let $\mathbf{Z}_{mis}$ denote the collection of missing observations and $\mathbf{Z}_{obs}$
+the collection of observed values, and let $\mathbf{Z} = (\mathbf{Z}_{obs}, \mathbf{Z}_{mis})$.
+
+* The variables $R_{ij}$ are defined as
+\begin{equation}
+R_{ij} = 
+\begin{cases}
+1 & \textrm{ if } Z_{ij} \textrm{ is missing } \\
+0 & \textrm{ if } Z_{ij} \textrm{ is observed } 
+\end{cases}
+\end{equation}
+
 ### Missing Completely at Random (MCAR)
+
+* The **missingness mechanism** is said to be MCAR if
+\begin{equation}
+P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis}) = P(R_{ij}=1)
+\end{equation}
 
 ### Missing at Random (MAR)
 
+* The **missingness mechanism** is said to be MAR
+\begin{equation}
+P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis}) = P(R_{ij}=1|\mathbf{Z}_{obs})
+\end{equation}
+
 ### Missing not at Random (MNAR)
 
+* If the **missingness mechanism** is classified as **missing not at random** (MNAR), the probability 
+$P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis})$ cannot be factorized into a simpler form.
 
 
 

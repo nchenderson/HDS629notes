@@ -353,7 +353,7 @@ at the $j^{th}$ follow-up time.
 P( R_{ij} = 1| \textrm{smoke}_{i}) 
 = \begin{cases} 
 0.05 & \textrm{ if } \textrm{smoke}_{i} = 0 \\
-0.25 & \textrm{ if } \textrm{smoke}_{i} = 1
+0.3 & \textrm{ if } \textrm{smoke}_{i} = 1
 \end{cases}
 (\#eq:missingdat-ohio)
 \end{equation}
@@ -366,13 +366,13 @@ set.seed(1357)
 
 * To generate missing values according to assumption \@ref(eq:missingdat-ohio), we can use the following R code:
     + We will call the new data frame `ohio.wide.miss`
-```{r, echo=TRUE}
+```{r, echo=TRUE, warning=FALSE}
 ohio.wide.miss <- ohio.wide
 m <- nrow(ohio.wide.miss) ## number of individuals in study
 for(k in 1:m) {
     resp.values <- ohio.wide[k, 3:6]  # values of resp for individual k
     if(ohio.wide[k,2] == 1) {  # if smoke = 1
-        Rij <- sample(0:1, size=4, replace=TRUE, prob=c(0.75, 0.25))
+        Rij <- sample(0:1, size=4, replace=TRUE, prob=c(0.7, 0.3))
     } else { # if smoke = 0
         Rij <- sample(0:1, size=4, replace=TRUE, prob=c(0.95, 0.05))
     }
@@ -405,6 +405,7 @@ ohio.miss$age[ohio.miss$age == "age8"] <- -1
 ohio.miss$age[ohio.miss$age == "age9"] <- 0
 ohio.miss$age[ohio.miss$age == "age10"] <- 1
 ohio.miss <- ohio.miss[order(ohio.miss$id),]  ## sort everything according to id
+ohio.miss$age <- as.numeric(ohio.miss$age)
 head(ohio.miss)
 ```
 
@@ -413,7 +414,7 @@ head(ohio.miss)
 ## Complete case analysis
 
 library(lme4)
-ohio.cca <- glmer(resp ~ age + smoke + (1 | id), data = ohio, family = binomial)
+ohio.cca <- glmer(resp ~ age + smoke + (1 | id), data = ohio.miss, family = binomial)
 
 # Now look at estimated regression coefficients for complete case analysis:
 round(coef(summary(ohio.cca)), 4)
@@ -421,9 +422,9 @@ round(coef(summary(ohio.cca)), 4)
 
 ---
 
-* Now, let's use **mice** to create several **"completed versions"** of `ohio.wide.miss`
+* Now, let's use **mice** to create 50 **"completed versions"** of `ohio.wide.miss`
 ```{r, echo=TRUE}
-imputed.ohio <- mice(ohio.wide.miss, print=FALSE, seed=101)
+imputed.ohio <- mice(ohio.wide.miss, m=50, print=FALSE, seed=101)
 ```
 
 * For the case of **longitudinal data**, we probably want to actually extract each
@@ -436,7 +437,7 @@ completed.ohio <- mice::complete(imputed.ohio, "long")
 head(completed.ohio)
 ```
 
-* `completed.ohio` will be a **dataframe** that has **5 times** as many rows as the original `ohio.wide` data frame
+* `completed.ohio` will be a **dataframe** that has **50 times** as many rows as the original `ohio.wide` data frame
 ```{r, echo=TRUE}
 dim(ohio.wide)
 dim(completed.ohio)
@@ -447,6 +448,28 @@ dim(completed.ohio)
 table( completed.ohio$.imp ) # Tabulate impute indicators
 ```
 
+---
+
+```{r, echo=TRUE}
+BetaMat <- matrix(NA, nrow=50, ncol=3)
+for(k in 1:50) {
+    tmp.ohio <- completed.ohio[completed.ohio$.imp==k,-c(1,2)]
+    
+    tmp.ohio.long <- gather(tmp.ohio, age, resp, age7:age10)
+    tmp.ohio.long$age[tmp.ohio.long$age == "age7"] <- -2
+    tmp.ohio.long$age[tmp.ohio.long$age == "age8"] <- -1
+    tmp.ohio.long$age[tmp.ohio.long$age == "age9"] <- 0
+    tmp.ohio.long$age[tmp.ohio.long$age == "age10"] <- 1
+    tmp.ohio.long$age <- as.numeric(tmp.ohio.long$age)
+    
+    ohio.tmpfit <- glmer(resp ~ age + smoke + (1 | id), data = tmp.ohio.long, 
+                         family = binomial)
+    BetaMat[k,] <- coef(summary(ohio.tmpfit))[,1]
+}
+round(colMeans(BetaMat), 4)
+```
+
+* Compare these regression coefficients with those from the complete-case analysis.
 
 ## Different Missing Data Mechanisms
 

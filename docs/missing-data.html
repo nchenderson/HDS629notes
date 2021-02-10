@@ -632,7 +632,7 @@ at the <span class="math inline">\(j^{th}\)</span> follow-up time.</p></li>
 P( R_{ij} = 1| \textrm{smoke}_{i}) 
 = \begin{cases} 
 0.05 &amp; \textrm{ if } \textrm{smoke}_{i} = 0 \\
-0.25 &amp; \textrm{ if } \textrm{smoke}_{i} = 1
+0.3 &amp; \textrm{ if } \textrm{smoke}_{i} = 1
 \end{cases}
 \tag{2.1}
 \end{equation}\]</span></p></li>
@@ -649,7 +649,7 @@ P( R_{ij} = 1| \textrm{smoke}_{i})
 <a class="sourceLine" id="cb99-3" data-line-number="3"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>m) {</a>
 <a class="sourceLine" id="cb99-4" data-line-number="4">    resp.values &lt;-<span class="st"> </span>ohio.wide[k, <span class="dv">3</span><span class="op">:</span><span class="dv">6</span>]  <span class="co"># values of resp for individual k</span></a>
 <a class="sourceLine" id="cb99-5" data-line-number="5">    <span class="cf">if</span>(ohio.wide[k,<span class="dv">2</span>] <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) {  <span class="co"># if smoke = 1</span></a>
-<a class="sourceLine" id="cb99-6" data-line-number="6">        Rij &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>, <span class="dt">prob=</span><span class="kw">c</span>(<span class="fl">0.75</span>, <span class="fl">0.25</span>))</a>
+<a class="sourceLine" id="cb99-6" data-line-number="6">        Rij &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>, <span class="dt">prob=</span><span class="kw">c</span>(<span class="fl">0.7</span>, <span class="fl">0.3</span>))</a>
 <a class="sourceLine" id="cb99-7" data-line-number="7">    } <span class="cf">else</span> { <span class="co"># if smoke = 0</span></a>
 <a class="sourceLine" id="cb99-8" data-line-number="8">        Rij &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>, <span class="dt">prob=</span><span class="kw">c</span>(<span class="fl">0.95</span>, <span class="fl">0.05</span>))</a>
 <a class="sourceLine" id="cb99-9" data-line-number="9">    }</a>
@@ -672,7 +672,7 @@ P( R_{ij} = 1| \textrm{smoke}_{i})
 <li><code>ohio.wide.miss</code> now has 257 missing entries</li>
 </ul>
 <div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb102-1" data-line-number="1"><span class="kw">sum</span>( <span class="kw">is.na</span>(ohio.wide.miss))</a></code></pre></div>
-<pre><code>## [1] 257</code></pre>
+<pre><code>## [1] 296</code></pre>
 <hr />
 <ul>
 <li><p>Before using <strong>multiple imputation</strong> with <code>ohio.wide.miss</code>, let’s look at the regression coefficient
@@ -685,7 +685,8 @@ estimates that would be obtained with a <strong>complete case analysis</strong>.
 <a class="sourceLine" id="cb104-4" data-line-number="4">ohio.miss<span class="op">$</span>age[ohio.miss<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age9&quot;</span>] &lt;-<span class="st"> </span><span class="dv">0</span></a>
 <a class="sourceLine" id="cb104-5" data-line-number="5">ohio.miss<span class="op">$</span>age[ohio.miss<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age10&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></a>
 <a class="sourceLine" id="cb104-6" data-line-number="6">ohio.miss &lt;-<span class="st"> </span>ohio.miss[<span class="kw">order</span>(ohio.miss<span class="op">$</span>id),]  <span class="co">## sort everything according to id</span></a>
-<a class="sourceLine" id="cb104-7" data-line-number="7"><span class="kw">head</span>(ohio.miss)</a></code></pre></div>
+<a class="sourceLine" id="cb104-7" data-line-number="7">ohio.miss<span class="op">$</span>age &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(ohio.miss<span class="op">$</span>age)</a>
+<a class="sourceLine" id="cb104-8" data-line-number="8"><span class="kw">head</span>(ohio.miss)</a></code></pre></div>
 <pre><code>##      id smoke age resp
 ## 1     0     0  -2    0
 ## 538   0     0  -1    0
@@ -699,19 +700,19 @@ estimates that would be obtained with a <strong>complete case analysis</strong>.
 <div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb106-1" data-line-number="1"><span class="co">## Complete case analysis</span></a>
 <a class="sourceLine" id="cb106-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb106-3" data-line-number="3"><span class="kw">library</span>(lme4)</a>
-<a class="sourceLine" id="cb106-4" data-line-number="4">ohio.cca &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> ohio, <span class="dt">family =</span> binomial)</a>
+<a class="sourceLine" id="cb106-4" data-line-number="4">ohio.cca &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> ohio.miss, <span class="dt">family =</span> binomial)</a>
 <a class="sourceLine" id="cb106-5" data-line-number="5"></a>
 <a class="sourceLine" id="cb106-6" data-line-number="6"><span class="co"># Now look at estimated regression coefficients for complete case analysis:</span></a>
 <a class="sourceLine" id="cb106-7" data-line-number="7"><span class="kw">round</span>(<span class="kw">coef</span>(<span class="kw">summary</span>(ohio.cca)), <span class="dv">4</span>)</a></code></pre></div>
-<pre><code>##             Estimate Std. Error  z value Pr(&gt;|z|)
-## (Intercept)  -3.3740      0.275 -12.2700   0.0000
-## age          -0.1768      0.068  -2.6007   0.0093
-## smoke         0.4148      0.287   1.4450   0.1485</code></pre>
+<pre><code>##             Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept)  -3.8009     0.4346 -8.7459   0.0000
+## age          -0.1580     0.0783 -2.0165   0.0437
+## smoke         0.2333     0.3402  0.6857   0.4929</code></pre>
 <hr />
 <ul>
-<li>Now, let’s use <strong>mice</strong> to create several <strong>“completed versions”</strong> of <code>ohio.wide.miss</code></li>
+<li>Now, let’s use <strong>mice</strong> to create 50 <strong>“completed versions”</strong> of <code>ohio.wide.miss</code></li>
 </ul>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb108-1" data-line-number="1">imputed.ohio &lt;-<span class="st"> </span><span class="kw">mice</span>(ohio.wide.miss, <span class="dt">print=</span><span class="ot">FALSE</span>, <span class="dt">seed=</span><span class="dv">101</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb108-1" data-line-number="1">imputed.ohio &lt;-<span class="st"> </span><span class="kw">mice</span>(ohio.wide.miss, <span class="dt">m=</span><span class="dv">50</span>, <span class="dt">print=</span><span class="ot">FALSE</span>, <span class="dt">seed=</span><span class="dv">101</span>)</a></code></pre></div>
 <ul>
 <li>For the case of <strong>longitudinal data</strong>, we probably want to actually extract each
 complete dataset.
@@ -730,19 +731,44 @@ complete dataset.
 ## 5    1   5  4     0    0    0    0     0
 ## 6    1   6  5     0    0    0    0     0</code></pre>
 <ul>
-<li><code>completed.ohio</code> will be a <strong>dataframe</strong> that has <strong>5 times</strong> as many rows as the original <code>ohio.wide</code> data frame</li>
+<li><code>completed.ohio</code> will be a <strong>dataframe</strong> that has <strong>50 times</strong> as many rows as the original <code>ohio.wide</code> data frame</li>
 </ul>
 <div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb111-1" data-line-number="1"><span class="kw">dim</span>(ohio.wide)</a></code></pre></div>
 <pre><code>## [1] 537   6</code></pre>
 <div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb113-1" data-line-number="1"><span class="kw">dim</span>(completed.ohio)</a></code></pre></div>
-<pre><code>## [1] 2685    8</code></pre>
+<pre><code>## [1] 26850     8</code></pre>
 <ul>
 <li>The variable <code>.imp</code> in <code>completed.ohio</code> is an indicator of which of the five “imputed datasets” this is from:</li>
 </ul>
 <div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb115-1" data-line-number="1"><span class="kw">table</span>( completed.ohio<span class="op">$</span>.imp ) <span class="co"># Tabulate impute indicators</span></a></code></pre></div>
 <pre><code>## 
-##   1   2   3   4   5 
-## 537 537 537 537 537</code></pre>
+##   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 
+## 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 
+##  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40 
+## 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 
+##  41  42  43  44  45  46  47  48  49  50 
+## 537 537 537 537 537 537 537 537 537 537</code></pre>
+<hr />
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb117-1" data-line-number="1">BetaMat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">nrow=</span><span class="dv">50</span>, <span class="dt">ncol=</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb117-2" data-line-number="2"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">50</span>) {</a>
+<a class="sourceLine" id="cb117-3" data-line-number="3">    tmp.ohio &lt;-<span class="st"> </span>completed.ohio[completed.ohio<span class="op">$</span>.imp<span class="op">==</span>k,<span class="op">-</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]</a>
+<a class="sourceLine" id="cb117-4" data-line-number="4">    </a>
+<a class="sourceLine" id="cb117-5" data-line-number="5">    tmp.ohio.long &lt;-<span class="st"> </span><span class="kw">gather</span>(tmp.ohio, age, resp, age7<span class="op">:</span>age10)</a>
+<a class="sourceLine" id="cb117-6" data-line-number="6">    tmp.ohio.long<span class="op">$</span>age[tmp.ohio.long<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age7&quot;</span>] &lt;-<span class="st"> </span><span class="dv">-2</span></a>
+<a class="sourceLine" id="cb117-7" data-line-number="7">    tmp.ohio.long<span class="op">$</span>age[tmp.ohio.long<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age8&quot;</span>] &lt;-<span class="st"> </span><span class="dv">-1</span></a>
+<a class="sourceLine" id="cb117-8" data-line-number="8">    tmp.ohio.long<span class="op">$</span>age[tmp.ohio.long<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age9&quot;</span>] &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb117-9" data-line-number="9">    tmp.ohio.long<span class="op">$</span>age[tmp.ohio.long<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age10&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb117-10" data-line-number="10">    tmp.ohio.long<span class="op">$</span>age &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(tmp.ohio.long<span class="op">$</span>age)</a>
+<a class="sourceLine" id="cb117-11" data-line-number="11">    </a>
+<a class="sourceLine" id="cb117-12" data-line-number="12">    ohio.tmpfit &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> tmp.ohio.long, </a>
+<a class="sourceLine" id="cb117-13" data-line-number="13">                         <span class="dt">family =</span> binomial)</a>
+<a class="sourceLine" id="cb117-14" data-line-number="14">    BetaMat[k,] &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.tmpfit))[,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb117-15" data-line-number="15">}</a>
+<a class="sourceLine" id="cb117-16" data-line-number="16"><span class="kw">round</span>(<span class="kw">colMeans</span>(BetaMat), <span class="dv">4</span>)</a></code></pre></div>
+<pre><code>## [1] -3.6032 -0.1138  0.2501</code></pre>
+<ul>
+<li>Compare these regression coefficients with those from the complete-case analysis.</li>
+</ul>
 </div>
 <div id="different-missing-data-mechanisms" class="section level2">
 <h2><span class="header-section-number">2.5</span> Different Missing Data Mechanisms</h2>

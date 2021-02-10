@@ -565,7 +565,7 @@ at the $j^{th}$ follow-up time.
 P( R_{ij} = 1| \textrm{smoke}_{i}) 
 = \begin{cases} 
 0.05 & \textrm{ if } \textrm{smoke}_{i} = 0 \\
-0.25 & \textrm{ if } \textrm{smoke}_{i} = 1
+0.3 & \textrm{ if } \textrm{smoke}_{i} = 1
 \end{cases}
 (\#eq:missingdat-ohio)
 \end{equation}
@@ -583,7 +583,7 @@ m <- nrow(ohio.wide.miss) ## number of individuals in study
 for(k in 1:m) {
     resp.values <- ohio.wide[k, 3:6]  # values of resp for individual k
     if(ohio.wide[k,2] == 1) {  # if smoke = 1
-        Rij <- sample(0:1, size=4, replace=TRUE, prob=c(0.75, 0.25))
+        Rij <- sample(0:1, size=4, replace=TRUE, prob=c(0.7, 0.3))
     } else { # if smoke = 0
         Rij <- sample(0:1, size=4, replace=TRUE, prob=c(0.95, 0.05))
     }
@@ -620,7 +620,7 @@ sum( is.na(ohio.wide.miss))
 ```
 
 ```
-## [1] 257
+## [1] 296
 ```
 
 ---
@@ -637,6 +637,7 @@ ohio.miss$age[ohio.miss$age == "age8"] <- -1
 ohio.miss$age[ohio.miss$age == "age9"] <- 0
 ohio.miss$age[ohio.miss$age == "age10"] <- 1
 ohio.miss <- ohio.miss[order(ohio.miss$id),]  ## sort everything according to id
+ohio.miss$age <- as.numeric(ohio.miss$age)
 head(ohio.miss)
 ```
 
@@ -656,25 +657,25 @@ head(ohio.miss)
 ## Complete case analysis
 
 library(lme4)
-ohio.cca <- glmer(resp ~ age + smoke + (1 | id), data = ohio, family = binomial)
+ohio.cca <- glmer(resp ~ age + smoke + (1 | id), data = ohio.miss, family = binomial)
 
 # Now look at estimated regression coefficients for complete case analysis:
 round(coef(summary(ohio.cca)), 4)
 ```
 
 ```
-##             Estimate Std. Error  z value Pr(>|z|)
-## (Intercept)  -3.3740      0.275 -12.2700   0.0000
-## age          -0.1768      0.068  -2.6007   0.0093
-## smoke         0.4148      0.287   1.4450   0.1485
+##             Estimate Std. Error z value Pr(>|z|)
+## (Intercept)  -3.8009     0.4346 -8.7459   0.0000
+## age          -0.1580     0.0783 -2.0165   0.0437
+## smoke         0.2333     0.3402  0.6857   0.4929
 ```
 
 ---
 
-* Now, let's use **mice** to create several **"completed versions"** of `ohio.wide.miss`
+* Now, let's use **mice** to create 50 **"completed versions"** of `ohio.wide.miss`
 
 ```r
-imputed.ohio <- mice(ohio.wide.miss, print=FALSE, seed=101)
+imputed.ohio <- mice(ohio.wide.miss, m=50, print=FALSE, seed=101)
 ```
 
 * For the case of **longitudinal data**, we probably want to actually extract each
@@ -698,7 +699,7 @@ head(completed.ohio)
 ## 6    1   6  5     0    0    0    0     0
 ```
 
-* `completed.ohio` will be a **dataframe** that has **5 times** as many rows as the original `ohio.wide` data frame
+* `completed.ohio` will be a **dataframe** that has **50 times** as many rows as the original `ohio.wide` data frame
 
 ```r
 dim(ohio.wide)
@@ -713,7 +714,7 @@ dim(completed.ohio)
 ```
 
 ```
-## [1] 2685    8
+## [1] 26850     8
 ```
 
 * The variable `.imp` in `completed.ohio` is an indicator of which of the five "imputed datasets" this is from:
@@ -724,10 +725,41 @@ table( completed.ohio$.imp ) # Tabulate impute indicators
 
 ```
 ## 
-##   1   2   3   4   5 
-## 537 537 537 537 537
+##   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 
+## 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 
+##  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40 
+## 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 
+##  41  42  43  44  45  46  47  48  49  50 
+## 537 537 537 537 537 537 537 537 537 537
 ```
 
+---
+
+
+```r
+BetaMat <- matrix(NA, nrow=50, ncol=3)
+for(k in 1:50) {
+    tmp.ohio <- completed.ohio[completed.ohio$.imp==k,-c(1,2)]
+    
+    tmp.ohio.long <- gather(tmp.ohio, age, resp, age7:age10)
+    tmp.ohio.long$age[tmp.ohio.long$age == "age7"] <- -2
+    tmp.ohio.long$age[tmp.ohio.long$age == "age8"] <- -1
+    tmp.ohio.long$age[tmp.ohio.long$age == "age9"] <- 0
+    tmp.ohio.long$age[tmp.ohio.long$age == "age10"] <- 1
+    tmp.ohio.long$age <- as.numeric(tmp.ohio.long$age)
+    
+    ohio.tmpfit <- glmer(resp ~ age + smoke + (1 | id), data = tmp.ohio.long, 
+                         family = binomial)
+    BetaMat[k,] <- coef(summary(ohio.tmpfit))[,1]
+}
+round(colMeans(BetaMat), 4)
+```
+
+```
+## [1] -3.6032 -0.1138  0.2501
+```
+
+* Compare these regression coefficients with those from the complete-case analysis.
 
 ## Different Missing Data Mechanisms
 

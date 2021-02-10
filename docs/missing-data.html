@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-02-07" />
+<meta name="date" content="2021-02-09" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -158,10 +158,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.2.1" data-path="missing-data.html"><a href="missing-data.html#short-overview-of-multiple-imputation"><i class="fa fa-check"></i><b>2.2.1</b> Short Overview of Multiple Imputation</a></li>
 <li class="chapter" data-level="2.2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation-with-mice"><i class="fa fa-check"></i><b>2.2.2</b> Multiple imputation with mice</a></li>
 </ul></li>
-<li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#different-missing-data-mechanisms"><i class="fa fa-check"></i><b>2.3</b> Different Missing Data Mechanisms</a><ul>
-<li class="chapter" data-level="2.3.1" data-path="missing-data.html"><a href="missing-data.html#missing-completely-at-random-mcar"><i class="fa fa-check"></i><b>2.3.1</b> Missing Completely at Random (MCAR)</a></li>
-<li class="chapter" data-level="2.3.2" data-path="missing-data.html"><a href="missing-data.html#missing-at-random-mar"><i class="fa fa-check"></i><b>2.3.2</b> Missing at Random (MAR)</a></li>
-<li class="chapter" data-level="2.3.3" data-path="missing-data.html"><a href="missing-data.html#missing-not-at-random-mnar"><i class="fa fa-check"></i><b>2.3.3</b> Missing not at Random (MNAR)</a></li>
+<li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#what-is-mice-doing"><i class="fa fa-check"></i><b>2.3</b> What is MICE doing?</a></li>
+<li class="chapter" data-level="2.4" data-path="missing-data.html"><a href="missing-data.html#longitudinal-data"><i class="fa fa-check"></i><b>2.4</b> Longitudinal Data</a></li>
+<li class="chapter" data-level="2.5" data-path="missing-data.html"><a href="missing-data.html#different-missing-data-mechanisms"><i class="fa fa-check"></i><b>2.5</b> Different Missing Data Mechanisms</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="missing-data.html"><a href="missing-data.html#missing-completely-at-random-mcar"><i class="fa fa-check"></i><b>2.5.1</b> Missing Completely at Random (MCAR)</a></li>
+<li class="chapter" data-level="2.5.2" data-path="missing-data.html"><a href="missing-data.html#missing-at-random-mar"><i class="fa fa-check"></i><b>2.5.2</b> Missing at Random (MAR)</a></li>
+<li class="chapter" data-level="2.5.3" data-path="missing-data.html"><a href="missing-data.html#missing-not-at-random-mnar"><i class="fa fa-check"></i><b>2.5.3</b> Missing not at Random (MNAR)</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -186,11 +188,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="missing-data" class="section level1">
 <h1><span class="header-section-number">Chapter 2</span> Missing Data and Multiple Imputation</h1>
+<ul>
+<li>The book “Flexible Imputation of Missing Data” is a resource you also might find useful,
+and it is available online at: <a href="https://stefvanbuuren.name/fimd/" class="uri">https://stefvanbuuren.name/fimd/</a></li>
+</ul>
 <div id="missing-data-in-r-and-direct-approaches-for-handling-missing-data" class="section level2">
 <h2><span class="header-section-number">2.1</span> Missing Data in R and “Direct Approaches” for Handling Missing Data</h2>
 <ul>
-<li><p>In a wide range of datasets, it is very common to encounter missing value.</p></li>
-<li><p>In <strong>R</strong>, missing values are stored as <code>NA</code>, meaning “Not Available”.</p></li>
+<li><p>In a wide range of datasets, it is very common to encounter missing values.</p></li>
+<li><p>In <strong>R</strong>, missing values are stored as <code>NA</code>, meaning <strong>“Not Available”</strong>.</p></li>
 </ul>
 <hr />
 <ul>
@@ -470,23 +476,176 @@ use the <strong>pool</strong> function from <strong>mice</strong>:</li>
 coefficients from the 5 multiply imputed datasets.</p></li>
 <li><p>The pooled <strong>standard error</strong> for the <span class="math inline">\(j^{th}\)</span> regression coefficient is given by
 <span class="math display">\[\begin{equation}
-\textrm{pooled } SE_{j} = \sqrt{\frac{1}{K}\sum_{k=1}^{K} SE_{jk}}, 
+(\textrm{pooled } SE_{j})^{2} = \frac{1}{K}\sum_{k=1}^{K} SE_{jk}^{2} + \frac{K+1}{K(K-1)}\sum_{k=1}^{K}(\hat{\beta}_{jk} - \bar{\hat{\beta}}_{j.})^{2}, 
 \end{equation}\]</span>
-where <span class="math inline">\(SE_{jk}\)</span> is the standard error for the <span class="math inline">\(j^{th}\)</span> <strong>regression coefficient</strong> from the <span class="math inline">\(k^{th}\)</span> <strong>complete dataset</strong>.</p></li>
+where <span class="math inline">\(SE_{jk}\)</span> is the standard error for the <span class="math inline">\(j^{th}\)</span> <strong>regression coefficient</strong> from the <span class="math inline">\(k^{th}\)</span> <strong>complete dataset</strong>,
+and <span class="math inline">\(\hat{\beta}_{jk}\)</span> is the estimate of <span class="math inline">\(\beta_{j}\)</span> from the <span class="math inline">\(k^{th}\)</span> complete dataset.</p></li>
 </ul>
 </div>
 </div>
 </div>
+<div id="what-is-mice-doing" class="section level2">
+<h2><span class="header-section-number">2.3</span> What is MICE doing?</h2>
+<ul>
+<li><p>Suppose we have data from <span class="math inline">\(q\)</span> variables <span class="math inline">\(Z_{i1}, \ldots, Z_{iq}\)</span>.</p></li>
+<li><p>Let <span class="math inline">\(\mathbf{Z}_{mis}\)</span> denote the collection of missing observations and <span class="math inline">\(\mathbf{Z}_{obs}\)</span>
+the collection of observed values, and let <span class="math inline">\(\mathbf{Z} = (\mathbf{Z}_{obs}, \mathbf{Z}_{mis})\)</span>.</p></li>
+<li>The <strong>basic idea behind</strong> multiple imputation is to, in some way, generate samples <span class="math inline">\(\mathbf{Z}_{mis}^{(1)}, \ldots, \mathbf{Z}_{mis}^{(K)}\)</span> from a flexible probability model <span class="math inline">\(p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})\)</span>
+<ul>
+<li><span class="math inline">\(p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})\)</span> represents the conditional distribution of <span class="math inline">\(\mathbf{Z}_{mis}\)</span> given the observed <span class="math inline">\(\mathbf{Z}_{obs}\)</span>.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>The parameter of interest
+<span class="math display">\[\begin{eqnarray}
+\hat{\theta} &amp;=&amp; E( \theta |\mathbf{Z}_{obs}  )
+= \int E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{Z}_{mis} \Big\} p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs}) d\mathbf{Z}_{mis} \nonumber \\ 
+&amp;\approx&amp; \frac{1}{K} \sum_{k=1}^{K} E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{Z}_{mis}^{(k)} \Big\} 
+\end{eqnarray}\]</span></li>
+</ul>
+<hr />
+<ul>
+<li><p>There are two main approaches for setting up a model for which you can sample <span class="math inline">\(\mathbf{Z}_{mis}\)</span> from the conditional
+distribution of <span class="math inline">\(\mathbf{Z}_{mis}|\mathbf{Z}_{obs}\)</span>.</p></li>
+<li>One approach is to directly specify a <strong>full joint model</strong> for <span class="math inline">\(\mathbf{Z} = (\mathbf{Z}_{mis}, \mathbf{Z}_{obs})\)</span>
+<ul>
+<li>For example, assume that <span class="math inline">\(\mathbf{Z}\)</span> follows a multivariate a normal distribution.</li>
+</ul></li>
+<li>The <strong>fully conditional specification</strong> (FCS) approach specifies the distribution of each variable <span class="math inline">\(\mathbf{Z}_{j}\)</span> conditional on the remaining variables <span class="math inline">\(\mathbf{Z}_{-j}\)</span>.
+<ul>
+<li>The FCS approach is the one used by <strong>mice</strong>.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>With <strong>mice</strong>,</li>
+</ul>
+</div>
+<div id="longitudinal-data" class="section level2">
+<h2><span class="header-section-number">2.4</span> Longitudinal Data</h2>
+<ul>
+<li><p>A direct way to do multiple imputation with <strong>longitudinal data</strong> is to use mice
+on the dataset stored in <strong>wide format</strong>.</p></li>
+<li><p>Remember that in <strong>wide format</strong>, each row corresponds to a <strong>different individual</strong>.</p></li>
+<li><p>Applying multiple imputation to the wide-format dataset can account for the fact that
+observations across individuals will be <strong>correlated</strong>.</p></li>
+</ul>
+<hr />
+<ul>
+<li>Let’s look at the <strong>ohio</strong> data from the <strong>geepack</strong> package again</li>
+</ul>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb85-1" data-line-number="1"><span class="kw">library</span>(geepack)</a>
+<a class="sourceLine" id="cb85-2" data-line-number="2"><span class="kw">data</span>(ohio)</a>
+<a class="sourceLine" id="cb85-3" data-line-number="3"><span class="kw">head</span>(ohio)</a></code></pre></div>
+<pre><code>##   resp id age smoke
+## 1    0  0  -2     0
+## 2    0  0  -1     0
+## 3    0  0   0     0
+## 4    0  0   1     0
+## 5    0  1  -2     0
+## 6    0  1  -1     0</code></pre>
+<hr />
+<ul>
+<li><p>The <strong>ohio</strong> dataset is in <strong>long format</strong>. We need to first convert this into <strong>wide format</strong>.</p></li>
+<li>With <strong>tidyr</strong> you can convert from <strong>long to wide</strong> using <strong>spread</strong>:
+<ul>
+<li>(Use <strong>gather</strong> to go from <strong>wide to long</strong>)</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb87-1" data-line-number="1"><span class="kw">library</span>( tidyr )</a>
+<a class="sourceLine" id="cb87-2" data-line-number="2">ohio.wide &lt;-<span class="st"> </span><span class="kw">spread</span>(ohio, <span class="dt">key=</span>age, <span class="dt">value=</span>resp)</a>
+<a class="sourceLine" id="cb87-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb87-4" data-line-number="4"><span class="co">## Change variable names to so that ages go from 7 to 10</span></a>
+<a class="sourceLine" id="cb87-5" data-line-number="5"><span class="kw">names</span>(ohio.wide) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;smoke&quot;</span>, <span class="st">&quot;age7&quot;</span>, <span class="st">&quot;age8&quot;</span>, <span class="st">&quot;age9&quot;</span>, <span class="st">&quot;age10&quot;</span>)</a>
+<a class="sourceLine" id="cb87-6" data-line-number="6"><span class="kw">head</span>(ohio.wide)</a></code></pre></div>
+<pre><code>##   id smoke age7 age8 age9 age10
+## 1  0     0    0    0    0     0
+## 2  1     0    0    0    0     0
+## 3  2     0    0    0    0     0
+## 4  3     0    0    0    0     0
+## 5  4     0    0    0    0     0
+## 6  5     0    0    0    0     0</code></pre>
+<ul>
+<li>The variable <code>age7</code> now represents the value of <code>resp</code> at age 7,
+<code>age8</code> represents the value of <code>resp</code> at age 8, etc…</li>
+</ul>
+<hr />
+<ul>
+<li><strong>reshape</strong> from base <strong>R</strong> can also be used to go from long to wide</li>
+</ul>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb89-1" data-line-number="1"><span class="co"># Example of using reshape</span></a>
+<a class="sourceLine" id="cb89-2" data-line-number="2"><span class="co">#ohio.wide2 &lt;- reshape(ohio, v.names=&quot;resp&quot;, idvar=&quot;id&quot;, timevar=&quot;age&quot;, direction=&quot;wide&quot;)</span></a></code></pre></div>
+<hr />
+<ul>
+<li><p>The <strong>ohio</strong> dataset does not have any missing values.</p></li>
+<li><p>Let’s introduce missing values for the variable <code>resp</code> values
+by assuming that the <strong>probability</strong> of being missing is positively
+related to smoking status.</p></li>
+<li><p>Let <span class="math inline">\(R_{ij}\)</span> be an <strong>indicator of missingness</strong> of <code>resp</code> for individual <span class="math inline">\(i\)</span>
+at the <span class="math inline">\(j^{th}\)</span> follow-up time.</p></li>
+<li><p>When randomly generating missing values, we will assume that:
+<span class="math display" id="eq:missingdat-ohio">\[\begin{equation}
+P( R_{ij} = 1| \textrm{smoke}_{i}) 
+= \begin{cases} 
+0.05 &amp; \textrm{ if } \textrm{smoke}_{i} = 0 \\
+0.25 &amp; \textrm{ if } \textrm{smoke}_{i} = 1
+\end{cases}
+\tag{2.1}
+\end{equation}\]</span></p></li>
+</ul>
+<hr />
+<ul>
+<li>To generate missing values according to assumption <a href="missing-data.html#eq:missingdat-ohio">(2.1)</a>, we can use the following R code:
+<ul>
+<li>We will call the new data frame <code>ohio.wide.miss</code></li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb90-1" data-line-number="1">ohio.wide.miss &lt;-<span class="st"> </span>ohio.wide</a>
+<a class="sourceLine" id="cb90-2" data-line-number="2">m &lt;-<span class="st"> </span><span class="kw">nrow</span>(ohio.wide.miss) <span class="co">## number of individuals in study</span></a>
+<a class="sourceLine" id="cb90-3" data-line-number="3"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>m) {</a>
+<a class="sourceLine" id="cb90-4" data-line-number="4">    resp.values &lt;-<span class="st"> </span>ohio.wide[k, <span class="dv">3</span><span class="op">:</span><span class="dv">6</span>]  <span class="co"># values of resp for individual k</span></a>
+<a class="sourceLine" id="cb90-5" data-line-number="5">    <span class="cf">if</span>(ohio.wide[k,<span class="dv">2</span>] <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) {  <span class="co"># if smoke = 1</span></a>
+<a class="sourceLine" id="cb90-6" data-line-number="6">        Rij &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>, <span class="dt">prob=</span><span class="kw">c</span>(<span class="fl">0.75</span>, <span class="fl">0.25</span>))</a>
+<a class="sourceLine" id="cb90-7" data-line-number="7">    } <span class="cf">else</span> { <span class="co"># if smoke = 0</span></a>
+<a class="sourceLine" id="cb90-8" data-line-number="8">        Rij &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>, <span class="dt">prob=</span><span class="kw">c</span>(<span class="fl">0.95</span>, <span class="fl">0.05</span>))</a>
+<a class="sourceLine" id="cb90-9" data-line-number="9">    }</a>
+<a class="sourceLine" id="cb90-10" data-line-number="10">    resp.values[Rij<span class="op">==</span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="ot">NA</span> <span class="co"># insert NA values where Rij = 1</span></a>
+<a class="sourceLine" id="cb90-11" data-line-number="11">    ohio.wide.miss[k, <span class="dv">3</span><span class="op">:</span><span class="dv">6</span>] &lt;-<span class="st"> </span>resp.values</a>
+<a class="sourceLine" id="cb90-12" data-line-number="12">}</a></code></pre></div>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb91-1" data-line-number="1"><span class="kw">head</span>(ohio.wide.miss, <span class="dv">10</span>)</a></code></pre></div>
+<pre><code>##    id smoke age7 age8 age9 age10
+## 1   0     0    0    0   NA     0
+## 2   1     0    0    0    0     0
+## 3   2     0    0    0    0     0
+## 4   3     0    0    0    0     0
+## 5   4     0    0    0    0     0
+## 6   5     0    0    0    0     0
+## 7   6     0    0    0    0     0
+## 8   7     0    0   NA    0     0
+## 9   8     0    0    0    0     0
+## 10  9     0    0    0    0     0</code></pre>
+<ul>
+<li><code>ohio.wide.miss</code> now has 257 missing entries</li>
+</ul>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb93-1" data-line-number="1"><span class="kw">sum</span>( <span class="kw">is.na</span>(ohio.wide.miss))</a></code></pre></div>
+<pre><code>## [1] 257</code></pre>
+<hr />
+<ul>
+<li>Now, let’s use <strong>mice</strong> to create several <strong>“completed versions”</strong> of <code>ohio.wide.miss</code></li>
+</ul>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb95-1" data-line-number="1">imputed.ohio &lt;-<span class="st"> </span><span class="kw">mice</span>(ohio.wide.miss, <span class="dt">print=</span><span class="ot">FALSE</span>, <span class="dt">seed=</span><span class="dv">101</span>)</a></code></pre></div>
+</div>
 <div id="different-missing-data-mechanisms" class="section level2">
-<h2><span class="header-section-number">2.3</span> Different Missing Data Mechanisms</h2>
+<h2><span class="header-section-number">2.5</span> Different Missing Data Mechanisms</h2>
 <div id="missing-completely-at-random-mcar" class="section level3">
-<h3><span class="header-section-number">2.3.1</span> Missing Completely at Random (MCAR)</h3>
+<h3><span class="header-section-number">2.5.1</span> Missing Completely at Random (MCAR)</h3>
 </div>
 <div id="missing-at-random-mar" class="section level3">
-<h3><span class="header-section-number">2.3.2</span> Missing at Random (MAR)</h3>
+<h3><span class="header-section-number">2.5.2</span> Missing at Random (MAR)</h3>
 </div>
 <div id="missing-not-at-random-mnar" class="section level3">
-<h3><span class="header-section-number">2.3.3</span> Missing not at Random (MNAR)</h3>
+<h3><span class="header-section-number">2.5.3</span> Missing not at Random (MNAR)</h3>
 
 <div id="refs" class="references">
 <div>

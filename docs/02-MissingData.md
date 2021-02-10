@@ -1,10 +1,13 @@
 # Missing Data and Multiple Imputation {#missing-data}
 
+* The book "Flexible Imputation of Missing Data" is a resource you also might find useful,
+and it is available online at: https://stefvanbuuren.name/fimd/
+
 ## Missing Data in R and "Direct Approaches" for Handling Missing Data
 
-* In a wide range of datasets, it is very common to encounter missing value.
+* In a wide range of datasets, it is very common to encounter missing values.
 
-* In **R**, missing values are stored as `NA`, meaning "Not Available".
+* In **R**, missing values are stored as `NA`, meaning **"Not Available"**.
 
 ---
 
@@ -368,9 +371,197 @@ coefficients from the 5 multiply imputed datasets.
 
 * The pooled **standard error** for the $j^{th}$ regression coefficient is given by
 \begin{equation}
-\textrm{pooled } SE_{j} = \sqrt{\frac{1}{K}\sum_{k=1}^{K} SE_{jk}}, 
+(\textrm{pooled } SE_{j})^{2} = \frac{1}{K}\sum_{k=1}^{K} SE_{jk}^{2} + \frac{K+1}{K(K-1)}\sum_{k=1}^{K}(\hat{\beta}_{jk} - \bar{\hat{\beta}}_{j.})^{2}, 
 \end{equation}
-where $SE_{jk}$ is the standard error for the $j^{th}$ **regression coefficient** from the $k^{th}$ **complete dataset**.
+where $SE_{jk}$ is the standard error for the $j^{th}$ **regression coefficient** from the $k^{th}$ **complete dataset**,
+and $\hat{\beta}_{jk}$ is the estimate of $\beta_{j}$ from the $k^{th}$ complete dataset.
+
+## What is MICE doing?
+
+* Suppose we have data from $q$ variables $Z_{i1}, \ldots, Z_{iq}$.
+
+* Let $\mathbf{Z}_{mis}$ denote the collection of missing observations and $\mathbf{Z}_{obs}$
+the collection of observed values, and let $\mathbf{Z} = (\mathbf{Z}_{obs}, \mathbf{Z}_{mis})$.
+
+* The **basic idea behind** multiple imputation is to, in some way, generate samples $\mathbf{Z}_{mis}^{(1)}, \ldots, \mathbf{Z}_{mis}^{(K)}$ from a flexible probability model $p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})$
+    + $p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})$ represents the conditional distribution of $\mathbf{Z}_{mis}$ given the observed $\mathbf{Z}_{obs}$.
+
+---
+
+* The parameter of interest 
+\begin{eqnarray}
+\hat{\theta} &=& E( \theta |\mathbf{Z}_{obs}  )
+= \int E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{Z}_{mis} \Big\} p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs}) d\mathbf{Z}_{mis} \nonumber \\ 
+&\approx& \frac{1}{K} \sum_{k=1}^{K} E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{Z}_{mis}^{(k)} \Big\} 
+\end{eqnarray}
+
+---
+
+* There are two main approaches for setting up a model for which you can sample $\mathbf{Z}_{mis}$ from the conditional
+distribution of $\mathbf{Z}_{mis}|\mathbf{Z}_{obs}$.
+
+* One approach is to directly specify a **full joint model** for $\mathbf{Z} = (\mathbf{Z}_{mis}, \mathbf{Z}_{obs})$
+     + For example, assume that $\mathbf{Z}$ follows a multivariate a normal distribution.
+     
+* The **fully conditional specification** (FCS) approach specifies the distribution of each variable $\mathbf{Z}_{j}$ conditional on the remaining variables $\mathbf{Z}_{-j}$.
+    + The FCS approach is the one used by **mice**.
+
+---
+
+* With **mice**, 
+
+
+## Longitudinal Data
+
+* A direct way to do multiple imputation with **longitudinal data** is to use mice 
+on the dataset stored in **wide format**.
+
+* Remember that in **wide format**, each row corresponds to a **different individual**.
+
+* Applying multiple imputation to the wide-format dataset can account for the fact that
+observations across individuals will be **correlated**.
+
+---
+
+* Let's look at the **ohio** data from the **geepack** package again
+
+```r
+library(geepack)
+data(ohio)
+head(ohio)
+```
+
+```
+##   resp id age smoke
+## 1    0  0  -2     0
+## 2    0  0  -1     0
+## 3    0  0   0     0
+## 4    0  0   1     0
+## 5    0  1  -2     0
+## 6    0  1  -1     0
+```
+
+---
+
+* The **ohio** dataset is in **long format**. We need to first convert this into **wide format**. 
+
+* With **tidyr** you can convert from **long to wide** using **spread**:
+    + (Use **gather** to go from **wide to long**)
+
+```r
+library( tidyr )
+ohio.wide <- spread(ohio, key=age, value=resp)
+
+## Change variable names to so that ages go from 7 to 10
+names(ohio.wide) <- c("id", "smoke", "age7", "age8", "age9", "age10")
+head(ohio.wide)
+```
+
+```
+##   id smoke age7 age8 age9 age10
+## 1  0     0    0    0    0     0
+## 2  1     0    0    0    0     0
+## 3  2     0    0    0    0     0
+## 4  3     0    0    0    0     0
+## 5  4     0    0    0    0     0
+## 6  5     0    0    0    0     0
+```
+
+* The variable `age7` now represents the value of `resp` at age 7, 
+`age8` represents the value of `resp` at age 8, etc...
+
+
+---
+
+* **reshape** from base **R** can also be used to go from long to wide
+
+```r
+# Example of using reshape
+#ohio.wide2 <- reshape(ohio, v.names="resp", idvar="id", timevar="age", direction="wide")
+```
+
+---
+
+* The **ohio** dataset does not have any missing values. 
+
+* Let's introduce missing values for the variable `resp` values
+by assuming that the **probability** of being missing is positively
+related to smoking status.
+
+
+* Let $R_{ij}$ be an **indicator of missingness** of `resp` for individual $i$
+at the $j^{th}$ follow-up time.
+
+* When randomly generating missing values, we will assume that: 
+\begin{equation}
+P( R_{ij} = 1| \textrm{smoke}_{i}) 
+= \begin{cases} 
+0.05 & \textrm{ if } \textrm{smoke}_{i} = 0 \\
+0.25 & \textrm{ if } \textrm{smoke}_{i} = 1
+\end{cases}
+(\#eq:missingdat-ohio)
+\end{equation}
+
+---
+
+
+
+* To generate missing values according to assumption \@ref(eq:missingdat-ohio), we can use the following R code:
+    + We will call the new data frame `ohio.wide.miss`
+
+```r
+ohio.wide.miss <- ohio.wide
+m <- nrow(ohio.wide.miss) ## number of individuals in study
+for(k in 1:m) {
+    resp.values <- ohio.wide[k, 3:6]  # values of resp for individual k
+    if(ohio.wide[k,2] == 1) {  # if smoke = 1
+        Rij <- sample(0:1, size=4, replace=TRUE, prob=c(0.75, 0.25))
+    } else { # if smoke = 0
+        Rij <- sample(0:1, size=4, replace=TRUE, prob=c(0.95, 0.05))
+    }
+    resp.values[Rij==1] <- NA # insert NA values where Rij = 1
+    ohio.wide.miss[k, 3:6] <- resp.values
+}
+```
+
+
+
+
+```r
+head(ohio.wide.miss, 10)
+```
+
+```
+##    id smoke age7 age8 age9 age10
+## 1   0     0    0    0   NA     0
+## 2   1     0    0    0    0     0
+## 3   2     0    0    0    0     0
+## 4   3     0    0    0    0     0
+## 5   4     0    0    0    0     0
+## 6   5     0    0    0    0     0
+## 7   6     0    0    0    0     0
+## 8   7     0    0   NA    0     0
+## 9   8     0    0    0    0     0
+## 10  9     0    0    0    0     0
+```
+
+* `ohio.wide.miss` now has 257 missing entries
+
+```r
+sum( is.na(ohio.wide.miss))
+```
+
+```
+## [1] 257
+```
+
+---
+
+* Now, let's use **mice** to create several **"completed versions"** of `ohio.wide.miss`
+
+```r
+imputed.ohio <- mice(ohio.wide.miss, print=FALSE, seed=101)
+```
 
 ## Different Missing Data Mechanisms
 

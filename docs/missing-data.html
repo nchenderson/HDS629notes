@@ -568,10 +568,26 @@ binary, some categorical, etc. …</p></li>
 <ul>
 <li>The FCS approach is the one used by <strong>mice</strong>.</li>
 </ul></li>
+<li><p>With the FCS approach, we assume models for <span class="math inline">\(q\)</span> different conditional distributions
+\begin{eqnarray}
+p(<em>{1}&amp;|&amp;</em>{-1}, <em>{1}) \
+p(</em>{2}&amp;|&amp;<em>{-2}, </em>{2}) \
+&amp;&amp; \
+p(<em>{q}&amp;|&amp;</em>{-q}, _{q})
+\end{equation}</p></li>
 </ul>
 <hr />
 <ul>
-<li>With <strong>mice</strong>,</li>
+<li><p>With <strong>mice</strong>, the parameters <span class="math inline">\(\eta_{j}\)</span> and the missing values for each variable <span class="math inline">\(\mathbf{Z}_{j,mis}\)</span> are updated <strong>one-at-a-time</strong> via a kind of <strong>Gibbs sampler</strong>.</p></li>
+<li><p>All of the missing values are imputed in <strong>one cycle</strong> of the Gibbs sampler.</p></li>
+<li><p>Multiple cycles are repeated to get <strong>multiple completed datasets</strong>.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>The default model for a continuous variable <span class="math inline">\(\mathbf{Z}_{j}\)</span> is to use <strong>predictive mean matching</strong>.</p></li>
+<li><p>The default model for a binary variable <span class="math inline">\(\mathbf{Z}_{j}\)</span> is <strong>logistic regression</strong>.</p></li>
+<li><p>Look at the <code>defaultMethod</code> argument of <code>mice</code> and <span class="citation">Buuren and Groothuis-Oudshoorn (<a href="#ref-buuren2010">2010</a>)</span> for more
+details about how to change these default models.</p></li>
 </ul>
 </div>
 <div id="longitudinal-data" class="section level2">
@@ -822,10 +838,19 @@ P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis}) = P(R_{ij}=1|\mathbf{Z}_{obs})
 
 <div id="refs" class="references">
 <div>
+<p>Buuren, S van, and Karin Groothuis-Oudshoorn. 2010. “Mice: Multivariate Imputation by Chained Equations in R.” <em>Journal of Statistical Software</em>, 1–68.</p>
+</div>
+<div>
 <p>Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.</p>
 </div>
 </div>
 </div>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-buuren2010">
+<p>Buuren, S van, and Karin Groothuis-Oudshoorn. 2010. “Mice: Multivariate Imputation by Chained Equations in R.” <em>Journal of Statistical Software</em>, 1–68.</p>
 </div>
 </div>
             </section>

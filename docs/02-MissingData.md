@@ -487,12 +487,31 @@ a posterior mean:
      
 * The **fully conditional specification** (FCS) approach specifies the distribution of each variable $\mathbf{Z}_{j}$ conditional on the remaining variables $\mathbf{Z}_{-j}$.
     + The FCS approach is the one used by **mice**.
-    
+
+* With the FCS approach, we assume models for $q$ different conditional distributions 
+\begin{eqnarray}
+p(\mathbf{Z}_{1}&|&\mathbf{Z}_{-1}, \boldsymbol{\eta}_{1}) \nonumber \\
+p(\mathbf{Z}_{2}&|&\mathbf{Z}_{-2}, \boldsymbol{\eta}_{2}) \nonumber \\
+&\vdots& \nonumber \\
+p(\mathbf{Z}_{q}&|&\mathbf{Z}_{-q}, \boldsymbol{\eta}_{q})
+\end{equation}
 
 ---
 
-* With **mice**, 
+* With **mice**, the parameters $\eta_{j}$ and the missing values for each variable $\mathbf{Z}_{j,mis}$ are updated **one-at-a-time** via a kind of **Gibbs sampler**.
 
+* All of the missing values are imputed in **one cycle** of the Gibbs sampler.
+
+* Multiple cycles are repeated to get **multiple completed datasets**.
+
+---
+
+* The default model for a continuous variable $\mathbf{Z}_{j}$ is to use **predictive mean matching**. 
+
+* The default model for a binary variable $\mathbf{Z}_{j}$ is **logistic regression**.
+
+* Look at the `defaultMethod` argument of `mice` and @buuren2010 for more
+details about how to change these default models.
 
 ## Longitudinal Data
 

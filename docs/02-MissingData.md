@@ -1,7 +1,6 @@
 # Missing Data and Multiple Imputation {#missing-data}
 
-* The book "Flexible Imputation of Missing Data" is a resource you also might find useful,
-and it is available online at: https://stefvanbuuren.name/fimd/
+* The book "Flexible Imputation of Missing Data" is a resource you also might find useful. It is available online at: https://stefvanbuuren.name/fimd/
 
 ## Missing Data in R and "Direct Approaches" for Handling Missing Data
 
@@ -309,7 +308,7 @@ head(imputed.airs$imp$Solar.R)
 * For example, the 5th observation of the `Solar.R` variable has 131 in the 1st imputation, 285 in
 the 2nd imputation, 274 in the 3rd imputation, etc. ....
 
-#### with() and pool()
+#### with(), pool(), complete()
 
 * You could use the components of `imputed.airs$imp` to directly fit **5 separate regression** on the multiply imputed datasets and then average the results.
 
@@ -375,6 +374,75 @@ coefficients from the 5 multiply imputed datasets.
 \end{equation}
 where $SE_{jk}$ is the standard error for the $j^{th}$ **regression coefficient** from the $k^{th}$ **complete dataset**,
 and $\hat{\beta}_{jk}$ is the estimate of $\beta_{j}$ from the $k^{th}$ complete dataset.
+
+---
+
+* It is sometimes useful to actually **extract** each of the completed datasets.
+    + This is true, for example, in longitudinal data where you may want to go back and forth between "wide" and "long"
+    formats.
+    
+* To extract each of the completed datasets, you can use the `complete` function from **mice**.
+
+* The following code will return the **5 complete datasets** from `imputed.airs`
+
+```r
+completed.airs <- mice::complete(imputed.airs, action="long")
+```
+
+* `completed.airs` will be a dataframe that has **5 times** as many rows as the `airquality` data frame
+    + The variable `.imp` is an indicator of which of the 5 imputations that row corresponds to.
+
+```r
+head(completed.airs)
+```
+
+```
+##   .imp .id Ozone Solar.R Wind Temp Month Day
+## 1    1   1    41     190  7.4   67     5   1
+## 2    1   2    36     118  8.0   72     5   2
+## 3    1   3    12     149 12.6   74     5   3
+## 4    1   4    18     313 11.5   62     5   4
+## 5    1   5     6     131 14.3   56     5   5
+## 6    1   6    28     127 14.9   66     5   6
+```
+
+```r
+dim(completed.airs)
+```
+
+```
+## [1] 765   8
+```
+
+```r
+dim(airquality)
+```
+
+```
+## [1] 153   6
+```
+
+---
+
+* Using `complete.airs`, we can compute the multiple imputation-based estimates of the regression coefficients **"by hand"**
+   + This should give us the same results as when using `with`
+
+
+```r
+BetaMat <- matrix(NA, nrow=5, ncol=4)
+for(k in 1:5) {
+    ## Find beta.hat from kth imputed dataset
+    BetaMat[k,] <- lm(Ozone ~ Solar.R + Wind + Temp, 
+                      data=completed.airs[completed.airs$.imp==k,])$coefficients
+}
+round(colMeans(BetaMat), 3)  # compare with the results from using the "with" function
+```
+
+```
+## [1] -62.731   0.059  -3.108   1.600
+```
+
+
 
 ## What is MICE doing?
 
@@ -557,11 +625,109 @@ sum( is.na(ohio.wide.miss))
 
 ---
 
+* Before using **multiple imputation** with `ohio.wide.miss`, let's look at the regression coefficient
+estimates that would be obtained with a **complete case analysis**.
+
+* To use `glmer` on the **missing-data version** of `ohio`, we need to first convert `ohio.wide.miss` back into **long form**:
+
+```r
+ohio.miss <- gather(ohio.wide.miss, age, resp, age7:age10)
+ohio.miss$age[ohio.miss$age == "age7"] <- -2
+ohio.miss$age[ohio.miss$age == "age8"] <- -1
+ohio.miss$age[ohio.miss$age == "age9"] <- 0
+ohio.miss$age[ohio.miss$age == "age10"] <- 1
+ohio.miss <- ohio.miss[order(ohio.miss$id),]  ## sort everything according to id
+head(ohio.miss)
+```
+
+```
+##      id smoke age resp
+## 1     0     0  -2    0
+## 538   0     0  -1    0
+## 1075  0     0   0   NA
+## 1612  0     0   1    0
+## 2     1     0  -2    0
+## 539   1     0  -1    0
+```
+
+* Let's use a **random intercept** model as we did in our earlier discussion of generalized linear mixed models:
+
+```r
+## Complete case analysis
+
+library(lme4)
+ohio.cca <- glmer(resp ~ age + smoke + (1 | id), data = ohio, family = binomial)
+
+# Now look at estimated regression coefficients for complete case analysis:
+round(coef(summary(ohio.cca)), 4)
+```
+
+```
+##             Estimate Std. Error  z value Pr(>|z|)
+## (Intercept)  -3.3740      0.275 -12.2700   0.0000
+## age          -0.1768      0.068  -2.6007   0.0093
+## smoke         0.4148      0.287   1.4450   0.1485
+```
+
+---
+
 * Now, let's use **mice** to create several **"completed versions"** of `ohio.wide.miss`
 
 ```r
 imputed.ohio <- mice(ohio.wide.miss, print=FALSE, seed=101)
 ```
+
+* For the case of **longitudinal data**, we probably want to actually extract each
+complete dataset.
+   + (This is because many of the analysis methods such as `lmer` assume the data is in long form).
+
+* This can be done with the following code:
+
+```r
+completed.ohio <- mice::complete(imputed.ohio, "long")
+head(completed.ohio)
+```
+
+```
+##   .imp .id id smoke age7 age8 age9 age10
+## 1    1   1  0     0    0    0    0     0
+## 2    1   2  1     0    0    0    0     0
+## 3    1   3  2     0    0    0    0     0
+## 4    1   4  3     0    0    0    0     0
+## 5    1   5  4     0    0    0    0     0
+## 6    1   6  5     0    0    0    0     0
+```
+
+* `completed.ohio` will be a **dataframe** that has **5 times** as many rows as the original `ohio.wide` data frame
+
+```r
+dim(ohio.wide)
+```
+
+```
+## [1] 537   6
+```
+
+```r
+dim(completed.ohio)
+```
+
+```
+## [1] 2685    8
+```
+
+* The variable `.imp` in `completed.ohio` is an indicator of which of the five "imputed datasets" this is from:
+
+```r
+table( completed.ohio$.imp ) # Tabulate impute indicators
+```
+
+```
+## 
+##   1   2   3   4   5 
+## 537 537 537 537 537
+```
+
 
 ## Different Missing Data Mechanisms
 

@@ -305,7 +305,7 @@ p(\mathbf{Z}_{1}&|&\mathbf{Z}_{-1}, \boldsymbol{\eta}_{1}) \nonumber \\
 p(\mathbf{Z}_{2}&|&\mathbf{Z}_{-2}, \boldsymbol{\eta}_{2}) \nonumber \\
 &\vdots& \nonumber \\
 p(\mathbf{Z}_{q}&|&\mathbf{Z}_{-q}, \boldsymbol{\eta}_{q})
-\end{equation}
+\end{eqnarray}
 
 ---
 

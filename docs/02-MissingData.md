@@ -115,7 +115,7 @@ any of the variables used from that row have a missing value.
     + In this example, a row will be dropped if either the value of `Ozone`, `Solar.R`, `Wind`, or `Temp`
     is missing. 
 
-* After these observations have been deleted, the usual regression is fit to the remaining "complete" dataset. 
+* After these observations have been deleted, the usual regression is fit to the remaining **"complete" dataset**. 
 
 ---
 
@@ -168,10 +168,9 @@ round(air.lm2$coefficients, 3)
 ### Other "Direct" Methods
 
 * In general, doing a **complete-case analysis** is **not advisable**.
-    + A complete-case analysis should really only be used if you are confident that the data are missing 
-      completely at random (MCAR).
+    + A complete-case analysis should really only be used if you are confident that the data are **missing completely at random (MCAR)**.
       
-    + Roughly speaking, MCAR means that the probability of having a missing value is not related to
+    + Roughly speaking, **MCAR** means that the probability of having a missing value is not related to
     **missing or observed** values of the data.
 
 ---
@@ -193,11 +192,11 @@ round(air.lm2$coefficients, 3)
 ### Short Overview of Multiple Imputation
 
 * To summarize, **multiple imputation** consists of the following steps:
-     1. Create $K$ different "complete datasets" which contain no missing data.
+     1. Create $K$ different **"complete datasets"** where each dataset contains **no missing data**.
      
-     2. For each of these $K$ complete datasets, compute the estimates of interest. 
+     2. For **each** of these $K$ complete datasets, compute the estimates of interest. 
      
-     3. "Pool" these separate estimates to get a final estimate. 
+     3. **"Pool"** these separate estimates to get final **estimates and standard errors**. 
 
 ---
 
@@ -222,6 +221,7 @@ for performing **multiple imputation**.
 * To use `mice`, just use `mice(df)` where `df` is the **name** of the dataframe.
     + (Set `print = FALSE` if you don't want it to print out the number of the iteration).
     + Choose a value of `seed` so that the results are reproducible.
+    + Note that the **default number** of complete datasets returned is 5. This can be changed with the `m` argument.
 
 ```r
 library(mice)
@@ -284,7 +284,7 @@ the 2nd imputation, 18 in the 3rd imputation, etc. ....
 ---
 
 * Similarly, the `Solar.R` component of `imputed.airs$imp` will be a data frame 
-   + This is because the `Ozone` variable had **7 missing values**, and there are **5 multiple imputations**.
+   + This is because the `Solar.R` variable had **7 missing values**, and there are **5 multiple imputations**.
 
 
 ```r
@@ -383,8 +383,7 @@ and $\hat{\beta}_{jk}$ is the estimate of $\beta_{j}$ from the $k^{th}$ complete
 ---
 
 * It is sometimes useful to actually **extract** each of the completed datasets.
-    + This is true, for example, in longitudinal data where you may want to go back and forth between "wide" and "long"
-    formats.
+    + This is true, for example, in **longitudinal data** where you may want to go back and forth between **"wide" and "long" formats**.
     
 * To extract each of the completed datasets, you can use the `complete` function from **mice**.
 
@@ -393,6 +392,9 @@ and $\hat{\beta}_{jk}$ is the estimate of $\beta_{j}$ from the $k^{th}$ complete
 ```r
 completed.airs <- mice::complete(imputed.airs, action="long")
 ```
+
+* `action = "long"` means that it will return the 5 complete datasets as one dataframe with 
+the individual datasets "**stacked** on top of each other."
 
 * `completed.airs` will be a dataframe that has **5 times** as many rows as the `airquality` data frame
     + The variable `.imp` is an indicator of which of the 5 imputations that row corresponds to.
@@ -751,7 +753,7 @@ dim(completed.ohio)
 ## [1] 26850     8
 ```
 
-* The variable `.imp` in `completed.ohio` is an indicator of which of the five "imputed datasets" this is from:
+* The variable `.imp` in `completed.ohio` is an indicator of which of the 50 "imputed datasets" this is from:
 
 ```r
 table( completed.ohio$.imp ) # Tabulate impute indicators
@@ -769,8 +771,13 @@ table( completed.ohio$.imp ) # Tabulate impute indicators
 
 ---
 
+* For **each** of the 50 complete datasets, we need to **convert** the wide dataset 
+into long form before using `glmer`:
+
 
 ```r
+## Multiple imputation-based estimates of regression coefficients 
+## for missing version of the ohio data.
 BetaMat <- matrix(NA, nrow=50, ncol=3)
 for(k in 1:50) {
     tmp.ohio <- completed.ohio[completed.ohio$.imp==k,-c(1,2)]
@@ -786,6 +793,12 @@ for(k in 1:50) {
                          family = binomial)
     BetaMat[k,] <- coef(summary(ohio.tmpfit))[,1]
 }
+```
+
+* The **multiple imputation-based** estimates of the regression coefficients for 
+the missing version of **ohio** are:
+
+```r
 round(colMeans(BetaMat), 4)
 ```
 
@@ -831,6 +844,7 @@ P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis}) = P(R_{ij}=1|\mathbf{Z}_{obs})
 * If the **missingness mechanism** is classified as **missing not at random** (MNAR), the probability 
 $P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis})$ cannot be factorized into a simpler form.
 
+---
 
 
 

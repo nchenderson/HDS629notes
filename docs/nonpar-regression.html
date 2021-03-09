@@ -172,6 +172,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.2.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#description-of-kernel-regression"><i class="fa fa-check"></i><b>3.2.1</b> Description of Kernel Regression</a></li>
 <li class="chapter" data-level="3.2.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-regression-in-the-sleepstudy-data"><i class="fa fa-check"></i><b>3.2.2</b> Kernel Regression in the sleepstudy data</a></li>
 <li class="chapter" data-level="3.2.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#bandwidth-selection"><i class="fa fa-check"></i><b>3.2.3</b> Bandwidth Selection</a></li>
+<li class="chapter" data-level="3.2.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#another-example-the-bone-data"><i class="fa fa-check"></i><b>3.2.4</b> Another Example: The Bone Data</a></li>
 </ul></li>
 <li class="chapter" data-level="3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines"><i class="fa fa-check"></i><b>3.3</b> Regression Splines</a></li>
 </ul></li>
@@ -357,6 +358,114 @@ some of the days.</p></li>
 </div>
 <div id="bandwidth-selection" class="section level3">
 <h3><span class="header-section-number">3.2.3</span> Bandwidth Selection</h3>
+<ul>
+<li><p>The bandwidth can be chosen to get a level of smoothness that looks good visually.</p></li>
+<li><p>For example, when observations are only collected daily like in the <strong>sleepstudy</strong>
+you will probably want to choose a bandwidth so that the estimated mean function
+does not have obvious bumps in between days.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>To choose the bandwidth <span class="math inline">\(h_{n} &gt; 0\)</span> using a formal criterion, a common approach is
+to use <strong>leave-one-out</strong> cross-validation.</p></li>
+<li><p>In the context of <strong>longitudinal data</strong>, it is usually suggested that you
+leave one <strong>subject</strong> out at a time rather than one <strong>observation</strong> at a time (cite).</p></li>
+<li><p>The reason for this is that the <strong>subject-level leave-one-out cross-validation</strong> score is
+a good estimate of the <strong>mean-squared prediction error</strong> of regardless of what the
+correlation structure is for the within-subject outcomes.</p></li>
+<li><p>This is not the case when using <strong>observation-level leave-one-out cross-validation</strong>.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>The <strong>subject-level leave-one-out cross-validation score</strong> for a given bandwidth choice is
+defined as
+<span class="math display">\[\begin{equation}
+\textrm{LOOCV}(h_{n}) = \sum_{i=1}^{n}\sum_{j=1}^{m_{i}} \{ Y_{ij} - \hat{\mu}_{h_{n}}^{(-i)}(\mathbf{x}_{ij}) \}^{2}
+\end{equation}\]</span></p></li>
+<li><p>Here, <span class="math inline">\(\hat{\mu}_{h_{n}}^{(-i)}(\mathbf{x}_{ij})\)</span> is the mean function estimate when using
+<strong>bandwidth</strong> <span class="math inline">\(h_{n}\)</span> and when ignoring the data from subject <span class="math inline">\(i\)</span>.</p></li>
+</ul>
+</div>
+<div id="another-example-the-bone-data" class="section level3">
+<h3><span class="header-section-number">3.2.4</span> Another Example: The Bone Data</h3>
+<ul>
+<li><p>As another example, we can use the “bone” dataset.</p></li>
+<li><p>This is a <strong>longitudinal dataset</strong> with typically 2 or 3 observations per individual.</p></li>
+</ul>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb129-1" data-line-number="1">bonedat &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://web.stanford.edu/~hastie/ElemStatLearn/datasets/bone.data&quot;</span>, </a>
+<a class="sourceLine" id="cb129-2" data-line-number="2">                      <span class="dt">header=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb129-3" data-line-number="3"><span class="kw">head</span>(bonedat)</a></code></pre></div>
+<pre><code>##   idnum   age gender      spnbmd
+## 1     1 11.70   male 0.018080670
+## 2     1 12.70   male 0.060109290
+## 3     1 13.75   male 0.005857545
+## 4     2 13.25   male 0.010263930
+## 5     2 14.30   male 0.210526300
+## 6     2 15.30   male 0.040843210</code></pre>
+<ul>
+<li>For this data, the interest would be to model the mean function for bone mineral
+density (the variable <code>spnbmd</code>) as a function of <code>age</code></li>
+</ul>
+<p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<hr />
+<ul>
+<li>We can compute the leave-one-out cross-validation score for the <strong>bone</strong> data
+for <strong>different</strong> values of <span class="math inline">\(h_{n}\)</span> (here <span class="math inline">\(0.1 \leq h_{n} \leq 1\)</span>) with the following code:</li>
+</ul>
+<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb131-1" data-line-number="1">nh &lt;-<span class="st"> </span><span class="dv">200</span></a>
+<a class="sourceLine" id="cb131-2" data-line-number="2">hh &lt;-<span class="st"> </span><span class="kw">seq</span>(.<span class="dv">1</span>, <span class="dv">1</span>, <span class="dt">length.out=</span>nh)</a>
+<a class="sourceLine" id="cb131-3" data-line-number="3">LOOCV &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, nh)</a>
+<a class="sourceLine" id="cb131-4" data-line-number="4">subj.list &lt;-<span class="st"> </span><span class="kw">unique</span>(bonedat<span class="op">$</span>idnum)</a>
+<a class="sourceLine" id="cb131-5" data-line-number="5">nsubj &lt;-<span class="st"> </span><span class="kw">length</span>(subj.list)</a>
+<a class="sourceLine" id="cb131-6" data-line-number="6"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>nh) {</a>
+<a class="sourceLine" id="cb131-7" data-line-number="7">    ss &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb131-8" data-line-number="8">    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>nsubj) {</a>
+<a class="sourceLine" id="cb131-9" data-line-number="9">        ind &lt;-<span class="st"> </span>bonedat<span class="op">$</span>idnum<span class="op">==</span>subj.list[i]</a>
+<a class="sourceLine" id="cb131-10" data-line-number="10">        yy &lt;-<span class="st"> </span>bonedat<span class="op">$</span>spnbmd[<span class="op">-</span>ind]</a>
+<a class="sourceLine" id="cb131-11" data-line-number="11">        xx &lt;-<span class="st"> </span>bonedat<span class="op">$</span>age[<span class="op">-</span>ind]</a>
+<a class="sourceLine" id="cb131-12" data-line-number="12">        tmp &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(xx, yy, <span class="dt">kernel=</span><span class="st">&quot;normal&quot;</span>, <span class="dt">bandwidth =</span> hh[k],</a>
+<a class="sourceLine" id="cb131-13" data-line-number="13">                       <span class="dt">x.points=</span>bonedat<span class="op">$</span>age[ind])</a>
+<a class="sourceLine" id="cb131-14" data-line-number="14">        mu.hat &lt;-<span class="st"> </span>tmp<span class="op">$</span>y</a>
+<a class="sourceLine" id="cb131-15" data-line-number="15">        ss &lt;-<span class="st"> </span>ss <span class="op">+</span><span class="st"> </span><span class="kw">sum</span>((bonedat<span class="op">$</span>spnbmd[ind] <span class="op">-</span><span class="st"> </span>mu.hat)<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb131-16" data-line-number="16">    }</a>
+<a class="sourceLine" id="cb131-17" data-line-number="17">    LOOCV[k] &lt;-<span class="st"> </span>ss</a>
+<a class="sourceLine" id="cb131-18" data-line-number="18">}</a>
+<a class="sourceLine" id="cb131-19" data-line-number="19">hh[<span class="kw">which.min</span>(LOOCV)] <span class="co">## best seems to be 0.1</span></a></code></pre></div>
+<pre><code>## [1] 0.1</code></pre>
+<ul>
+<li>In this case, the best <strong>bandwidth</strong> was <span class="math inline">\(0.1\)</span> according to the
+subject-level leave-one-out cross-validation criterion.</li>
+</ul>
+<hr />
+<ul>
+<li>The kernel regression estimate of the mean function with the bandwidth of <span class="math inline">\(0.1\)</span> is plotted below:</li>
+</ul>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb133-1" data-line-number="1">bone.kernel &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(bonedat<span class="op">$</span>age, bonedat<span class="op">$</span>spnbmd, <span class="dt">kernel=</span><span class="st">&quot;normal&quot;</span>,</a>
+<a class="sourceLine" id="cb133-2" data-line-number="2">                        <span class="dt">bandwidth =</span> <span class="fl">0.1</span>, <span class="dt">x.points=</span><span class="kw">seq</span>(<span class="fl">9.4</span>, <span class="dv">25</span>, <span class="dt">length.out=</span><span class="dv">100</span>))</a>
+<a class="sourceLine" id="cb133-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb133-4" data-line-number="4"><span class="kw">plot</span>(bonedat<span class="op">$</span>age, bonedat<span class="op">$</span>spnbmd, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;spnbmd&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;age&quot;</span>,</a>
+<a class="sourceLine" id="cb133-5" data-line-number="5">     <span class="dt">main=</span><span class="st">&quot;Bone Data: Kernel Regression with Bandwidth = 0.1&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
+<a class="sourceLine" id="cb133-6" data-line-number="6"><span class="kw">points</span>(bonedat<span class="op">$</span>age, bonedat<span class="op">$</span>spnbmd, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb133-7" data-line-number="7"><span class="kw">lines</span>(bone.kernel<span class="op">$</span>x, bone.kernel<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<ul>
+<li>Using a bandwidth of <span class="math inline">\(1\)</span> gives a smoother mean function estimate.
+<img src="03-NonParRegression_files/figure-html/unnamed-chunk-13-1.png" width="672" /></li>
+</ul>
+<hr />
+<ul>
+<li><p>The performance of kernel regression methods can degrade quickly as we move to higher dimensions.
+The convergence rate of the estimated regression function to the true regression function slows substantially
+as we the dimension of the covariates <span class="math inline">\(\mathbf{x}_{ij}\)</span>.</p></li>
+<li><p>“Curse of dimensionality” - need very large datasets to have a sufficient number of observations
+near a given point <span class="math inline">\(\mathbf{x}\)</span>.</p></li>
+<li><p>Another approach when using multiple covariates is to use <strong>generalized additive models.</strong></p></li>
+<li><p>With <strong>generalized additive models</strong>, the mean function is expressed
+as the sum of several univariate nonparametric functions:
+<span class="math display">\[\begin{equation}
+\mu(\mathbf{x}) = \beta_{0} + \mu(x_{1}) + \mu(x_{2}) + \ldots + \mu(x_{p})
+\end{equation}\]</span></p></li>
+</ul>
 </div>
 </div>
 <div id="regression-splines" class="section level2">
@@ -364,7 +473,7 @@ some of the days.</p></li>
 <ul>
 <li><p>Using <strong>regression splines</strong> is another common nonparametric approach for estimating a
 mean function.</p></li>
-<li><p>The most common type of spline used is the <strong>cubic spline</strong>.</p></li>
+<li><p>The most common type of spline used in the context of nonparametric regression is the <strong>cubic spline</strong>.</p></li>
 <li><strong>Definition</strong>: A <strong>cubic spline</strong> with knots <span class="math inline">\(u_{1} &lt; u_{2} &lt; \ldots &lt; u_{q}\)</span> is a function <span class="math inline">\(f(x)\)</span> such that
 <ul>
 <li><span class="math inline">\(f(x)\)</span> is a cubic function over each of the intervals <span class="math inline">\((-\infty, u_{1}], [u_{1}, u_{2}], \ldots, [u_{q-1}, u_{q}], [u_{q}, \infty)\)</span>.</li>

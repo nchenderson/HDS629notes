@@ -218,7 +218,7 @@ does not have obvious bumps in between days.
 to use **leave-one-out** cross-validation.
 
 * In the context of **longitudinal data**, it is usually suggested that you 
-leave one **subject** out at a time rather than one **observation** at a time (cite).
+leave one **subject** out at a time rather than one **observation** at a time (@rice1991).
 
 * The reason for this is that the **subject-level leave-one-out cross-validation** score is
 a good estimate of the **mean-squared prediction error** of regardless of what the 
@@ -340,6 +340,7 @@ as the sum of several univariate nonparametric functions:
 
 ## Regression Splines
 
+### Overview
 * Using **regression splines** is another common nonparametric approach for estimating a 
 mean function.
 
@@ -351,17 +352,97 @@ mean function.
 
 ---
 
-* A commonly used **basis** for the set of cubic splines with knots $u_{1} < u_{2} < \ldots < u_{q}$ is the **B-spline** basis.
+* A commonly used set of **basis functions** for the set of cubic splines with knots $u_{1} < u_{2} < \ldots < u_{q}$ is the **B-spline** basis functions.
 
-* This means that if $\varphi_{1, B}(x), \ldots, \varphi_{q+4, B}(x)$ are the basis functions 
+* This means that if $\varphi_{1, B}(x), \ldots, \varphi_{q+4, B}(x)$ are the B-spline **basis functions**
+for the set of cubic splines with knots $u_{1} < u_{2} < \ldots < u_{q}$, we can represent any cubic spline
+estimate of the mean function as
+\begin{equation}
+\hat{\mu}(x) = \sum_{j=1}^{q+4} \hat{\beta}_{1}\varphi_{j, B}(x)
+\end{equation}
+
+* The nice thing about using regression splines is that they can estimated
+in the same way as you would in a typical regression setting.
+
+* The columns of the design matrix will be filled in with the values of $\varphi_{j,B}(x_{i})$.
 
 
+### Regression Splines with Longitudinal Data in R
 
+* Regression splines can be fitted in R by using the `splines` package
 
+```r
+library(splines)
+```
 
+* The `bs` function in `splines` generates the B-spline "design" matrix 
 
+```r
+bs(x, df, knots, degree)
+```
+* `x` - vector of covariates values. This can also just be the name of a variable when `bs` is used inside a function such as `geeglm`.
+* `df` - the "degrees of freedom". For a cubic spline this is actually $q + 3$ rather than $q + 4$. If you just enter `df`, the `bs` function will pick the knots for you.
+* `knots` - the vector of knots. If you don't want to pick the knots, you can just enter a number for the `df`.
+* `degree` - the degree of the piecewise polynomial. Typically, `degree=3` which would be a cubic spline.
 
+---
 
+* You can directly use **regression splines** within the **"GEE framework"**.
+
+* In this case, you can model the marginal mean (or part of the marginal mean function) with a spline.
+
+---
+
+* For example, with the **bone data**, suppose we want to fit separate curves for the male and female
+groups.
+
+* We could express the mean function $\mu(\cdot)$ as
+\begin{equation}
+\mu(t_{ij}) = f_{0}(t_{ij}) + A_{ij}f_{1}(t_{ij})
+(\#eq:gee-bone)
+\end{equation}
+
+* $f_{0}(\cdot)$ and $f_{1}(\cdot)$ would be modeled with regression splines.
+
+* $t_{ij}$ is the value of **age** for observation (i,j)
+
+* $A_{ij} = 1$ if the $(i,j)$ observation corresponds to a male individual 
+and $A_{ij} = 0$ if the $(i,j)$ observation corresponds to a female individual.
+
+---
+
+* To fit model \@ref(eq:gee-bone) using the `geepack` package, you can use the following code
+
+```r
+library(splines)
+gee.bone <- geeglm(spnbmd ~ bs(age, df=6) + gender*bs(age,df=6), id=idnum, data=bonedat)
+```
+
+* We can plot the estimated mean functions by first extracting the **fitted values** for both the male and female groups:
+
+```r
+male.fitted <- gee.bone$fitted.values[bonedat$gender=="male"]
+male.age <- bonedat$age[bonedat$gender=="male"]
+female.fitted <- gee.bone$fitted.values[bonedat$gender=="female"]
+female.age <- bonedat$age[bonedat$gender=="female"]
+```
+
+* Now, plot the fitted curves for both groups
+
+```r
+plot(bonedat$age, bonedat$spnbmd, lwd=1, xlab="age", ylab="spnbmd", 
+     main="Regression Splines for the Bone Data")
+points(bonedat$age[bonedat$gender=="male"], bonedat$spnbmd[bonedat$gender=="male"], 
+       cex=0.8)
+points(bonedat$age[bonedat$gender=="female"], bonedat$spnbmd[bonedat$gender=="female"], 
+       pch=16, cex=0.8)
+lines(male.age[order(male.age)], male.fitted[order(male.age)], col="red", lwd=2)
+lines(female.age[order(female.age)], female.fitted[order(female.age)], col="blue", 
+      lwd=2)
+legend("topright", legend=c("Male", "Female"), col=c("red", "blue"), lwd=3, bty='n')
+```
+
+<img src="03-NonParRegression_files/figure-html/unnamed-chunk-18-1.png" width="672" />
 
 
 ---

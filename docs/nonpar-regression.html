@@ -174,7 +174,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.2.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#bandwidth-selection"><i class="fa fa-check"></i><b>3.2.3</b> Bandwidth Selection</a></li>
 <li class="chapter" data-level="3.2.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#another-example-the-bone-data"><i class="fa fa-check"></i><b>3.2.4</b> Another Example: The Bone Data</a></li>
 </ul></li>
-<li class="chapter" data-level="3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines"><i class="fa fa-check"></i><b>3.3</b> Regression Splines</a></li>
+<li class="chapter" data-level="3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines"><i class="fa fa-check"></i><b>3.3</b> Regression Splines</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#overview"><i class="fa fa-check"></i><b>3.3.1</b> Overview</a></li>
+<li class="chapter" data-level="3.3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines-with-longitudinal-data-in-r"><i class="fa fa-check"></i><b>3.3.2</b> Regression Splines with Longitudinal Data in R</a></li>
+</ul></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -369,7 +372,7 @@ does not have obvious bumps in between days.</p></li>
 <li><p>To choose the bandwidth <span class="math inline">\(h_{n} &gt; 0\)</span> using a formal criterion, a common approach is
 to use <strong>leave-one-out</strong> cross-validation.</p></li>
 <li><p>In the context of <strong>longitudinal data</strong>, it is usually suggested that you
-leave one <strong>subject</strong> out at a time rather than one <strong>observation</strong> at a time (cite).</p></li>
+leave one <strong>subject</strong> out at a time rather than one <strong>observation</strong> at a time (<span class="citation">Rice and Silverman (<a href="#ref-rice1991">1991</a>)</span>).</p></li>
 <li><p>The reason for this is that the <strong>subject-level leave-one-out cross-validation</strong> score is
 a good estimate of the <strong>mean-squared prediction error</strong> of regardless of what the
 correlation structure is for the within-subject outcomes.</p></li>
@@ -470,6 +473,8 @@ as the sum of several univariate nonparametric functions:
 </div>
 <div id="regression-splines" class="section level2">
 <h2><span class="header-section-number">3.3</span> Regression Splines</h2>
+<div id="overview" class="section level3">
+<h3><span class="header-section-number">3.3.1</span> Overview</h3>
 <ul>
 <li><p>Using <strong>regression splines</strong> is another common nonparametric approach for estimating a
 mean function.</p></li>
@@ -482,9 +487,80 @@ mean function.</p></li>
 </ul>
 <hr />
 <ul>
-<li><p>A commonly used <strong>basis</strong> for the set of cubic splines with knots <span class="math inline">\(u_{1} &lt; u_{2} &lt; \ldots &lt; u_{q}\)</span> is the <strong>B-spline</strong> basis.</p></li>
-<li><p>This means that if <span class="math inline">\(\varphi_{1, B}(x), \ldots, \varphi_{q+4, B}(x)\)</span> are the basis functions</p></li>
+<li><p>A commonly used set of <strong>basis functions</strong> for the set of cubic splines with knots <span class="math inline">\(u_{1} &lt; u_{2} &lt; \ldots &lt; u_{q}\)</span> is the <strong>B-spline</strong> basis functions.</p></li>
+<li><p>This means that if <span class="math inline">\(\varphi_{1, B}(x), \ldots, \varphi_{q+4, B}(x)\)</span> are the B-spline <strong>basis functions</strong>
+for the set of cubic splines with knots <span class="math inline">\(u_{1} &lt; u_{2} &lt; \ldots &lt; u_{q}\)</span>, we can represent any cubic spline
+estimate of the mean function as
+<span class="math display">\[\begin{equation}
+\hat{\mu}(x) = \sum_{j=1}^{q+4} \hat{\beta}_{1}\varphi_{j, B}(x)
+\end{equation}\]</span></p></li>
+<li><p>The nice thing about using regression splines is that they can estimated
+in the same way as you would in a typical regression setting.</p></li>
+<li><p>The columns of the design matrix will be filled in with the values of <span class="math inline">\(\varphi_{j,B}(x_{i})\)</span>.</p></li>
 </ul>
+</div>
+<div id="regression-splines-with-longitudinal-data-in-r" class="section level3">
+<h3><span class="header-section-number">3.3.2</span> Regression Splines with Longitudinal Data in R</h3>
+<ul>
+<li>Regression splines can be fitted in R by using the <code>splines</code> package</li>
+</ul>
+<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb134-1" data-line-number="1"><span class="kw">library</span>(splines)</a></code></pre></div>
+<ul>
+<li>The <code>bs</code> function in <code>splines</code> generates the B-spline “design” matrix</li>
+</ul>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb135-1" data-line-number="1"><span class="kw">bs</span>(x, df, knots, degree)</a></code></pre></div>
+<ul>
+<li><code>x</code> - vector of covariates values. This can also just be the name of a variable when <code>bs</code> is used inside a function such as <code>geeglm</code>.</li>
+<li><code>df</code> - the “degrees of freedom”. For a cubic spline this is actually <span class="math inline">\(q + 3\)</span> rather than <span class="math inline">\(q + 4\)</span>. If you just enter <code>df</code>, the <code>bs</code> function will pick the knots for you.</li>
+<li><code>knots</code> - the vector of knots. If you don’t want to pick the knots, you can just enter a number for the <code>df</code>.</li>
+<li><code>degree</code> - the degree of the piecewise polynomial. Typically, <code>degree=3</code> which would be a cubic spline.</li>
+</ul>
+<hr />
+<ul>
+<li><p>You can directly use <strong>regression splines</strong> within the <strong>“GEE framework”</strong>.</p></li>
+<li><p>In this case, you can model the marginal mean (or part of the marginal mean function) with a spline.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>For example, with the <strong>bone data</strong>, suppose we want to fit separate curves for the male and female
+groups.</p></li>
+<li><p>We could express the mean function <span class="math inline">\(\mu(\cdot)\)</span> as
+<span class="math display" id="eq:gee-bone">\[\begin{equation}
+\mu(t_{ij}) = f_{0}(t_{ij}) + A_{ij}f_{1}(t_{ij})
+\tag{3.2}
+\end{equation}\]</span></p></li>
+<li><p><span class="math inline">\(f_{0}(\cdot)\)</span> and <span class="math inline">\(f_{1}(\cdot)\)</span> would be modeled with regression splines.</p></li>
+<li><p><span class="math inline">\(t_{ij}\)</span> is the value of <strong>age</strong> for observation (i,j)</p></li>
+<li><p><span class="math inline">\(A_{ij} = 1\)</span> if the <span class="math inline">\((i,j)\)</span> observation corresponds to a male individual
+and <span class="math inline">\(A_{ij} = 0\)</span> if the <span class="math inline">\((i,j)\)</span> observation corresponds to a female individual.</p></li>
+</ul>
+<hr />
+<ul>
+<li>To fit model <a href="nonpar-regression.html#eq:gee-bone">(3.2)</a> using the <code>geepack</code> package, you can use the following code</li>
+</ul>
+<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb136-1" data-line-number="1"><span class="kw">library</span>(splines)</a>
+<a class="sourceLine" id="cb136-2" data-line-number="2">gee.bone &lt;-<span class="st"> </span><span class="kw">geeglm</span>(spnbmd <span class="op">~</span><span class="st"> </span><span class="kw">bs</span>(age, <span class="dt">df=</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span>gender<span class="op">*</span><span class="kw">bs</span>(age,<span class="dt">df=</span><span class="dv">6</span>), <span class="dt">id=</span>idnum, <span class="dt">data=</span>bonedat)</a></code></pre></div>
+<ul>
+<li>We can plot the estimated mean functions by first extracting the <strong>fitted values</strong> for both the male and female groups:</li>
+</ul>
+<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb137-1" data-line-number="1">male.fitted &lt;-<span class="st"> </span>gee.bone<span class="op">$</span>fitted.values[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;male&quot;</span>]</a>
+<a class="sourceLine" id="cb137-2" data-line-number="2">male.age &lt;-<span class="st"> </span>bonedat<span class="op">$</span>age[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;male&quot;</span>]</a>
+<a class="sourceLine" id="cb137-3" data-line-number="3">female.fitted &lt;-<span class="st"> </span>gee.bone<span class="op">$</span>fitted.values[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;female&quot;</span>]</a>
+<a class="sourceLine" id="cb137-4" data-line-number="4">female.age &lt;-<span class="st"> </span>bonedat<span class="op">$</span>age[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;female&quot;</span>]</a></code></pre></div>
+<ul>
+<li>Now, plot the fitted curves for both groups</li>
+</ul>
+<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb138-1" data-line-number="1"><span class="kw">plot</span>(bonedat<span class="op">$</span>age, bonedat<span class="op">$</span>spnbmd, <span class="dt">lwd=</span><span class="dv">1</span>, <span class="dt">xlab=</span><span class="st">&quot;age&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;spnbmd&quot;</span>, </a>
+<a class="sourceLine" id="cb138-2" data-line-number="2">     <span class="dt">main=</span><span class="st">&quot;Regression Splines for the Bone Data&quot;</span>)</a>
+<a class="sourceLine" id="cb138-3" data-line-number="3"><span class="kw">points</span>(bonedat<span class="op">$</span>age[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;male&quot;</span>], bonedat<span class="op">$</span>spnbmd[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;male&quot;</span>], </a>
+<a class="sourceLine" id="cb138-4" data-line-number="4">       <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb138-5" data-line-number="5"><span class="kw">points</span>(bonedat<span class="op">$</span>age[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;female&quot;</span>], bonedat<span class="op">$</span>spnbmd[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;female&quot;</span>], </a>
+<a class="sourceLine" id="cb138-6" data-line-number="6">       <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb138-7" data-line-number="7"><span class="kw">lines</span>(male.age[<span class="kw">order</span>(male.age)], male.fitted[<span class="kw">order</span>(male.age)], <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb138-8" data-line-number="8"><span class="kw">lines</span>(female.age[<span class="kw">order</span>(female.age)], female.fitted[<span class="kw">order</span>(female.age)], <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>, </a>
+<a class="sourceLine" id="cb138-9" data-line-number="9">      <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb138-10" data-line-number="10"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span><span class="kw">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>), <span class="dt">lwd=</span><span class="dv">3</span>, <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>)</a></code></pre></div>
+<p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <hr />
 
 <div id="refs" class="references">
@@ -494,7 +570,17 @@ mean function.</p></li>
 <div>
 <p>Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.</p>
 </div>
+<div>
+<p>Rice, John A, and Bernard W Silverman. 1991. “Estimating the Mean and Covariance Structure Nonparametrically When the Data Are Curves.” <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 53 (1): 233–43.</p>
 </div>
+</div>
+</div>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-rice1991">
+<p>Rice, John A, and Bernard W Silverman. 1991. “Estimating the Mean and Covariance Structure Nonparametrically When the Data Are Curves.” <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 53 (1): 233–43.</p>
 </div>
 </div>
             </section>

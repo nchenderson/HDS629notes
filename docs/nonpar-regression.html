@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Nonparametric Regression with Longitudinal Data | Notes for Case Studies in Health Big Data</title>
+  <meta name="description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Nonparametric Regression with Longitudinal Data | Notes for Case Studies in Health Big Data" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://nchenderson.github.io/HDS629notes/" />
+  
+  <meta property="og:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  <meta name="github-repo" content="nchenderson/HDS629notes" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Nonparametric Regression with Longitudinal Data | Notes for Case Studies in Health Big Data" />
+  
+  <meta name="twitter:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  
+
+<meta name="author" content="Nicholas Henderson" />
+
+
+<meta name="date" content="2021-03-09" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="missing-data.html"/>
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Biostat 629</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="mixed-models.html"><a href="mixed-models.html"><i class="fa fa-check"></i><b>1</b> Mixed Models for Longitudinal Data Analysis</a><ul>
+<li class="chapter" data-level="1.1" data-path="mixed-models.html"><a href="mixed-models.html#sec:methods-overview"><i class="fa fa-check"></i><b>1.1</b> Methods for Analyzing Longitudinal Data</a></li>
+<li class="chapter" data-level="1.2" data-path="mixed-models.html"><a href="mixed-models.html#mixed-models-for-continuous-outcomes"><i class="fa fa-check"></i><b>1.2</b> Mixed Models for Continuous Outcomes</a></li>
+<li class="chapter" data-level="1.3" data-path="mixed-models.html"><a href="mixed-models.html#advantages-of-using-random-effects"><i class="fa fa-check"></i><b>1.3</b> Advantages of using random effects</a><ul>
+<li class="chapter" data-level="1.3.1" data-path="mixed-models.html"><a href="mixed-models.html#within-subject-correlation"><i class="fa fa-check"></i><b>1.3.1</b> Within-subject correlation</a></li>
+<li class="chapter" data-level="1.3.2" data-path="mixed-models.html"><a href="mixed-models.html#inference-about-heterogeneity---variance-of-random-effects"><i class="fa fa-check"></i><b>1.3.2</b> Inference about Heterogeneity - Variance of Random Effects</a></li>
+<li class="chapter" data-level="1.3.3" data-path="mixed-models.html"><a href="mixed-models.html#best-linear-unbiased-prediction"><i class="fa fa-check"></i><b>1.3.3</b> Best Linear Unbiased Prediction</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="mixed-models.html"><a href="mixed-models.html#generalized-linear-mixed-models-glmms"><i class="fa fa-check"></i><b>1.4</b> Generalized linear mixed models (GLMMs)</a><ul>
+<li class="chapter" data-level="1.4.1" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-binary-outcomes"><i class="fa fa-check"></i><b>1.4.1</b> GLMMs with Binary Outcomes</a></li>
+<li class="chapter" data-level="1.4.2" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-count-outcomes"><i class="fa fa-check"></i><b>1.4.2</b> GLMMs with Count Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="mixed-models.html"><a href="mixed-models.html#fitting-linear-mixed-models-lmms-and-generalized-linear-mixed-models-glmms-in-r"><i class="fa fa-check"></i><b>1.5</b> Fitting Linear Mixed Models (LMMs) and Generalized Linear Mixed models (GLMMs) in <strong>R</strong></a><ul>
+<li class="chapter" data-level="1.5.1" data-path="mixed-models.html"><a href="mixed-models.html#fitting-lmms-with-the-sleepstudy-data"><i class="fa fa-check"></i><b>1.5.1</b> Fitting LMMs with the sleepstudy data</a></li>
+<li class="chapter" data-level="1.5.2" data-path="mixed-models.html"><a href="mixed-models.html#fitting-binary-glmms-using-the-ohio-data"><i class="fa fa-check"></i><b>1.5.2</b> Fitting Binary GLMMs using the Ohio data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>2</b> Missing Data and Multiple Imputation</a><ul>
+<li class="chapter" data-level="2.1" data-path="missing-data.html"><a href="missing-data.html#missing-data-in-r-and-direct-approaches-for-handling-missing-data"><i class="fa fa-check"></i><b>2.1</b> Missing Data in R and “Direct Approaches” for Handling Missing Data</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="missing-data.html"><a href="missing-data.html#complete-case-analysis-listwise-deletion"><i class="fa fa-check"></i><b>2.1.1</b> Complete Case Analysis (Listwise Deletion)</a></li>
+<li class="chapter" data-level="2.1.2" data-path="missing-data.html"><a href="missing-data.html#other-direct-methods"><i class="fa fa-check"></i><b>2.1.2</b> Other “Direct” Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation"><i class="fa fa-check"></i><b>2.2</b> Multiple Imputation</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="missing-data.html"><a href="missing-data.html#short-overview-of-multiple-imputation"><i class="fa fa-check"></i><b>2.2.1</b> Short Overview of Multiple Imputation</a></li>
+<li class="chapter" data-level="2.2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation-with-mice"><i class="fa fa-check"></i><b>2.2.2</b> Multiple imputation with mice</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#what-is-mice-doing"><i class="fa fa-check"></i><b>2.3</b> What is MICE doing?</a></li>
+<li class="chapter" data-level="2.4" data-path="missing-data.html"><a href="missing-data.html#longitudinal-data"><i class="fa fa-check"></i><b>2.4</b> Longitudinal Data</a></li>
+<li class="chapter" data-level="2.5" data-path="missing-data.html"><a href="missing-data.html#different-missing-data-mechanisms"><i class="fa fa-check"></i><b>2.5</b> Different Missing Data Mechanisms</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="missing-data.html"><a href="missing-data.html#missing-completely-at-random-mcar"><i class="fa fa-check"></i><b>2.5.1</b> Missing Completely at Random (MCAR)</a></li>
+<li class="chapter" data-level="2.5.2" data-path="missing-data.html"><a href="missing-data.html#missing-at-random-mar"><i class="fa fa-check"></i><b>2.5.2</b> Missing at Random (MAR)</a></li>
+<li class="chapter" data-level="2.5.3" data-path="missing-data.html"><a href="missing-data.html#missing-not-at-random-mnar"><i class="fa fa-check"></i><b>2.5.3</b> Missing not at Random (MNAR)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="nonpar-regression.html"><a href="nonpar-regression.html"><i class="fa fa-check"></i><b>3</b> Nonparametric Regression with Longitudinal Data</a><ul>
+<li class="chapter" data-level="3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#notation"><i class="fa fa-check"></i><b>3.1</b> Notation</a></li>
+<li class="chapter" data-level="3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-smoothing"><i class="fa fa-check"></i><b>3.2</b> Kernel Smoothing</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#description-of-kernel-regression"><i class="fa fa-check"></i><b>3.2.1</b> Description of Kernel Regression</a></li>
+<li class="chapter" data-level="3.2.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-regression-in-the-sleepstudy-data"><i class="fa fa-check"></i><b>3.2.2</b> Kernel Regression in the sleepstudy data</a></li>
+<li class="chapter" data-level="3.2.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#bandwidth-selection"><i class="fa fa-check"></i><b>3.2.3</b> Bandwidth Selection</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines"><i class="fa fa-check"></i><b>3.3</b> Regression Splines</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notes for Case Studies in Health Big Data</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="nonpar-regression" class="section level1">
+<h1><span class="header-section-number">Chapter 3</span> Nonparametric Regression with Longitudinal Data</h1>
+<div id="notation" class="section level2">
+<h2><span class="header-section-number">3.1</span> Notation</h2>
+<ul>
+<li>For <strong>longitudinal data</strong>, we will again use the following <strong>notation</strong>:
+<ul>
+<li><p>Individual <span class="math inline">\(i\)</span> has observations for both the outcome and the covariates at times <span class="math inline">\(t_{i1}, \ldots, t_{in_{i}}\)</span></p></li>
+<li><p><span class="math inline">\(Y_{ij}\)</span> is the outcome for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
+<li><p><span class="math inline">\(\mathbf{x}_{ij}\)</span> is the vector of covariates at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
+<li><p>The <span class="math inline">\(i^{th}\)</span> individual has <span class="math inline">\(n_{i}\)</span> observations: <span class="math inline">\(Y_{i1}, \ldots, Y_{in_{i}}\)</span>.</p></li>
+<li><p>There will be <span class="math inline">\(m\)</span> individuals in the study (so <span class="math inline">\(1 \leq i \leq m\)</span>).</p></li>
+</ul></li>
+<li><p>A general regression model relating <span class="math inline">\(Y_{ij}\)</span> and <span class="math inline">\(\mathbf{x}_{ij}\)</span> is the following:
+<span class="math display">\[\begin{equation}
+Y_{ij} = \mu( \mathbf{x}_{ij} ) + \varepsilon_{ij}  \nonumber
+\end{equation}\]</span></p></li>
+<li><p>Here, <span class="math inline">\(\mu(\mathbf{x}_{ij}) = E(Y_{ij}| \mathbf{x}_{ij})\)</span> is the “mean function”.</p></li>
+<li><p>In <strong>nonparametric approaches</strong> to estimating <span class="math inline">\(\mu(\cdot)\)</span>, we will try to estimate <span class="math inline">\(\mu(\mathbf{x})\)</span> without
+making any strong assumptions about the form of <span class="math inline">\(\mu( \mathbf{x} )\)</span>.</p></li>
+<li><p>Basically, in a nonparametric approach, there is not a fixed set of parameters describing
+the mean function that does not change as the sample size grows.</p></li>
+</ul>
+</div>
+<div id="kernel-smoothing" class="section level2">
+<h2><span class="header-section-number">3.2</span> Kernel Smoothing</h2>
+<div id="description-of-kernel-regression" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> Description of Kernel Regression</h3>
+<ul>
+<li><p>With <strong>kernel regression</strong>, we estimate the mean function <span class="math inline">\(\mu(\mathbf{x})\)</span> at <span class="math inline">\(\mathbf{x}\)</span>
+by taking a weighted <strong>“local average”</strong> of the <span class="math inline">\(Y_{ij}\)</span> around <span class="math inline">\(\mathbf{x}\)</span>.</p></li>
+<li><p>Specifically, the <strong>kernel regression estimate</strong> of <span class="math inline">\(\mu(\cdot)\)</span> at a point <span class="math inline">\(\mathbf{x}\)</span> can be expressed as
+<span class="math display">\[\begin{equation}
+\hat{\mu}( \mathbf{x} ) = \sum_{i=1}^{m}\sum_{j=1}^{n_{i}} w_{ij}(\mathbf{x})Y_{ij} 
+\end{equation}\]</span></p></li>
+<li><p>The <strong>“weights”</strong> at the point <span class="math inline">\(\mathbf{x}\)</span> are given by
+<span class="math display" id="eq:nw-weights">\[\begin{equation}
+w_{ij}(\mathbf{x}) = \frac{ K\Big( \frac{\mathbf{x} - \mathbf{x}_{ij}}{ h_{n} }\Big) }{ \sum_{i=1}^{m}\sum_{j=1}^{n_{i}} K\Big( \frac{\mathbf{x} - \mathbf{x}_{ij}}{ h_{n} }\Big)  }
+\tag{3.1}
+\end{equation}\]</span></p></li>
+<li><p>When using the weights <a href="nonpar-regression.html#eq:nw-weights">(3.1)</a>, <span class="math inline">\(\hat{\mu}(\mathbf{x})\)</span> is known as the <strong>Nadaraya-Watson</strong> esitmator.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>The function <span class="math inline">\(K(\cdot)\)</span> in <a href="nonpar-regression.html#eq:nw-weights">(3.1)</a> is referred to as the <strong>“kernel function”</strong>.</p></li>
+<li>The <strong>kernel function</strong> <span class="math inline">\(K(\cdot)\)</span> is:
+<ul>
+<li>A smooth nonnegative function</li>
+<li>Symmetric around <span class="math inline">\(0\)</span></li>
+<li>Has a mode at <span class="math inline">\(0\)</span> and decays the further you go away from <span class="math inline">\(0\)</span></li>
+</ul></li>
+<li><p>A common choice of <span class="math inline">\(K(\cdot)\)</span> is the <strong>Gaussian kernel</strong>
+<span class="math display">\[\begin{equation}
+K(\mathbf{u}) = \exp\Big\{ - \frac{||\mathbf{u}||^{2}}{2} \Big\}
+\end{equation}\]</span></p></li>
+</ul>
+<p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<hr />
+<ul>
+<li><p>Observations where <span class="math inline">\(\mathbf{x}_{ij}\)</span> is <strong>“close”</strong> to <span class="math inline">\(\mathbf{x}\)</span> will be given
+a larger weight <span class="math inline">\(w_{ij}(\mathbf{x})\)</span> because <span class="math inline">\(||\mathbf{x} - \mathbf{x}_{ij}||^{2}\)</span> will be small.</p></li>
+<li><p>Similarly, observations where <span class="math inline">\(\mathbf{x}_{ij}\)</span> is <strong>“far away”</strong> from <span class="math inline">\(\mathbf{x}\)</span> will be given
+a smaller weight <span class="math inline">\(w_{ij}(\mathbf{x})\)</span> because <span class="math inline">\(||\mathbf{x} - \mathbf{x}_{ij}||^{2}\)</span> will be small.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>The term <span class="math inline">\(h_{n} &gt; 0\)</span> is referred to as the <strong>bandwidth</strong>.</p></li>
+<li><p>The <strong>bandwidth</strong> determines how many observations have
+a strong impact on the value of <span class="math inline">\(\hat{\mu}( \mathbf{x} )\)</span>.</p></li>
+<li><p>If the bandwidth <span class="math inline">\(h_{n}\)</span> is <strong>small</strong>, observations close to <span class="math inline">\(\mathbf{x}\)</span> will largely
+determine the value of <span class="math inline">\(\hat{\mu}(\mathbf{x})\)</span>.</p></li>
+<li><p>If the bandwidth <span class="math inline">\(h_{n}\)</span> is <strong>large</strong>, the value of <span class="math inline">\(\hat{\mu}(\mathbf{x})\)</span> will be more heavily influenced
+by a larger number of observations.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>Kernel regression estimates with a <strong>smaller bandwidth</strong> will be more “wiggly” and <strong>non-smooth</strong>.</p></li>
+<li><p>Kernel regression estimates with a <strong>larger bandwidth</strong> will be more <strong>smooth</strong>.</p></li>
+</ul>
+</div>
+<div id="kernel-regression-in-the-sleepstudy-data" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> Kernel Regression in the sleepstudy data</h3>
+<ul>
+<li><p>Again, let’s look at the <strong>sleepstudy</strong> data from the <strong>lme4</strong> package.</p></li>
+<li><p>The <strong>sleepstudy</strong> data had 18 participants with <strong>reaction time</strong>
+measured across 10 days.</p></li>
+</ul>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb120-1" data-line-number="1"><span class="kw">library</span>(lme4)</a></code></pre></div>
+<pre><code>## Loading required package: Matrix</code></pre>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb122-1" data-line-number="1"><span class="kw">data</span>(sleepstudy)</a>
+<a class="sourceLine" id="cb122-2" data-line-number="2"><span class="kw">head</span>(sleepstudy)</a></code></pre></div>
+<pre><code>##   Reaction Days Subject
+## 1 249.5600    0     308
+## 2 258.7047    1     308
+## 3 250.8006    2     308
+## 4 321.4398    3     308
+## 5 356.8519    4     308
+## 6 414.6901    5     308</code></pre>
+<p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<hr />
+<ul>
+<li><p>We can estimate the <strong>marginal mean function</strong> for the <strong>sleepstudy</strong> data by using a <strong>GEE</strong>.</p></li>
+<li>We will assume that reaction time is a <strong>linear function</strong> of time on study:
+<ul>
+<li>That is, we will assume that <span class="math inline">\(\mu(t) = \beta_{0} + \beta_{1} t\)</span>.</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb124-1" data-line-number="1"><span class="kw">library</span>(geepack)</a>
+<a class="sourceLine" id="cb124-2" data-line-number="2"><span class="co">## Use AR(1) correlation structure</span></a>
+<a class="sourceLine" id="cb124-3" data-line-number="3">sleep.gee &lt;-<span class="st"> </span><span class="kw">geeglm</span>(Reaction <span class="op">~</span><span class="st"> </span>Days, <span class="dt">data=</span>sleepstudy, <span class="dt">id=</span>Subject, <span class="dt">corstr=</span><span class="st">&quot;ar1&quot;</span>) </a></code></pre></div>
+<ul>
+<li>To get the value of the estimated <strong>regression function</strong>, we can use the first
+<span class="math inline">\(10\)</span> fitted values (because the fitted values for each subject are the same as the overall mean function)</li>
+</ul>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb125-1" data-line-number="1"><span class="co">## Estimated mean function at each time point</span></a>
+<a class="sourceLine" id="cb125-2" data-line-number="2">gee.regfn &lt;-<span class="st"> </span>sleep.gee<span class="op">$</span>fitted.values[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,<span class="dv">1</span>] </a>
+<a class="sourceLine" id="cb125-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb125-4" data-line-number="4"><span class="co">### Now plot the estimated mean function</span></a>
+<a class="sourceLine" id="cb125-5" data-line-number="5"><span class="kw">plot</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Days&quot;</span>,</a>
+<a class="sourceLine" id="cb125-6" data-line-number="6">     <span class="dt">main=</span><span class="st">&quot;Sleepstudy: GEE estimate of Mean Function&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
+<a class="sourceLine" id="cb125-7" data-line-number="7"><span class="kw">points</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb125-8" data-line-number="8"><span class="kw">lines</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">9</span>, gee.regfn, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<hr />
+<ul>
+<li><p>To find a kernel regression estimate of the mean function, you can use the <strong>ksmooth</strong> function in <strong>R</strong>.</p></li>
+<li><p>One thing to note is that <strong>ksmooth</strong> only works for a scalar covariate.</p></li>
+<li><p>Using a <strong>bandwidth</strong> of <span class="math inline">\(0.5\)</span> and a <strong>Gaussian kernel</strong>, we can find the kernel regression estimate of the mean function
+with the following <strong>R</strong> code:</p></li>
+</ul>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb126-1" data-line-number="1">sleep.kernel &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">kernel=</span><span class="st">&quot;normal&quot;</span>,</a>
+<a class="sourceLine" id="cb126-2" data-line-number="2">                        <span class="dt">bandwidth =</span> <span class="fl">0.5</span>)</a></code></pre></div>
+<ul>
+<li><p>This will return a list with an “x vector” and a “y vector”.</p></li>
+<li><p>The <code>x</code> vector will be the vector of points at which the regression function
+is estimated. The <code>y</code> vector will be a vector containing the estimated values of the regression function.</p></li>
+</ul>
+<hr />
+<ul>
+<li>Let’s <strong>plot</strong> the estimated mean function to see what it looks like:</li>
+</ul>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb127-1" data-line-number="1"><span class="kw">plot</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Days&quot;</span>,</a>
+<a class="sourceLine" id="cb127-2" data-line-number="2">     <span class="dt">main=</span><span class="st">&quot;Sleepstudy: Kernel Regression with Bandwidth = 0.5&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
+<a class="sourceLine" id="cb127-3" data-line-number="3"><span class="kw">points</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb127-4" data-line-number="4"><span class="kw">lines</span>(sleep.kernel<span class="op">$</span>x, sleep.kernel<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<ul>
+<li><p>This <strong>bandwidth</strong> looks too small. There are clear “near jumps” in between
+some of the days.</p></li>
+<li><p>We can try a <strong>bandwidth</strong> of <span class="math inline">\(1\)</span> to see if we can smooth this out a bit.</p></li>
+</ul>
+<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb128-1" data-line-number="1">sleep.kernel.bw1 &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">kernel=</span><span class="st">&quot;normal&quot;</span>,</a>
+<a class="sourceLine" id="cb128-2" data-line-number="2">                        <span class="dt">bandwidth =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb128-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb128-4" data-line-number="4"><span class="kw">plot</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Days&quot;</span>,</a>
+<a class="sourceLine" id="cb128-5" data-line-number="5">     <span class="dt">main=</span><span class="st">&quot;Sleepstudy: Kernel Regression with Bandwidth = 1&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
+<a class="sourceLine" id="cb128-6" data-line-number="6"><span class="kw">points</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb128-7" data-line-number="7"><span class="kw">lines</span>(sleep.kernel.bw1<span class="op">$</span>x, sleep.kernel.bw1<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="bandwidth-selection" class="section level3">
+<h3><span class="header-section-number">3.2.3</span> Bandwidth Selection</h3>
+</div>
+</div>
+<div id="regression-splines" class="section level2">
+<h2><span class="header-section-number">3.3</span> Regression Splines</h2>
+<ul>
+<li><p>Using <strong>regression splines</strong> is another common nonparametric approach for estimating a
+mean function.</p></li>
+<li><p>The most common type of spline used is the <strong>cubic spline</strong>.</p></li>
+<li><strong>Definition</strong>: A <strong>cubic spline</strong> with knots <span class="math inline">\(u_{1} &lt; u_{2} &lt; \ldots &lt; u_{q}\)</span> is a function <span class="math inline">\(f(x)\)</span> such that
+<ul>
+<li><span class="math inline">\(f(x)\)</span> is a cubic function over each of the intervals <span class="math inline">\((-\infty, u_{1}], [u_{1}, u_{2}], \ldots, [u_{q-1}, u_{q}], [u_{q}, \infty)\)</span>.</li>
+<li><span class="math inline">\(f(x)\)</span>, <span class="math inline">\(f&#39;(x)\)</span>, and <span class="math inline">\(f&#39;&#39;(x)\)</span> are all continuous functions.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>A commonly used <strong>basis</strong> for the set of cubic splines with knots <span class="math inline">\(u_{1} &lt; u_{2} &lt; \ldots &lt; u_{q}\)</span> is the <strong>B-spline</strong> basis.</p></li>
+<li><p>This means that if <span class="math inline">\(\varphi_{1, B}(x), \ldots, \varphi_{q+4, B}(x)\)</span> are the basis functions</p></li>
+</ul>
+<hr />
+
+<div id="refs" class="references">
+<div>
+<p>Buuren, S van, and Karin Groothuis-Oudshoorn. 2010. “Mice: Multivariate Imputation by Chained Equations in R.” <em>Journal of Statistical Software</em>, 1–68.</p>
+</div>
+<div>
+<p>Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.</p>
+</div>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="missing-data.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

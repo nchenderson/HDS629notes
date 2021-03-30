@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-03-09" />
+<meta name="date" content="2021-03-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +32,7 @@
   
   
 <link rel="prev" href="missing-data.html"/>
-
+<link rel="next" href="glmm-lasso.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -178,6 +178,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#overview"><i class="fa fa-check"></i><b>3.3.1</b> Overview</a></li>
 <li class="chapter" data-level="3.3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines-with-longitudinal-data-in-r"><i class="fa fa-check"></i><b>3.3.2</b> Regression Splines with Longitudinal Data in R</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="glmm-lasso.html"><a href="glmm-lasso.html"><i class="fa fa-check"></i><b>4</b> Sparse Regression for Longitudinal Data</a><ul>
+<li class="chapter" data-level="4.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#sparse-regression-methods"><i class="fa fa-check"></i><b>4.1</b> Sparse regression methods</a></li>
+<li class="chapter" data-level="4.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#the-lasso-with-longitudinal-data"><i class="fa fa-check"></i><b>4.2</b> The Lasso with longitudinal data</a></li>
+<li class="chapter" data-level="4.3" data-path="glmm-lasso.html"><a href="glmm-lasso.html#lasso-for-lmms-and-glmms-in-r"><i class="fa fa-check"></i><b>4.3</b> Lasso for LMMs and GLMMs in R</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#soccer-data"><i class="fa fa-check"></i><b>4.3.1</b> Soccer Data</a></li>
+<li class="chapter" data-level="4.3.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#choosing-the-tuning-parameter-for-the-soccer-data"><i class="fa fa-check"></i><b>4.3.2</b> Choosing the tuning parameter for the soccer data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="glmm-lasso.html"><a href="glmm-lasso.html#cross-validation-for-longitudinal-data"><i class="fa fa-check"></i><b>4.4</b> Cross-Validation for Longitudinal Data</a></li>
+<li class="chapter" data-level="4.5" data-path="glmm-lasso.html"><a href="glmm-lasso.html#glmm-lasso-with-binary-outcomes"><i class="fa fa-check"></i><b>4.5</b> GLMM-Lasso with Binary Outcomes</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -563,17 +573,6 @@ and <span class="math inline">\(A_{ij} = 0\)</span> if the <span class="math inl
 <p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <hr />
 
-<div id="refs" class="references">
-<div>
-<p>Buuren, S van, and Karin Groothuis-Oudshoorn. 2010. “Mice: Multivariate Imputation by Chained Equations in R.” <em>Journal of Statistical Software</em>, 1–68.</p>
-</div>
-<div>
-<p>Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.</p>
-</div>
-<div>
-<p>Rice, John A, and Bernard W Silverman. 1991. “Estimating the Mean and Covariance Structure Nonparametrically When the Data Are Curves.” <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 53 (1): 233–43.</p>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -588,8 +587,8 @@ and <span class="math inline">\(A_{ij} = 0\)</span> if the <span class="math inl
           </div>
         </div>
       </div>
-<a href="missing-data.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="missing-data.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="glmm-lasso.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

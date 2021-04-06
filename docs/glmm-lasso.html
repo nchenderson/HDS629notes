@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-03-30" />
+<meta name="date" content="2021-04-06" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +32,7 @@
   
   
 <link rel="prev" href="nonpar-regression.html"/>
-
+<link rel="next" href="risk-prediction.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -188,6 +188,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="glmm-lasso.html"><a href="glmm-lasso.html#cross-validation-for-longitudinal-data"><i class="fa fa-check"></i><b>4.4</b> Cross-Validation for Longitudinal Data</a></li>
 <li class="chapter" data-level="4.5" data-path="glmm-lasso.html"><a href="glmm-lasso.html#glmm-lasso-with-binary-outcomes"><i class="fa fa-check"></i><b>4.5</b> GLMM-Lasso with Binary Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="risk-prediction.html"><a href="risk-prediction.html"><i class="fa fa-check"></i><b>5</b> Risk Prediction and Validation</a><ul>
+<li class="chapter" data-level="5.1" data-path="risk-prediction.html"><a href="risk-prediction.html#risk-predictionstratification"><i class="fa fa-check"></i><b>5.1</b> Risk Prediction/Stratification</a></li>
+<li class="chapter" data-level="5.2" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve-and-the-c-statistic"><i class="fa fa-check"></i><b>5.2</b> Area under the ROC curve and the C-statistic</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="risk-prediction.html"><a href="risk-prediction.html#sensitivity-and-specificity"><i class="fa fa-check"></i><b>5.2.1</b> Sensitivity and Specificity</a></li>
+<li class="chapter" data-level="5.2.2" data-path="risk-prediction.html"><a href="risk-prediction.html#the-roc-curve"><i class="fa fa-check"></i><b>5.2.2</b> The ROC curve</a></li>
+<li class="chapter" data-level="5.2.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-roc-curve"><i class="fa fa-check"></i><b>5.2.3</b> Computing the ROC curve</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve"><i class="fa fa-check"></i><b>5.3</b> Area under the ROC curve</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="risk-prediction.html"><a href="risk-prediction.html#rewriting-the-formula-for-the-auc"><i class="fa fa-check"></i><b>5.3.1</b> Rewriting the formula for the AUC</a></li>
+<li class="chapter" data-level="5.3.2" data-path="risk-prediction.html"><a href="risk-prediction.html#interpreting-the-auc"><i class="fa fa-check"></i><b>5.3.2</b> Interpreting the AUC</a></li>
+<li class="chapter" data-level="5.3.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-auc-in-r"><i class="fa fa-check"></i><b>5.3.3</b> Computing the AUC in R</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="risk-prediction.html"><a href="risk-prediction.html#calibration"><i class="fa fa-check"></i><b>5.4</b> Calibration</a></li>
+<li class="chapter" data-level="5.5" data-path="risk-prediction.html"><a href="risk-prediction.html#longitudinal-data-and-risk-score-validation"><i class="fa fa-check"></i><b>5.5</b> Longitudinal Data and Risk Score Validation</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -692,23 +707,6 @@ best value of <span class="math inline">\(\lambda\)</span> is roughly <span clas
 ## id 2.674618</code></pre>
 <hr />
 
-<div id="refs" class="references">
-<div>
-<p>Buuren, S van, and Karin Groothuis-Oudshoorn. 2010. “Mice: Multivariate Imputation by Chained Equations in R.” <em>Journal of Statistical Software</em>, 1–68.</p>
-</div>
-<div>
-<p>Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.</p>
-</div>
-<div>
-<p>Rice, John A, and Bernard W Silverman. 1991. “Estimating the Mean and Covariance Structure Nonparametrically When the Data Are Curves.” <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 53 (1): 233–43.</p>
-</div>
-<div>
-<p>Schelldorfer, Jürg, Peter Bühlmann, and Sara Van De Geer. 2011. “Estimation for High-Dimensional Linear Mixed-Effects Models Using <span class="math inline">\(\ell_{1}\)</span>-Penalization.” <em>Scandinavian Journal of Statistics</em> 38 (2): 197–214.</p>
-</div>
-<div>
-<p>Wang, Lan, Jianhui Zhou, and Annie Qu. 2012. “Penalized Generalized Estimating Equations for High-Dimensional Longitudinal Data Analysis.” <em>Biometrics</em> 68 (2): 353–60.</p>
-</div>
-</div>
 </div>
 </div>
 <h3>References</h3>
@@ -725,8 +723,8 @@ best value of <span class="math inline">\(\lambda\)</span> is roughly <span clas
           </div>
         </div>
       </div>
-<a href="nonpar-regression.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="nonpar-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="risk-prediction.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

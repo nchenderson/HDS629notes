@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 5 Risk Prediction and Validation | Notes for Case Studies in Health Big Data</title>
+  <meta name="description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 5 Risk Prediction and Validation | Notes for Case Studies in Health Big Data" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://nchenderson.github.io/HDS629notes/" />
+  
+  <meta property="og:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  <meta name="github-repo" content="nchenderson/HDS629notes" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 5 Risk Prediction and Validation | Notes for Case Studies in Health Big Data" />
+  
+  <meta name="twitter:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  
+
+<meta name="author" content="Nicholas Henderson" />
+
+
+<meta name="date" content="2021-04-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="glmm-lasso.html"/>
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Biostat 629</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="mixed-models.html"><a href="mixed-models.html"><i class="fa fa-check"></i><b>1</b> Mixed Models for Longitudinal Data Analysis</a><ul>
+<li class="chapter" data-level="1.1" data-path="mixed-models.html"><a href="mixed-models.html#sec:methods-overview"><i class="fa fa-check"></i><b>1.1</b> Methods for Analyzing Longitudinal Data</a></li>
+<li class="chapter" data-level="1.2" data-path="mixed-models.html"><a href="mixed-models.html#mixed-models-for-continuous-outcomes"><i class="fa fa-check"></i><b>1.2</b> Mixed Models for Continuous Outcomes</a></li>
+<li class="chapter" data-level="1.3" data-path="mixed-models.html"><a href="mixed-models.html#advantages-of-using-random-effects"><i class="fa fa-check"></i><b>1.3</b> Advantages of using random effects</a><ul>
+<li class="chapter" data-level="1.3.1" data-path="mixed-models.html"><a href="mixed-models.html#within-subject-correlation"><i class="fa fa-check"></i><b>1.3.1</b> Within-subject correlation</a></li>
+<li class="chapter" data-level="1.3.2" data-path="mixed-models.html"><a href="mixed-models.html#inference-about-heterogeneity---variance-of-random-effects"><i class="fa fa-check"></i><b>1.3.2</b> Inference about Heterogeneity - Variance of Random Effects</a></li>
+<li class="chapter" data-level="1.3.3" data-path="mixed-models.html"><a href="mixed-models.html#best-linear-unbiased-prediction"><i class="fa fa-check"></i><b>1.3.3</b> Best Linear Unbiased Prediction</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="mixed-models.html"><a href="mixed-models.html#generalized-linear-mixed-models-glmms"><i class="fa fa-check"></i><b>1.4</b> Generalized linear mixed models (GLMMs)</a><ul>
+<li class="chapter" data-level="1.4.1" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-binary-outcomes"><i class="fa fa-check"></i><b>1.4.1</b> GLMMs with Binary Outcomes</a></li>
+<li class="chapter" data-level="1.4.2" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-count-outcomes"><i class="fa fa-check"></i><b>1.4.2</b> GLMMs with Count Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="mixed-models.html"><a href="mixed-models.html#fitting-linear-mixed-models-lmms-and-generalized-linear-mixed-models-glmms-in-r"><i class="fa fa-check"></i><b>1.5</b> Fitting Linear Mixed Models (LMMs) and Generalized Linear Mixed models (GLMMs) in <strong>R</strong></a><ul>
+<li class="chapter" data-level="1.5.1" data-path="mixed-models.html"><a href="mixed-models.html#fitting-lmms-with-the-sleepstudy-data"><i class="fa fa-check"></i><b>1.5.1</b> Fitting LMMs with the sleepstudy data</a></li>
+<li class="chapter" data-level="1.5.2" data-path="mixed-models.html"><a href="mixed-models.html#fitting-binary-glmms-using-the-ohio-data"><i class="fa fa-check"></i><b>1.5.2</b> Fitting Binary GLMMs using the Ohio data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>2</b> Missing Data and Multiple Imputation</a><ul>
+<li class="chapter" data-level="2.1" data-path="missing-data.html"><a href="missing-data.html#missing-data-in-r-and-direct-approaches-for-handling-missing-data"><i class="fa fa-check"></i><b>2.1</b> Missing Data in R and “Direct Approaches” for Handling Missing Data</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="missing-data.html"><a href="missing-data.html#complete-case-analysis-listwise-deletion"><i class="fa fa-check"></i><b>2.1.1</b> Complete Case Analysis (Listwise Deletion)</a></li>
+<li class="chapter" data-level="2.1.2" data-path="missing-data.html"><a href="missing-data.html#other-direct-methods"><i class="fa fa-check"></i><b>2.1.2</b> Other “Direct” Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation"><i class="fa fa-check"></i><b>2.2</b> Multiple Imputation</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="missing-data.html"><a href="missing-data.html#short-overview-of-multiple-imputation"><i class="fa fa-check"></i><b>2.2.1</b> Short Overview of Multiple Imputation</a></li>
+<li class="chapter" data-level="2.2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation-with-mice"><i class="fa fa-check"></i><b>2.2.2</b> Multiple imputation with mice</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#what-is-mice-doing"><i class="fa fa-check"></i><b>2.3</b> What is MICE doing?</a></li>
+<li class="chapter" data-level="2.4" data-path="missing-data.html"><a href="missing-data.html#longitudinal-data"><i class="fa fa-check"></i><b>2.4</b> Longitudinal Data</a></li>
+<li class="chapter" data-level="2.5" data-path="missing-data.html"><a href="missing-data.html#different-missing-data-mechanisms"><i class="fa fa-check"></i><b>2.5</b> Different Missing Data Mechanisms</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="missing-data.html"><a href="missing-data.html#missing-completely-at-random-mcar"><i class="fa fa-check"></i><b>2.5.1</b> Missing Completely at Random (MCAR)</a></li>
+<li class="chapter" data-level="2.5.2" data-path="missing-data.html"><a href="missing-data.html#missing-at-random-mar"><i class="fa fa-check"></i><b>2.5.2</b> Missing at Random (MAR)</a></li>
+<li class="chapter" data-level="2.5.3" data-path="missing-data.html"><a href="missing-data.html#missing-not-at-random-mnar"><i class="fa fa-check"></i><b>2.5.3</b> Missing not at Random (MNAR)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="nonpar-regression.html"><a href="nonpar-regression.html"><i class="fa fa-check"></i><b>3</b> Nonparametric Regression with Longitudinal Data</a><ul>
+<li class="chapter" data-level="3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#notation"><i class="fa fa-check"></i><b>3.1</b> Notation</a></li>
+<li class="chapter" data-level="3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-smoothing"><i class="fa fa-check"></i><b>3.2</b> Kernel Smoothing</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#description-of-kernel-regression"><i class="fa fa-check"></i><b>3.2.1</b> Description of Kernel Regression</a></li>
+<li class="chapter" data-level="3.2.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-regression-in-the-sleepstudy-data"><i class="fa fa-check"></i><b>3.2.2</b> Kernel Regression in the sleepstudy data</a></li>
+<li class="chapter" data-level="3.2.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#bandwidth-selection"><i class="fa fa-check"></i><b>3.2.3</b> Bandwidth Selection</a></li>
+<li class="chapter" data-level="3.2.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#another-example-the-bone-data"><i class="fa fa-check"></i><b>3.2.4</b> Another Example: The Bone Data</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines"><i class="fa fa-check"></i><b>3.3</b> Regression Splines</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#overview"><i class="fa fa-check"></i><b>3.3.1</b> Overview</a></li>
+<li class="chapter" data-level="3.3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines-with-longitudinal-data-in-r"><i class="fa fa-check"></i><b>3.3.2</b> Regression Splines with Longitudinal Data in R</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="glmm-lasso.html"><a href="glmm-lasso.html"><i class="fa fa-check"></i><b>4</b> Sparse Regression for Longitudinal Data</a><ul>
+<li class="chapter" data-level="4.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#sparse-regression-methods"><i class="fa fa-check"></i><b>4.1</b> Sparse regression methods</a></li>
+<li class="chapter" data-level="4.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#the-lasso-with-longitudinal-data"><i class="fa fa-check"></i><b>4.2</b> The Lasso with longitudinal data</a></li>
+<li class="chapter" data-level="4.3" data-path="glmm-lasso.html"><a href="glmm-lasso.html#lasso-for-lmms-and-glmms-in-r"><i class="fa fa-check"></i><b>4.3</b> Lasso for LMMs and GLMMs in R</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#soccer-data"><i class="fa fa-check"></i><b>4.3.1</b> Soccer Data</a></li>
+<li class="chapter" data-level="4.3.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#choosing-the-tuning-parameter-for-the-soccer-data"><i class="fa fa-check"></i><b>4.3.2</b> Choosing the tuning parameter for the soccer data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="glmm-lasso.html"><a href="glmm-lasso.html#cross-validation-for-longitudinal-data"><i class="fa fa-check"></i><b>4.4</b> Cross-Validation for Longitudinal Data</a></li>
+<li class="chapter" data-level="4.5" data-path="glmm-lasso.html"><a href="glmm-lasso.html#glmm-lasso-with-binary-outcomes"><i class="fa fa-check"></i><b>4.5</b> GLMM-Lasso with Binary Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="risk-prediction.html"><a href="risk-prediction.html"><i class="fa fa-check"></i><b>5</b> Risk Prediction and Validation</a><ul>
+<li class="chapter" data-level="5.1" data-path="risk-prediction.html"><a href="risk-prediction.html#risk-predictionstratification"><i class="fa fa-check"></i><b>5.1</b> Risk Prediction/Stratification</a></li>
+<li class="chapter" data-level="5.2" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve-and-the-c-statistic"><i class="fa fa-check"></i><b>5.2</b> Area under the ROC curve and the C-statistic</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="risk-prediction.html"><a href="risk-prediction.html#sensitivity-and-specificity"><i class="fa fa-check"></i><b>5.2.1</b> Sensitivity and Specificity</a></li>
+<li class="chapter" data-level="5.2.2" data-path="risk-prediction.html"><a href="risk-prediction.html#the-roc-curve"><i class="fa fa-check"></i><b>5.2.2</b> The ROC curve</a></li>
+<li class="chapter" data-level="5.2.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-roc-curve"><i class="fa fa-check"></i><b>5.2.3</b> Computing the ROC curve</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve"><i class="fa fa-check"></i><b>5.3</b> Area under the ROC curve</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="risk-prediction.html"><a href="risk-prediction.html#rewriting-the-formula-for-the-auc"><i class="fa fa-check"></i><b>5.3.1</b> Rewriting the formula for the AUC</a></li>
+<li class="chapter" data-level="5.3.2" data-path="risk-prediction.html"><a href="risk-prediction.html#interpreting-the-auc"><i class="fa fa-check"></i><b>5.3.2</b> Interpreting the AUC</a></li>
+<li class="chapter" data-level="5.3.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-auc-in-r"><i class="fa fa-check"></i><b>5.3.3</b> Computing the AUC in R</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="risk-prediction.html"><a href="risk-prediction.html#calibration"><i class="fa fa-check"></i><b>5.4</b> Calibration</a></li>
+<li class="chapter" data-level="5.5" data-path="risk-prediction.html"><a href="risk-prediction.html#longitudinal-data-and-risk-score-validation"><i class="fa fa-check"></i><b>5.5</b> Longitudinal Data and Risk Score Validation</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notes for Case Studies in Health Big Data</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="risk-prediction" class="section level1">
+<h1><span class="header-section-number">Chapter 5</span> Risk Prediction and Validation</h1>
+<hr />
+<div id="risk-predictionstratification" class="section level2">
+<h2><span class="header-section-number">5.1</span> Risk Prediction/Stratification</h2>
+<ul>
+<li><p>For <strong>binary outcomes</strong>, a <strong>risk prediction</strong> is related
+to the predicted probability that an individual has or will develop
+a certain condition/trait.</p></li>
+<li><strong>Examples</strong> of a risk prediction for a binary outcome:
+<ul>
+<li><p>Probability that someone has hypertension.</p></li>
+<li><p>Probability that someone has type-2 diabetes.</p></li>
+<li><p>Probability someone will be hospitalized over the next 1 year.</p></li>
+</ul></li>
+<li><strong>Risk stratification</strong>: Often, a risk prediction model
+will only report whether or not someone belongs to one of several <strong>risk strata</strong>.
+<ul>
+<li>For example, <strong>high</strong>, <strong>medium</strong>, or <strong>low risk</strong>.</li>
+</ul></li>
+</ul>
+</div>
+<div id="area-under-the-roc-curve-and-the-c-statistic" class="section level2">
+<h2><span class="header-section-number">5.2</span> Area under the ROC curve and the C-statistic</h2>
+<div id="sensitivity-and-specificity" class="section level3">
+<h3><span class="header-section-number">5.2.1</span> Sensitivity and Specificity</h3>
+<ul>
+<li><p>Let <span class="math inline">\(g(\mathbf{x}_{i})\)</span> be a <strong>risk score</strong> for an individual with covariate vector <span class="math inline">\(\mathbf{x}_{i}\)</span>.</p></li>
+<li>Higher values of <span class="math inline">\(g(\mathbf{x}_{i})\)</span> are supposed to imply greater probability that the binary
+outcome <span class="math inline">\(Y_{i}\)</span> is equal to <span class="math inline">\(1\)</span>.
+<ul>
+<li>Though <span class="math inline">\(g(\mathbf{x}_{i})\)</span> does not necessarily have to be a predicted probability.</li>
+</ul></li>
+<li>The value <span class="math inline">\(t\)</span> will be a <strong>threshold</strong> which determines whether or not, we predict <span class="math inline">\(Y_{i} = 1\)</span> or not.
+<ul>
+<li><span class="math inline">\(g(\mathbf{x}_{i}) \geq t\)</span> implies <span class="math inline">\(Y_{i} = 1\)</span></li>
+<li><span class="math inline">\(g(\mathbf{x}_{i}) &lt; t\)</span> implies <span class="math inline">\(Y_{i} = 0\)</span></li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>The <strong>sensitivity</strong> of the risk score <span class="math inline">\(g(\mathbf{x}_{i})\)</span> with the threshold <span class="math inline">\(t\)</span> is defined
+as the probability you “predict” <span class="math inline">\(Y_{i} = 1\)</span> assuming that <span class="math inline">\(Y_{i}\)</span> is, in fact, equal to <span class="math inline">\(1\)</span>.</p></li>
+<li>In other words, the <strong>sensitivity</strong> is the probability of making the right decision
+given that <span class="math inline">\(Y_{i} = 1\)</span>.
+<ul>
+<li>Sensitivity is often called the <strong>“true positive rate”</strong>.</li>
+</ul></li>
+<li><p>The <strong>sensitivity</strong> is defined as:
+<span class="math display">\[\begin{eqnarray}
+\textrm{Sensitivity}(t; g)
+&amp;=&amp; P\big\{ g(\mathbf{x}_{i}) \geq t| Y_{i} = 1 \big\} \nonumber \\
+&amp;=&amp; \frac{P\big\{ g(\mathbf{x}_{i}) \geq t, Y_{i} = 1 \big\}}{P\big\{ Y_{i} = 1 \big\} }\nonumber \\
+&amp;=&amp; \frac{P\big\{ g(\mathbf{x}_{i}) \geq t, Y_{i} = 1 \big\}}{
+P\big\{ g(\mathbf{x}_{i}) \geq t, Y_{i} = 1 \big\} + P\big\{ g(\mathbf{x}_{i}) &lt; t, Y_{i} = 1 \big\}}
+\end{eqnarray}\]</span></p></li>
+<li><p>For a worthless risk score that is totally uninformative about the outcome, we should expect
+the sensitivity to be close to <span class="math inline">\(P\{ g(\mathbf{x}_{i}) \geq t \}\)</span>.</p></li>
+</ul>
+<hr />
+<ul>
+<li>You can compute the <strong>in-sample</strong> sensitivity with
+<span class="math display">\[\begin{eqnarray}
+\hat{\textrm{Sensitivity}}(t; g)
+&amp;=&amp; \frac{\sum_{i=1}^{n} I\big\{ g(\mathbf{x}_{i}) \geq t, Y_{i} = 1 \big\} }{
+ \sum_{i=1}^{n} I\big\{g(\mathbf{x}_{i}) \geq t, Y_{i} = 1 \big\} + \sum_{i=1}^{n} I\big\{ g(\mathbf{x}_{i}) &lt; t, Y_{i} = 1 \big\}} \nonumber \\
+&amp;=&amp; \frac{\textrm{number of true positives}}{\textrm{number of true positives} + \textrm{number of false negatives} }
+\end{eqnarray}\]</span></li>
+</ul>
+<hr />
+<ul>
+<li><p>The <strong>specificity</strong> of the risk score <span class="math inline">\(g(\mathbf{x}_{i})\)</span> with the threshold <span class="math inline">\(t\)</span> is defined
+as the probability you “predict” <span class="math inline">\(Y_{i} = 0\)</span> assuming that <span class="math inline">\(Y_{i}\)</span> is, in fact, equal to <span class="math inline">\(0\)</span>.</p></li>
+<li><p>The <strong>specificity</strong> is defined as:
+<span class="math display">\[\begin{eqnarray}
+\textrm{Specificity}(t; g)
+&amp;=&amp; P\big\{ g(\mathbf{x}_{i}) &lt; t| Y_{i} = 0 \big\} \nonumber \\
+&amp;=&amp; \frac{P\big\{ g(\mathbf{x}_{i}) &lt; t, Y_{i} = 0 \big\}}{
+P\big\{ g(\mathbf{x}_{i}) &lt; t, Y_{i} = 0 \big\} + P\big\{ g(\mathbf{x}_{i}) \geq t, Y_{i} = 0 \big\}}
+\end{eqnarray}\]</span></p></li>
+<li>Note that <span class="math inline">\(1 - \textrm{Specificity}(t; g) = P\big\{ g(\mathbf{x}_{i}) \geq t| Y_{i} = 0 \big\}\)</span>.
+<ul>
+<li><span class="math inline">\(1 - \textrm{Specificity}(t; g)\)</span> is often called the “false positive rate”</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>You can compute the <strong>in-sample</strong> specificity with
+<span class="math display">\[\begin{eqnarray}
+\hat{\textrm{Specificity}}(t; g)
+&amp;=&amp; \frac{\sum_{i=1}^{n} I\big\{ g(\mathbf{x}_{i}) &lt; t, Y_{i} = 0 \big\} }{
+ \sum_{i=1}^{n} I\big\{g(\mathbf{x}_{i}) &lt; t, Y_{i} = 0 \big\} + \sum_{i=1}^{n} I\big\{ g(\mathbf{x}_{i}) \geq t, Y_{i} = 0 \big\}} \nonumber \\
+&amp;=&amp; \frac{\textrm{number of true negatives}}{\textrm{number of true negatives} + \textrm{number of false positives} }
+\end{eqnarray}\]</span></p></li>
+<li><p>For a worthless risk score that is totally uninformative about the outcome, we should expect
+the specificity to be close to <span class="math inline">\(P\{ g(\mathbf{x}_{i}) &lt; t \}\)</span>.</p></li>
+<li>Note that <strong>high values</strong> of both <strong>sensitivity</strong> and <strong>specificity</strong> is good.
+<ul>
+<li>For a “perfect” risk score, both sensitivity and specificity would be equal to <span class="math inline">\(1\)</span>.</li>
+</ul></li>
+</ul>
+</div>
+<div id="the-roc-curve" class="section level3">
+<h3><span class="header-section-number">5.2.2</span> The ROC curve</h3>
+<ul>
+<li><p>The <strong>receiver operating characteristic</strong> (ROC) curve graphically depicts
+how sensitivity and specificity change as the <strong>threshold</strong> <span class="math inline">\(t\)</span> varies.</p></li>
+<li><p>Let <span class="math inline">\(t_{i} = g(\mathbf{x}_{i})\)</span> and let <span class="math inline">\(t_{(1)} &gt; t_{(2)} &gt; ... &gt; t_{(n)}\)</span>
+be the ordered values of <span class="math inline">\(t_{1}, \ldots, t_{n}\)</span>.</p></li>
+<li><p>To construct an <strong>ROC</strong> curve we are going to plot sentivity vs. 1 - specificity
+for each of the thresholds <span class="math inline">\(t_{(1)}, \ldots, t_{(n)}\)</span>.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>Let <span class="math inline">\(x_{i} = 1 - \hat{\textrm{Specificity}}(t_{(i)}; g)\)</span> and
+<span class="math inline">\(y_{i} = \hat{\textrm{Sensitivity}}(t_{(i)}; g)\)</span>.</p></li>
+<li>We will define <span class="math inline">\(x_{0} = y_{0} = 0\)</span> and <span class="math inline">\(x_{n+1} = y_{n+1} = 1\)</span>.
+<ul>
+<li><span class="math inline">\(x_{0}\)</span>, <span class="math inline">\(y_{0}\)</span> represent 1 - specificity and sensitivity when using <span class="math inline">\(t = \infty\)</span>.</li>
+<li><span class="math inline">\(x_{n+1}\)</span>, <span class="math inline">\(y_{n+1}\)</span> represent 1 - specificity and sensitivity when using <span class="math inline">\(t = -\infty\)</span>.</li>
+</ul></li>
+<li><p>Plotting <span class="math inline">\(y_{i}\)</span> vs. <span class="math inline">\(x_{i}\)</span> for <span class="math inline">\(i = 0, \ldots, n+1\)</span> will give you the <strong>ROC</strong> curve.</p></li>
+<li><p>Ideally, the values of <span class="math inline">\(y_{i}\)</span> will close to <span class="math inline">\(1\)</span> for all <span class="math inline">\(i\)</span>.</p></li>
+<li><p>For a worthless risk score we should expect both <span class="math inline">\(y_{i}\)</span> and <span class="math inline">\(x_{i}\)</span>
+to be roughly equal to <span class="math inline">\(P(g(\mathbf{x}_{i}) \geq t)\)</span>.</p></li>
+<li><p>Hence, plotting <span class="math inline">\(y_{i}\)</span> vs. <span class="math inline">\(x_{i}\)</span> should be fairly close to the line <span class="math inline">\(y=x\)</span>.</p></li>
+</ul>
+</div>
+<div id="computing-the-roc-curve" class="section level3">
+<h3><span class="header-section-number">5.2.3</span> Computing the ROC curve</h3>
+<ul>
+<li>To try computing an <strong>ROC</strong> curve, we will use the Wisconsin Breast Cancer dataset
+which is available in the <code>biopsy</code> dataset from the <code>MASS</code> package.</li>
+</ul>
+<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb171-1" data-line-number="1"><span class="kw">library</span>(MASS)</a>
+<a class="sourceLine" id="cb171-2" data-line-number="2"><span class="kw">data</span>(biopsy)</a>
+<a class="sourceLine" id="cb171-3" data-line-number="3"><span class="kw">head</span>(biopsy)</a></code></pre></div>
+<pre><code>##        ID V1 V2 V3 V4 V5 V6 V7 V8 V9     class
+## 1 1000025  5  1  1  1  2  1  3  1  1    benign
+## 2 1002945  5  4  4  5  7 10  3  2  1    benign
+## 3 1015425  3  1  1  1  2  2  3  1  1    benign
+## 4 1016277  6  8  8  1  3  4  3  7  1    benign
+## 5 1017023  4  1  1  3  2  1  3  1  1    benign
+## 6 1017122  8 10 10  8  7 10  9  7  1 malignant</code></pre>
+<div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb173-1" data-line-number="1"><span class="co">## Look at number of &quot;benign&quot; and &quot;malignant&quot; tumors</span></a>
+<a class="sourceLine" id="cb173-2" data-line-number="2"><span class="kw">table</span>(biopsy<span class="op">$</span>class)</a></code></pre></div>
+<pre><code>## 
+##    benign malignant 
+##       458       241</code></pre>
+<div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb175-1" data-line-number="1">biopsy<span class="op">$</span>tumor.type &lt;-<span class="st"> </span><span class="kw">ifelse</span>(biopsy<span class="op">$</span>class<span class="op">==</span><span class="st">&quot;malignant&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb175-2" data-line-number="2"><span class="kw">table</span>(biopsy<span class="op">$</span>tumor.type)</a></code></pre></div>
+<pre><code>## 
+##   0   1 
+## 458 241</code></pre>
+<ul>
+<li><p>Let’s compute <strong>risk scores</strong> for tumor malignancy by using a <strong>logistic regression</strong> model
+with <code>class</code> as the <strong>outcome</strong> and variables <code>V1, V3, V4, V7, V8</code> as the <strong>covariates</strong>.</p></li>
+<li><p>Our risk score for the <span class="math inline">\(i^{th}\)</span> case,
+will be the predicted probability of having a malignant tumor given the covariate information</p></li>
+</ul>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb177-1" data-line-number="1">logreg.model &lt;-<span class="st"> </span><span class="kw">glm</span>(tumor.type <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">family=</span><span class="st">&quot;binomial&quot;</span>, <span class="dt">data=</span>biopsy)</a>
+<a class="sourceLine" id="cb177-2" data-line-number="2">risk.score &lt;-<span class="st"> </span>logreg.model<span class="op">$</span>fitted.values</a></code></pre></div>
+<ul>
+<li>Let’s now compute the <strong>sensitivity</strong> and <strong>specificity</strong> for a threshold of <span class="math inline">\(t = 0.5\)</span></li>
+</ul>
+<div class="sourceCode" id="cb178"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb178-1" data-line-number="1">Sensitivity &lt;-<span class="st"> </span><span class="cf">function</span>(thresh, Y, risk.score) {</a>
+<a class="sourceLine" id="cb178-2" data-line-number="2">    <span class="kw">sum</span>((risk.score <span class="op">&gt;=</span><span class="st"> </span>thresh)<span class="op">*</span>Y)<span class="op">/</span><span class="kw">sum</span>(Y)</a>
+<a class="sourceLine" id="cb178-3" data-line-number="3">}</a>
+<a class="sourceLine" id="cb178-4" data-line-number="4">Specificity &lt;-<span class="st"> </span><span class="cf">function</span>(thresh, Y, risk.score) {</a>
+<a class="sourceLine" id="cb178-5" data-line-number="5">    <span class="kw">sum</span>((risk.score <span class="op">&lt;</span><span class="st"> </span>thresh)<span class="op">*</span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>Y))<span class="op">/</span><span class="kw">sum</span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>Y)</a>
+<a class="sourceLine" id="cb178-6" data-line-number="6">}</a>
+<a class="sourceLine" id="cb178-7" data-line-number="7"><span class="kw">Sensitivity</span>(<span class="fl">0.5</span>, <span class="dt">Y=</span>biopsy<span class="op">$</span>tumor.type, risk.score)</a></code></pre></div>
+<pre><code>## [1] 0.9502075</code></pre>
+<div class="sourceCode" id="cb180"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb180-1" data-line-number="1"><span class="kw">Specificity</span>(<span class="fl">0.5</span>, <span class="dt">Y=</span>biopsy<span class="op">$</span>tumor.type, risk.score)</a></code></pre></div>
+<pre><code>## [1] 0.9759825</code></pre>
+<ul>
+<li>For the threshold of <span class="math inline">\(t = 0.5\)</span>, we have a sensitivity of about <span class="math inline">\(0.95\)</span> and a specificity of
+about <span class="math inline">\(0.975\)</span>.</li>
+</ul>
+<hr />
+<ul>
+<li>Now, let’s compute the ROC curve by computing sensitivity and specificity
+for each risk score (plus the values of 0 and 1).</li>
+</ul>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb182-1" data-line-number="1">sorted.riskscores &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="kw">sort</span>(risk.score, <span class="dt">decreasing=</span><span class="ot">TRUE</span>), <span class="dv">0</span>) </a>
+<a class="sourceLine" id="cb182-2" data-line-number="2">mm &lt;-<span class="st"> </span><span class="kw">length</span>(sorted.riskscores)</a>
+<a class="sourceLine" id="cb182-3" data-line-number="3">roc.y &lt;-<span class="st"> </span>roc.x &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, mm)</a>
+<a class="sourceLine" id="cb182-4" data-line-number="4"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>mm) {</a>
+<a class="sourceLine" id="cb182-5" data-line-number="5">   thresh.val &lt;-<span class="st"> </span>sorted.riskscores[k]</a>
+<a class="sourceLine" id="cb182-6" data-line-number="6">   roc.y[k] &lt;-<span class="st"> </span><span class="kw">Sensitivity</span>(thresh.val, <span class="dt">Y=</span>biopsy<span class="op">$</span>tumor.type, risk.score)</a>
+<a class="sourceLine" id="cb182-7" data-line-number="7">   roc.x[k] &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">Specificity</span>(thresh.val, <span class="dt">Y=</span>biopsy<span class="op">$</span>tumor.type, risk.score)</a>
+<a class="sourceLine" id="cb182-8" data-line-number="8">}</a>
+<a class="sourceLine" id="cb182-9" data-line-number="9"><span class="kw">plot</span>(roc.x, roc.y, <span class="dt">main=</span><span class="st">&quot;ROC curve for biopsy data&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;1 - Specificity&quot;</span>,</a>
+<a class="sourceLine" id="cb182-10" data-line-number="10">     <span class="dt">ylab=</span><span class="st">&quot;Sensitivity&quot;</span>, <span class="dt">las=</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb182-11" data-line-number="11"><span class="kw">lines</span>(roc.x, roc.y, <span class="dt">type=</span><span class="st">&quot;s&quot;</span>)</a>
+<a class="sourceLine" id="cb182-12" data-line-number="12"><span class="kw">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</a></code></pre></div>
+<p><img src="05-riskprediction_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<hr />
+<ul>
+<li>Let’s compare the <strong>logistic regression</strong> ROC curve with a worthless risk score where
+we generate risk scores randomly from a <strong>uniform distribution</strong>.</li>
+</ul>
+<div class="sourceCode" id="cb183"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb183-1" data-line-number="1">rr &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="kw">nrow</span>(biopsy))</a>
+<a class="sourceLine" id="cb183-2" data-line-number="2">sorted.rr &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="kw">sort</span>(rr, <span class="dt">decreasing=</span><span class="ot">TRUE</span>), <span class="dv">0</span>) </a>
+<a class="sourceLine" id="cb183-3" data-line-number="3">mm &lt;-<span class="st"> </span><span class="kw">length</span>(sorted.rr)</a>
+<a class="sourceLine" id="cb183-4" data-line-number="4">roc.random.y &lt;-<span class="st"> </span>roc.random.x &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, mm)</a>
+<a class="sourceLine" id="cb183-5" data-line-number="5"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>mm) {</a>
+<a class="sourceLine" id="cb183-6" data-line-number="6">   thresh.val &lt;-<span class="st"> </span>sorted.rr[k]</a>
+<a class="sourceLine" id="cb183-7" data-line-number="7">   roc.random.y[k] &lt;-<span class="st"> </span><span class="kw">Sensitivity</span>(thresh.val, <span class="dt">Y=</span>biopsy<span class="op">$</span>tumor.type, rr)</a>
+<a class="sourceLine" id="cb183-8" data-line-number="8">   roc.random.x[k] &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">Specificity</span>(thresh.val, <span class="dt">Y=</span>biopsy<span class="op">$</span>tumor.type, rr)</a>
+<a class="sourceLine" id="cb183-9" data-line-number="9">}</a>
+<a class="sourceLine" id="cb183-10" data-line-number="10"><span class="kw">plot</span>(roc.random.x, roc.random.y, <span class="dt">main=</span><span class="st">&quot;ROC curve for biopsy data&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;1 - Specificity&quot;</span>,</a>
+<a class="sourceLine" id="cb183-11" data-line-number="11">     <span class="dt">ylab=</span><span class="st">&quot;Sensitivity&quot;</span>, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
+<a class="sourceLine" id="cb183-12" data-line-number="12"><span class="kw">lines</span>(roc.random.x, roc.random.y, <span class="dt">type=</span><span class="st">&quot;s&quot;</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb183-13" data-line-number="13"><span class="kw">lines</span>(roc.x, roc.y, <span class="dt">type=</span><span class="st">&quot;s&quot;</span>)</a>
+<a class="sourceLine" id="cb183-14" data-line-number="14"><span class="kw">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="dt">legend=</span><span class="kw">c</span>(<span class="st">&quot;logistic regression risk scores&quot;</span>, <span class="st">&quot;random risk scores&quot;</span>),</a>
+<a class="sourceLine" id="cb183-15" data-line-number="15">       <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>)</a>
+<a class="sourceLine" id="cb183-16" data-line-number="16"><span class="kw">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</a></code></pre></div>
+<p><img src="05-riskprediction_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+</div>
+<div id="area-under-the-roc-curve" class="section level2">
+<h2><span class="header-section-number">5.3</span> Area under the ROC curve</h2>
+<ul>
+<li><p>The <strong>Area Under the ROC curve</strong> AUC is the area under the graph of the points
+<span class="math inline">\((x_{i}, y_{i})\)</span>, <span class="math inline">\(i = 0, \ldots, n+1\)</span>.</p></li>
+<li><p>The AUC is given by
+<span class="math display">\[\begin{equation}
+AUC = \sum_{i=0}^{n} y_{i}(x_{i+1} - x_{i})
+\end{equation}\]</span></p></li>
+</ul>
+<div id="rewriting-the-formula-for-the-auc" class="section level3">
+<h3><span class="header-section-number">5.3.1</span> Rewriting the formula for the AUC</h3>
+<ul>
+<li><p>Note that
+<span class="math display">\[\begin{equation}
+y_{i} = \sum_{k=1}^{n} I\{ g(\mathbf{x}_{k}) \geq t_{(i)}\} I\{ Y_{k} = 1  \}\Big/\sum_{k=1}^{n} I\{ Y_{k} = 1\}
+= \frac{1}{n\hat{p}}\sum_{k=1}^{n} a_{ki},
+\end{equation}\]</span>
+where <span class="math inline">\(n\hat{p} = \sum_{k=1}^{n} I\{ Y_{k} = 1\}\)</span> and <span class="math inline">\(a_{ki} = I\{ g(\mathbf{x}_{k}) \geq t_{(i)}\} I\{ Y_{k} = 1 \}\)</span>.</p></li>
+<li><p>Because <span class="math inline">\(t_{(i)} \geq t_{(i+1)}\)</span>:
+<span class="math display">\[\begin{eqnarray}
+x_{i+1} - x_{i} &amp;=&amp;  \sum_{k=1}^{n} \Big(I\{ g(\mathbf{x}_{k}) \geq t_{(i+1)}, Y_{k} = 0  \} - I\{ g(\mathbf{x}_{k}) \geq t_{(i)}, Y_{k} = 0  \}\Big)\Big/\sum_{k=1}^{n} I\{ Y_{k} = 0\} \nonumber \\
+&amp;=&amp; \frac{1}{n(1 - \hat{p})}\sum_{k=1}^{n} I\{g(\mathbf{x}_{k}) &lt; t_{(i)}\} I\{ g(\mathbf{x}_{k}) \geq t_{(i+1)}\} I\{Y_{k} = 0  \} \\
+&amp;=&amp; \frac{1}{n(1 - \hat{p})}\sum_{k=1}^{n} I\{ g(\mathbf{x}_{k}) = t_{(i+1)}\} I\{Y_{k} = 0  \} \nonumber \\
+&amp;=&amp; \frac{1}{n(1 - \hat{p})}\sum_{k=1}^{n} b_{ki}
+\end{eqnarray}\]</span>
+where <span class="math inline">\(n(1 - \hat{p}) = \sum_{k=1}^{n} I\{ Y_{k} = 0\}\)</span> and <span class="math inline">\(b_{ki} = I\{ g(\mathbf{x}_{k}) = t_{(i+1)}\} I\{Y_{k} = 0 \}\)</span>.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>So, we can express the AUC as:
+<span class="math display" id="eq:AUC-full">\[\begin{eqnarray}
+AUC &amp;=&amp; \frac{1}{n^{2}\hat{p}(1 - \hat{p})}\sum_{i=0}^{n} \sum_{k=0}^{n} a_{ki} \sum_{k=0}^{n} b_{ki}
+= \frac{1}{n^{2}\hat{p}(1 - \hat{p})} \sum_{k=0}^{n} \sum_{j=0}^{n}\sum_{i=0}^{n} a_{ki} b_{ji} \\
+&amp;=&amp; \frac{1}{n^{2}\hat{p}(1 - \hat{p})} \sum_{k=0}^{n} \sum_{j=0}^{n} I\{ Y_{k} = 1  \} I\{Y_{j} = 0 \} \sum_{i=0}^{n} I\{ g(\mathbf{x}_{k}) \geq t_{(i)}\}I\{ g(\mathbf{x}_{j}) = t_{(i+1)}\} 
+\tag{5.1}
+\end{eqnarray}\]</span></p></li>
+<li><p>Note now that because the <span class="math inline">\(t_{(i)}\)</span> are the ordered values of the <span class="math inline">\(g(\mathbf{x}_{h})\)</span>
+<span class="math display">\[\begin{equation}
+\sum_{i=0}^{n} I\{ g(\mathbf{x}_{k}) \geq t_{(i)}\}I\{ g(\mathbf{x}_{j}) = t_{(i+1)}\} 
+= I\{ g(\mathbf{x}_{k}) \geq t_{(j^{*} - 1)}\}
+= I\{ g(\mathbf{x}_{k}) &gt; t_{(j^{*})}\},
+\end{equation}\]</span>
+where <span class="math inline">\(j^{*}\)</span> is the index such that <span class="math inline">\(t_{(j^{*})} = g(\mathbf{x}_{j})\)</span>.</p></li>
+<li><p>Hence,
+<span class="math display" id="eq:indicator-simplification">\[\begin{equation}
+\sum_{i=0}^{n} I\{ g(\mathbf{x}_{k}) \geq t_{(i)}\}I\{ g(\mathbf{x}_{j}) = t_{(i+1)}\}
+= I\{ g(\mathbf{x}_{k}) &gt; g(\mathbf{x}_{j}) \}
+\tag{5.2}
+\end{equation}\]</span></p></li>
+</ul>
+<hr />
+<ul>
+<li>Now, by plugging <a href="risk-prediction.html#eq:indicator-simplification">(5.2)</a> into <a href="risk-prediction.html#eq:AUC-full">(5.1)</a>, we can finally express the AUC as
+<span class="math display">\[\begin{eqnarray}
+AUC
+&amp;=&amp; \frac{1}{n^{2}\hat{p}(1 - \hat{p})} \sum_{k=0}^{n} \sum_{j=0}^{n} I\{ g(\mathbf{x}_{k}) &gt; g(\mathbf{x}_{j}) \}I\{ Y_{k} = 1  \} I\{Y_{j} = 0 \} 
+\end{eqnarray}\]</span></li>
+</ul>
+</div>
+<div id="interpreting-the-auc" class="section level3">
+<h3><span class="header-section-number">5.3.2</span> Interpreting the AUC</h3>
+<ul>
+<li><p>We can write the AUC as
+<span class="math display">\[\begin{equation}
+\textrm{AUC} = S_{1}/S_{2}
+\end{equation}\]</span></p></li>
+<li>The sum <span class="math inline">\(S_{2}\)</span> counts the number of all <strong>discordant pairs</strong> of responses
+<ul>
+<li>The pair of outcomes <span class="math inline">\((Y_{k}, Y_{j})\)</span> is discordant if <span class="math inline">\(Y_{k} = 1\)</span> and <span class="math inline">\(Y_{j}=0\)</span> or vice versa.
+<span class="math display">\[\begin{equation}
+S_{2} = \sum_{i=1}^{n}I\{ Y_{i} = 0\}\sum_{i=1}^{n} I\{Y_{i} = 1\}
+= \sum_{j=1}^{n}\sum_{k=1}^{n} I\{ Y_{j} = 0\} I\{Y_{k} = 1\}
+\end{equation}\]</span></li>
+</ul></li>
+<li><p>Now, look at the sum <span class="math inline">\(S_{1}\)</span>:
+<span class="math display">\[\begin{eqnarray}
+S_{1}
+&amp;=&amp; \sum_{k=0}^{n} \sum_{j=0}^{n} I\{ g(\mathbf{x}_{k}) &gt; g(\mathbf{x}_{j}) \}I\{ Y_{k} = 1  \} I\{Y_{j} = 0 \} 
+\end{eqnarray}\]</span></p></li>
+<li><p><span class="math inline">\(S_{1}\)</span> looks at <strong>all discordant pairs</strong> of responses and counts the number of pairs
+where the risk score ordering <strong>agrees</strong> with the ordering of the responses.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p><strong>To summarize:</strong> The AUC is the <strong>proportion</strong> of discordant outcome pairs where the risk score ordering
+for that pair <strong>agrees</strong> with the ordering of the outcomes</p></li>
+<li><p>An AUC of <span class="math inline">\(0.5\)</span> means that the risk score is performing about the same as
+a risk score generated at random.</p></li>
+<li><p>The AUC is often referred to as the concordance index, or <strong>c-index</strong>.</p></li>
+</ul>
+<hr />
+<ul>
+<li>Let’s compute the AUC for our logistic regression-based <strong>risk score</strong> for the <code>biopsy</code> data:</li>
+</ul>
+<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb184-1" data-line-number="1">AUC.biopsy &lt;-<span class="st"> </span><span class="kw">sum</span>(roc.y[<span class="op">-</span><span class="kw">length</span>(roc.y)]<span class="op">*</span><span class="kw">diff</span>(roc.x))</a>
+<a class="sourceLine" id="cb184-2" data-line-number="2"><span class="kw">round</span>(AUC.biopsy, <span class="dv">4</span>)</a></code></pre></div>
+<pre><code>## [1] 0.9928</code></pre>
+<ul>
+<li>This is a <strong>very high</strong> AUC: <span class="math inline">\(0.9928\)</span></li>
+</ul>
+</div>
+<div id="computing-the-auc-in-r" class="section level3">
+<h3><span class="header-section-number">5.3.3</span> Computing the AUC in R</h3>
+<ul>
+<li><p>You can compute the <strong>AUC</strong> in R without writing all your own functions by using
+the <code>pROC</code> package.</p></li>
+<li><p>With the <code>pROC</code> package, you start by inputting your binary
+outcomes and risk scores into the <code>roc</code> function in order to get an “roc object”.</p></li>
+</ul>
+<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb186-1" data-line-number="1"><span class="kw">library</span>(pROC)</a>
+<a class="sourceLine" id="cb186-2" data-line-number="2">roc.biopsy &lt;-<span class="st"> </span><span class="kw">roc</span>(biopsy<span class="op">$</span>tumor.type, risk.score)</a></code></pre></div>
+<ul>
+<li>To find the AUC, you can then use <code>auc(roc.biopsy)</code></li>
+</ul>
+<div class="sourceCode" id="cb187"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb187-1" data-line-number="1"><span class="kw">auc</span>( roc.biopsy )</a></code></pre></div>
+<pre><code>## Area under the curve: 0.9928</code></pre>
+<hr />
+<ul>
+<li>You can <strong>plot</strong> the ROC curve by just plugging in the roc object into the <code>plot</code> function.</li>
+</ul>
+<div class="sourceCode" id="cb189"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb189-1" data-line-number="1"><span class="kw">plot</span>(roc.biopsy)</a></code></pre></div>
+<p><img src="05-riskprediction_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<ul>
+<li>To also print the <strong>AUC</strong> value, you can just add <code>print.auc=TRUE</code></li>
+</ul>
+<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb190-1" data-line-number="1"><span class="kw">plot</span>(roc.biopsy, <span class="dt">print.auc=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<p><img src="05-riskprediction_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+</div>
+<div id="calibration" class="section level2">
+<h2><span class="header-section-number">5.4</span> Calibration</h2>
+<ul>
+<li><p>The AUC, or c-index is a measure of the <strong>statistical discrimination</strong> of the risk score.</p></li>
+<li><p>However, a high value of the AUC does not imply that the risk score is <strong>well-calibrated</strong>.</p></li>
+<li><p><strong>Calibration</strong> refers to the agreement between <strong>observed frequency</strong> of
+the outcome and the fitted probabilities of those outcomes.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>For example, if we look at a group of individuals all of whom have a fitted probability
+of <span class="math inline">\(0.2\)</span>, then we should expect that roughly <span class="math inline">\(20\%\)</span> of the outcomes should equal <span class="math inline">\(1\)</span> from this
+group.</p></li>
+<li><p>We can examine this graphically by looking at the observed proportion of successes
+vs. the fitted probabilities for several risk strata.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>Specifically, if we have risk score-cutoffs <span class="math inline">\(r_{1}, \ldots, r_{G}\)</span>, the observed proportion
+of successes in the <span class="math inline">\(k^{th}\)</span> risk stratum is
+<span class="math display">\[\begin{equation}
+O_{k} = \frac{1}{n}\sum_{i=1}^{n} Y_{i}I\{ r_{k-1} &lt; g(\mathbf{x}_{i}) \leq r_{k} \}
+\end{equation}\]</span></p></li>
+<li><p>The expected proportion of successes in the <span class="math inline">\(k^{th}\)</span> risk stratum is
+<span class="math display">\[\begin{equation}
+P_{k} = \frac{1}{n}\sum_{i=1}^{n} g(\mathbf{x}_{i})I\{ r_{k-1} &lt; g(\mathbf{x}_{i}) \leq r_{k} \}
+\end{equation}\]</span></p></li>
+<li><p>If <span class="math inline">\(g(\mathbf{x}_{i})\)</span> is <strong>well-calibrated</strong>, <span class="math inline">\(O_{k}\)</span> and <span class="math inline">\(P_{k}\)</span> should be fairly similar
+for each <span class="math inline">\(k\)</span>.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>Let’s make a <strong>calibration plot</strong> for the <code>biopsy</code> data.</p></li>
+<li><p>First, let’s make <strong>10 risk strata</strong> using the quantiles of our logistic regression-based risk score.</p></li>
+</ul>
+<div class="sourceCode" id="cb191"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb191-1" data-line-number="1">rr &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="kw">quantile</span>(risk.score, <span class="dt">prob=</span><span class="kw">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="dt">by=</span><span class="fl">0.1</span>)), <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb191-2" data-line-number="2">rr</a></code></pre></div>
+<pre><code>##                     10%         20%         30%         40%         50% 
+## 0.000000000 0.001505966 0.002756161 0.005385182 0.010154320 0.019231612 
+##         60%         70%         80%         90%             
+## 0.074574998 0.841857858 0.989561027 0.999471042 1.000000000</code></pre>
+<ul>
+<li>Now, compute <strong>observed and expected frequencies</strong> for each of the risk strata and plot the result:</li>
+</ul>
+<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb193-1" data-line-number="1">observed.freq &lt;-<span class="st"> </span>pred.freq &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb193-2" data-line-number="2"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span><span class="dv">11</span>) {</a>
+<a class="sourceLine" id="cb193-3" data-line-number="3">   ind &lt;-<span class="st"> </span>risk.score <span class="op">&lt;=</span><span class="st"> </span>rr[k] <span class="op">&amp;</span><span class="st"> </span>risk.score <span class="op">&gt;</span><span class="st"> </span>rr[k<span class="dv">-1</span>] <span class="co"># stratum indicators</span></a>
+<a class="sourceLine" id="cb193-4" data-line-number="4">   observed.freq[k] &lt;-<span class="st"> </span><span class="kw">mean</span>(biopsy<span class="op">$</span>tumor.type[ind])</a>
+<a class="sourceLine" id="cb193-5" data-line-number="5">   pred.freq[k] &lt;-<span class="st"> </span><span class="kw">mean</span>(risk.score[ind])</a>
+<a class="sourceLine" id="cb193-6" data-line-number="6">}</a>
+<a class="sourceLine" id="cb193-7" data-line-number="7"><span class="kw">plot</span>(observed.freq, pred.freq, <span class="dt">xlab=</span><span class="st">&quot;Observed Frequency&quot;</span>,</a>
+<a class="sourceLine" id="cb193-8" data-line-number="8">     <span class="dt">ylab =</span> <span class="st">&quot;Predicted Frequency&quot;</span>,</a>
+<a class="sourceLine" id="cb193-9" data-line-number="9">     <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">main=</span><span class="st">&quot;Calibration plot for biopsy data&quot;</span>)</a>
+<a class="sourceLine" id="cb193-10" data-line-number="10"><span class="kw">lines</span>(observed.freq, pred.freq)</a>
+<a class="sourceLine" id="cb193-11" data-line-number="11"><span class="kw">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dt">lty=</span><span class="dv">2</span>)</a></code></pre></div>
+<p><img src="05-riskprediction_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<hr />
+<ul>
+<li>Most of the risk scores are more concentrated near zero, but this calibration plot shows fairly
+good calibration.
+<ul>
+<li>Expected vs. Observed frequencies are mostly close to the <span class="math inline">\(y = x\)</span> straight line.</li>
+</ul></li>
+<li>Sometimes an estimated <strong>intercept</strong> and <strong>slope</strong> from
+a regression of expected vs. observed frequencies is reported.
+<ul>
+<li>We should expect that the intercept should be close to <span class="math inline">\(0\)</span> and the slope should be close to <span class="math inline">\(1\)</span> for a well-calibrated risk score.</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb194-1" data-line-number="1"><span class="kw">lm</span>(pred.freq <span class="op">~</span><span class="st"> </span>observed.freq)</a></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = pred.freq ~ observed.freq)
+## 
+## Coefficients:
+##   (Intercept)  observed.freq  
+##      0.001759       0.994948</code></pre>
+<ul>
+<li>The <strong>Hosmer–Lemeshow test</strong> is a more formal test that compares these types of
+observed vs. expected frequencies.</li>
+</ul>
+</div>
+<div id="longitudinal-data-and-risk-score-validation" class="section level2">
+<h2><span class="header-section-number">5.5</span> Longitudinal Data and Risk Score Validation</h2>
+<ul>
+<li><p>When you have <strong>longitudinal responses</strong> <span class="math inline">\(Y_{ij}\)</span>, sensitivity, specificity, and the AUC/c-index
+will depend on what exactly you are trying to predict.</p></li>
+<li><p>If you are trying to predict <span class="math inline">\(Y_{ij} = 1\)</span> vs. <span class="math inline">\(Y_{ij} = 0\)</span> for
+each <span class="math inline">\(j\)</span>, sensitivity and specificity will be defined by
+<span class="math display">\[\begin{equation}
+P\{ g(\mathbf{x}_{ij}) \geq t|Y_{ij} = 1\} \qquad \textrm{ and } \qquad P\{ g(\mathbf{x}_{ij}) &lt; t|Y_{ij} = 0\}
+\end{equation}\]</span></p></li>
+<li><p>Here, <span class="math inline">\(g(\mathbf{x}_{ij})\)</span> would be a risk score based on covariate information
+up to and including time <span class="math inline">\(t_{ij}\)</span> and could include responses before time <span class="math inline">\(t_{ij}\)</span>.</p></li>
+<li><p>In this case, the AUC would be calculated in the same way as the non-longitudinal case -
+you would just sum over all responses and risk scores across all individuals and time points.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>In other cases, you may want to predict a single outcome <span class="math inline">\(\tilde{Y}_{i}\)</span> even though
+the covariates are collected longitudinally over additional time points.</p></li>
+<li><p>For example, <span class="math inline">\(\tilde{Y}_{i}\)</span> might be an indicator of whether or not a patient
+is hypertensive over a particular time window.</p></li>
+<li>In this case, you might compute a single risk score <span class="math inline">\(\hat{g}_{i}\)</span> for each individual.
+<ul>
+<li><p>For example, <span class="math inline">\(\hat{g}_{i} = \frac{1}{n_{i}}\sum_{j=1}^{n_{i}} g(\mathbf{x}_{ij})\)</span>.</p></li>
+<li><p>For example, <span class="math inline">\(\hat{g}_{i} = \max\{ g(\mathbf{x}_{i1}), \ldots, g(\mathbf{x}_{in_{i}}) \}\)</span>.</p></li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>To <strong>“validate”</strong> a risk score, you generally want to look at <strong>out-of-sample</strong> performance of
+the risk score.</p></li>
+<li><p>For example, you would build your risk model using data from a specific six-month time window
+and look at the AUC statistic for outcomes in a later six-month time window.</p></li>
+<li><p>Looking at the out-of-sample performance over a different time window or
+using data from a different source is often used as a way of justifying
+the robustness of a particular risk model.</p></li>
+</ul>
+<hr />
+
+<div id="refs" class="references">
+<div>
+<p>Buuren, S van, and Karin Groothuis-Oudshoorn. 2010. “Mice: Multivariate Imputation by Chained Equations in R.” <em>Journal of Statistical Software</em>, 1–68.</p>
+</div>
+<div>
+<p>Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.</p>
+</div>
+<div>
+<p>Rice, John A, and Bernard W Silverman. 1991. “Estimating the Mean and Covariance Structure Nonparametrically When the Data Are Curves.” <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 53 (1): 233–43.</p>
+</div>
+<div>
+<p>Schelldorfer, Jürg, Peter Bühlmann, and Sara Van De Geer. 2011. “Estimation for High-Dimensional Linear Mixed-Effects Models Using <span class="math inline">\(\ell_{1}\)</span>-Penalization.” <em>Scandinavian Journal of Statistics</em> 38 (2): 197–214.</p>
+</div>
+<div>
+<p>Wang, Lan, Jianhui Zhou, and Annie Qu. 2012. “Penalized Generalized Estimating Equations for High-Dimensional Longitudinal Data Analysis.” <em>Biometrics</em> 68 (2): 353–60.</p>
+</div>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="glmm-lasso.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

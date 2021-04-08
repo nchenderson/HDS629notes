@@ -547,19 +547,22 @@ is hypertensive over a particular time window.
 * In this case, you might compute a single risk score $\hat{g}_{i}$ for each individual. 
     + For example, $\hat{g}_{i} = \frac{1}{n_{i}}\sum_{j=1}^{n_{i}} g(\mathbf{x}_{ij})$.
     
+    + For example, $\hat{g}_{i} = \textrm{median} \{ g(\mathbf{x}_{i1}), \ldots, g(\mathbf{x}_{in_{i}}) \}$.
+    
     + For example, $\hat{g}_{i} = \max\{ g(\mathbf{x}_{i1}), \ldots, g(\mathbf{x}_{in_{i}}) \}$.
-
+    
 --- 
 
 * To **"validate"** a risk score, you generally want to look at **out-of-sample** performance of 
 the risk score. 
 
-* For example, you would build your risk model using data from a specific six-month time window
-and look at the AUC statistic for outcomes in a later six-month time window.
+* For example, you might build your risk model using data from a **specific six-month time window**
+and look at the AUC statistic for outcomes in a **later six-month time window**.
+    + The risk score in the later time window would be constructed only using covariate information.
 
 * Looking at the out-of-sample performance over a different time window or 
-using data from a different source is often used as a way of justifying 
-the robustness of a particular risk model.
+using data from a different source is often a good way of justifying 
+the robustness/generalizability of a particular risk model.
 
 ---
 

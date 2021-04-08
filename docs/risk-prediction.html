@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-04-06" />
+<meta name="date" content="2021-04-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -681,6 +681,7 @@ is hypertensive over a particular time window.</p></li>
 <li>In this case, you might compute a single risk score <span class="math inline">\(\hat{g}_{i}\)</span> for each individual.
 <ul>
 <li><p>For example, <span class="math inline">\(\hat{g}_{i} = \frac{1}{n_{i}}\sum_{j=1}^{n_{i}} g(\mathbf{x}_{ij})\)</span>.</p></li>
+<li><p>For example, <span class="math inline">\(\hat{g}_{i} = \textrm{median} \{ g(\mathbf{x}_{i1}), \ldots, g(\mathbf{x}_{in_{i}}) \}\)</span>.</p></li>
 <li><p>For example, <span class="math inline">\(\hat{g}_{i} = \max\{ g(\mathbf{x}_{i1}), \ldots, g(\mathbf{x}_{in_{i}}) \}\)</span>.</p></li>
 </ul></li>
 </ul>
@@ -688,11 +689,14 @@ is hypertensive over a particular time window.</p></li>
 <ul>
 <li><p>To <strong>“validate”</strong> a risk score, you generally want to look at <strong>out-of-sample</strong> performance of
 the risk score.</p></li>
-<li><p>For example, you would build your risk model using data from a specific six-month time window
-and look at the AUC statistic for outcomes in a later six-month time window.</p></li>
+<li>For example, you might build your risk model using data from a <strong>specific six-month time window</strong>
+and look at the AUC statistic for outcomes in a <strong>later six-month time window</strong>.
+<ul>
+<li>The risk score in the later time window would be constructed only using covariate information.</li>
+</ul></li>
 <li><p>Looking at the out-of-sample performance over a different time window or
-using data from a different source is often used as a way of justifying
-the robustness of a particular risk model.</p></li>
+using data from a different source is often a good way of justifying
+the robustness/generalizability of a particular risk model.</p></li>
 </ul>
 <hr />
 

@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-04-15" />
+<meta name="date" content="2022-01-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -250,6 +250,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p><span class="math inline">\(Y_{ij}\)</span> - outcome for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
 <li><p>The <span class="math inline">\(i^{th}\)</span> individual has <span class="math inline">\(n_{i}\)</span> observations: <span class="math inline">\(Y_{i1}, \ldots, Y_{in_{i}}\)</span>.</p></li>
 <li><p>There will be <span class="math inline">\(m\)</span> individuals in the study (so <span class="math inline">\(1 \leq i \leq m\)</span>).</p></li>
+<li><p><span class="math inline">\(\mathbf{x}_{ij} = (x_{ij1}, \ldots, x_{ijp})\)</span> is the vector of covariates for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
+<li><p><strong>Note:</strong> The data that you analyze for this project could be “asynchronous”, meaning that the outcomes <span class="math inline">\(Y_{ij}\)</span> and
+the covariates are not exactly matched in time.</p></li>
+<li><p>For example, on a given day, you may observe <span class="math inline">\(Y_{ij}\)</span> at 9:00, 10:00, and 11:00, but
+observe the covariate of interest at 9:17, 9:53, and 11:08.</p></li>
+<li><p>We will probably discuss some ways of processing asynchronous longitudinal data later in the class.</p></li>
 </ul></li>
 </ul>
 <hr />
@@ -301,8 +307,8 @@ build a regression model without any random effects, we might assume something l
 Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
 \tag{1.1}
 \end{equation}\]</span></p></li>
-<li><p><span class="math inline">\(\mathbf{x}_{ij} = (x_{i1}, \ldots, x_{ip})\)</span> is the vector
-of covariates for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(j\)</span>.</p></li>
+<li><p><span class="math inline">\(\mathbf{x}_{ij} = (x_{ij1}, \ldots, x_{ijp})\)</span> is the vector
+of covariates for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
 <li>The vector <span class="math inline">\(\mathbf{x}_{ij}\)</span> could contain individual information such as smoking status or age.
 <ul>
 <li><span class="math inline">\(\mathbf{x}_{ij}\)</span> could also contain some of the actual time points: <span class="math inline">\(t_{ij}, t_{ij-1}, ...\)</span>
@@ -613,6 +619,10 @@ E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad
 for fitting LMMs and GLMMs.</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(lme4)</a></code></pre></div>
+<ul>
+<li>With <strong>Python</strong>, you can use the <code>mixedlm</code> function from the <code>statmodels</code> module to
+fit linear mixed models.</li>
+</ul>
 <div id="fitting-lmms-with-the-sleepstudy-data" class="section level3">
 <h3><span class="header-section-number">1.5.1</span> Fitting LMMs with the sleepstudy data</h3>
 <ul>
@@ -668,7 +678,7 @@ the exact same “formula notation” used in the <strong>lm</strong> function.<
 <ul>
 <li><code>group_var</code> is the “grouping variable” used for the random effects
 <ul>
-<li>This would be the variable telling you which</li>
+<li>For longitudinal data, this would be the variable which identifies each individual.</li>
 </ul></li>
 </ul>
 <div id="lmm-with-a-single-random-intercept-for-each-subject" class="section level4">

@@ -16,6 +16,16 @@
     + The $i^{th}$ individual has $n_{i}$ observations: $Y_{i1}, \ldots, Y_{in_{i}}$.
     
     + There will be $m$ individuals in the study (so $1 \leq i \leq m$).
+    
+    + $\mathbf{x}_{ij} = (x_{ij1}, \ldots, x_{ijp})$ is the vector of covariates for individual $i$ at time $t_{ij}$.
+    
+    + **Note:** The data that you analyze for this project could be "asynchronous", meaning that the outcomes $Y_{ij}$ and
+    the covariates are not exactly matched in time. 
+    
+    + For example, on a given day, you may observe $Y_{ij}$ at 9:00, 10:00, and 11:00, but
+    observe the covariate of interest at 9:17, 9:53, and 11:08.
+    
+    + We will probably discuss some ways of processing asynchronous longitudinal data later in the class.
 
 ---
 
@@ -82,8 +92,8 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
 (\#eq:fixed-reg-model)
 \end{equation}
 
-* $\mathbf{x}_{ij} = (x_{i1}, \ldots, x_{ip})$ is the vector
-of covariates for individual $i$ at time $j$.
+* $\mathbf{x}_{ij} = (x_{ij1}, \ldots, x_{ijp})$ is the vector
+of covariates for individual $i$ at time $t_{ij}$.
 
 * The vector $\mathbf{x}_{ij}$ could contain individual information such as smoking status or age. 
     + $\mathbf{x}_{ij}$ could also contain some of the actual time points: $t_{ij}, t_{ij-1}, ...$
@@ -408,6 +418,9 @@ for fitting LMMs and GLMMs.
 library(lme4)
 ```
 
+* With **Python**, you can use the `mixedlm` function from the `statmodels` module to 
+fit linear mixed models.
+
 ### Fitting LMMs with the sleepstudy data
 
 * To start off, let's use the **sleepstudy** longitudinal data in **lme4**
@@ -441,7 +454,7 @@ the exact same "formula notation" used in the **lm** function.
 ```
 
 * `group_var` is the "grouping variable" used for the random effects
-    + This would be the variable telling you which 
+    + For longitudinal data, this would be the variable which identifies each individual.
 
 #### LMM with a single, random intercept for each subject
 

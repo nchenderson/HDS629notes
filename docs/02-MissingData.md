@@ -4,13 +4,13 @@
 
 ## Missing Data in R and "Direct Approaches" for Handling Missing Data
 
-* In a wide range of datasets, it is very common to encounter missing values.
+* In many real-world datasets, it is very common to have missing values.
 
 * In **R**, missing values are stored as `NA`, meaning **"Not Available"**.
 
 ---
 
-* For example, look at the `airquality` dataframe available in base **R**
+* As an example, let's look at the `airquality` dataframe available in base **R**
 
 ```r
 data(airquality)
@@ -67,6 +67,17 @@ dim( airquality )  ## Dataset has a total of 153 x 6 = 918 entries
 ## [1] 153   6
 ```
 
+* Doing `apply(is.na(airquality), 2, sum)` gives us the number of missing values for each variable.
+
+```r
+apply( is.na(airquality), 2, sum)
+```
+
+```
+##   Ozone Solar.R    Wind    Temp   Month     Day 
+##      37       7       0       0       0       0
+```
+
 ### Complete Case Analysis (Listwise Deletion)
 
 * Suppose we wanted to run a regression with `Ozone` as the response and `Solar.R`,
@@ -105,17 +116,17 @@ summary( air.lm1 )
 
 ---
 
-* How is **R** handling all the **missing values** in `airquality`.
+* How is **R** handling all the **missing values** in `airquality`?
 
-* As a default, `lm` conducts a **complete case analysis** (sometimes referred to as listwise deletion).
+* As a default, `lm` performs a **complete case analysis** (sometimes referred to as listwise deletion).
      + (This is the default unless you changed the default `na.action` setting with `options(...)`)
 
-* A **complete case analysis** for regression will first **delete all rows** from the dataset if 
-any of the variables used from that row have a missing value.
+* A **complete case analysis** for regression will **delete a rows** from the dataset if 
+**any** of the variables used from that row have a missing value.
     + In this example, a row will be dropped if either the value of `Ozone`, `Solar.R`, `Wind`, or `Temp`
     is missing. 
 
-* After these observations have been deleted, the usual regression is fit to the remaining **"complete" dataset**. 
+* After these observations have been deleted, the usual regression parameters are estimated from the remaining **"complete" dataset**. 
 
 ---
 
@@ -172,6 +183,8 @@ round(air.lm2$coefficients, 3)
       
     + Roughly speaking, **MCAR** means that the probability of having a missing value is not related to
     **missing or observed** values of the data.
+    
+    + Section 2.5 gives a more formal definition of MCAR.
 
 ---
 
@@ -205,9 +218,10 @@ use your **original analysis approach**.
 
 * That is, you can just apply your original analysis method to each of the $K$ **complete datasets**.
 
-* The complicated part in multiple imputation is generating the $K$ complete datasets in a **"valid"** way.
+* The complicated part in multiple imputation is generating the $K$ complete datasets in a **"valid"** or 
+**"statistically principled"** way.
 
-* Luckily, there are a number of **R** packages that implement different ways of creating
+* Fortunately, there are a number of **R** packages that implement different approaches for creating
 the $K$ **imputed datasets**.
 
 ### Multiple imputation with mice
@@ -221,7 +235,10 @@ for performing **multiple imputation**.
 * To use `mice`, just use `mice(df)` where `df` is the **name** of the dataframe.
     + (Set `print = FALSE` if you don't want it to print out the number of the iteration).
     + Choose a value of `seed` so that the results are reproducible.
-    + Note that the **default number** of complete datasets returned is 5. This can be changed with the `m` argument.
+    + Note that the **default number** of complete datasets returned is 5. This can be changed with the `m` argument. A value of `m` set to 5 or 10 is a typically recommendation for something that works well in practice. 
+    
+* Let's try running the `mice` function with the `airquality` dataset.
+
 
 ```r
 library(mice)
@@ -233,7 +250,7 @@ imputed.airs <- mice(airquality, print=FALSE, seed=101)
 * The object returned by `mice` will have a component called `imp` which is a list.
     
 * Each component of `imp` is a **dataframe** corresponding to a single variable in the original dataframe 
-     + This dataframe will contain the imputed values for the **missing values** of that variable.      
+     + This dataframe will contain the **imputed values** for the **missing values** of that variable.      
 
 * For example, `imputed.airs$imp` will be a **list** with each component of the list being
 one of the variables from `airquality`
@@ -455,11 +472,8 @@ round(colMeans(BetaMat), 3)  # compare with the results from using the "with" fu
 
 * Suppose we have data from $q$ variables $Z_{i1}, \ldots, Z_{iq}$.
 
-* Let $\mathbf{Z}_{mis}$ denote the collection of missing observations and $\mathbf{Z}_{obs}$
-the collection of observed values, and let $\mathbf{Z} = (\mathbf{Z}_{obs}, \mathbf{Z}_{mis})$.
-
-* Let the vector $\mathbf{Z}_{j} = (Z_{1j}, \ldots, Z_{nj})$ denote all the observations
-from variable $j$.
+* Let $\mathbf{Z}_{mis}$ denote the **entire collection** of missing observations and $\mathbf{Z}_{obs}$
+the **entire collection** of observed values, and let $\mathbf{Z} = (\mathbf{Z}_{obs}, \mathbf{Z}_{mis})$.
 
 * The **basic idea behind** multiple imputation is to, in some way, generate samples $\mathbf{Z}_{mis}^{(1)}, \ldots, \mathbf{Z}_{mis}^{(K)}$ from a flexible probability model $p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})$
     + $p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})$ represents the conditional distribution of $\mathbf{Z}_{mis}$ given the observed $\mathbf{Z}_{obs}$.
@@ -486,7 +500,12 @@ a posterior mean:
      
      + This approach is not so straightforward when you have variables of **mixed type**: some continuous,some
      binary, some categorical, etc. ...
-     
+
+---
+
+* Let the vector $\mathbf{Z}_{j} = (Z_{1j}, \ldots, Z_{nj})$ denote all the "data" (whether observed or unobserved)
+from variable $j$.
+
 * The **fully conditional specification** (FCS) approach specifies the distribution of each variable $\mathbf{Z}_{j}$ conditional on the remaining variables $\mathbf{Z}_{-j}$.
     + The FCS approach is the one used by **mice**.
 
@@ -502,7 +521,7 @@ p(\mathbf{Z}_{q}&|&\mathbf{Z}_{-q}, \boldsymbol{\eta}_{q})
 
 * With **mice**, the parameters $\eta_{j}$ and the missing values for each variable $\mathbf{Z}_{j,mis}$ are updated **one-at-a-time** via a kind of **Gibbs sampler**.
 
-* All of the missing values are imputed in **one cycle** of the Gibbs sampler.
+* All of the missing values can be imputed in **one cycle** of the Gibbs sampler.
 
 * Multiple cycles are repeated to get **multiple completed datasets**.
 
@@ -549,7 +568,7 @@ head(ohio)
 
 * The **ohio** dataset is in **long format**. We need to first convert this into **wide format**. 
 
-* With **tidyr** you can convert from **long to wide** using **spread**:
+* With the **tidyr** package, you can convert from **long to wide** using **spread**:
     + (Use **gather** to go from **wide to long**)
 
 ```r
@@ -708,10 +727,10 @@ round(coef(summary(ohio.cca)), 4)
 
 ---
 
-* Now, let's use **mice** to create 50 **"completed versions"** of `ohio.wide.miss`
+* Now, let's use **mice** to create 10 **"completed versions"** of `ohio.wide.miss`
 
 ```r
-imputed.ohio <- mice(ohio.wide.miss, m=50, print=FALSE, seed=101)
+imputed.ohio <- mice(ohio.wide.miss, m=10, print=FALSE, seed=101)
 ```
 
 * For the case of **longitudinal data**, we probably want to actually extract each
@@ -735,7 +754,7 @@ head(completed.ohio)
 ## 6    1   6  5     0    0    0    0     0
 ```
 
-* `completed.ohio` will be a **dataframe** that has **50 times** as many rows as the original `ohio.wide` data frame
+* `completed.ohio` will be a **dataframe** that has **10 times** as many rows as the original `ohio.wide` data frame
 
 ```r
 dim(ohio.wide)
@@ -750,10 +769,10 @@ dim(completed.ohio)
 ```
 
 ```
-## [1] 26850     8
+## [1] 5370    8
 ```
 
-* The variable `.imp` in `completed.ohio` is an indicator of which of the 50 "imputed datasets" this is from:
+* The variable `.imp` in `completed.ohio` is an indicator of which of the 10 "imputed datasets" this is from:
 
 ```r
 table( completed.ohio$.imp ) # Tabulate impute indicators
@@ -761,25 +780,21 @@ table( completed.ohio$.imp ) # Tabulate impute indicators
 
 ```
 ## 
-##   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 
-## 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 
-##  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40 
-## 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 
-##  41  42  43  44  45  46  47  48  49  50 
+##   1   2   3   4   5   6   7   8   9  10 
 ## 537 537 537 537 537 537 537 537 537 537
 ```
 
 ---
 
-* For **each** of the 50 complete datasets, we need to **convert** the wide dataset 
+* For **each** of the 10 complete datasets, we need to **convert** the wide dataset 
 into long form before using `glmer`:
 
 
 ```r
 ## Multiple imputation-based estimates of regression coefficients 
-## for missing version of the ohio data.
+## for the missing version of the ohio data.
 BetaMat <- matrix(NA, nrow=50, ncol=3)
-for(k in 1:50) {
+for(k in 1:10) {
     tmp.ohio <- completed.ohio[completed.ohio$.imp==k,-c(1,2)]
     
     tmp.ohio.long <- gather(tmp.ohio, age, resp, age7:age10)
@@ -803,7 +818,7 @@ round(colMeans(BetaMat), 4)
 ```
 
 ```
-## [1] -3.6032 -0.1138  0.2501
+## [1] NA NA NA
 ```
 
 * Compare the above regression coefficients with those from the complete-case analysis.
@@ -834,15 +849,24 @@ P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis}) = P(R_{ij}=1)
 
 ### Missing at Random (MAR)
 
-* The **missingness mechanism** is said to be MAR
+* The **missingness mechanism** is said to be MAR if:
 \begin{equation}
 P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis}) = P(R_{ij}=1|\mathbf{Z}_{obs})
 \end{equation}
+
+* If missingness is follows either MAR or MCAR, direct use of multiple imputation
+is a valid approach.
+
 
 ### Missing not at Random (MNAR)
 
 * If the **missingness mechanism** is classified as **missing not at random** (MNAR), the probability 
 $P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis})$ cannot be factorized into a simpler form.
+
+* If the missingness is MNAR, direct use of multiple imputation may be invalid and 
+modeling of the missingness mechanism using subject-matter knowledge may be needed.
+
+* Use of multiple imputation with a sensitivity analysis is one approach to consider.
 
 ---
 

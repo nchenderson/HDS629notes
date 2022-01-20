@@ -14,4 +14,4 @@ description: "Course notes for Biostatistics 629: Case Studies in Health Big Dat
 
 # Preface {-}
 
-This contains some of the course notes for Biostatistics 629.
+This will contain some of the course notes for Biostatistics 629, Winter 2021.

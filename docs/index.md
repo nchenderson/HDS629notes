@@ -1,7 +1,7 @@
 --- 
 title: "Notes for Case Studies in Health Big Data"
 author: "Nicholas Henderson"
-date: "2022-01-11"
+date: "2021-04-15"
 site: bookdown::bookdown_site
 documentclass: book
 bibliography: ["book.bib"]
@@ -14,4 +14,4 @@ description: "Course notes for Biostatistics 629: Case Studies in Health Big Dat
 
 # Preface {-}
 
-This contains some of the course notes for Biostatistics 629.
+This will contain some of the course notes for Biostatistics 629, Winter 2021.

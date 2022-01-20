@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-04-15" />
+<meta name="date" content="2022-01-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -321,10 +321,10 @@ by a larger number of observations.</p></li>
 <li><p>The <strong>sleepstudy</strong> data had 18 participants with <strong>reaction time</strong>
 measured across 10 days.</p></li>
 </ul>
-<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb120-1" data-line-number="1"><span class="kw">library</span>(lme4)</a></code></pre></div>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb122-1" data-line-number="1"><span class="kw">library</span>(lme4)</a></code></pre></div>
 <pre><code>## Loading required package: Matrix</code></pre>
-<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb122-1" data-line-number="1"><span class="kw">data</span>(sleepstudy)</a>
-<a class="sourceLine" id="cb122-2" data-line-number="2"><span class="kw">head</span>(sleepstudy)</a></code></pre></div>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb124-1" data-line-number="1"><span class="kw">data</span>(sleepstudy)</a>
+<a class="sourceLine" id="cb124-2" data-line-number="2"><span class="kw">head</span>(sleepstudy)</a></code></pre></div>
 <pre><code>##   Reaction Days Subject
 ## 1 249.5600    0     308
 ## 2 258.7047    1     308
@@ -341,21 +341,21 @@ measured across 10 days.</p></li>
 <li>That is, we will assume that <span class="math inline">\(\mu(t) = \beta_{0} + \beta_{1} t\)</span>.</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb124-1" data-line-number="1"><span class="kw">library</span>(geepack)</a>
-<a class="sourceLine" id="cb124-2" data-line-number="2"><span class="co">## Use AR(1) correlation structure</span></a>
-<a class="sourceLine" id="cb124-3" data-line-number="3">sleep.gee &lt;-<span class="st"> </span><span class="kw">geeglm</span>(Reaction <span class="op">~</span><span class="st"> </span>Days, <span class="dt">data=</span>sleepstudy, <span class="dt">id=</span>Subject, <span class="dt">corstr=</span><span class="st">&quot;ar1&quot;</span>) </a></code></pre></div>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb126-1" data-line-number="1"><span class="kw">library</span>(geepack)</a>
+<a class="sourceLine" id="cb126-2" data-line-number="2"><span class="co">## Use AR(1) correlation structure</span></a>
+<a class="sourceLine" id="cb126-3" data-line-number="3">sleep.gee &lt;-<span class="st"> </span><span class="kw">geeglm</span>(Reaction <span class="op">~</span><span class="st"> </span>Days, <span class="dt">data=</span>sleepstudy, <span class="dt">id=</span>Subject, <span class="dt">corstr=</span><span class="st">&quot;ar1&quot;</span>) </a></code></pre></div>
 <ul>
 <li>To get the value of the estimated <strong>regression function</strong>, we can use the first
 <span class="math inline">\(10\)</span> fitted values (because the fitted values for each subject are the same as the overall mean function)</li>
 </ul>
-<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb125-1" data-line-number="1"><span class="co">## Estimated mean function at each time point</span></a>
-<a class="sourceLine" id="cb125-2" data-line-number="2">gee.regfn &lt;-<span class="st"> </span>sleep.gee<span class="op">$</span>fitted.values[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,<span class="dv">1</span>] </a>
-<a class="sourceLine" id="cb125-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb125-4" data-line-number="4"><span class="co">### Now plot the estimated mean function</span></a>
-<a class="sourceLine" id="cb125-5" data-line-number="5"><span class="kw">plot</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Days&quot;</span>,</a>
-<a class="sourceLine" id="cb125-6" data-line-number="6">     <span class="dt">main=</span><span class="st">&quot;Sleepstudy: GEE estimate of Mean Function&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
-<a class="sourceLine" id="cb125-7" data-line-number="7"><span class="kw">points</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
-<a class="sourceLine" id="cb125-8" data-line-number="8"><span class="kw">lines</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">9</span>, gee.regfn, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb127-1" data-line-number="1"><span class="co">## Estimated mean function at each time point</span></a>
+<a class="sourceLine" id="cb127-2" data-line-number="2">gee.regfn &lt;-<span class="st"> </span>sleep.gee<span class="op">$</span>fitted.values[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,<span class="dv">1</span>] </a>
+<a class="sourceLine" id="cb127-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb127-4" data-line-number="4"><span class="co">### Now plot the estimated mean function</span></a>
+<a class="sourceLine" id="cb127-5" data-line-number="5"><span class="kw">plot</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Days&quot;</span>,</a>
+<a class="sourceLine" id="cb127-6" data-line-number="6">     <span class="dt">main=</span><span class="st">&quot;Sleepstudy: GEE estimate of Mean Function&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
+<a class="sourceLine" id="cb127-7" data-line-number="7"><span class="kw">points</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb127-8" data-line-number="8"><span class="kw">lines</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">9</span>, gee.regfn, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
 <p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <hr />
 <ul>
@@ -364,8 +364,8 @@ measured across 10 days.</p></li>
 <li><p>Using a <strong>bandwidth</strong> of <span class="math inline">\(0.5\)</span> and a <strong>Gaussian kernel</strong>, we can find the kernel regression estimate of the mean function
 with the following <strong>R</strong> code:</p></li>
 </ul>
-<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb126-1" data-line-number="1">sleep.kernel &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">kernel=</span><span class="st">&quot;normal&quot;</span>,</a>
-<a class="sourceLine" id="cb126-2" data-line-number="2">                        <span class="dt">bandwidth =</span> <span class="fl">0.5</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb128-1" data-line-number="1">sleep.kernel &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">kernel=</span><span class="st">&quot;normal&quot;</span>,</a>
+<a class="sourceLine" id="cb128-2" data-line-number="2">                        <span class="dt">bandwidth =</span> <span class="fl">0.5</span>)</a></code></pre></div>
 <ul>
 <li><p>This will return a list with an “x vector” and a “y vector”.</p></li>
 <li><p>The <code>x</code> vector will be the vector of points at which the regression function
@@ -375,23 +375,23 @@ is estimated. The <code>y</code> vector will be a vector containing the estimate
 <ul>
 <li>Let’s <strong>plot</strong> the estimated mean function to see what it looks like:</li>
 </ul>
-<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb127-1" data-line-number="1"><span class="kw">plot</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Days&quot;</span>,</a>
-<a class="sourceLine" id="cb127-2" data-line-number="2">     <span class="dt">main=</span><span class="st">&quot;Sleepstudy: Kernel Regression with Bandwidth = 0.5&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
-<a class="sourceLine" id="cb127-3" data-line-number="3"><span class="kw">points</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
-<a class="sourceLine" id="cb127-4" data-line-number="4"><span class="kw">lines</span>(sleep.kernel<span class="op">$</span>x, sleep.kernel<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb129-1" data-line-number="1"><span class="kw">plot</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Days&quot;</span>,</a>
+<a class="sourceLine" id="cb129-2" data-line-number="2">     <span class="dt">main=</span><span class="st">&quot;Sleepstudy: Kernel Regression with Bandwidth = 0.5&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
+<a class="sourceLine" id="cb129-3" data-line-number="3"><span class="kw">points</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb129-4" data-line-number="4"><span class="kw">lines</span>(sleep.kernel<span class="op">$</span>x, sleep.kernel<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
 <p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <ul>
 <li><p>This <strong>bandwidth</strong> looks too small. There are clear “near jumps” in between
 some of the days.</p></li>
 <li><p>We can try a <strong>bandwidth</strong> of <span class="math inline">\(1\)</span> to see if we can smooth this out a bit.</p></li>
 </ul>
-<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb128-1" data-line-number="1">sleep.kernel.bw1 &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">kernel=</span><span class="st">&quot;normal&quot;</span>,</a>
-<a class="sourceLine" id="cb128-2" data-line-number="2">                        <span class="dt">bandwidth =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb128-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb128-4" data-line-number="4"><span class="kw">plot</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Days&quot;</span>,</a>
-<a class="sourceLine" id="cb128-5" data-line-number="5">     <span class="dt">main=</span><span class="st">&quot;Sleepstudy: Kernel Regression with Bandwidth = 1&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
-<a class="sourceLine" id="cb128-6" data-line-number="6"><span class="kw">points</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
-<a class="sourceLine" id="cb128-7" data-line-number="7"><span class="kw">lines</span>(sleep.kernel.bw1<span class="op">$</span>x, sleep.kernel.bw1<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb130-1" data-line-number="1">sleep.kernel.bw1 &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">kernel=</span><span class="st">&quot;normal&quot;</span>,</a>
+<a class="sourceLine" id="cb130-2" data-line-number="2">                        <span class="dt">bandwidth =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb130-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb130-4" data-line-number="4"><span class="kw">plot</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Days&quot;</span>,</a>
+<a class="sourceLine" id="cb130-5" data-line-number="5">     <span class="dt">main=</span><span class="st">&quot;Sleepstudy: Kernel Regression with Bandwidth = 1&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
+<a class="sourceLine" id="cb130-6" data-line-number="6"><span class="kw">points</span>(sleepstudy<span class="op">$</span>Days, sleepstudy<span class="op">$</span>Reaction, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb130-7" data-line-number="7"><span class="kw">lines</span>(sleep.kernel.bw1<span class="op">$</span>x, sleep.kernel.bw1<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
 <p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="bandwidth-selection" class="section level3">
@@ -430,9 +430,9 @@ defined as
 <li><p>As another example, we can use the “bone” dataset.</p></li>
 <li><p>This is a <strong>longitudinal dataset</strong> with typically 2 or 3 observations per individual.</p></li>
 </ul>
-<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb129-1" data-line-number="1">bonedat &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://web.stanford.edu/~hastie/ElemStatLearn/datasets/bone.data&quot;</span>, </a>
-<a class="sourceLine" id="cb129-2" data-line-number="2">                      <span class="dt">header=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb129-3" data-line-number="3"><span class="kw">head</span>(bonedat)</a></code></pre></div>
+<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb131-1" data-line-number="1">bonedat &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://web.stanford.edu/~hastie/ElemStatLearn/datasets/bone.data&quot;</span>, </a>
+<a class="sourceLine" id="cb131-2" data-line-number="2">                      <span class="dt">header=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb131-3" data-line-number="3"><span class="kw">head</span>(bonedat)</a></code></pre></div>
 <pre><code>##   idnum   age gender      spnbmd
 ## 1     1 11.70   male 0.018080670
 ## 2     1 12.70   male 0.060109290
@@ -450,25 +450,25 @@ density (the variable <code>spnbmd</code>) as a function of <code>age</code></li
 <li>We can compute the leave-one-out cross-validation score for the <strong>bone</strong> data
 for <strong>different</strong> values of <span class="math inline">\(h_{n}\)</span> (here <span class="math inline">\(0.1 \leq h_{n} \leq 1\)</span>) with the following code:</li>
 </ul>
-<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb131-1" data-line-number="1">nh &lt;-<span class="st"> </span><span class="dv">200</span></a>
-<a class="sourceLine" id="cb131-2" data-line-number="2">hh &lt;-<span class="st"> </span><span class="kw">seq</span>(.<span class="dv">1</span>, <span class="dv">1</span>, <span class="dt">length.out=</span>nh)</a>
-<a class="sourceLine" id="cb131-3" data-line-number="3">LOOCV &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, nh)</a>
-<a class="sourceLine" id="cb131-4" data-line-number="4">subj.list &lt;-<span class="st"> </span><span class="kw">unique</span>(bonedat<span class="op">$</span>idnum)</a>
-<a class="sourceLine" id="cb131-5" data-line-number="5">nsubj &lt;-<span class="st"> </span><span class="kw">length</span>(subj.list)</a>
-<a class="sourceLine" id="cb131-6" data-line-number="6"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>nh) {</a>
-<a class="sourceLine" id="cb131-7" data-line-number="7">    ss &lt;-<span class="st"> </span><span class="dv">0</span></a>
-<a class="sourceLine" id="cb131-8" data-line-number="8">    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>nsubj) {</a>
-<a class="sourceLine" id="cb131-9" data-line-number="9">        ind &lt;-<span class="st"> </span>bonedat<span class="op">$</span>idnum<span class="op">==</span>subj.list[i]</a>
-<a class="sourceLine" id="cb131-10" data-line-number="10">        yy &lt;-<span class="st"> </span>bonedat<span class="op">$</span>spnbmd[<span class="op">-</span>ind]</a>
-<a class="sourceLine" id="cb131-11" data-line-number="11">        xx &lt;-<span class="st"> </span>bonedat<span class="op">$</span>age[<span class="op">-</span>ind]</a>
-<a class="sourceLine" id="cb131-12" data-line-number="12">        tmp &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(xx, yy, <span class="dt">kernel=</span><span class="st">&quot;normal&quot;</span>, <span class="dt">bandwidth =</span> hh[k],</a>
-<a class="sourceLine" id="cb131-13" data-line-number="13">                       <span class="dt">x.points=</span>bonedat<span class="op">$</span>age[ind])</a>
-<a class="sourceLine" id="cb131-14" data-line-number="14">        mu.hat &lt;-<span class="st"> </span>tmp<span class="op">$</span>y</a>
-<a class="sourceLine" id="cb131-15" data-line-number="15">        ss &lt;-<span class="st"> </span>ss <span class="op">+</span><span class="st"> </span><span class="kw">sum</span>((bonedat<span class="op">$</span>spnbmd[ind] <span class="op">-</span><span class="st"> </span>mu.hat)<span class="op">^</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb131-16" data-line-number="16">    }</a>
-<a class="sourceLine" id="cb131-17" data-line-number="17">    LOOCV[k] &lt;-<span class="st"> </span>ss</a>
-<a class="sourceLine" id="cb131-18" data-line-number="18">}</a>
-<a class="sourceLine" id="cb131-19" data-line-number="19">hh[<span class="kw">which.min</span>(LOOCV)] <span class="co">## best seems to be 0.1</span></a></code></pre></div>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb133-1" data-line-number="1">nh &lt;-<span class="st"> </span><span class="dv">200</span></a>
+<a class="sourceLine" id="cb133-2" data-line-number="2">hh &lt;-<span class="st"> </span><span class="kw">seq</span>(.<span class="dv">1</span>, <span class="dv">1</span>, <span class="dt">length.out=</span>nh)</a>
+<a class="sourceLine" id="cb133-3" data-line-number="3">LOOCV &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, nh)</a>
+<a class="sourceLine" id="cb133-4" data-line-number="4">subj.list &lt;-<span class="st"> </span><span class="kw">unique</span>(bonedat<span class="op">$</span>idnum)</a>
+<a class="sourceLine" id="cb133-5" data-line-number="5">nsubj &lt;-<span class="st"> </span><span class="kw">length</span>(subj.list)</a>
+<a class="sourceLine" id="cb133-6" data-line-number="6"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>nh) {</a>
+<a class="sourceLine" id="cb133-7" data-line-number="7">    ss &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb133-8" data-line-number="8">    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>nsubj) {</a>
+<a class="sourceLine" id="cb133-9" data-line-number="9">        ind &lt;-<span class="st"> </span>bonedat<span class="op">$</span>idnum<span class="op">==</span>subj.list[i]</a>
+<a class="sourceLine" id="cb133-10" data-line-number="10">        yy &lt;-<span class="st"> </span>bonedat<span class="op">$</span>spnbmd[<span class="op">-</span>ind]</a>
+<a class="sourceLine" id="cb133-11" data-line-number="11">        xx &lt;-<span class="st"> </span>bonedat<span class="op">$</span>age[<span class="op">-</span>ind]</a>
+<a class="sourceLine" id="cb133-12" data-line-number="12">        tmp &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(xx, yy, <span class="dt">kernel=</span><span class="st">&quot;normal&quot;</span>, <span class="dt">bandwidth =</span> hh[k],</a>
+<a class="sourceLine" id="cb133-13" data-line-number="13">                       <span class="dt">x.points=</span>bonedat<span class="op">$</span>age[ind])</a>
+<a class="sourceLine" id="cb133-14" data-line-number="14">        mu.hat &lt;-<span class="st"> </span>tmp<span class="op">$</span>y</a>
+<a class="sourceLine" id="cb133-15" data-line-number="15">        ss &lt;-<span class="st"> </span>ss <span class="op">+</span><span class="st"> </span><span class="kw">sum</span>((bonedat<span class="op">$</span>spnbmd[ind] <span class="op">-</span><span class="st"> </span>mu.hat)<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb133-16" data-line-number="16">    }</a>
+<a class="sourceLine" id="cb133-17" data-line-number="17">    LOOCV[k] &lt;-<span class="st"> </span>ss</a>
+<a class="sourceLine" id="cb133-18" data-line-number="18">}</a>
+<a class="sourceLine" id="cb133-19" data-line-number="19">hh[<span class="kw">which.min</span>(LOOCV)] <span class="co">## best seems to be 0.1</span></a></code></pre></div>
 <pre><code>## [1] 0.1</code></pre>
 <ul>
 <li>In this case, the best <strong>bandwidth</strong> was <span class="math inline">\(0.1\)</span> according to the
@@ -478,13 +478,13 @@ subject-level leave-one-out cross-validation criterion.</li>
 <ul>
 <li>The kernel regression estimate of the mean function with the bandwidth of <span class="math inline">\(0.1\)</span> is plotted below:</li>
 </ul>
-<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb133-1" data-line-number="1">bone.kernel &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(bonedat<span class="op">$</span>age, bonedat<span class="op">$</span>spnbmd, <span class="dt">kernel=</span><span class="st">&quot;normal&quot;</span>,</a>
-<a class="sourceLine" id="cb133-2" data-line-number="2">                        <span class="dt">bandwidth =</span> <span class="fl">0.1</span>, <span class="dt">x.points=</span><span class="kw">seq</span>(<span class="fl">9.4</span>, <span class="dv">25</span>, <span class="dt">length.out=</span><span class="dv">100</span>))</a>
-<a class="sourceLine" id="cb133-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb133-4" data-line-number="4"><span class="kw">plot</span>(bonedat<span class="op">$</span>age, bonedat<span class="op">$</span>spnbmd, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;spnbmd&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;age&quot;</span>,</a>
-<a class="sourceLine" id="cb133-5" data-line-number="5">     <span class="dt">main=</span><span class="st">&quot;Bone Data: Kernel Regression with Bandwidth = 0.1&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
-<a class="sourceLine" id="cb133-6" data-line-number="6"><span class="kw">points</span>(bonedat<span class="op">$</span>age, bonedat<span class="op">$</span>spnbmd, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
-<a class="sourceLine" id="cb133-7" data-line-number="7"><span class="kw">lines</span>(bone.kernel<span class="op">$</span>x, bone.kernel<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb135-1" data-line-number="1">bone.kernel &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(bonedat<span class="op">$</span>age, bonedat<span class="op">$</span>spnbmd, <span class="dt">kernel=</span><span class="st">&quot;normal&quot;</span>,</a>
+<a class="sourceLine" id="cb135-2" data-line-number="2">                        <span class="dt">bandwidth =</span> <span class="fl">0.1</span>, <span class="dt">x.points=</span><span class="kw">seq</span>(<span class="fl">9.4</span>, <span class="dv">25</span>, <span class="dt">length.out=</span><span class="dv">100</span>))</a>
+<a class="sourceLine" id="cb135-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb135-4" data-line-number="4"><span class="kw">plot</span>(bonedat<span class="op">$</span>age, bonedat<span class="op">$</span>spnbmd, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;spnbmd&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;age&quot;</span>,</a>
+<a class="sourceLine" id="cb135-5" data-line-number="5">     <span class="dt">main=</span><span class="st">&quot;Bone Data: Kernel Regression with Bandwidth = 0.1&quot;</span>, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>)</a>
+<a class="sourceLine" id="cb135-6" data-line-number="6"><span class="kw">points</span>(bonedat<span class="op">$</span>age, bonedat<span class="op">$</span>spnbmd, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb135-7" data-line-number="7"><span class="kw">lines</span>(bone.kernel<span class="op">$</span>x, bone.kernel<span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a></code></pre></div>
 <p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <ul>
 <li>Using a bandwidth of <span class="math inline">\(1\)</span> gives a smoother mean function estimate.
@@ -539,11 +539,11 @@ in the same way as you would in a typical regression setting.</p></li>
 <ul>
 <li>Regression splines can be fitted in R by using the <code>splines</code> package</li>
 </ul>
-<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb134-1" data-line-number="1"><span class="kw">library</span>(splines)</a></code></pre></div>
+<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb136-1" data-line-number="1"><span class="kw">library</span>(splines)</a></code></pre></div>
 <ul>
 <li>The <code>bs</code> function in <code>splines</code> generates the B-spline “design” matrix</li>
 </ul>
-<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb135-1" data-line-number="1"><span class="kw">bs</span>(x, df, knots, degree)</a></code></pre></div>
+<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb137-1" data-line-number="1"><span class="kw">bs</span>(x, df, knots, degree)</a></code></pre></div>
 <ul>
 <li><code>x</code> - vector of covariates values. This can also just be the name of a variable when <code>bs</code> is used inside a function such as <code>geeglm</code>.</li>
 <li><code>df</code> - the “degrees of freedom”. For a cubic spline this is actually <span class="math inline">\(q + 3\)</span> rather than <span class="math inline">\(q + 4\)</span>. If you just enter <code>df</code>, the <code>bs</code> function will pick the knots for you.</li>
@@ -573,28 +573,28 @@ and <span class="math inline">\(A_{ij} = 0\)</span> if the <span class="math inl
 <ul>
 <li>To fit model <a href="nonpar-regression.html#eq:gee-bone">(3.2)</a> using the <code>geepack</code> package, you can use the following code</li>
 </ul>
-<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb136-1" data-line-number="1"><span class="kw">library</span>(splines)</a>
-<a class="sourceLine" id="cb136-2" data-line-number="2">gee.bone &lt;-<span class="st"> </span><span class="kw">geeglm</span>(spnbmd <span class="op">~</span><span class="st"> </span><span class="kw">bs</span>(age, <span class="dt">df=</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span>gender<span class="op">*</span><span class="kw">bs</span>(age,<span class="dt">df=</span><span class="dv">6</span>), <span class="dt">id=</span>idnum, <span class="dt">data=</span>bonedat)</a></code></pre></div>
+<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb138-1" data-line-number="1"><span class="kw">library</span>(splines)</a>
+<a class="sourceLine" id="cb138-2" data-line-number="2">gee.bone &lt;-<span class="st"> </span><span class="kw">geeglm</span>(spnbmd <span class="op">~</span><span class="st"> </span><span class="kw">bs</span>(age, <span class="dt">df=</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span>gender<span class="op">*</span><span class="kw">bs</span>(age,<span class="dt">df=</span><span class="dv">6</span>), <span class="dt">id=</span>idnum, <span class="dt">data=</span>bonedat)</a></code></pre></div>
 <ul>
 <li>We can plot the estimated mean functions by first extracting the <strong>fitted values</strong> for both the male and female groups:</li>
 </ul>
-<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb137-1" data-line-number="1">male.fitted &lt;-<span class="st"> </span>gee.bone<span class="op">$</span>fitted.values[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;male&quot;</span>]</a>
-<a class="sourceLine" id="cb137-2" data-line-number="2">male.age &lt;-<span class="st"> </span>bonedat<span class="op">$</span>age[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;male&quot;</span>]</a>
-<a class="sourceLine" id="cb137-3" data-line-number="3">female.fitted &lt;-<span class="st"> </span>gee.bone<span class="op">$</span>fitted.values[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;female&quot;</span>]</a>
-<a class="sourceLine" id="cb137-4" data-line-number="4">female.age &lt;-<span class="st"> </span>bonedat<span class="op">$</span>age[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;female&quot;</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb139-1" data-line-number="1">male.fitted &lt;-<span class="st"> </span>gee.bone<span class="op">$</span>fitted.values[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;male&quot;</span>]</a>
+<a class="sourceLine" id="cb139-2" data-line-number="2">male.age &lt;-<span class="st"> </span>bonedat<span class="op">$</span>age[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;male&quot;</span>]</a>
+<a class="sourceLine" id="cb139-3" data-line-number="3">female.fitted &lt;-<span class="st"> </span>gee.bone<span class="op">$</span>fitted.values[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;female&quot;</span>]</a>
+<a class="sourceLine" id="cb139-4" data-line-number="4">female.age &lt;-<span class="st"> </span>bonedat<span class="op">$</span>age[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;female&quot;</span>]</a></code></pre></div>
 <ul>
 <li>Now, plot the fitted curves for both groups</li>
 </ul>
-<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb138-1" data-line-number="1"><span class="kw">plot</span>(bonedat<span class="op">$</span>age, bonedat<span class="op">$</span>spnbmd, <span class="dt">lwd=</span><span class="dv">1</span>, <span class="dt">xlab=</span><span class="st">&quot;age&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;spnbmd&quot;</span>, </a>
-<a class="sourceLine" id="cb138-2" data-line-number="2">     <span class="dt">main=</span><span class="st">&quot;Regression Splines for the Bone Data&quot;</span>)</a>
-<a class="sourceLine" id="cb138-3" data-line-number="3"><span class="kw">points</span>(bonedat<span class="op">$</span>age[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;male&quot;</span>], bonedat<span class="op">$</span>spnbmd[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;male&quot;</span>], </a>
-<a class="sourceLine" id="cb138-4" data-line-number="4">       <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
-<a class="sourceLine" id="cb138-5" data-line-number="5"><span class="kw">points</span>(bonedat<span class="op">$</span>age[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;female&quot;</span>], bonedat<span class="op">$</span>spnbmd[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;female&quot;</span>], </a>
-<a class="sourceLine" id="cb138-6" data-line-number="6">       <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
-<a class="sourceLine" id="cb138-7" data-line-number="7"><span class="kw">lines</span>(male.age[<span class="kw">order</span>(male.age)], male.fitted[<span class="kw">order</span>(male.age)], <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb138-8" data-line-number="8"><span class="kw">lines</span>(female.age[<span class="kw">order</span>(female.age)], female.fitted[<span class="kw">order</span>(female.age)], <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>, </a>
-<a class="sourceLine" id="cb138-9" data-line-number="9">      <span class="dt">lwd=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb138-10" data-line-number="10"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span><span class="kw">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>), <span class="dt">lwd=</span><span class="dv">3</span>, <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb140-1" data-line-number="1"><span class="kw">plot</span>(bonedat<span class="op">$</span>age, bonedat<span class="op">$</span>spnbmd, <span class="dt">lwd=</span><span class="dv">1</span>, <span class="dt">xlab=</span><span class="st">&quot;age&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;spnbmd&quot;</span>, </a>
+<a class="sourceLine" id="cb140-2" data-line-number="2">     <span class="dt">main=</span><span class="st">&quot;Regression Splines for the Bone Data&quot;</span>)</a>
+<a class="sourceLine" id="cb140-3" data-line-number="3"><span class="kw">points</span>(bonedat<span class="op">$</span>age[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;male&quot;</span>], bonedat<span class="op">$</span>spnbmd[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;male&quot;</span>], </a>
+<a class="sourceLine" id="cb140-4" data-line-number="4">       <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb140-5" data-line-number="5"><span class="kw">points</span>(bonedat<span class="op">$</span>age[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;female&quot;</span>], bonedat<span class="op">$</span>spnbmd[bonedat<span class="op">$</span>gender<span class="op">==</span><span class="st">&quot;female&quot;</span>], </a>
+<a class="sourceLine" id="cb140-6" data-line-number="6">       <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">cex=</span><span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb140-7" data-line-number="7"><span class="kw">lines</span>(male.age[<span class="kw">order</span>(male.age)], male.fitted[<span class="kw">order</span>(male.age)], <span class="dt">col=</span><span class="st">&quot;red&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb140-8" data-line-number="8"><span class="kw">lines</span>(female.age[<span class="kw">order</span>(female.age)], female.fitted[<span class="kw">order</span>(female.age)], <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>, </a>
+<a class="sourceLine" id="cb140-9" data-line-number="9">      <span class="dt">lwd=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb140-10" data-line-number="10"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span><span class="kw">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>), <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>), <span class="dt">lwd=</span><span class="dv">3</span>, <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>)</a></code></pre></div>
 <p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <hr />
 

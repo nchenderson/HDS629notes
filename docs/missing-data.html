@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2021-04-15" />
+<meta name="date" content="2022-01-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -242,12 +242,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="missing-data-in-r-and-direct-approaches-for-handling-missing-data" class="section level2">
 <h2><span class="header-section-number">2.1</span> Missing Data in R and “Direct Approaches” for Handling Missing Data</h2>
 <ul>
-<li><p>In a wide range of datasets, it is very common to encounter missing values.</p></li>
+<li><p>In many real-world datasets, it is very common to have missing values.</p></li>
 <li><p>In <strong>R</strong>, missing values are stored as <code>NA</code>, meaning <strong>“Not Available”</strong>.</p></li>
 </ul>
 <hr />
 <ul>
-<li>For example, look at the <code>airquality</code> dataframe available in base <strong>R</strong></li>
+<li>As an example, let’s look at the <code>airquality</code> dataframe available in base <strong>R</strong></li>
 </ul>
 <div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" data-line-number="1"><span class="kw">data</span>(airquality)</a>
 <a class="sourceLine" id="cb52-2" data-line-number="2"><span class="kw">head</span>(airquality)</a></code></pre></div>
@@ -282,6 +282,12 @@ and the <strong>5th and 6th observations</strong> for the <code>Solar.R</code> v
 <pre><code>## [1] 44</code></pre>
 <div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" data-line-number="1"><span class="kw">dim</span>( airquality )  <span class="co">## Dataset has a total of 153 x 6 = 918 entries</span></a></code></pre></div>
 <pre><code>## [1] 153   6</code></pre>
+<ul>
+<li>Doing <code>apply(is.na(airquality), 2, sum)</code> gives us the number of missing values for each variable.</li>
+</ul>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1"><span class="kw">apply</span>( <span class="kw">is.na</span>(airquality), <span class="dv">2</span>, sum)</a></code></pre></div>
+<pre><code>##   Ozone Solar.R    Wind    Temp   Month     Day 
+##      37       7       0       0       0       0</code></pre>
 <div id="complete-case-analysis-listwise-deletion" class="section level3">
 <h3><span class="header-section-number">2.1.1</span> Complete Case Analysis (Listwise Deletion)</h3>
 <ul>
@@ -289,8 +295,8 @@ and the <strong>5th and 6th observations</strong> for the <code>Solar.R</code> v
 <code>Wind</code>, and <code>Temp</code> as the covariates.</p></li>
 <li><p>If we do this in <strong>R</strong>, we will get the following result:</p></li>
 </ul>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1">air.lm1 &lt;-<span class="st"> </span><span class="kw">lm</span>( Ozone <span class="op">~</span><span class="st"> </span>Solar.R <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Temp, <span class="dt">data =</span> airquality )</a>
-<a class="sourceLine" id="cb60-2" data-line-number="2"><span class="kw">summary</span>( air.lm1 )</a></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1">air.lm1 &lt;-<span class="st"> </span><span class="kw">lm</span>( Ozone <span class="op">~</span><span class="st"> </span>Solar.R <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Temp, <span class="dt">data =</span> airquality )</a>
+<a class="sourceLine" id="cb62-2" data-line-number="2"><span class="kw">summary</span>( air.lm1 )</a></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = Ozone ~ Solar.R + Wind + Temp, data = airquality)
@@ -314,27 +320,27 @@ and the <strong>5th and 6th observations</strong> for the <code>Solar.R</code> v
 ## F-statistic: 54.83 on 3 and 107 DF,  p-value: &lt; 2.2e-16</code></pre>
 <hr />
 <ul>
-<li><p>How is <strong>R</strong> handling all the <strong>missing values</strong> in <code>airquality</code>.</p></li>
-<li>As a default, <code>lm</code> conducts a <strong>complete case analysis</strong> (sometimes referred to as listwise deletion).
+<li><p>How is <strong>R</strong> handling all the <strong>missing values</strong> in <code>airquality</code>?</p></li>
+<li>As a default, <code>lm</code> performs a <strong>complete case analysis</strong> (sometimes referred to as listwise deletion).
 <ul>
 <li>(This is the default unless you changed the default <code>na.action</code> setting with <code>options(...)</code>)</li>
 </ul></li>
-<li>A <strong>complete case analysis</strong> for regression will first <strong>delete all rows</strong> from the dataset if
-any of the variables used from that row have a missing value.
+<li>A <strong>complete case analysis</strong> for regression will <strong>delete a rows</strong> from the dataset if
+<strong>any</strong> of the variables used from that row have a missing value.
 <ul>
 <li>In this example, a row will be dropped if either the value of <code>Ozone</code>, <code>Solar.R</code>, <code>Wind</code>, or <code>Temp</code>
 is missing.</li>
 </ul></li>
-<li><p>After these observations have been deleted, the usual regression is fit to the remaining <strong>“complete” dataset</strong>.</p></li>
+<li><p>After these observations have been deleted, the usual regression parameters are estimated from the remaining <strong>“complete” dataset</strong>.</p></li>
 </ul>
 <hr />
 <ul>
 <li>To remove <strong>all rows</strong> where there is at least one missing value, you can use
 <code>na.omit</code>:</li>
 </ul>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1">complete.air &lt;-<span class="st"> </span><span class="kw">na.omit</span>( airquality )</a>
-<a class="sourceLine" id="cb62-2" data-line-number="2"><span class="co">## Check that there are no missing values</span></a>
-<a class="sourceLine" id="cb62-3" data-line-number="3"><span class="kw">sum</span>( <span class="kw">is.na</span>(complete.air) )  <span class="co"># This should be zero</span></a></code></pre></div>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb64-1" data-line-number="1">complete.air &lt;-<span class="st"> </span><span class="kw">na.omit</span>( airquality )</a>
+<a class="sourceLine" id="cb64-2" data-line-number="2"><span class="co">## Check that there are no missing values</span></a>
+<a class="sourceLine" id="cb64-3" data-line-number="3"><span class="kw">sum</span>( <span class="kw">is.na</span>(complete.air) )  <span class="co"># This should be zero</span></a></code></pre></div>
 <pre><code>## [1] 0</code></pre>
 <!--* Because our regression model only uses the variables `Ozone`, `Solar.R`, `Wind`, and `Temp`,
 we -->
@@ -342,15 +348,15 @@ we -->
 <ul>
 <li>Let’s now fit a linear regression using the complete dataset <code>complete.air</code></li>
 </ul>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb64-1" data-line-number="1">air.lm2 &lt;-<span class="st"> </span><span class="kw">lm</span>( Ozone <span class="op">~</span><span class="st"> </span>Solar.R <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Temp, <span class="dt">data =</span> complete.air )</a></code></pre></div>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb66-1" data-line-number="1">air.lm2 &lt;-<span class="st"> </span><span class="kw">lm</span>( Ozone <span class="op">~</span><span class="st"> </span>Solar.R <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Temp, <span class="dt">data =</span> complete.air )</a></code></pre></div>
 <ul>
 <li>Because <strong>R</strong> does a complete-case analysis as default, the estimated regression coefficients <strong>should be the same</strong> when using the “incomplete dataset” <code>airquality</code> as when using the “complete dataset” <code>complete.air</code></li>
 </ul>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" data-line-number="1"><span class="co">## The estimated regression coefficients should be the same</span></a>
-<a class="sourceLine" id="cb65-2" data-line-number="2"><span class="kw">round</span>(air.lm1<span class="op">$</span>coefficients, <span class="dv">3</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb67-1" data-line-number="1"><span class="co">## The estimated regression coefficients should be the same</span></a>
+<a class="sourceLine" id="cb67-2" data-line-number="2"><span class="kw">round</span>(air.lm1<span class="op">$</span>coefficients, <span class="dv">3</span>)</a></code></pre></div>
 <pre><code>## (Intercept)     Solar.R        Wind        Temp 
 ##     -64.342       0.060      -3.334       1.652</code></pre>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb67-1" data-line-number="1"><span class="kw">round</span>(air.lm2<span class="op">$</span>coefficients, <span class="dv">3</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb69-1" data-line-number="1"><span class="kw">round</span>(air.lm2<span class="op">$</span>coefficients, <span class="dv">3</span>)</a></code></pre></div>
 <pre><code>## (Intercept)     Solar.R        Wind        Temp 
 ##     -64.342       0.060      -3.334       1.652</code></pre>
 </div>
@@ -362,6 +368,7 @@ we -->
 <li><p>A complete-case analysis should really only be used if you are confident that the data are <strong>missing completely at random (MCAR)</strong>.</p></li>
 <li><p>Roughly speaking, <strong>MCAR</strong> means that the probability of having a missing value is not related to
 <strong>missing or observed</strong> values of the data.</p></li>
+<li><p>Section 2.5 gives a more formal definition of MCAR.</p></li>
 </ul></li>
 </ul>
 <hr />
@@ -394,8 +401,9 @@ the values of the other variables.</p></li>
 <li><p>The nice thing about multiple imputation is that you can always
 use your <strong>original analysis approach</strong>.</p></li>
 <li><p>That is, you can just apply your original analysis method to each of the <span class="math inline">\(K\)</span> <strong>complete datasets</strong>.</p></li>
-<li><p>The complicated part in multiple imputation is generating the <span class="math inline">\(K\)</span> complete datasets in a <strong>“valid”</strong> way.</p></li>
-<li><p>Luckily, there are a number of <strong>R</strong> packages that implement different ways of creating
+<li><p>The complicated part in multiple imputation is generating the <span class="math inline">\(K\)</span> complete datasets in a <strong>“valid”</strong> or
+<strong>“statistically principled”</strong> way.</p></li>
+<li><p>Fortunately, there are a number of <strong>R</strong> packages that implement different approaches for creating
 the <span class="math inline">\(K\)</span> <strong>imputed datasets</strong>.</p></li>
 </ul>
 </div>
@@ -412,22 +420,23 @@ for performing <strong>multiple imputation</strong>.</p></li>
 <ul>
 <li>(Set <code>print = FALSE</code> if you don’t want it to print out the number of the iteration).</li>
 <li>Choose a value of <code>seed</code> so that the results are reproducible.</li>
-<li>Note that the <strong>default number</strong> of complete datasets returned is 5. This can be changed with the <code>m</code> argument.</li>
+<li>Note that the <strong>default number</strong> of complete datasets returned is 5. This can be changed with the <code>m</code> argument. A value of <code>m</code> set to 5 or 10 is a typically recommendation for something that works well in practice.</li>
 </ul></li>
+<li><p>Let’s try running the <code>mice</code> function with the <code>airquality</code> dataset.</p></li>
 </ul>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb69-1" data-line-number="1"><span class="kw">library</span>(mice)</a>
-<a class="sourceLine" id="cb69-2" data-line-number="2">imputed.airs &lt;-<span class="st"> </span><span class="kw">mice</span>(airquality, <span class="dt">print=</span><span class="ot">FALSE</span>, <span class="dt">seed=</span><span class="dv">101</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb71-1" data-line-number="1"><span class="kw">library</span>(mice)</a>
+<a class="sourceLine" id="cb71-2" data-line-number="2">imputed.airs &lt;-<span class="st"> </span><span class="kw">mice</span>(airquality, <span class="dt">print=</span><span class="ot">FALSE</span>, <span class="dt">seed=</span><span class="dv">101</span>)</a></code></pre></div>
 <hr />
 <ul>
 <li><p>The object returned by <code>mice</code> will have a component called <code>imp</code> which is a list.</p></li>
 <li>Each component of <code>imp</code> is a <strong>dataframe</strong> corresponding to a single variable in the original dataframe
 <ul>
-<li>This dataframe will contain the imputed values for the <strong>missing values</strong> of that variable.</li>
+<li>This dataframe will contain the <strong>imputed values</strong> for the <strong>missing values</strong> of that variable.</li>
 </ul></li>
 <li><p>For example, <code>imputed.airs$imp</code> will be a <strong>list</strong> with each component of the list being
 one of the variables from <code>airquality</code></p></li>
 </ul>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1"><span class="kw">names</span>( imputed.airs<span class="op">$</span>imp )</a></code></pre></div>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb72-1" data-line-number="1"><span class="kw">names</span>( imputed.airs<span class="op">$</span>imp )</a></code></pre></div>
 <pre><code>## [1] &quot;Ozone&quot;   &quot;Solar.R&quot; &quot;Wind&quot;    &quot;Temp&quot;    &quot;Month&quot;   &quot;Day&quot;</code></pre>
 <hr />
 <ul>
@@ -436,10 +445,10 @@ one of the variables from <code>airquality</code></p></li>
 <li>This is because the <code>Ozone</code> variable had <strong>37 missing values</strong>, and there are <strong>5 multiple imputations</strong> (the default number in <strong>mice</strong>)</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb72-1" data-line-number="1"><span class="kw">dim</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Ozone)</a></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" data-line-number="1"><span class="kw">dim</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Ozone)</a></code></pre></div>
 <pre><code>## [1] 37  5</code></pre>
-<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" data-line-number="1"><span class="co">## Imputed missing ozone values across the five multiple imputations</span></a>
-<a class="sourceLine" id="cb74-2" data-line-number="2"><span class="kw">head</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Ozone)</a></code></pre></div>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" data-line-number="1"><span class="co">## Imputed missing ozone values across the five multiple imputations</span></a>
+<a class="sourceLine" id="cb76-2" data-line-number="2"><span class="kw">head</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Ozone)</a></code></pre></div>
 <pre><code>##     1  2  3  4  5
 ## 5   6  8 18  6 37
 ## 10 12 18 27 18 30
@@ -460,10 +469,10 @@ the 2nd imputation, 18 in the 3rd imputation, etc. ….</p></li>
 <li>This is because the <code>Solar.R</code> variable had <strong>7 missing values</strong>, and there are <strong>5 multiple imputations</strong>.</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" data-line-number="1"><span class="kw">dim</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Solar.R)</a></code></pre></div>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb78-1" data-line-number="1"><span class="kw">dim</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Solar.R)</a></code></pre></div>
 <pre><code>## [1] 7 5</code></pre>
-<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb78-1" data-line-number="1"><span class="co">## Imputed missing ozone values across the five multiple imputations</span></a>
-<a class="sourceLine" id="cb78-2" data-line-number="2"><span class="kw">head</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Solar.R)</a></code></pre></div>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb80-1" data-line-number="1"><span class="co">## Imputed missing ozone values across the five multiple imputations</span></a>
+<a class="sourceLine" id="cb80-2" data-line-number="2"><span class="kw">head</span>(imputed.airs<span class="op">$</span>imp<span class="op">$</span>Solar.R)</a></code></pre></div>
 <pre><code>##      1   2   3   4   5
 ## 5  131 285 274  92 139
 ## 6  127 248 175 167 175
@@ -481,11 +490,11 @@ the 2nd imputation, 274 in the 3rd imputation, etc. ….</li>
 <li><p>You could use the components of <code>imputed.airs$imp</code> to directly fit <strong>5 separate regression</strong> on the multiply imputed datasets and then average the results.</p></li>
 <li><p>However, this is much easier if you just use the <strong>with</strong> function from <strong>mice</strong></p></li>
 </ul>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb80-1" data-line-number="1">air.multi.imputelm &lt;-<span class="st"> </span><span class="kw">with</span>(imputed.airs, <span class="kw">lm</span>( Ozone <span class="op">~</span><span class="st"> </span>Solar.R <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Temp))</a></code></pre></div>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb82-1" data-line-number="1">air.multi.imputelm &lt;-<span class="st"> </span><span class="kw">with</span>(imputed.airs, <span class="kw">lm</span>( Ozone <span class="op">~</span><span class="st"> </span>Solar.R <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Temp))</a></code></pre></div>
 <ul>
 <li>This will produce <strong>5 different sets</strong> of estimates of the regression coefficients:</li>
 </ul>
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb81-1" data-line-number="1"><span class="kw">summary</span>(air.multi.imputelm)</a></code></pre></div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb83-1" data-line-number="1"><span class="kw">summary</span>(air.multi.imputelm)</a></code></pre></div>
 <pre><code>## # A tibble: 20 x 6
 ##    term        estimate std.error statistic  p.value  nobs
 ##    &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;
@@ -513,7 +522,7 @@ the 2nd imputation, 274 in the 3rd imputation, etc. ….</li>
 <li>To get the “pooled estimates and standard errors” from these 5 different sets of regression coefficients
 use the <strong>pool</strong> function from <strong>mice</strong>:</li>
 </ul>
-<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb83-1" data-line-number="1"><span class="kw">summary</span>( <span class="kw">pool</span>(air.multi.imputelm) )</a></code></pre></div>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb85-1" data-line-number="1"><span class="kw">summary</span>( <span class="kw">pool</span>(air.multi.imputelm) )</a></code></pre></div>
 <pre><code>##          term     estimate   std.error statistic       df      p.value
 ## 1 (Intercept) -62.73141323 26.25695768 -2.389135 16.63162 2.903387e-02
 ## 2     Solar.R   0.05855766  0.02400718  2.439173 36.55628 1.969933e-02
@@ -538,7 +547,7 @@ and <span class="math inline">\(\hat{\beta}_{jk}\)</span> is the estimate of <sp
 <li><p>To extract each of the completed datasets, you can use the <code>complete</code> function from <strong>mice</strong>.</p></li>
 <li><p>The following code will return the <strong>5 complete datasets</strong> from <code>imputed.airs</code></p></li>
 </ul>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb85-1" data-line-number="1">completed.airs &lt;-<span class="st"> </span>mice<span class="op">::</span><span class="kw">complete</span>(imputed.airs, <span class="dt">action=</span><span class="st">&quot;long&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb87-1" data-line-number="1">completed.airs &lt;-<span class="st"> </span>mice<span class="op">::</span><span class="kw">complete</span>(imputed.airs, <span class="dt">action=</span><span class="st">&quot;long&quot;</span>)</a></code></pre></div>
 <ul>
 <li><p><code>action = &quot;long&quot;</code> means that it will return the 5 complete datasets as one dataframe with
 the individual datasets “<strong>stacked</strong> on top of each other.”</p></li>
@@ -547,7 +556,7 @@ the individual datasets “<strong>stacked</strong> on top of each other.”</p>
 <li>The variable <code>.imp</code> is an indicator of which of the 5 imputations that row corresponds to.</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb86-1" data-line-number="1"><span class="kw">head</span>(completed.airs)</a></code></pre></div>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb88-1" data-line-number="1"><span class="kw">head</span>(completed.airs)</a></code></pre></div>
 <pre><code>##   .imp .id Ozone Solar.R Wind Temp Month Day
 ## 1    1   1    41     190  7.4   67     5   1
 ## 2    1   2    36     118  8.0   72     5   2
@@ -555,9 +564,9 @@ the individual datasets “<strong>stacked</strong> on top of each other.”</p>
 ## 4    1   4    18     313 11.5   62     5   4
 ## 5    1   5     6     131 14.3   56     5   5
 ## 6    1   6    28     127 14.9   66     5   6</code></pre>
-<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb88-1" data-line-number="1"><span class="kw">dim</span>(completed.airs)</a></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb90-1" data-line-number="1"><span class="kw">dim</span>(completed.airs)</a></code></pre></div>
 <pre><code>## [1] 765   8</code></pre>
-<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb90-1" data-line-number="1"><span class="kw">dim</span>(airquality)</a></code></pre></div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb92-1" data-line-number="1"><span class="kw">dim</span>(airquality)</a></code></pre></div>
 <pre><code>## [1] 153   6</code></pre>
 <hr />
 <ul>
@@ -566,13 +575,13 @@ the individual datasets “<strong>stacked</strong> on top of each other.”</p>
 <li>This should give us the same results as when using <code>with</code></li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb92-1" data-line-number="1">BetaMat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">nrow=</span><span class="dv">5</span>, <span class="dt">ncol=</span><span class="dv">4</span>)</a>
-<a class="sourceLine" id="cb92-2" data-line-number="2"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>) {</a>
-<a class="sourceLine" id="cb92-3" data-line-number="3">    <span class="co">## Find beta.hat from kth imputed dataset</span></a>
-<a class="sourceLine" id="cb92-4" data-line-number="4">    BetaMat[k,] &lt;-<span class="st"> </span><span class="kw">lm</span>(Ozone <span class="op">~</span><span class="st"> </span>Solar.R <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Temp, </a>
-<a class="sourceLine" id="cb92-5" data-line-number="5">                      <span class="dt">data=</span>completed.airs[completed.airs<span class="op">$</span>.imp<span class="op">==</span>k,])<span class="op">$</span>coefficients</a>
-<a class="sourceLine" id="cb92-6" data-line-number="6">}</a>
-<a class="sourceLine" id="cb92-7" data-line-number="7"><span class="kw">round</span>(<span class="kw">colMeans</span>(BetaMat), <span class="dv">3</span>)  <span class="co"># compare with the results from using the &quot;with&quot; function</span></a></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb94-1" data-line-number="1">BetaMat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">nrow=</span><span class="dv">5</span>, <span class="dt">ncol=</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb94-2" data-line-number="2"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>) {</a>
+<a class="sourceLine" id="cb94-3" data-line-number="3">    <span class="co">## Find beta.hat from kth imputed dataset</span></a>
+<a class="sourceLine" id="cb94-4" data-line-number="4">    BetaMat[k,] &lt;-<span class="st"> </span><span class="kw">lm</span>(Ozone <span class="op">~</span><span class="st"> </span>Solar.R <span class="op">+</span><span class="st"> </span>Wind <span class="op">+</span><span class="st"> </span>Temp, </a>
+<a class="sourceLine" id="cb94-5" data-line-number="5">                      <span class="dt">data=</span>completed.airs[completed.airs<span class="op">$</span>.imp<span class="op">==</span>k,])<span class="op">$</span>coefficients</a>
+<a class="sourceLine" id="cb94-6" data-line-number="6">}</a>
+<a class="sourceLine" id="cb94-7" data-line-number="7"><span class="kw">round</span>(<span class="kw">colMeans</span>(BetaMat), <span class="dv">3</span>)  <span class="co"># compare with the results from using the &quot;with&quot; function</span></a></code></pre></div>
 <pre><code>## [1] -62.731   0.059  -3.108   1.600</code></pre>
 </div>
 </div>
@@ -581,10 +590,8 @@ the individual datasets “<strong>stacked</strong> on top of each other.”</p>
 <h2><span class="header-section-number">2.3</span> What is MICE doing?</h2>
 <ul>
 <li><p>Suppose we have data from <span class="math inline">\(q\)</span> variables <span class="math inline">\(Z_{i1}, \ldots, Z_{iq}\)</span>.</p></li>
-<li><p>Let <span class="math inline">\(\mathbf{Z}_{mis}\)</span> denote the collection of missing observations and <span class="math inline">\(\mathbf{Z}_{obs}\)</span>
-the collection of observed values, and let <span class="math inline">\(\mathbf{Z} = (\mathbf{Z}_{obs}, \mathbf{Z}_{mis})\)</span>.</p></li>
-<li><p>Let the vector <span class="math inline">\(\mathbf{Z}_{j} = (Z_{1j}, \ldots, Z_{nj})\)</span> denote all the observations
-from variable <span class="math inline">\(j\)</span>.</p></li>
+<li><p>Let <span class="math inline">\(\mathbf{Z}_{mis}\)</span> denote the <strong>entire collection</strong> of missing observations and <span class="math inline">\(\mathbf{Z}_{obs}\)</span>
+the <strong>entire collection</strong> of observed values, and let <span class="math inline">\(\mathbf{Z} = (\mathbf{Z}_{obs}, \mathbf{Z}_{mis})\)</span>.</p></li>
 <li>The <strong>basic idea behind</strong> multiple imputation is to, in some way, generate samples <span class="math inline">\(\mathbf{Z}_{mis}^{(1)}, \ldots, \mathbf{Z}_{mis}^{(K)}\)</span> from a flexible probability model <span class="math inline">\(p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})\)</span>
 <ul>
 <li><span class="math inline">\(p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})\)</span> represents the conditional distribution of <span class="math inline">\(\mathbf{Z}_{mis}\)</span> given the observed <span class="math inline">\(\mathbf{Z}_{obs}\)</span>.</li>
@@ -613,6 +620,11 @@ a posterior mean:
 <li><p>This approach is not so straightforward when you have variables of <strong>mixed type</strong>: some continuous,some
 binary, some categorical, etc. …</p></li>
 </ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>Let the vector <span class="math inline">\(\mathbf{Z}_{j} = (Z_{1j}, \ldots, Z_{nj})\)</span> denote all the “data” (whether observed or unobserved)
+from variable <span class="math inline">\(j\)</span>.</p></li>
 <li>The <strong>fully conditional specification</strong> (FCS) approach specifies the distribution of each variable <span class="math inline">\(\mathbf{Z}_{j}\)</span> conditional on the remaining variables <span class="math inline">\(\mathbf{Z}_{-j}\)</span>.
 <ul>
 <li>The FCS approach is the one used by <strong>mice</strong>.</li>
@@ -628,7 +640,7 @@ p(\mathbf{Z}_{q}&amp;|&amp;\mathbf{Z}_{-q}, \boldsymbol{\eta}_{q})
 <hr />
 <ul>
 <li><p>With <strong>mice</strong>, the parameters <span class="math inline">\(\eta_{j}\)</span> and the missing values for each variable <span class="math inline">\(\mathbf{Z}_{j,mis}\)</span> are updated <strong>one-at-a-time</strong> via a kind of <strong>Gibbs sampler</strong>.</p></li>
-<li><p>All of the missing values are imputed in <strong>one cycle</strong> of the Gibbs sampler.</p></li>
+<li><p>All of the missing values can be imputed in <strong>one cycle</strong> of the Gibbs sampler.</p></li>
 <li><p>Multiple cycles are repeated to get <strong>multiple completed datasets</strong>.</p></li>
 </ul>
 <hr />
@@ -652,9 +664,9 @@ observations across individuals will be <strong>correlated</strong>.</p></li>
 <ul>
 <li>Let’s look at the <strong>ohio</strong> data from the <strong>geepack</strong> package again</li>
 </ul>
-<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb94-1" data-line-number="1"><span class="kw">library</span>(geepack)</a>
-<a class="sourceLine" id="cb94-2" data-line-number="2"><span class="kw">data</span>(ohio)</a>
-<a class="sourceLine" id="cb94-3" data-line-number="3"><span class="kw">head</span>(ohio)</a></code></pre></div>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb96-1" data-line-number="1"><span class="kw">library</span>(geepack)</a>
+<a class="sourceLine" id="cb96-2" data-line-number="2"><span class="kw">data</span>(ohio)</a>
+<a class="sourceLine" id="cb96-3" data-line-number="3"><span class="kw">head</span>(ohio)</a></code></pre></div>
 <pre><code>##   resp id age smoke
 ## 1    0  0  -2     0
 ## 2    0  0  -1     0
@@ -665,17 +677,17 @@ observations across individuals will be <strong>correlated</strong>.</p></li>
 <hr />
 <ul>
 <li><p>The <strong>ohio</strong> dataset is in <strong>long format</strong>. We need to first convert this into <strong>wide format</strong>.</p></li>
-<li>With <strong>tidyr</strong> you can convert from <strong>long to wide</strong> using <strong>spread</strong>:
+<li>With the <strong>tidyr</strong> package, you can convert from <strong>long to wide</strong> using <strong>spread</strong>:
 <ul>
 <li>(Use <strong>gather</strong> to go from <strong>wide to long</strong>)</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb96-1" data-line-number="1"><span class="kw">library</span>( tidyr )</a>
-<a class="sourceLine" id="cb96-2" data-line-number="2">ohio.wide &lt;-<span class="st"> </span><span class="kw">spread</span>(ohio, <span class="dt">key=</span>age, <span class="dt">value=</span>resp)</a>
-<a class="sourceLine" id="cb96-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb96-4" data-line-number="4"><span class="co">## Change variable names to so that ages go from 7 to 10</span></a>
-<a class="sourceLine" id="cb96-5" data-line-number="5"><span class="kw">names</span>(ohio.wide) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;smoke&quot;</span>, <span class="st">&quot;age7&quot;</span>, <span class="st">&quot;age8&quot;</span>, <span class="st">&quot;age9&quot;</span>, <span class="st">&quot;age10&quot;</span>)</a>
-<a class="sourceLine" id="cb96-6" data-line-number="6"><span class="kw">head</span>(ohio.wide)</a></code></pre></div>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb98-1" data-line-number="1"><span class="kw">library</span>( tidyr )</a>
+<a class="sourceLine" id="cb98-2" data-line-number="2">ohio.wide &lt;-<span class="st"> </span><span class="kw">spread</span>(ohio, <span class="dt">key=</span>age, <span class="dt">value=</span>resp)</a>
+<a class="sourceLine" id="cb98-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb98-4" data-line-number="4"><span class="co">## Change variable names to so that ages go from 7 to 10</span></a>
+<a class="sourceLine" id="cb98-5" data-line-number="5"><span class="kw">names</span>(ohio.wide) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;smoke&quot;</span>, <span class="st">&quot;age7&quot;</span>, <span class="st">&quot;age8&quot;</span>, <span class="st">&quot;age9&quot;</span>, <span class="st">&quot;age10&quot;</span>)</a>
+<a class="sourceLine" id="cb98-6" data-line-number="6"><span class="kw">head</span>(ohio.wide)</a></code></pre></div>
 <pre><code>##   id smoke age7 age8 age9 age10
 ## 1  0     0    0    0    0     0
 ## 2  1     0    0    0    0     0
@@ -691,8 +703,8 @@ observations across individuals will be <strong>correlated</strong>.</p></li>
 <ul>
 <li><strong>reshape</strong> from base <strong>R</strong> can also be used to go from <strong>long to wide</strong></li>
 </ul>
-<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb98-1" data-line-number="1"><span class="co"># Example of using reshape</span></a>
-<a class="sourceLine" id="cb98-2" data-line-number="2"><span class="co">#ohio.wide2 &lt;- reshape(ohio, v.names=&quot;resp&quot;, idvar=&quot;id&quot;, timevar=&quot;age&quot;, direction=&quot;wide&quot;)</span></a></code></pre></div>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb100-1" data-line-number="1"><span class="co"># Example of using reshape</span></a>
+<a class="sourceLine" id="cb100-2" data-line-number="2"><span class="co">#ohio.wide2 &lt;- reshape(ohio, v.names=&quot;resp&quot;, idvar=&quot;id&quot;, timevar=&quot;age&quot;, direction=&quot;wide&quot;)</span></a></code></pre></div>
 <hr />
 <ul>
 <li><p>The <strong>ohio</strong> dataset does not have any missing values.</p></li>
@@ -718,19 +730,19 @@ P( R_{ij} = 1| \textrm{smoke}_{i})
 <li>We will call the new data frame <code>ohio.wide.miss</code></li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb99-1" data-line-number="1">ohio.wide.miss &lt;-<span class="st"> </span>ohio.wide</a>
-<a class="sourceLine" id="cb99-2" data-line-number="2">m &lt;-<span class="st"> </span><span class="kw">nrow</span>(ohio.wide.miss) <span class="co">## number of individuals in study</span></a>
-<a class="sourceLine" id="cb99-3" data-line-number="3"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>m) {</a>
-<a class="sourceLine" id="cb99-4" data-line-number="4">    resp.values &lt;-<span class="st"> </span>ohio.wide[k, <span class="dv">3</span><span class="op">:</span><span class="dv">6</span>]  <span class="co"># values of resp for individual k</span></a>
-<a class="sourceLine" id="cb99-5" data-line-number="5">    <span class="cf">if</span>(ohio.wide[k,<span class="dv">2</span>] <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) {  <span class="co"># if smoke = 1</span></a>
-<a class="sourceLine" id="cb99-6" data-line-number="6">        Rij &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>, <span class="dt">prob=</span><span class="kw">c</span>(<span class="fl">0.7</span>, <span class="fl">0.3</span>))</a>
-<a class="sourceLine" id="cb99-7" data-line-number="7">    } <span class="cf">else</span> { <span class="co"># if smoke = 0</span></a>
-<a class="sourceLine" id="cb99-8" data-line-number="8">        Rij &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>, <span class="dt">prob=</span><span class="kw">c</span>(<span class="fl">0.95</span>, <span class="fl">0.05</span>))</a>
-<a class="sourceLine" id="cb99-9" data-line-number="9">    }</a>
-<a class="sourceLine" id="cb99-10" data-line-number="10">    resp.values[Rij<span class="op">==</span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="ot">NA</span> <span class="co"># insert NA values where Rij = 1</span></a>
-<a class="sourceLine" id="cb99-11" data-line-number="11">    ohio.wide.miss[k, <span class="dv">3</span><span class="op">:</span><span class="dv">6</span>] &lt;-<span class="st"> </span>resp.values</a>
-<a class="sourceLine" id="cb99-12" data-line-number="12">}</a></code></pre></div>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb100-1" data-line-number="1"><span class="kw">head</span>(ohio.wide.miss, <span class="dv">10</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb101-1" data-line-number="1">ohio.wide.miss &lt;-<span class="st"> </span>ohio.wide</a>
+<a class="sourceLine" id="cb101-2" data-line-number="2">m &lt;-<span class="st"> </span><span class="kw">nrow</span>(ohio.wide.miss) <span class="co">## number of individuals in study</span></a>
+<a class="sourceLine" id="cb101-3" data-line-number="3"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>m) {</a>
+<a class="sourceLine" id="cb101-4" data-line-number="4">    resp.values &lt;-<span class="st"> </span>ohio.wide[k, <span class="dv">3</span><span class="op">:</span><span class="dv">6</span>]  <span class="co"># values of resp for individual k</span></a>
+<a class="sourceLine" id="cb101-5" data-line-number="5">    <span class="cf">if</span>(ohio.wide[k,<span class="dv">2</span>] <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) {  <span class="co"># if smoke = 1</span></a>
+<a class="sourceLine" id="cb101-6" data-line-number="6">        Rij &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>, <span class="dt">prob=</span><span class="kw">c</span>(<span class="fl">0.7</span>, <span class="fl">0.3</span>))</a>
+<a class="sourceLine" id="cb101-7" data-line-number="7">    } <span class="cf">else</span> { <span class="co"># if smoke = 0</span></a>
+<a class="sourceLine" id="cb101-8" data-line-number="8">        Rij &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>, <span class="dt">prob=</span><span class="kw">c</span>(<span class="fl">0.95</span>, <span class="fl">0.05</span>))</a>
+<a class="sourceLine" id="cb101-9" data-line-number="9">    }</a>
+<a class="sourceLine" id="cb101-10" data-line-number="10">    resp.values[Rij<span class="op">==</span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="ot">NA</span> <span class="co"># insert NA values where Rij = 1</span></a>
+<a class="sourceLine" id="cb101-11" data-line-number="11">    ohio.wide.miss[k, <span class="dv">3</span><span class="op">:</span><span class="dv">6</span>] &lt;-<span class="st"> </span>resp.values</a>
+<a class="sourceLine" id="cb101-12" data-line-number="12">}</a></code></pre></div>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb102-1" data-line-number="1"><span class="kw">head</span>(ohio.wide.miss, <span class="dv">10</span>)</a></code></pre></div>
 <pre><code>##    id smoke age7 age8 age9 age10
 ## 1   0     0    0    0   NA     0
 ## 2   1     0    0    0    0     0
@@ -745,7 +757,7 @@ P( R_{ij} = 1| \textrm{smoke}_{i})
 <ul>
 <li><code>ohio.wide.miss</code> now has 257 missing entries</li>
 </ul>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb102-1" data-line-number="1"><span class="kw">sum</span>( <span class="kw">is.na</span>(ohio.wide.miss))</a></code></pre></div>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb104-1" data-line-number="1"><span class="kw">sum</span>( <span class="kw">is.na</span>(ohio.wide.miss))</a></code></pre></div>
 <pre><code>## [1] 296</code></pre>
 <hr />
 <ul>
@@ -753,14 +765,14 @@ P( R_{ij} = 1| \textrm{smoke}_{i})
 estimates that would be obtained with a <strong>complete case analysis</strong>.</p></li>
 <li><p>To use <code>glmer</code> on the <strong>missing-data version</strong> of <code>ohio</code>, we need to first convert <code>ohio.wide.miss</code> back into <strong>long form</strong>:</p></li>
 </ul>
-<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb104-1" data-line-number="1">ohio.miss &lt;-<span class="st"> </span><span class="kw">gather</span>(ohio.wide.miss, age, resp, age7<span class="op">:</span>age10)</a>
-<a class="sourceLine" id="cb104-2" data-line-number="2">ohio.miss<span class="op">$</span>age[ohio.miss<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age7&quot;</span>] &lt;-<span class="st"> </span><span class="dv">-2</span></a>
-<a class="sourceLine" id="cb104-3" data-line-number="3">ohio.miss<span class="op">$</span>age[ohio.miss<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age8&quot;</span>] &lt;-<span class="st"> </span><span class="dv">-1</span></a>
-<a class="sourceLine" id="cb104-4" data-line-number="4">ohio.miss<span class="op">$</span>age[ohio.miss<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age9&quot;</span>] &lt;-<span class="st"> </span><span class="dv">0</span></a>
-<a class="sourceLine" id="cb104-5" data-line-number="5">ohio.miss<span class="op">$</span>age[ohio.miss<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age10&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb104-6" data-line-number="6">ohio.miss &lt;-<span class="st"> </span>ohio.miss[<span class="kw">order</span>(ohio.miss<span class="op">$</span>id),]  <span class="co">## sort everything according to id</span></a>
-<a class="sourceLine" id="cb104-7" data-line-number="7">ohio.miss<span class="op">$</span>age &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(ohio.miss<span class="op">$</span>age)</a>
-<a class="sourceLine" id="cb104-8" data-line-number="8"><span class="kw">head</span>(ohio.miss)</a></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb106-1" data-line-number="1">ohio.miss &lt;-<span class="st"> </span><span class="kw">gather</span>(ohio.wide.miss, age, resp, age7<span class="op">:</span>age10)</a>
+<a class="sourceLine" id="cb106-2" data-line-number="2">ohio.miss<span class="op">$</span>age[ohio.miss<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age7&quot;</span>] &lt;-<span class="st"> </span><span class="dv">-2</span></a>
+<a class="sourceLine" id="cb106-3" data-line-number="3">ohio.miss<span class="op">$</span>age[ohio.miss<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age8&quot;</span>] &lt;-<span class="st"> </span><span class="dv">-1</span></a>
+<a class="sourceLine" id="cb106-4" data-line-number="4">ohio.miss<span class="op">$</span>age[ohio.miss<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age9&quot;</span>] &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb106-5" data-line-number="5">ohio.miss<span class="op">$</span>age[ohio.miss<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age10&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb106-6" data-line-number="6">ohio.miss &lt;-<span class="st"> </span>ohio.miss[<span class="kw">order</span>(ohio.miss<span class="op">$</span>id),]  <span class="co">## sort everything according to id</span></a>
+<a class="sourceLine" id="cb106-7" data-line-number="7">ohio.miss<span class="op">$</span>age &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(ohio.miss<span class="op">$</span>age)</a>
+<a class="sourceLine" id="cb106-8" data-line-number="8"><span class="kw">head</span>(ohio.miss)</a></code></pre></div>
 <pre><code>##      id smoke age resp
 ## 1     0     0  -2    0
 ## 538   0     0  -1    0
@@ -771,22 +783,22 @@ estimates that would be obtained with a <strong>complete case analysis</strong>.
 <ul>
 <li>Let’s use a <strong>random intercept</strong> model as we did in our earlier discussion of generalized linear mixed models:</li>
 </ul>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb106-1" data-line-number="1"><span class="co">## Complete case analysis</span></a>
-<a class="sourceLine" id="cb106-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb106-3" data-line-number="3"><span class="kw">library</span>(lme4)</a>
-<a class="sourceLine" id="cb106-4" data-line-number="4">ohio.cca &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> ohio.miss, <span class="dt">family =</span> binomial)</a>
-<a class="sourceLine" id="cb106-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb106-6" data-line-number="6"><span class="co"># Now look at estimated regression coefficients for complete case analysis:</span></a>
-<a class="sourceLine" id="cb106-7" data-line-number="7"><span class="kw">round</span>(<span class="kw">coef</span>(<span class="kw">summary</span>(ohio.cca)), <span class="dv">4</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb108-1" data-line-number="1"><span class="co">## Complete case analysis</span></a>
+<a class="sourceLine" id="cb108-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb108-3" data-line-number="3"><span class="kw">library</span>(lme4)</a>
+<a class="sourceLine" id="cb108-4" data-line-number="4">ohio.cca &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> ohio.miss, <span class="dt">family =</span> binomial)</a>
+<a class="sourceLine" id="cb108-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb108-6" data-line-number="6"><span class="co"># Now look at estimated regression coefficients for complete case analysis:</span></a>
+<a class="sourceLine" id="cb108-7" data-line-number="7"><span class="kw">round</span>(<span class="kw">coef</span>(<span class="kw">summary</span>(ohio.cca)), <span class="dv">4</span>)</a></code></pre></div>
 <pre><code>##             Estimate Std. Error z value Pr(&gt;|z|)
 ## (Intercept)  -3.8009     0.4346 -8.7459   0.0000
 ## age          -0.1580     0.0783 -2.0165   0.0437
 ## smoke         0.2333     0.3402  0.6857   0.4929</code></pre>
 <hr />
 <ul>
-<li>Now, let’s use <strong>mice</strong> to create 50 <strong>“completed versions”</strong> of <code>ohio.wide.miss</code></li>
+<li>Now, let’s use <strong>mice</strong> to create 10 <strong>“completed versions”</strong> of <code>ohio.wide.miss</code></li>
 </ul>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb108-1" data-line-number="1">imputed.ohio &lt;-<span class="st"> </span><span class="kw">mice</span>(ohio.wide.miss, <span class="dt">m=</span><span class="dv">50</span>, <span class="dt">print=</span><span class="ot">FALSE</span>, <span class="dt">seed=</span><span class="dv">101</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb110-1" data-line-number="1">imputed.ohio &lt;-<span class="st"> </span><span class="kw">mice</span>(ohio.wide.miss, <span class="dt">m=</span><span class="dv">10</span>, <span class="dt">print=</span><span class="ot">FALSE</span>, <span class="dt">seed=</span><span class="dv">101</span>)</a></code></pre></div>
 <ul>
 <li>For the case of <strong>longitudinal data</strong>, we probably want to actually extract each
 complete dataset.
@@ -795,8 +807,8 @@ complete dataset.
 </ul></li>
 <li>This can be done with the following code:</li>
 </ul>
-<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb109-1" data-line-number="1">completed.ohio &lt;-<span class="st"> </span>mice<span class="op">::</span><span class="kw">complete</span>(imputed.ohio, <span class="st">&quot;long&quot;</span>)</a>
-<a class="sourceLine" id="cb109-2" data-line-number="2"><span class="kw">head</span>(completed.ohio)</a></code></pre></div>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb111-1" data-line-number="1">completed.ohio &lt;-<span class="st"> </span>mice<span class="op">::</span><span class="kw">complete</span>(imputed.ohio, <span class="st">&quot;long&quot;</span>)</a>
+<a class="sourceLine" id="cb111-2" data-line-number="2"><span class="kw">head</span>(completed.ohio)</a></code></pre></div>
 <pre><code>##   .imp .id id smoke age7 age8 age9 age10
 ## 1    1   1  0     0    0    0    0     0
 ## 2    1   2  1     0    0    0    0     0
@@ -805,51 +817,47 @@ complete dataset.
 ## 5    1   5  4     0    0    0    0     0
 ## 6    1   6  5     0    0    0    0     0</code></pre>
 <ul>
-<li><code>completed.ohio</code> will be a <strong>dataframe</strong> that has <strong>50 times</strong> as many rows as the original <code>ohio.wide</code> data frame</li>
+<li><code>completed.ohio</code> will be a <strong>dataframe</strong> that has <strong>10 times</strong> as many rows as the original <code>ohio.wide</code> data frame</li>
 </ul>
-<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb111-1" data-line-number="1"><span class="kw">dim</span>(ohio.wide)</a></code></pre></div>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb113-1" data-line-number="1"><span class="kw">dim</span>(ohio.wide)</a></code></pre></div>
 <pre><code>## [1] 537   6</code></pre>
-<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb113-1" data-line-number="1"><span class="kw">dim</span>(completed.ohio)</a></code></pre></div>
-<pre><code>## [1] 26850     8</code></pre>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb115-1" data-line-number="1"><span class="kw">dim</span>(completed.ohio)</a></code></pre></div>
+<pre><code>## [1] 5370    8</code></pre>
 <ul>
-<li>The variable <code>.imp</code> in <code>completed.ohio</code> is an indicator of which of the 50 “imputed datasets” this is from:</li>
+<li>The variable <code>.imp</code> in <code>completed.ohio</code> is an indicator of which of the 10 “imputed datasets” this is from:</li>
 </ul>
-<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb115-1" data-line-number="1"><span class="kw">table</span>( completed.ohio<span class="op">$</span>.imp ) <span class="co"># Tabulate impute indicators</span></a></code></pre></div>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb117-1" data-line-number="1"><span class="kw">table</span>( completed.ohio<span class="op">$</span>.imp ) <span class="co"># Tabulate impute indicators</span></a></code></pre></div>
 <pre><code>## 
-##   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 
-## 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 
-##  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40 
-## 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 537 
-##  41  42  43  44  45  46  47  48  49  50 
+##   1   2   3   4   5   6   7   8   9  10 
 ## 537 537 537 537 537 537 537 537 537 537</code></pre>
 <hr />
 <ul>
-<li>For <strong>each</strong> of the 50 complete datasets, we need to <strong>convert</strong> the wide dataset
+<li>For <strong>each</strong> of the 10 complete datasets, we need to <strong>convert</strong> the wide dataset
 into long form before using <code>glmer</code>:</li>
 </ul>
-<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb117-1" data-line-number="1"><span class="co">## Multiple imputation-based estimates of regression coefficients </span></a>
-<a class="sourceLine" id="cb117-2" data-line-number="2"><span class="co">## for missing version of the ohio data.</span></a>
-<a class="sourceLine" id="cb117-3" data-line-number="3">BetaMat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">nrow=</span><span class="dv">50</span>, <span class="dt">ncol=</span><span class="dv">3</span>)</a>
-<a class="sourceLine" id="cb117-4" data-line-number="4"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">50</span>) {</a>
-<a class="sourceLine" id="cb117-5" data-line-number="5">    tmp.ohio &lt;-<span class="st"> </span>completed.ohio[completed.ohio<span class="op">$</span>.imp<span class="op">==</span>k,<span class="op">-</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]</a>
-<a class="sourceLine" id="cb117-6" data-line-number="6">    </a>
-<a class="sourceLine" id="cb117-7" data-line-number="7">    tmp.ohio.long &lt;-<span class="st"> </span><span class="kw">gather</span>(tmp.ohio, age, resp, age7<span class="op">:</span>age10)</a>
-<a class="sourceLine" id="cb117-8" data-line-number="8">    tmp.ohio.long<span class="op">$</span>age[tmp.ohio.long<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age7&quot;</span>] &lt;-<span class="st"> </span><span class="dv">-2</span></a>
-<a class="sourceLine" id="cb117-9" data-line-number="9">    tmp.ohio.long<span class="op">$</span>age[tmp.ohio.long<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age8&quot;</span>] &lt;-<span class="st"> </span><span class="dv">-1</span></a>
-<a class="sourceLine" id="cb117-10" data-line-number="10">    tmp.ohio.long<span class="op">$</span>age[tmp.ohio.long<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age9&quot;</span>] &lt;-<span class="st"> </span><span class="dv">0</span></a>
-<a class="sourceLine" id="cb117-11" data-line-number="11">    tmp.ohio.long<span class="op">$</span>age[tmp.ohio.long<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age10&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb117-12" data-line-number="12">    tmp.ohio.long<span class="op">$</span>age &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(tmp.ohio.long<span class="op">$</span>age)</a>
-<a class="sourceLine" id="cb117-13" data-line-number="13">    </a>
-<a class="sourceLine" id="cb117-14" data-line-number="14">    ohio.tmpfit &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> tmp.ohio.long, </a>
-<a class="sourceLine" id="cb117-15" data-line-number="15">                         <span class="dt">family =</span> binomial)</a>
-<a class="sourceLine" id="cb117-16" data-line-number="16">    BetaMat[k,] &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.tmpfit))[,<span class="dv">1</span>]</a>
-<a class="sourceLine" id="cb117-17" data-line-number="17">}</a></code></pre></div>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb119-1" data-line-number="1"><span class="co">## Multiple imputation-based estimates of regression coefficients </span></a>
+<a class="sourceLine" id="cb119-2" data-line-number="2"><span class="co">## for the missing version of the ohio data.</span></a>
+<a class="sourceLine" id="cb119-3" data-line-number="3">BetaMat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">nrow=</span><span class="dv">50</span>, <span class="dt">ncol=</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb119-4" data-line-number="4"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) {</a>
+<a class="sourceLine" id="cb119-5" data-line-number="5">    tmp.ohio &lt;-<span class="st"> </span>completed.ohio[completed.ohio<span class="op">$</span>.imp<span class="op">==</span>k,<span class="op">-</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]</a>
+<a class="sourceLine" id="cb119-6" data-line-number="6">    </a>
+<a class="sourceLine" id="cb119-7" data-line-number="7">    tmp.ohio.long &lt;-<span class="st"> </span><span class="kw">gather</span>(tmp.ohio, age, resp, age7<span class="op">:</span>age10)</a>
+<a class="sourceLine" id="cb119-8" data-line-number="8">    tmp.ohio.long<span class="op">$</span>age[tmp.ohio.long<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age7&quot;</span>] &lt;-<span class="st"> </span><span class="dv">-2</span></a>
+<a class="sourceLine" id="cb119-9" data-line-number="9">    tmp.ohio.long<span class="op">$</span>age[tmp.ohio.long<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age8&quot;</span>] &lt;-<span class="st"> </span><span class="dv">-1</span></a>
+<a class="sourceLine" id="cb119-10" data-line-number="10">    tmp.ohio.long<span class="op">$</span>age[tmp.ohio.long<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age9&quot;</span>] &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb119-11" data-line-number="11">    tmp.ohio.long<span class="op">$</span>age[tmp.ohio.long<span class="op">$</span>age <span class="op">==</span><span class="st"> &quot;age10&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb119-12" data-line-number="12">    tmp.ohio.long<span class="op">$</span>age &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(tmp.ohio.long<span class="op">$</span>age)</a>
+<a class="sourceLine" id="cb119-13" data-line-number="13">    </a>
+<a class="sourceLine" id="cb119-14" data-line-number="14">    ohio.tmpfit &lt;-<span class="st"> </span><span class="kw">glmer</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>id), <span class="dt">data =</span> tmp.ohio.long, </a>
+<a class="sourceLine" id="cb119-15" data-line-number="15">                         <span class="dt">family =</span> binomial)</a>
+<a class="sourceLine" id="cb119-16" data-line-number="16">    BetaMat[k,] &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(ohio.tmpfit))[,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb119-17" data-line-number="17">}</a></code></pre></div>
 <ul>
 <li>The <strong>multiple imputation-based</strong> estimates of the regression coefficients for
 the missing version of <strong>ohio</strong> are:</li>
 </ul>
-<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb118-1" data-line-number="1"><span class="kw">round</span>(<span class="kw">colMeans</span>(BetaMat), <span class="dv">4</span>)</a></code></pre></div>
-<pre><code>## [1] -3.6032 -0.1138  0.2501</code></pre>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb120-1" data-line-number="1"><span class="kw">round</span>(<span class="kw">colMeans</span>(BetaMat), <span class="dv">4</span>)</a></code></pre></div>
+<pre><code>## [1] NA NA NA</code></pre>
 <ul>
 <li>Compare the above regression coefficients with those from the complete-case analysis.</li>
 </ul>
@@ -882,17 +890,22 @@ P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis}) = P(R_{ij}=1)
 <div id="missing-at-random-mar" class="section level3">
 <h3><span class="header-section-number">2.5.2</span> Missing at Random (MAR)</h3>
 <ul>
-<li>The <strong>missingness mechanism</strong> is said to be MAR
+<li><p>The <strong>missingness mechanism</strong> is said to be MAR if:
 <span class="math display">\[\begin{equation}
 P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis}) = P(R_{ij}=1|\mathbf{Z}_{obs})
-\end{equation}\]</span></li>
+\end{equation}\]</span></p></li>
+<li><p>If missingness is follows either MAR or MCAR, direct use of multiple imputation
+is a valid approach.</p></li>
 </ul>
 </div>
 <div id="missing-not-at-random-mnar" class="section level3">
 <h3><span class="header-section-number">2.5.3</span> Missing not at Random (MNAR)</h3>
 <ul>
-<li>If the <strong>missingness mechanism</strong> is classified as <strong>missing not at random</strong> (MNAR), the probability
-<span class="math inline">\(P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis})\)</span> cannot be factorized into a simpler form.</li>
+<li><p>If the <strong>missingness mechanism</strong> is classified as <strong>missing not at random</strong> (MNAR), the probability
+<span class="math inline">\(P(R_{ij} = 1|\mathbf{Z}_{obs}, \mathbf{Z}_{mis})\)</span> cannot be factorized into a simpler form.</p></li>
+<li><p>If the missingness is MNAR, direct use of multiple imputation may be invalid and
+modeling of the missingness mechanism using subject-matter knowledge may be needed.</p></li>
+<li><p>Use of multiple imputation with a sensitivity analysis is one approach to consider.</p></li>
 </ul>
 <hr />
 

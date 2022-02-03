@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2022-01-20" />
+<meta name="date" content="2022-02-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -177,6 +177,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines"><i class="fa fa-check"></i><b>3.3</b> Regression Splines</a><ul>
 <li class="chapter" data-level="3.3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#overview"><i class="fa fa-check"></i><b>3.3.1</b> Overview</a></li>
 <li class="chapter" data-level="3.3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines-with-longitudinal-data-in-r"><i class="fa fa-check"></i><b>3.3.2</b> Regression Splines with Longitudinal Data in R</a></li>
+<li class="chapter" data-level="3.3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#looking-at-a-continuous-and-a-binary-covariate"><i class="fa fa-check"></i><b>3.3.3</b> Looking at a Continuous and a Binary Covariate</a></li>
+<li class="chapter" data-level="3.3.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#model-comparison"><i class="fa fa-check"></i><b>3.3.4</b> Model Comparison</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="glmm-lasso.html"><a href="glmm-lasso.html"><i class="fa fa-check"></i><b>4</b> Sparse Regression for Longitudinal Data</a><ul>
@@ -837,7 +839,7 @@ into long form before using <code>glmer</code>:</li>
 </ul>
 <div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb119-1" data-line-number="1"><span class="co">## Multiple imputation-based estimates of regression coefficients </span></a>
 <a class="sourceLine" id="cb119-2" data-line-number="2"><span class="co">## for the missing version of the ohio data.</span></a>
-<a class="sourceLine" id="cb119-3" data-line-number="3">BetaMat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">nrow=</span><span class="dv">50</span>, <span class="dt">ncol=</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb119-3" data-line-number="3">BetaMat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">nrow=</span><span class="dv">10</span>, <span class="dt">ncol=</span><span class="dv">3</span>)</a>
 <a class="sourceLine" id="cb119-4" data-line-number="4"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) {</a>
 <a class="sourceLine" id="cb119-5" data-line-number="5">    tmp.ohio &lt;-<span class="st"> </span>completed.ohio[completed.ohio<span class="op">$</span>.imp<span class="op">==</span>k,<span class="op">-</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]</a>
 <a class="sourceLine" id="cb119-6" data-line-number="6">    </a>
@@ -857,9 +859,9 @@ into long form before using <code>glmer</code>:</li>
 the missing version of <strong>ohio</strong> are:</li>
 </ul>
 <div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb120-1" data-line-number="1"><span class="kw">round</span>(<span class="kw">colMeans</span>(BetaMat), <span class="dv">4</span>)</a></code></pre></div>
-<pre><code>## [1] NA NA NA</code></pre>
+<pre><code>## [1] -3.5711 -0.1066  0.2865</code></pre>
 <ul>
-<li>Compare the above regression coefficients with those from the complete-case analysis.</li>
+<li>Compare the above regression coefficients with those from the <strong>complete-case</strong> analysis.</li>
 </ul>
 </div>
 <div id="different-missing-data-mechanisms" class="section level2">

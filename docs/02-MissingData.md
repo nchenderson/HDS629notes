@@ -793,7 +793,7 @@ into long form before using `glmer`:
 ```r
 ## Multiple imputation-based estimates of regression coefficients 
 ## for the missing version of the ohio data.
-BetaMat <- matrix(NA, nrow=50, ncol=3)
+BetaMat <- matrix(NA, nrow=10, ncol=3)
 for(k in 1:10) {
     tmp.ohio <- completed.ohio[completed.ohio$.imp==k,-c(1,2)]
     
@@ -818,10 +818,10 @@ round(colMeans(BetaMat), 4)
 ```
 
 ```
-## [1] NA NA NA
+## [1] -3.5711 -0.1066  0.2865
 ```
 
-* Compare the above regression coefficients with those from the complete-case analysis.
+* Compare the above regression coefficients with those from the **complete-case** analysis.
 
 ## Different Missing Data Mechanisms
 

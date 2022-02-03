@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2022-01-20" />
+<meta name="date" content="2022-02-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -177,6 +177,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines"><i class="fa fa-check"></i><b>3.3</b> Regression Splines</a><ul>
 <li class="chapter" data-level="3.3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#overview"><i class="fa fa-check"></i><b>3.3.1</b> Overview</a></li>
 <li class="chapter" data-level="3.3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines-with-longitudinal-data-in-r"><i class="fa fa-check"></i><b>3.3.2</b> Regression Splines with Longitudinal Data in R</a></li>
+<li class="chapter" data-level="3.3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#looking-at-a-continuous-and-a-binary-covariate"><i class="fa fa-check"></i><b>3.3.3</b> Looking at a Continuous and a Binary Covariate</a></li>
+<li class="chapter" data-level="3.3.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#model-comparison"><i class="fa fa-check"></i><b>3.3.4</b> Model Comparison</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="glmm-lasso.html"><a href="glmm-lasso.html"><i class="fa fa-check"></i><b>4</b> Sparse Regression for Longitudinal Data</a><ul>
@@ -373,11 +375,11 @@ for example, the paper: <span class="citation">Wang, Zhou, and Qu (<a href="#ref
 <li><p>This dataset has <strong>54 observations</strong> with <strong>23 unique teams</strong>.</p></li>
 <li><p>Each row in this dataset corresponds to data taken from a single team in a single season.</p></li>
 </ul>
-<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb141-1" data-line-number="1"><span class="kw">library</span>(glmmLasso)</a>
-<a class="sourceLine" id="cb141-2" data-line-number="2"><span class="kw">data</span>(<span class="st">&quot;soccer&quot;</span>)</a>
-<a class="sourceLine" id="cb141-3" data-line-number="3"><span class="kw">dim</span>(soccer)  <span class="co">## 54 observations and 16 variables</span></a></code></pre></div>
+<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb155-1" data-line-number="1"><span class="kw">library</span>(glmmLasso)</a>
+<a class="sourceLine" id="cb155-2" data-line-number="2"><span class="kw">data</span>(<span class="st">&quot;soccer&quot;</span>)</a>
+<a class="sourceLine" id="cb155-3" data-line-number="3"><span class="kw">dim</span>(soccer)  <span class="co">## 54 observations and 16 variables</span></a></code></pre></div>
 <pre><code>## [1] 54 16</code></pre>
-<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb143-1" data-line-number="1"><span class="kw">head</span>(soccer)</a></code></pre></div>
+<div class="sourceCode" id="cb157"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb157-1" data-line-number="1"><span class="kw">head</span>(soccer)</a></code></pre></div>
 <pre><code>##     pos            team points transfer.spendings transfer.receits yellow.card
 ## 338  12     1. FC Koeln     39            5150000           750000          70
 ## 357  13     1. FC Koeln     38           11500000           900000          70
@@ -399,7 +401,7 @@ for example, the paper: <span class="citation">Wang, Zhou, and Qu (<a href="#ref
 ## 360   49.61    48548       719705      42336        5
 ## 353   49.44    20300       342350      20138       11
 ## 333   50.38    30164       477414      28083       17</code></pre>
-<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb145-1" data-line-number="1"><span class="kw">length</span>(<span class="kw">unique</span>(soccer<span class="op">$</span>team)) <span class="co">## 23 unique teams</span></a></code></pre></div>
+<div class="sourceCode" id="cb159"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb159-1" data-line-number="1"><span class="kw">length</span>(<span class="kw">unique</span>(soccer<span class="op">$</span>team)) <span class="co">## 23 unique teams</span></a></code></pre></div>
 <pre><code>## [1] 23</code></pre>
 <hr />
 <ul>
@@ -416,16 +418,16 @@ points scored: <code>ball.possession</code>, <code>tackles</code>, etc.</p></li>
 <li><p>We will use <code>points</code> and 10 of the other variables as the fixed-effects covariates.</p></li>
 <li><p>It is common in practice to <strong>center and scale</strong> the covariates before running the lasso:</p></li>
 </ul>
-<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb147-1" data-line-number="1">soccer[,<span class="kw">c</span>(<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">9</span><span class="op">:</span><span class="dv">16</span>)] &lt;-<span class="st"> </span><span class="kw">scale</span>(soccer[,<span class="kw">c</span>(<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">9</span><span class="op">:</span><span class="dv">16</span>)], <span class="dt">center=</span><span class="ot">TRUE</span>, <span class="dt">scale=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb147-2" data-line-number="2">soccer &lt;-<span class="st"> </span><span class="kw">data.frame</span>(soccer)</a></code></pre></div>
+<div class="sourceCode" id="cb161"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb161-1" data-line-number="1">soccer[,<span class="kw">c</span>(<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">9</span><span class="op">:</span><span class="dv">16</span>)] &lt;-<span class="st"> </span><span class="kw">scale</span>(soccer[,<span class="kw">c</span>(<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">9</span><span class="op">:</span><span class="dv">16</span>)], <span class="dt">center=</span><span class="ot">TRUE</span>, <span class="dt">scale=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb161-2" data-line-number="2">soccer &lt;-<span class="st"> </span><span class="kw">data.frame</span>(soccer)</a></code></pre></div>
 <hr />
 <ul>
 <li>To fit an lmm-lasso with <span class="math inline">\(\lambda = 100\)</span> and a random intercept for each team, we can use the following code</li>
 </ul>
-<div class="sourceCode" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb148-1" data-line-number="1">lm.lambda100 &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(points <span class="op">~</span><span class="st"> </span>transfer.spendings <span class="op">+</span><span class="st"> </span>ave.unfair.score </a>
-<a class="sourceLine" id="cb148-2" data-line-number="2">                                   <span class="op">+</span><span class="st"> </span>ball.possession <span class="op">+</span><span class="st"> </span>tackles </a>
-<a class="sourceLine" id="cb148-3" data-line-number="3">                                   <span class="op">+</span><span class="st"> </span>ave.attend <span class="op">+</span><span class="st"> </span>sold.out, <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">team=</span><span class="op">~</span><span class="dv">1</span>), </a>
-<a class="sourceLine" id="cb148-4" data-line-number="4">                                  <span class="dt">lambda=</span><span class="dv">100</span>, <span class="dt">data =</span> soccer)</a></code></pre></div>
+<div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb162-1" data-line-number="1">lm.lambda100 &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(points <span class="op">~</span><span class="st"> </span>transfer.spendings <span class="op">+</span><span class="st"> </span>ave.unfair.score </a>
+<a class="sourceLine" id="cb162-2" data-line-number="2">                                   <span class="op">+</span><span class="st"> </span>ball.possession <span class="op">+</span><span class="st"> </span>tackles </a>
+<a class="sourceLine" id="cb162-3" data-line-number="3">                                   <span class="op">+</span><span class="st"> </span>ave.attend <span class="op">+</span><span class="st"> </span>sold.out, <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">team=</span><span class="op">~</span><span class="dv">1</span>), </a>
+<a class="sourceLine" id="cb162-4" data-line-number="4">                                  <span class="dt">lambda=</span><span class="dv">100</span>, <span class="dt">data =</span> soccer)</a></code></pre></div>
 <ul>
 <li>Note that the random effects model (i.e., the model for <span class="math inline">\(b_{ij}\)</span>) is specified through the <code>rnd</code> argument.
 <ul>
@@ -433,7 +435,7 @@ points scored: <code>ball.possession</code>, <code>tackles</code>, etc.</p></li>
 </ul></li>
 <li>To look at the summary of the parameter estimates, use <code>summary</code></li>
 </ul>
-<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb149-1" data-line-number="1"><span class="kw">summary</span>(lm.lambda100)</a></code></pre></div>
+<div class="sourceCode" id="cb163"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb163-1" data-line-number="1"><span class="kw">summary</span>(lm.lambda100)</a></code></pre></div>
 <pre><code>## Call:
 ## glmmLasso(fix = points ~ transfer.spendings + ave.unfair.score + 
 ##     ball.possession + tackles + ave.attend + sold.out, rnd = list(team = ~1), 
@@ -464,12 +466,12 @@ points scored: <code>ball.possession</code>, <code>tackles</code>, etc.</p></li>
 <ul>
 <li>If we set <span class="math inline">\(\lambda = 500\)</span>, all of the coefficient estimates will be zero:</li>
 </ul>
-<div class="sourceCode" id="cb151"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb151-1" data-line-number="1">lm.lambda500 &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(points <span class="op">~</span><span class="st"> </span>transfer.spendings <span class="op">+</span><span class="st"> </span>ave.unfair.score </a>
-<a class="sourceLine" id="cb151-2" data-line-number="2">                                   <span class="op">+</span><span class="st"> </span>ball.possession <span class="op">+</span><span class="st"> </span>tackles </a>
-<a class="sourceLine" id="cb151-3" data-line-number="3">                                   <span class="op">+</span><span class="st"> </span>ave.attend <span class="op">+</span><span class="st"> </span>sold.out, <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">team=</span><span class="op">~</span><span class="dv">1</span>), </a>
-<a class="sourceLine" id="cb151-4" data-line-number="4">                                   <span class="dt">lambda=</span><span class="dv">500</span>, <span class="dt">data =</span> soccer)</a>
-<a class="sourceLine" id="cb151-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb151-6" data-line-number="6"><span class="kw">summary</span>(lm.lambda500)</a></code></pre></div>
+<div class="sourceCode" id="cb165"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb165-1" data-line-number="1">lm.lambda500 &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(points <span class="op">~</span><span class="st"> </span>transfer.spendings <span class="op">+</span><span class="st"> </span>ave.unfair.score </a>
+<a class="sourceLine" id="cb165-2" data-line-number="2">                                   <span class="op">+</span><span class="st"> </span>ball.possession <span class="op">+</span><span class="st"> </span>tackles </a>
+<a class="sourceLine" id="cb165-3" data-line-number="3">                                   <span class="op">+</span><span class="st"> </span>ave.attend <span class="op">+</span><span class="st"> </span>sold.out, <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">team=</span><span class="op">~</span><span class="dv">1</span>), </a>
+<a class="sourceLine" id="cb165-4" data-line-number="4">                                   <span class="dt">lambda=</span><span class="dv">500</span>, <span class="dt">data =</span> soccer)</a>
+<a class="sourceLine" id="cb165-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb165-6" data-line-number="6"><span class="kw">summary</span>(lm.lambda500)</a></code></pre></div>
 <pre><code>## Call:
 ## glmmLasso(fix = points ~ transfer.spendings + ave.unfair.score + 
 ##     ball.possession + tackles + ave.attend + sold.out, rnd = list(team = ~1), 
@@ -497,7 +499,7 @@ points scored: <code>ball.possession</code>, <code>tackles</code>, etc.</p></li>
 <ul>
 <li>We can find the value of BIC by looking at the <code>$bic</code> component of lm.lambda100</li>
 </ul>
-<div class="sourceCode" id="cb153"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb153-1" data-line-number="1">lm.lambda100<span class="op">$</span>bic</a></code></pre></div>
+<div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb167-1" data-line-number="1">lm.lambda100<span class="op">$</span>bic</a></code></pre></div>
 <pre><code>##           [,1]
 ## [1,] -122872.8</code></pre>
 </div>
@@ -509,16 +511,16 @@ that the “best” value of <span class="math inline">\(\lambda\)</span> should
 <li><p>Let’s compute the <strong>BIC</strong> across a grid of <span class="math inline">\(\lambda\)</span> values from <span class="math inline">\(0\)</span> to <span class="math inline">\(500\)</span> and plot the
 result</p></li>
 </ul>
-<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb155-1" data-line-number="1">lam.seq &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">500</span>, <span class="dt">by=</span><span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb155-2" data-line-number="2">BIC.values &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, <span class="kw">length</span>(lam.seq))</a>
-<a class="sourceLine" id="cb155-3" data-line-number="3"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(lam.seq)) {</a>
-<a class="sourceLine" id="cb155-4" data-line-number="4">lm.tmp &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(points <span class="op">~</span><span class="st"> </span>transfer.spendings <span class="op">+</span><span class="st"> </span>ave.unfair.score </a>
-<a class="sourceLine" id="cb155-5" data-line-number="5">                          <span class="op">+</span><span class="st"> </span>ball.possession <span class="op">+</span><span class="st"> </span>tackles </a>
-<a class="sourceLine" id="cb155-6" data-line-number="6">                          <span class="op">+</span><span class="st"> </span>ave.attend <span class="op">+</span><span class="st"> </span>sold.out, <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">team=</span><span class="op">~</span><span class="dv">1</span>), </a>
-<a class="sourceLine" id="cb155-7" data-line-number="7">                          <span class="dt">lambda=</span>lam.seq[k], <span class="dt">data =</span> soccer)</a>
-<a class="sourceLine" id="cb155-8" data-line-number="8">BIC.values[k] &lt;-<span class="st"> </span>lm.tmp<span class="op">$</span>bic</a>
-<a class="sourceLine" id="cb155-9" data-line-number="9">}</a>
-<a class="sourceLine" id="cb155-10" data-line-number="10"><span class="kw">plot</span>(lam.seq, BIC.values, <span class="dt">xlab=</span><span class="kw">expression</span>(lambda), <span class="dt">ylab=</span><span class="st">&quot;BIC&quot;</span>, <span class="dt">main=</span><span class="st">&quot;BIC for soccer data&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb169-1" data-line-number="1">lam.seq &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">500</span>, <span class="dt">by=</span><span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb169-2" data-line-number="2">BIC.values &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, <span class="kw">length</span>(lam.seq))</a>
+<a class="sourceLine" id="cb169-3" data-line-number="3"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(lam.seq)) {</a>
+<a class="sourceLine" id="cb169-4" data-line-number="4">lm.tmp &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(points <span class="op">~</span><span class="st"> </span>transfer.spendings <span class="op">+</span><span class="st"> </span>ave.unfair.score </a>
+<a class="sourceLine" id="cb169-5" data-line-number="5">                          <span class="op">+</span><span class="st"> </span>ball.possession <span class="op">+</span><span class="st"> </span>tackles </a>
+<a class="sourceLine" id="cb169-6" data-line-number="6">                          <span class="op">+</span><span class="st"> </span>ave.attend <span class="op">+</span><span class="st"> </span>sold.out, <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">team=</span><span class="op">~</span><span class="dv">1</span>), </a>
+<a class="sourceLine" id="cb169-7" data-line-number="7">                          <span class="dt">lambda=</span>lam.seq[k], <span class="dt">data =</span> soccer)</a>
+<a class="sourceLine" id="cb169-8" data-line-number="8">BIC.values[k] &lt;-<span class="st"> </span>lm.tmp<span class="op">$</span>bic</a>
+<a class="sourceLine" id="cb169-9" data-line-number="9">}</a>
+<a class="sourceLine" id="cb169-10" data-line-number="10"><span class="kw">plot</span>(lam.seq, BIC.values, <span class="dt">xlab=</span><span class="kw">expression</span>(lambda), <span class="dt">ylab=</span><span class="st">&quot;BIC&quot;</span>, <span class="dt">main=</span><span class="st">&quot;BIC for soccer data&quot;</span>)</a></code></pre></div>
 <p><img src="04-glmmlasso_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <ul>
 <li>It looks like the lowest <strong>BIC</strong> value is in between 0 and 50.
@@ -526,33 +528,33 @@ result</p></li>
 <li>Let’s plot the BIC values for a denser grid of <span class="math inline">\(\lambda\)</span> values between 0 and 50</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb156-1" data-line-number="1">lam.seq &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">50</span>, <span class="dt">by=</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb156-2" data-line-number="2">BIC.values &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, <span class="kw">length</span>(lam.seq))</a>
-<a class="sourceLine" id="cb156-3" data-line-number="3"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(lam.seq)) {</a>
-<a class="sourceLine" id="cb156-4" data-line-number="4">  lm.tmp &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(points <span class="op">~</span><span class="st"> </span>transfer.spendings <span class="op">+</span><span class="st"> </span>ave.unfair.score </a>
-<a class="sourceLine" id="cb156-5" data-line-number="5">                      <span class="op">+</span><span class="st"> </span>ball.possession <span class="op">+</span><span class="st"> </span>tackles </a>
-<a class="sourceLine" id="cb156-6" data-line-number="6">                      <span class="op">+</span><span class="st"> </span>ave.attend <span class="op">+</span><span class="st"> </span>sold.out, <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">team=</span><span class="op">~</span><span class="dv">1</span>), </a>
-<a class="sourceLine" id="cb156-7" data-line-number="7">                      <span class="dt">lambda=</span>lam.seq[k], <span class="dt">data =</span> soccer)</a>
-<a class="sourceLine" id="cb156-8" data-line-number="8">  BIC.values[k] &lt;-<span class="st"> </span>lm.tmp<span class="op">$</span>bic</a>
-<a class="sourceLine" id="cb156-9" data-line-number="9">}</a>
-<a class="sourceLine" id="cb156-10" data-line-number="10"><span class="kw">plot</span>(lam.seq, BIC.values, <span class="dt">xlab=</span><span class="kw">expression</span>(lambda), <span class="dt">ylab=</span><span class="st">&quot;BIC&quot;</span>, <span class="dt">main=</span><span class="st">&quot;BIC for soccer data&quot;</span>)</a>
-<a class="sourceLine" id="cb156-11" data-line-number="11"><span class="kw">lines</span>(lam.seq, BIC.values)</a></code></pre></div>
+<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb170-1" data-line-number="1">lam.seq &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">50</span>, <span class="dt">by=</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb170-2" data-line-number="2">BIC.values &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, <span class="kw">length</span>(lam.seq))</a>
+<a class="sourceLine" id="cb170-3" data-line-number="3"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(lam.seq)) {</a>
+<a class="sourceLine" id="cb170-4" data-line-number="4">  lm.tmp &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(points <span class="op">~</span><span class="st"> </span>transfer.spendings <span class="op">+</span><span class="st"> </span>ave.unfair.score </a>
+<a class="sourceLine" id="cb170-5" data-line-number="5">                      <span class="op">+</span><span class="st"> </span>ball.possession <span class="op">+</span><span class="st"> </span>tackles </a>
+<a class="sourceLine" id="cb170-6" data-line-number="6">                      <span class="op">+</span><span class="st"> </span>ave.attend <span class="op">+</span><span class="st"> </span>sold.out, <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">team=</span><span class="op">~</span><span class="dv">1</span>), </a>
+<a class="sourceLine" id="cb170-7" data-line-number="7">                      <span class="dt">lambda=</span>lam.seq[k], <span class="dt">data =</span> soccer)</a>
+<a class="sourceLine" id="cb170-8" data-line-number="8">  BIC.values[k] &lt;-<span class="st"> </span>lm.tmp<span class="op">$</span>bic</a>
+<a class="sourceLine" id="cb170-9" data-line-number="9">}</a>
+<a class="sourceLine" id="cb170-10" data-line-number="10"><span class="kw">plot</span>(lam.seq, BIC.values, <span class="dt">xlab=</span><span class="kw">expression</span>(lambda), <span class="dt">ylab=</span><span class="st">&quot;BIC&quot;</span>, <span class="dt">main=</span><span class="st">&quot;BIC for soccer data&quot;</span>)</a>
+<a class="sourceLine" id="cb170-11" data-line-number="11"><span class="kw">lines</span>(lam.seq, BIC.values)</a></code></pre></div>
 <p><img src="04-glmmlasso_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <ul>
 <li>The best value of <span class="math inline">\(\lambda\)</span> according to the BIC criterion is <span class="math inline">\(16\)</span>:</li>
 </ul>
-<div class="sourceCode" id="cb157"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb157-1" data-line-number="1">lam.seq[<span class="kw">which.min</span>(BIC.values)]</a></code></pre></div>
+<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb171-1" data-line-number="1">lam.seq[<span class="kw">which.min</span>(BIC.values)]</a></code></pre></div>
 <pre><code>## [1] 16</code></pre>
 <hr />
 <ul>
 <li>Let’s look at the regression coefficient estimates using <span class="math inline">\(\lambda = 16\)</span></li>
 </ul>
-<div class="sourceCode" id="cb159"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb159-1" data-line-number="1">lm.lambda16 &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(points <span class="op">~</span><span class="st"> </span>transfer.spendings <span class="op">+</span><span class="st"> </span>ave.unfair.score </a>
-<a class="sourceLine" id="cb159-2" data-line-number="2">                                   <span class="op">+</span><span class="st"> </span>ball.possession <span class="op">+</span><span class="st"> </span>tackles </a>
-<a class="sourceLine" id="cb159-3" data-line-number="3">                                   <span class="op">+</span><span class="st"> </span>ave.attend <span class="op">+</span><span class="st"> </span>sold.out, <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">team=</span><span class="op">~</span><span class="dv">1</span>), </a>
-<a class="sourceLine" id="cb159-4" data-line-number="4">                                   <span class="dt">lambda=</span><span class="dv">16</span>, <span class="dt">data =</span> soccer)</a>
-<a class="sourceLine" id="cb159-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb159-6" data-line-number="6"><span class="kw">summary</span>(lm.lambda16)</a></code></pre></div>
+<div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb173-1" data-line-number="1">lm.lambda16 &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(points <span class="op">~</span><span class="st"> </span>transfer.spendings <span class="op">+</span><span class="st"> </span>ave.unfair.score </a>
+<a class="sourceLine" id="cb173-2" data-line-number="2">                                   <span class="op">+</span><span class="st"> </span>ball.possession <span class="op">+</span><span class="st"> </span>tackles </a>
+<a class="sourceLine" id="cb173-3" data-line-number="3">                                   <span class="op">+</span><span class="st"> </span>ave.attend <span class="op">+</span><span class="st"> </span>sold.out, <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">team=</span><span class="op">~</span><span class="dv">1</span>), </a>
+<a class="sourceLine" id="cb173-4" data-line-number="4">                                   <span class="dt">lambda=</span><span class="dv">16</span>, <span class="dt">data =</span> soccer)</a>
+<a class="sourceLine" id="cb173-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb173-6" data-line-number="6"><span class="kw">summary</span>(lm.lambda16)</a></code></pre></div>
 <pre><code>## Call:
 ## glmmLasso(fix = points ~ transfer.spendings + ave.unfair.score + 
 ##     ball.possession + tackles + ave.attend + sold.out, rnd = list(team = ~1), 
@@ -602,9 +604,9 @@ at <strong>“future” time points</strong> when compared with the training set
 <li><p>Let’s try doing <strong>5-fold</strong> cross-validation with the <code>soccer</code> data.</p></li>
 <li><p>To do this, it’s easier to just create a <strong>team id</strong> variable first</p></li>
 </ul>
-<div class="sourceCode" id="cb161"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb161-1" data-line-number="1">team.labels&lt;-<span class="kw">data.frame</span>(<span class="dt">team=</span><span class="kw">unique</span>(soccer<span class="op">$</span>team),<span class="dt">team.id=</span><span class="kw">as.numeric</span>(<span class="kw">unique</span>(soccer<span class="op">$</span>team)))</a>
-<a class="sourceLine" id="cb161-2" data-line-number="2">soccer &lt;-<span class="st"> </span><span class="kw">merge</span>(soccer, team.labels, <span class="dt">by=</span><span class="st">&quot;team&quot;</span>)</a>
-<a class="sourceLine" id="cb161-3" data-line-number="3"><span class="kw">head</span>(soccer)</a></code></pre></div>
+<div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb175-1" data-line-number="1">team.labels&lt;-<span class="kw">data.frame</span>(<span class="dt">team=</span><span class="kw">unique</span>(soccer<span class="op">$</span>team),<span class="dt">team.id=</span><span class="kw">as.numeric</span>(<span class="kw">unique</span>(soccer<span class="op">$</span>team)))</a>
+<a class="sourceLine" id="cb175-2" data-line-number="2">soccer &lt;-<span class="st"> </span><span class="kw">merge</span>(soccer, team.labels, <span class="dt">by=</span><span class="st">&quot;team&quot;</span>)</a>
+<a class="sourceLine" id="cb175-3" data-line-number="3"><span class="kw">head</span>(soccer)</a></code></pre></div>
 <pre><code>##              team pos points transfer.spendings transfer.receits yellow.card
 ## 1     1. FC Koeln  12     39        -0.47350170       -0.6774385          70
 ## 2     1. FC Koeln  13     38        -0.08019776       -0.6624274          70
@@ -629,39 +631,39 @@ at <strong>“future” time points</strong> when compared with the training set
 <ul>
 <li>Now create each of the 5 <strong>test sets</strong>.</li>
 </ul>
-<div class="sourceCode" id="cb163"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb163-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">2352</span>)</a>
-<a class="sourceLine" id="cb163-2" data-line-number="2"><span class="co">## first create the indices for the test sets</span></a>
-<a class="sourceLine" id="cb163-3" data-line-number="3">nfolds &lt;-<span class="st"> </span><span class="dv">5</span></a>
-<a class="sourceLine" id="cb163-4" data-line-number="4">test.groups &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>nfolds, <span class="dt">size=</span><span class="dv">23</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb163-5" data-line-number="5">test.groups</a></code></pre></div>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb177-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">2352</span>)</a>
+<a class="sourceLine" id="cb177-2" data-line-number="2"><span class="co">## first create the indices for the test sets</span></a>
+<a class="sourceLine" id="cb177-3" data-line-number="3">nfolds &lt;-<span class="st"> </span><span class="dv">5</span></a>
+<a class="sourceLine" id="cb177-4" data-line-number="4">test.groups &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>nfolds, <span class="dt">size=</span><span class="dv">23</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb177-5" data-line-number="5">test.groups</a></code></pre></div>
 <pre><code>##  [1] 2 5 2 5 4 3 1 4 1 2 3 5 3 1 5 2 1 4 3 2 4 5 4</code></pre>
-<div class="sourceCode" id="cb165"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb165-1" data-line-number="1"><span class="co">## test.groups == k means that the observation will be in the kth test set</span></a>
-<a class="sourceLine" id="cb165-2" data-line-number="2"><span class="co">## For such a small dataset, you may want to randomly generate the</span></a>
-<a class="sourceLine" id="cb165-3" data-line-number="3"><span class="co">## test sets so that they all have the same size.</span></a></code></pre></div>
+<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb179-1" data-line-number="1"><span class="co">## test.groups == k means that the observation will be in the kth test set</span></a>
+<a class="sourceLine" id="cb179-2" data-line-number="2"><span class="co">## For such a small dataset, you may want to randomly generate the</span></a>
+<a class="sourceLine" id="cb179-3" data-line-number="3"><span class="co">## test sets so that they all have the same size.</span></a></code></pre></div>
 <hr />
 <ul>
 <li>Now, compute cross-validation estimates of the <strong>mean-squared error</strong> over a grid of <span class="math inline">\(\lambda\)</span> values</li>
 </ul>
-<div class="sourceCode" id="cb166"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb166-1" data-line-number="1">lam.seq &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">200</span>, <span class="dt">by=</span><span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb166-2" data-line-number="2">MSE &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, nfolds, <span class="kw">length</span>(lam.seq))</a>
-<a class="sourceLine" id="cb166-3" data-line-number="3"><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(lam.seq)) {</a>
-<a class="sourceLine" id="cb166-4" data-line-number="4">    </a>
-<a class="sourceLine" id="cb166-5" data-line-number="5">    <span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>nfolds) {</a>
-<a class="sourceLine" id="cb166-6" data-line-number="6">       soccer.test &lt;-<span class="st"> </span>soccer[test.groups<span class="op">==</span>k,]</a>
-<a class="sourceLine" id="cb166-7" data-line-number="7">       soccer.train &lt;-<span class="st"> </span>soccer[test.groups<span class="op">!=</span>k,]</a>
-<a class="sourceLine" id="cb166-8" data-line-number="8">       </a>
-<a class="sourceLine" id="cb166-9" data-line-number="9">       tmp.lm &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(points <span class="op">~</span><span class="st"> </span>transfer.spendings <span class="op">+</span><span class="st"> </span>ave.unfair.score </a>
-<a class="sourceLine" id="cb166-10" data-line-number="10">                 <span class="op">+</span><span class="st"> </span>ball.possession <span class="op">+</span><span class="st"> </span>tackles </a>
-<a class="sourceLine" id="cb166-11" data-line-number="11">                 <span class="op">+</span><span class="st"> </span>ave.attend <span class="op">+</span><span class="st"> </span>sold.out, <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">team=</span><span class="op">~</span><span class="dv">1</span>),</a>
-<a class="sourceLine" id="cb166-12" data-line-number="12">                 <span class="dt">lambda=</span>lam.seq[j], <span class="dt">data =</span> soccer.train)</a>
-<a class="sourceLine" id="cb166-13" data-line-number="13">       </a>
-<a class="sourceLine" id="cb166-14" data-line-number="14">       predicted.values &lt;-<span class="st"> </span><span class="kw">predict</span>(tmp.lm, <span class="dt">newdata=</span>soccer.test)</a>
-<a class="sourceLine" id="cb166-15" data-line-number="15">       MSE[k,j] &lt;-<span class="st"> </span><span class="kw">mean</span>((predicted.values <span class="op">-</span><span class="st"> </span>soccer.test<span class="op">$</span>points)<span class="op">^</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb166-16" data-line-number="16">    }</a>
-<a class="sourceLine" id="cb166-17" data-line-number="17">}</a>
-<a class="sourceLine" id="cb166-18" data-line-number="18"><span class="kw">plot</span>(lam.seq, <span class="kw">colMeans</span>(MSE), <span class="dt">xlab=</span><span class="kw">expression</span>(lambda), <span class="dt">ylab=</span><span class="st">&quot;MSE&quot;</span>, <span class="dt">main=</span><span class="st">&quot;5-fold</span></a>
-<a class="sourceLine" id="cb166-19" data-line-number="19"><span class="st">     cross-validation for the soccer data&quot;</span>)</a>
-<a class="sourceLine" id="cb166-20" data-line-number="20"><span class="kw">lines</span>(lam.seq, <span class="kw">colMeans</span>(MSE))</a></code></pre></div>
+<div class="sourceCode" id="cb180"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb180-1" data-line-number="1">lam.seq &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">200</span>, <span class="dt">by=</span><span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb180-2" data-line-number="2">MSE &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, nfolds, <span class="kw">length</span>(lam.seq))</a>
+<a class="sourceLine" id="cb180-3" data-line-number="3"><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(lam.seq)) {</a>
+<a class="sourceLine" id="cb180-4" data-line-number="4">    </a>
+<a class="sourceLine" id="cb180-5" data-line-number="5">    <span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>nfolds) {</a>
+<a class="sourceLine" id="cb180-6" data-line-number="6">       soccer.test &lt;-<span class="st"> </span>soccer[test.groups<span class="op">==</span>k,]</a>
+<a class="sourceLine" id="cb180-7" data-line-number="7">       soccer.train &lt;-<span class="st"> </span>soccer[test.groups<span class="op">!=</span>k,]</a>
+<a class="sourceLine" id="cb180-8" data-line-number="8">       </a>
+<a class="sourceLine" id="cb180-9" data-line-number="9">       tmp.lm &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(points <span class="op">~</span><span class="st"> </span>transfer.spendings <span class="op">+</span><span class="st"> </span>ave.unfair.score </a>
+<a class="sourceLine" id="cb180-10" data-line-number="10">                 <span class="op">+</span><span class="st"> </span>ball.possession <span class="op">+</span><span class="st"> </span>tackles </a>
+<a class="sourceLine" id="cb180-11" data-line-number="11">                 <span class="op">+</span><span class="st"> </span>ave.attend <span class="op">+</span><span class="st"> </span>sold.out, <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">team=</span><span class="op">~</span><span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb180-12" data-line-number="12">                 <span class="dt">lambda=</span>lam.seq[j], <span class="dt">data =</span> soccer.train)</a>
+<a class="sourceLine" id="cb180-13" data-line-number="13">       </a>
+<a class="sourceLine" id="cb180-14" data-line-number="14">       predicted.values &lt;-<span class="st"> </span><span class="kw">predict</span>(tmp.lm, <span class="dt">newdata=</span>soccer.test)</a>
+<a class="sourceLine" id="cb180-15" data-line-number="15">       MSE[k,j] &lt;-<span class="st"> </span><span class="kw">mean</span>((predicted.values <span class="op">-</span><span class="st"> </span>soccer.test<span class="op">$</span>points)<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb180-16" data-line-number="16">    }</a>
+<a class="sourceLine" id="cb180-17" data-line-number="17">}</a>
+<a class="sourceLine" id="cb180-18" data-line-number="18"><span class="kw">plot</span>(lam.seq, <span class="kw">colMeans</span>(MSE), <span class="dt">xlab=</span><span class="kw">expression</span>(lambda), <span class="dt">ylab=</span><span class="st">&quot;MSE&quot;</span>, <span class="dt">main=</span><span class="st">&quot;5-fold</span></a>
+<a class="sourceLine" id="cb180-19" data-line-number="19"><span class="st">     cross-validation for the soccer data&quot;</span>)</a>
+<a class="sourceLine" id="cb180-20" data-line-number="20"><span class="kw">lines</span>(lam.seq, <span class="kw">colMeans</span>(MSE))</a></code></pre></div>
 <p><img src="04-glmmlasso_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <ul>
 <li>According to the cross-validation estimates of prediction error, the
@@ -674,9 +676,9 @@ best value of <span class="math inline">\(\lambda\)</span> is roughly <span clas
 <li><p>You can use <code>glmmLasso</code> with <strong>binary outcomes</strong> by adding the <code>family=binomial()</code> argument.</p></li>
 <li><p>As a quick example, let’s look at the <code>ohio</code> data from the <code>geepack</code> package.</p></li>
 </ul>
-<div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb167-1" data-line-number="1"><span class="kw">library</span>(geepack)</a>
-<a class="sourceLine" id="cb167-2" data-line-number="2"><span class="kw">data</span>(ohio)</a>
-<a class="sourceLine" id="cb167-3" data-line-number="3"><span class="kw">head</span>(ohio)</a></code></pre></div>
+<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb181-1" data-line-number="1"><span class="kw">library</span>(geepack)</a>
+<a class="sourceLine" id="cb181-2" data-line-number="2"><span class="kw">data</span>(ohio)</a>
+<a class="sourceLine" id="cb181-3" data-line-number="3"><span class="kw">head</span>(ohio)</a></code></pre></div>
 <pre><code>##   resp id age smoke
 ## 1    0  0  -2     0
 ## 2    0  0  -1     0
@@ -687,16 +689,16 @@ best value of <span class="math inline">\(\lambda\)</span> is roughly <span clas
 <ul>
 <li>For the <code>glmmLasso</code> function, you do need to make sure the “id variable” is a factor.</li>
 </ul>
-<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb169-1" data-line-number="1">ohio<span class="op">$</span>id &lt;-<span class="st"> </span><span class="kw">factor</span>(ohio<span class="op">$</span>id) </a></code></pre></div>
+<div class="sourceCode" id="cb183"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb183-1" data-line-number="1">ohio<span class="op">$</span>id &lt;-<span class="st"> </span><span class="kw">factor</span>(ohio<span class="op">$</span>id) </a></code></pre></div>
 <ul>
 <li>Let’s now fit a penalized generalized linear mixed model with <span class="math inline">\(\lambda = 10\)</span>:</li>
 </ul>
-<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb170-1" data-line-number="1">ohio.fit10 &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(smoke <span class="op">~</span><span class="st"> </span>resp <span class="op">+</span><span class="st"> </span>age, <span class="dt">family=</span><span class="kw">binomial</span>(), <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">id=</span><span class="op">~</span><span class="dv">1</span>),</a>
-<a class="sourceLine" id="cb170-2" data-line-number="2">                      <span class="dt">lambda=</span><span class="dv">10</span>, <span class="dt">data =</span> ohio)</a></code></pre></div>
+<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb184-1" data-line-number="1">ohio.fit10 &lt;-<span class="st"> </span><span class="kw">glmmLasso</span>(smoke <span class="op">~</span><span class="st"> </span>resp <span class="op">+</span><span class="st"> </span>age, <span class="dt">family=</span><span class="kw">binomial</span>(), <span class="dt">rnd =</span> <span class="kw">list</span>(<span class="dt">id=</span><span class="op">~</span><span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb184-2" data-line-number="2">                      <span class="dt">lambda=</span><span class="dv">10</span>, <span class="dt">data =</span> ohio)</a></code></pre></div>
 <ul>
 <li>It looks like the <strong>wheeze status</strong> variable was selected while the <strong>age</strong> variable was not.</li>
 </ul>
-<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb171-1" data-line-number="1"><span class="kw">summary</span>(ohio.fit10)</a></code></pre></div>
+<div class="sourceCode" id="cb185"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb185-1" data-line-number="1"><span class="kw">summary</span>(ohio.fit10)</a></code></pre></div>
 <pre><code>## Call:
 ## glmmLasso(fix = smoke ~ resp + age, rnd = list(id = ~1), data = ohio, 
 ##     lambda = 10, family = binomial())

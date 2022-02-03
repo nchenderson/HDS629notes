@@ -243,6 +243,11 @@ defined as
 
 * This is a **longitudinal dataset** with typically 2 or 3 observations per individual.
 
+* The outcome variable of interest is the relative **spinal bone mineral density**.
+
+* This is actual the difference in mineral density taken on two consecutive visits divided
+by the average mineral density on those visits.
+
 
 ```r
 bonedat <- read.table("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/bone.data", 
@@ -341,7 +346,7 @@ as the sum of several univariate nonparametric functions:
 ## Regression Splines
 
 ### Overview
-* Using **regression splines** is another common nonparametric approach for estimating a 
+* Using **regression splines** is a common nonparametric approach for estimating a 
 mean function.
 
 * The most common type of spline used in the context of nonparametric regression is the **cubic spline**. 
@@ -362,9 +367,9 @@ estimate of the mean function as
 \end{equation}
 
 * The nice thing about using regression splines is that they can estimated
-in the same way as you would in a typical regression setting.
+in the **same way** as in a "typical" regression setting.
 
-* The columns of the design matrix will be filled in with the values of $\varphi_{j,B}(x_{i})$.
+* For regression splines, the columns of the design matrix contain the values of $\varphi_{j,B}(x_{i})$.
 
 
 ### Regression Splines with Longitudinal Data in R
@@ -389,22 +394,122 @@ bs(x, df, knots, degree)
 
 * You can directly use **regression splines** within the **"GEE framework"**.
 
-* In this case, you can model the marginal mean (or part of the marginal mean function) with a spline.
+* In this case, you can model the **marginal mean** (or part of the marginal mean function) with a spline.
+
+* Here, we are assuming that $E(Y_{ij}|t_{ij}) = f_{0}(t_{ij})$ with:
+    + $Y_{ij}$ is the `spnbmd` value of individual $i$ at age $t_{ij}$.
+    + $t_{ij}$ is the $j^{th}$ age value of individual $i$
+    + The function $f_{0}(t)$ will be estimated with a spline.
+
+
+* To fit this with an **AR1 correlation structure**, you would use the following code: 
+
+```r
+gee.bone0 <- geeglm(spnbmd ~ bs(age, df=6), id=idnum, data=bonedat,
+                    corstr = "ar1")
+```
 
 ---
+
+* The argument `df = 6` means that the number of columns in the design matrix is 7 (due to the intercept), and the number of knots is is determined by the equation $q + 4 = 7$ (so $q = 3$).
+   + You can actually explicity define the set of knots using the `knots` argument if you would like. 
+
+* We can look at the estimates of the regression coefficients by using `summary`.
+
+```r
+summary( gee.bone0 )
+```
+
+```
+## 
+## Call:
+## geeglm(formula = spnbmd ~ bs(age, df = 6), data = bonedat, id = idnum, 
+##     corstr = "ar1")
+## 
+##  Coefficients:
+##                  Estimate  Std.err   Wald Pr(>|W|)    
+## (Intercept)       0.05124  0.01580 10.518  0.00118 ** 
+## bs(age, df = 6)1 -0.01790  0.03214  0.310  0.57751    
+## bs(age, df = 6)2  0.06437  0.01647 15.281 9.27e-05 ***
+## bs(age, df = 6)3 -0.03130  0.02028  2.383  0.12263    
+## bs(age, df = 6)4 -0.04220  0.01668  6.398  0.01142 *  
+## bs(age, df = 6)5 -0.06118  0.01951  9.837  0.00171 ** 
+## bs(age, df = 6)6 -0.03974  0.01687  5.549  0.01849 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation structure = ar1 
+## Estimated Scale Parameters:
+## 
+##             Estimate  Std.err
+## (Intercept) 0.001623 0.000135
+##   Link = identity 
+## 
+## Estimated Correlation Parameters:
+##       Estimate Std.err
+## alpha   0.2872 0.06967
+## Number of clusters:   261  Maximum cluster size: 3
+```
+
+
+---
+
+* There's not really any interpretation to the individual regression coefficients estimates in a spline model
+    + You would typically be more interested in plotting the fitted values as a function of age.
+
+* The `gee.bone0` object has a component called "fitted values" which contains the values 
+of $\hat{f}_{0}(t_{ij})$ for each $t_{ij}$.
+
+
+```r
+## First 5 observations and corresponding fitted values
+bonedat$age[1:5]
+```
+
+```
+## [1] 11.70 12.70 13.75 13.25 14.30
+```
+
+```r
+gee.bone0$fitted.values[1:5]
+```
+
+```
+## [1] 0.07000 0.08114 0.07288 0.07918 0.06279
+```
+
+---
+
+* To **plot** the estimated mean function, we can just draw lines through the fitted values:
+
+```r
+plot(bonedat$age, bonedat$spnbmd, xlab="age", ylab="spnbmd", 
+     main="Regression Spline Estimate for Bone Data", las=1)
+lines(bonedat$age[order(bonedat$age)], 
+      gee.bone0$fitted.values[order(bonedat$age)], lwd=2) ## plot spline estimate
+```
+
+<img src="03-NonParRegression_files/figure-html/unnamed-chunk-19-1.png" width="672" />
+
+```r
+## Use order(bonedat$age) so that the observations are
+## sorted by age.
+```
+
+### Looking at a Continuous and a Binary Covariate
 
 * For example, with the **bone data**, suppose we want to fit separate curves for the male and female
 groups.
 
 * We could express the mean function $\mu(\cdot)$ as
 \begin{equation}
-\mu(t_{ij}) = f_{0}(t_{ij}) + A_{ij}f_{1}(t_{ij})
+\mu(t_{ij}) = f_{0}(t_{ij}) + A_{ij}f_{1}(t_{ij}) 
 (\#eq:gee-bone)
 \end{equation}
 
 * $f_{0}(\cdot)$ and $f_{1}(\cdot)$ would be modeled with regression splines.
 
-* $t_{ij}$ is the value of **age** for observation (i,j)
+* $t_{ij}$ is the value of **age** for observation $(i,j)$
 
 * $A_{ij} = 1$ if the $(i,j)$ observation corresponds to a male individual 
 and $A_{ij} = 0$ if the $(i,j)$ observation corresponds to a female individual.
@@ -415,15 +520,16 @@ and $A_{ij} = 0$ if the $(i,j)$ observation corresponds to a female individual.
 
 ```r
 library(splines)
-gee.bone <- geeglm(spnbmd ~ bs(age, df=6) + gender*bs(age,df=6), id=idnum, data=bonedat)
+gee.bone01 <- geeglm(spnbmd ~ bs(age, df=6) + gender*bs(age,df=6), id=idnum, data=bonedat,
+                   corstr="ar1")
 ```
 
 * We can plot the estimated mean functions by first extracting the **fitted values** for both the male and female groups:
 
 ```r
-male.fitted <- gee.bone$fitted.values[bonedat$gender=="male"]
+male.fitted <- gee.bone01$fitted.values[bonedat$gender=="male"]
 male.age <- bonedat$age[bonedat$gender=="male"]
-female.fitted <- gee.bone$fitted.values[bonedat$gender=="female"]
+female.fitted <- gee.bone01$fitted.values[bonedat$gender=="female"]
 female.age <- bonedat$age[bonedat$gender=="female"]
 ```
 
@@ -431,7 +537,7 @@ female.age <- bonedat$age[bonedat$gender=="female"]
 
 ```r
 plot(bonedat$age, bonedat$spnbmd, lwd=1, xlab="age", ylab="spnbmd", 
-     main="Regression Splines for the Bone Data")
+     main="Regression Splines for the Bone Data", las=1)
 points(bonedat$age[bonedat$gender=="male"], bonedat$spnbmd[bonedat$gender=="male"], 
        cex=0.8)
 points(bonedat$age[bonedat$gender=="female"], bonedat$spnbmd[bonedat$gender=="female"], 
@@ -442,7 +548,93 @@ lines(female.age[order(female.age)], female.fitted[order(female.age)], col="blue
 legend("topright", legend=c("Male", "Female"), col=c("red", "blue"), lwd=3, bty='n')
 ```
 
-<img src="03-NonParRegression_files/figure-html/unnamed-chunk-18-1.png" width="672" />
+<img src="03-NonParRegression_files/figure-html/unnamed-chunk-22-1.png" width="672" />
 
+---
+
+* We could also fit a model where there is a simple "male" effect that does not change over time.
+\begin{equation}
+\mu(t_{ij}) = f_{0}(t_{ij}) + \beta_{1}A_{ij}
+\end{equation}
+
+* The mean function for male individuals would be $f_{0}(t) + \beta_{1}$.
+
+* The mean function for females would be $f_{0}(t)$.
+
+* This could be fit with the following code:
+
+```r
+gee.bone1 <- geeglm(spnbmd ~ bs(age, df=6) + gender, id=idnum, data=bonedat,
+                    corstr="ar1")
+```
+
+---
+
+* If we plot the estimated mean functions from `gee.bone1`, it looks like the following:
+<img src="03-NonParRegression_files/figure-html/unnamed-chunk-24-1.png" width="672" />
+
+* I think the model $\mu(t_{ij}) = f_{0}(t_{ij}) + \beta_{1}A_{ij}$ is just not a good one. 
+    + Forcing the mean function to have this form hides the differences between males/females.
+    
+---
+
+### Model Comparison
+
+* We just fit the following three models
+\begin{eqnarray}
+\mu(t_{ij}) &=& f_{0}(t_{ij}) \\
+\mu(t_{ij}) &=& f_{0}(t_{ij}) + \beta_{1}A_{ij} \\
+\mu(t_{ij}) &=& f_{0}(t_{ij}) + A_{ij}f_{1}(t_{ij})
+\end{eqnarray}
+
+* These model fits were saved as `gee.bone0`, `gee.bone1`, and `gee.bone01`.
+
+---
+
+* We can formally compare the models using the `anova` method in **R**
+
+* To compare, $\mu(t_{ij}) = f_{0}(t_{ij})$ vs. $\mu(t_{ij}) = f_{0}(t_{ij}) + \beta_{1}A_{ij}$ do the following:
+
+```r
+anova( gee.bone0, gee.bone1)
+```
+
+```
+## Analysis of 'Wald statistic' Table
+## 
+## Model 1 spnbmd ~ bs(age, df = 6) + gender 
+## Model 2 spnbmd ~ bs(age, df = 6)
+##   Df    X2 P(>|Chi|)
+## 1  1 0.164      0.69
+```
+
+* This p-value is quite large (0.69). This is saying there is not strong evidence favoring
+model $\mu(t_{ij}) = f_{0}(t_{ij}) + \beta_{1}A_{ij}$ over the more simple model
+$\mu(t_{ij}) = f_{0}(t_{ij})$.
+    + In other words, a model with a single "male effect" is not better than a nonparametric model that does not take male/female into consideration.
+
+---
+
+* Now, let's compare the models $\mu(t_{ij}) = f_{0}(t_{ij})$ vs. $\mu(t_{ij}) = f_{0}(t_{ij}) + A_{ij}f_{1}(t_{ij})$
+
+```r
+anova( gee.bone0, gee.bone01)
+```
+
+```
+## Analysis of 'Wald statistic' Table
+## 
+## Model 1 spnbmd ~ bs(age, df = 6) + gender * bs(age, df = 6) 
+## Model 2 spnbmd ~ bs(age, df = 6)
+##   Df   X2 P(>|Chi|)    
+## 1  7 62.1   5.9e-11 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+* Here, we see a very small p-value. 
+
+* This is strong evidence in favor of the model $\mu(t_{ij}) = f_{0}(t_{ij}) + A_{ij}f_{1}(t_{ij})$
+over the model $\mu(t_{ij}) = f_{0}(t_{ij})$.
 
 ---

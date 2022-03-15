@@ -18,15 +18,20 @@ Q_{\lambda}(\boldsymbol{\beta}) = \sum_{i=1}^{n}(y_{i} - \mathbf{x}_{i}^{T}\bold
 
 ---
 
-* An advantage of the **lasso** is that many of the individual estimated regression coefficients $\hat{\beta}_{j}$
-will equal zero **exactly**.
+* An advantage of the **lasso** is that many of the individual estimated regression coefficients $\hat{\beta}_{j}$ will equal zero **exactly**.
 
-* So, you can think of the lasso as performing **variable selection**
+* You can think of the lasso as performing **variable selection**
     + The regression coefficient estimates which are non-zero will be the "selected" variables.
+    
+* A nice feature of the **lasso** is that it performs **simultaneous** variable
+selection and **regression coefficient estimation**.
+    + You do not need to first select a model and then estimate the coefficients from this selected model.
+    
+    + The selection and estimation is done at the same time.
 
 ---
 
-* $\lambda \geq 0$ in the $L_{1}$ penalty function $\lambda \sum_{j=1}^{p}|\beta_{j}|$ is referred to as the "tuning parameter".
+* $\lambda \geq 0$ in the $L_{1}$ penalty function $\lambda \sum_{j=1}^{p}|\beta_{j}|$ is referred to as the **"tuning parameter"**.
 
 * If $\lambda$ is **large enough**, **all** of the estimated regression coefficients will be equal to zero.
 
@@ -36,15 +41,14 @@ the usual least-squares estimates.
 * For **intermediate** values of $\lambda$, some regression coefficients will be **"selected"** with
 the remaining regression coefficient estimates being set to zero.
 
-* The value of the tuning parameter $\lambda$ is usually chosen through **cross-validation**.
+* The value of the tuning parameter $\lambda$ is most ofte chosen through **cross-validation**.
+    + However, $\lambda$ is sometimes chosen by looking at an estimate of the "degrees of freedom" associated $\lambda$.
 
-* **Lasso paths**: You can plot the values of the regression coefficients for different values of $\lambda$
-to get a sense of which variables are selected first.
+* **Lasso paths**: You can plot the values of the regression coefficients for different values of $\lambda$ to get a sense of which variables are selected first.
 
 ---
 
-* In addition to performing variable selection, the lasso also **shrinks** the regression
-coefficients **towards zero**. 
+* In addition to performing variable selection, the lasso also **shrinks** the regression coefficient estimates **towards zero**. 
 
 *  This can improve predictive performance when the regression coefficient estimates
 have **high variance**.
@@ -54,11 +58,14 @@ have **high variance**.
 that they can be used when the number of variables is **greater** than the 
 number of observations.
 
+* Although the lasso is often suggested as a tool for high-dimensional problems (i.e., lots of covariates),
+the lasso is still a good tool for moderate-sized number of covariates (e.g., 10-20).
+    + The lasso can still improve predictive performance in such cases, and the lasso enables 
+      simultaneous variable selection and estimation.
 
-  
 ## The Lasso with longitudinal data
 
-**Recall our notation for longitudinal data**:
+**Recall our notation for longitudinal data with random effects**:
 
 * $Y_{ij}$ - outcome for individual $i$ at time $t_{ij}$.
 
@@ -68,8 +75,7 @@ number of observations.
 
 ---
 
-* With **penalized regression for longitudinal data**, 
-the linear mixed model still assumes that
+* With **penalized regression for longitudinal data**, the linear mixed model still assumes that
 \begin{eqnarray}
 Y_{ij} &=& 
 \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + b_{ij} + e_{ij} \nonumber \\
@@ -78,8 +84,26 @@ Y_{ij} &=&
 \end{eqnarray}
     + $\boldsymbol{\beta}$ - vector of fixed effects
     + $\mathbf{u}_{i}$ - vector of random effects
-    + $\mathbf{u}_{i} \sim \textrm{Normal}(0, \boldsymbol{\Sigma})$.
+    + $\mathbf{u}_{i} \sim \textrm{Normal}(0, \boldsymbol{\Sigma}_{\boldsymbol{\theta}})$.
     + $e_{ij} \sim \textrm{Normal}(0, \sigma^{2})$.
+
+---
+
+* If $\mathbf{Y}_{i} = (Y_{i1}, ..., Y_{in_{i}})$ is the vector of observations
+from the $i^{th}$ person.
+
+* The vectors $\mathbf{Y}_{1}, \ldots, \mathbf{Y}_{m}$ **are independent** although
+the observations within each vector are not independent.
+
+* The distribution of $\mathbf{Y}_{i}$ is 
+$\mathbf{Y}_{i} \sim \textrm{Normal}\left( \mathbf{X}_{i}\boldsymbol{\beta}, \mathbf{V}_{i}(\boldsymbol{\theta}, \sigma^{2}) \right)$.
+    + $\mathbf{X}_{i}$ is the $n_{i} \times p$ design matrix for individual $i$.
+
+* The covariance matrix of $\mathbf{Y}_{i}$ is
+\begin{equation}
+\mathbf{V}_{i}(\boldsymbol{\theta}, \sigma^{2}) = \textrm{Cov}(\mathbf{Y}_{i}) = \mathbf{Z}_{i}\boldsymbol{\Sigma}_{\boldsymbol{\theta}}\mathbf{Z}_{i}^{T} + \sigma^{2}\mathbf{I}_{n_{i}}
+\end{equation}
+    + $\mathbf{Z}_{i}$ is the $n_{i} \times q$ random effects design matrix for individual $i$.
 
 ---
 
@@ -91,33 +115,30 @@ Y_{ij} &=&
 \mathbf{Y} \sim \textrm{Normal}(\mathbf{X}\boldsymbol{\beta}, \mathbf{V})
 \end{equation}
 
-* $\mathbf{V} = \mathbf{Z}\textrm{Cov}(\mathbf{u})\mathbf{Z}^{T} + \sigma^{2}\mathbf{I}$.
-    + $\textrm{Cov}(\mathbf{u})$ is the covariance matrix for the "stacked" vector of random effects $\mathbf{u}$.
-    
-    + $\textrm{Cov}(\mathbf{u})$ will be a **"block diagonal"** matrix with the blocks being $\boldsymbol{\Sigma}$.
-
-* 
+* The covariance matrix $\mathbf{V}$ will be **"block diagonal"** diagonal matrix with
+the blocks being $\mathbf{V}_{i}(\theta, \sigma^{2})$
 \begin{equation}
-\textrm{Cov}(\mathbf{u}) = 
+\mathbf{V} = 
 \begin{bmatrix}
-\boldsymbol{\Sigma} & \mathbf{0} & \mathbf{0} & \ldots & \mathbf{0} \\
-\mathbf{0} & \boldsymbol{\Sigma} & \mathbf{0} & \ldots & \mathbf{0} \\
-\mathbf{0} & \mathbf{0} & \boldsymbol{\Sigma}  & \ldots & \mathbf{0} \\
+\mathbf{V}_{1}(\boldsymbol{\theta}, \sigma^{2}) & \mathbf{0} & \mathbf{0} & \ldots & \mathbf{0} \\
+\mathbf{0} & \mathbf{V}_{2}(\boldsymbol{\theta}, \sigma^{2}) & \mathbf{0} & \ldots & \mathbf{0} \\
+\mathbf{0} & \mathbf{0} & \mathbf{V}_{3}(\boldsymbol{\theta}, \sigma^{2})  & \ldots & \mathbf{0} \\
 \vdots & & & \ddots & \vdots \\
-\mathbf{0} & \mathbf{0} & \mathbf{0} & \ldots & \boldsymbol{\Sigma}
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \ldots & \mathbf{V}_{m}(\boldsymbol{\theta}, \sigma^{2})
 \end{bmatrix}
 \end{equation}
 ---
 
 * With the **LMM-Lasso** (@schelldorfer2011), you estimate the vector of fixed effects $\boldsymbol{\beta}$
-and the parameters in $\mathbf{V}$
-by minimizing the following penalized negative log-likelihood:
-\begin{equation}
-Q_{\lambda}(\boldsymbol{\beta}, \mathbf{V}) = \frac{1}{2}\log\det(\mathbf{V}) + \frac{1}{2}(\mathbf{Y} - \mathbf{X}\boldsymbol{\beta})^{T}\mathbf{V}^{-1}
-(\mathbf{Y} - \mathbf{X}\boldsymbol{\beta}) + \lambda\sum_{j=1}^{p}\beta_{j}
-\end{equation}
+and the parameters in $\mathbf{V}$ by minimizing the following penalized negative log-likelihood:
+\begin{eqnarray}
+&& Q_{\lambda}(\boldsymbol{\beta}, \boldsymbol{\theta}, \sigma^{2}) = \frac{1}{2}\log\det(\mathbf{V}) + \frac{1}{2}(\mathbf{Y} - \mathbf{X}\boldsymbol{\beta})^{T}\mathbf{V}^{-1}
+(\mathbf{Y} - \mathbf{X}\boldsymbol{\beta}) + \lambda\sum_{j=1}^{p} |\beta_{j}| \nonumber \\
+&=& \frac{1}{2}\sum_{i=1}^{m} \log\det\left( \mathbf{V}_{i}(\boldsymbol{\theta}, \sigma^{2}) \right) + \frac{1}{2}\sum_{i=1}^{m} (\mathbf{Y}_{i} - \mathbf{X}_{i}\boldsymbol{\beta})^{T}\mathbf{V}_{i}^{-1}(\boldsymbol{\theta}, \sigma^{2})
+(\mathbf{Y}_{i} - \mathbf{X}_{i}\boldsymbol{\beta}) + \lambda\sum_{j=1}^{p} |\beta_{j}| \nonumber \\
+\end{eqnarray}
 
-* In @schelldorfer2011, suggest using a Bayesian information criterion (BIC) to choose the tuning
+* In @schelldorfer2011, suggest using a **Bayesian information criterion** (BIC) to choose the tuning
 parameter $\lambda$.
 
 * This is defined as 
@@ -125,7 +146,7 @@ parameter $\lambda$.
 \textrm{BIC}_{\lambda} = -2 \times \textrm{log-likelihood} + \log(n) \times df_{\lambda} 
 \end{equation}
     + $df_{\lambda}$ is equal to the number of non-zero regression coefficients when using $\lambda$ **plus** the 
-    number of paramaters in the matrix $\mathbf{V}$.
+    number of paramaters in the matrix $\mathbf{V}_{i}(\boldsymbol{\theta}, \sigma^{2})$.
     
 ## Lasso for LMMs and GLMMs in R
 
@@ -521,6 +542,227 @@ lines(lam.seq, colMeans(MSE))
 
 * According to the cross-validation estimates of prediction error, the 
 best value of $\lambda$ is roughly $80$. 
+
+## Penalized Generalized Estimating Equations
+
+* Without any penalization, a generalized estimating equation (GEE) approach to estimating $\boldsymbol{\beta}$ 
+works by choosing $\boldsymbol{\beta}$ to solve the following system of equations
+\begin{equation}
+S_{\alpha}(\boldsymbol{\beta}) = \sum_{i=1}^{m} \mathbf{D}_{i}^{T}\mathbf{V}_{i}^{-1}\left(\mathbf{Y}_{i} - \boldsymbol{\mu}_{i}(\boldsymbol{\beta}) \right) = \mathbf{0}
+\end{equation}
+   + $\boldsymbol{\mu}_{i}(\boldsymbol{\beta}) = g^{-1}(\mathbf{X}_{i}\boldsymbol{\beta})$: this is a $n_{i} \times 1$ vector
+   
+   + $\mathbf{D}_{i} = \partial \boldsymbol{\mu}_{i}/\partial \boldsymbol{\beta}$: this is a $n_{i} \times p$ matrix.
+
+* $\mathbf{V}_{i}$ is the "working" covariance matrix of $\mathbf{Y}_{i}$ which can depend on the parameter $\alpha$.
+
+---
+
+* For penalized GEE, we are going to solve the equation $U_{\alpha,\lambda}(\boldsymbol{\beta}) = \mathbf{0}$, 
+where $U_{\alpha, \lambda}(\boldsymbol{\beta})$ is defined as
+\begin{equation}
+U_{\alpha, \lambda}(\boldsymbol{\beta}) = S_{\alpha}(\boldsymbol{\beta}) - \sum_{j=1}^{p} q_{\lambda}(|\beta_{j}|)\textrm{sign}(\beta_{j})
+\end{equation}
+
+* Here, $q_{\lambda}()$ is some choice of "penalty" function and $\textrm{sign}(\beta_{j}) = 1$ if $\beta_{j} > 0$
+and $\textrm{sign}(\beta_{j}) = -1$ if $\beta_{j} < 0$. 
+
+* The reason for considering $\textrm{sign}(\beta_{j})$ is that we are no longer trying to minimize $U_{\alpha, \lambda}(\boldsymbol{\beta})$, but rather trying to solve $U_{\alpha,\lambda}(\boldsymbol{\beta}) = \mathbf{0}$.
+   + You can think of this as setting the derivative of a quasi-penalized log-likelihood to zero and solving it.
+
+---
+
+* There are a number of possible choices for $q_{\lambda}()$.
+
+* Penalized GEE as implemented by the **PGEE** package uses the derivative of the "SCAD" penalty. 
+
+* For $t > 0$, the derivative of the SCAD penalty is defined as
+\begin{equation}
+q_{\lambda}(t) = \begin{cases}
+t & \text{ for } t < \lambda \\
+\frac{a\lambda - t}{(a - 1)\lambda} & \text{ for } \lambda \leq t < a\lambda \\
+0 & \text{ for } t > a\lambda
+\end{cases}
+\end{equation}
+
+### The PGEE package
+
+* Just to show the basics of how the PGEE package works, we can look at the **yeastG1** dataset from the PGEE package
+
+
+```r
+library(PGEE)
+data(yeastG1)
+
+## look at first 6 rows and first 5 columns
+yeastG1[1:6, 1:5]
+```
+
+```
+##   id     y time        ABF1       ACE2
+## 1  1  0.88    3 -0.09702788  8.3839614
+## 2  1  0.32    4 -0.09702788  8.3839614
+## 3  1  1.09   12 -0.09702788  8.3839614
+## 4  1  0.73   13 -0.09702788  8.3839614
+## 5  2  0.66    3 -0.34618104 -0.1418099
+## 6  2 -0.05    4 -0.34618104 -0.1418099
+```
+
+* The response of interest is the continuous measurement `y`.
+
+* There are 96 covariates (besides time). I think these are all just different transcription factors.
+
+* These 96 covariates are not time-varying.
+
+---
+
+* Suppose we want to fit the following marginal **mean** model
+\begin{equation}
+E(Y_{ij}|\mathbf{x}_{ijk}) = \gamma_{0} + \gamma_{1}t_{ij} + \sum_{k=1}^{96}\beta_{j}x_{ijk}
+\end{equation}
+   + Note that $x_{ijk}$ does not change across values of $j$.
+
+* To fit the above model with an **AR(1)** correlation structure and $\lambda = 0.1$, you can use the following **R** code
+
+```r
+m0 <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=0.1, data=yeastG1)
+```
+
+
+
+* Let's look at the values of the first 5 estimated regression coefficients:
+
+```r
+m0$coefficients[1:5]
+```
+
+```
+##   (Intercept)          time          ABF1          ACE2          ADR1 
+##  1.879532e-03  1.795182e-02 -1.366213e-02  4.360565e-06  2.988796e-07
+```
+
+* The `PGEE` function does not automatically return **exactly zero** regression coefficients,
+but you can set those coefficients whose absolute value is less than some small threshold equal to zero.
+
+```r
+length(m0$coefficients)
+```
+
+```
+## [1] 98
+```
+
+```r
+## 71 out of 98 coefficients are "zero"
+sum(abs(m0$coefficients) < 1e-4)
+```
+
+```
+## [1] 71
+```
+
+---
+
+* The `PGEE` package does have a function to select the best value of $\lambda$ through cross-validation.
+     + However, you do have to provide a range of lambda values for the function to search over.
+
+* By trial and error, you can find 
+    + a small value $\lambda_{min}$ where most of the coefficients are nonzero.
+    + a large value $\lambda_{max}$ where most of the coefficients are zero.
+    + then, perform cross-validation over the range $(\lambda_{min}, \lambda_{max})$. 
+
+* Setting $\lambda_{min} = 0.01$ and $\lambda_{max} = 0.03$ seems reasonable.
+    + This gives a range of 12-92 for the number of zero coefficients
+
+
+```r
+mlow <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=0.01, data=yeastG1)
+mhigh <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=0.3, data=yeastG1)
+
+sum(abs(mlow$coefficients) < 1e-4) ## only 12 out of 98 are zero
+sum(abs(mhigh$coefficients) < 1e-4) ## now, 92 out of 98 are zero
+```
+
+---
+
+* Now, let's use the `CVfit` function from the `PGEE` package to get the best value of $\lambda$ over
+the range $(\lambda_{min}, \lambda_{max})$.
+    + Use 5-fold cross-validation using the `fold` argument in `CVfit`.
+    + Use a lambda sequence of length 10 from 0.01 to 0.3
+
+
+```r
+cv.yeast <- CVfit(y ~. -id, id=id, lambda=seq(0.01, 0.3, length.out=10), 
+                  fold = 5, data=yeastG1)
+```
+
+* The cross-validation done by `CVfit` does automatically assume an **"independent"** working correlation structure.
+
+* The `lam.opt` component of `cv.yeast` gives the optimal value of lambda.
+
+```r
+cv.yeast$lam.opt
+```
+
+```
+## [1] 0.04222222
+```
+
+* Now, we can just use `PGEE` with the optimal value of lambda.
+
+```r
+mfinal <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=cv.yeast$lam.opt, data=yeastG1)
+```
+
+* From the `mfinal` object returned by `PGEE`, we can look at the selected **nonzero** coefficients
+
+```r
+mfinal$coefficients[abs(mfinal$coefficients) > 1e-4]
+```
+
+```
+##   (Intercept)          time          ABF1          ACE2         ARG81 
+##  0.0654041421  0.0124562882 -0.0325838863  0.0127874415  0.0169445034 
+##          ASH1          CAD1          CIN5         DAL82          DIG1 
+## -0.0482950685  0.0022875036  0.0197437839 -0.0033708398  0.0064621372 
+##          FKH1          FKH2          FZF1          GAT1          GAT3 
+## -0.0224616164 -0.0854029778 -0.0141534498  0.0157663787  0.4004159946 
+##          GCN4          GCR1          GCR2   GRF10.Pho2.          GTS1 
+## -0.0072661953 -0.0052707577 -0.0313007398 -0.0149795248 -0.0196408251 
+##          HAL9          HIR1          HIR2          IXR1          LEU3 
+##  0.0064780824 -0.0067448440 -0.0005240435 -0.0036456617 -0.0002425373 
+##         MATa1          MBP1         MET31          MET4          MSN4 
+## -0.0019846420  0.1338670401 -0.0058896291 -0.0356033691  0.0090765224 
+##          MTH1          NDD1          NRG1          PHD1          RCS1 
+## -0.0199223945 -0.1048632039  0.0071845565  0.0244530145 -0.0072457243 
+##          REB1          RFX1          RLM1          RME1          ROX1 
+## -0.0183030215  0.0024567990  0.0017190724  0.0112334737  0.0099033888 
+##          RTG1          SFP1          SKN7          SMP1          STB1 
+##  0.0041439296  0.0161008010  0.0194410387  0.0163084797  0.0712247908 
+##          STP1          SWI4          SWI5          SWI6          YAP1 
+##  0.0402297692  0.0309969037  0.0190456062  0.0376147418 -0.0021417459 
+##          YAP5          YAP6       YJL206C          ZAP1 
+## -0.3194214925 -0.0247157203  0.0014576098 -0.0182930638
+```
+
+* We can also look at the estimated working correlation matrix
+
+```r
+round(mfinal$working.correlation, 3)
+```
+
+```
+##       [,1]  [,2]  [,3]  [,4]
+## [1,] 1.000 0.115 0.013 0.002
+## [2,] 0.115 1.000 0.115 0.013
+## [3,] 0.013 0.115 1.000 0.115
+## [4,] 0.002 0.013 0.115 1.000
+```
+
+* `PGEE` also returns most of the other types of components that functions
+  like `lm`, `glm`, `geeglm` return: e.g., `fitted.values`, `residuals`, etc.
+
+
 
 ## GLMM-Lasso with Binary Outcomes
 

@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2022-02-03" />
+<meta name="date" content="2022-03-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -189,7 +189,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#choosing-the-tuning-parameter-for-the-soccer-data"><i class="fa fa-check"></i><b>4.3.2</b> Choosing the tuning parameter for the soccer data</a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="glmm-lasso.html"><a href="glmm-lasso.html#cross-validation-for-longitudinal-data"><i class="fa fa-check"></i><b>4.4</b> Cross-Validation for Longitudinal Data</a></li>
-<li class="chapter" data-level="4.5" data-path="glmm-lasso.html"><a href="glmm-lasso.html#glmm-lasso-with-binary-outcomes"><i class="fa fa-check"></i><b>4.5</b> GLMM-Lasso with Binary Outcomes</a></li>
+<li class="chapter" data-level="4.5" data-path="glmm-lasso.html"><a href="glmm-lasso.html#penalized-generalized-estimating-equations"><i class="fa fa-check"></i><b>4.5</b> Penalized Generalized Estimating Equations</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#the-pgee-package"><i class="fa fa-check"></i><b>4.5.1</b> The PGEE package</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="glmm-lasso.html"><a href="glmm-lasso.html#glmm-lasso-with-binary-outcomes"><i class="fa fa-check"></i><b>4.6</b> GLMM-Lasso with Binary Outcomes</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="risk-prediction.html"><a href="risk-prediction.html"><i class="fa fa-check"></i><b>5</b> Risk Prediction and Validation (Part I)</a><ul>
 <li class="chapter" data-level="5.1" data-path="risk-prediction.html"><a href="risk-prediction.html#risk-predictionstratification"><i class="fa fa-check"></i><b>5.1</b> Risk Prediction/Stratification</a></li>
@@ -315,13 +318,13 @@ average value of the risk score <span class="math inline">\(g_{s}\)</span> in st
 <ul>
 <li>Let’s compute the <strong>Brier score</strong> using the <code>biopsy</code> data again from the <code>MASS</code> package.</li>
 </ul>
-<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb212-1" data-line-number="1"><span class="kw">library</span>(rpart)</a>
-<a class="sourceLine" id="cb212-2" data-line-number="2"><span class="kw">library</span>(MASS)</a>
-<a class="sourceLine" id="cb212-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb212-4" data-line-number="4"><span class="kw">data</span>(biopsy)</a>
-<a class="sourceLine" id="cb212-5" data-line-number="5"><span class="co"># Create binary outcome for tumor class</span></a>
-<a class="sourceLine" id="cb212-6" data-line-number="6">biopsy<span class="op">$</span>tumor.type &lt;-<span class="st"> </span><span class="kw">ifelse</span>(biopsy<span class="op">$</span>class<span class="op">==</span><span class="st">&quot;malignant&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb212-7" data-line-number="7"><span class="kw">head</span>(biopsy)</a></code></pre></div>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb230-1" data-line-number="1"><span class="kw">library</span>(rpart)</a>
+<a class="sourceLine" id="cb230-2" data-line-number="2"><span class="kw">library</span>(MASS)</a>
+<a class="sourceLine" id="cb230-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb230-4" data-line-number="4"><span class="kw">data</span>(biopsy)</a>
+<a class="sourceLine" id="cb230-5" data-line-number="5"><span class="co"># Create binary outcome for tumor class</span></a>
+<a class="sourceLine" id="cb230-6" data-line-number="6">biopsy<span class="op">$</span>tumor.type &lt;-<span class="st"> </span><span class="kw">ifelse</span>(biopsy<span class="op">$</span>class<span class="op">==</span><span class="st">&quot;malignant&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb230-7" data-line-number="7"><span class="kw">head</span>(biopsy)</a></code></pre></div>
 <pre><code>##        ID V1 V2 V3 V4 V5 V6 V7 V8 V9     class tumor.type
 ## 1 1000025  5  1  1  1  2  1  3  1  1    benign          0
 ## 2 1002945  5  4  4  5  7 10  3  2  1    benign          0
@@ -337,18 +340,18 @@ average value of the risk score <span class="math inline">\(g_{s}\)</span> in st
 <li><strong>random forest</strong></li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb214-1" data-line-number="1"><span class="kw">library</span>(rpart)</a>
-<a class="sourceLine" id="cb214-2" data-line-number="2"><span class="kw">library</span>(randomForest)</a>
-<a class="sourceLine" id="cb214-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb214-4" data-line-number="4"><span class="co"># Fit CART, logistic regression, and random forest</span></a>
-<a class="sourceLine" id="cb214-5" data-line-number="5">cart.model &lt;-<span class="st"> </span><span class="kw">rpart</span>(class <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">data=</span>biopsy)</a>
-<a class="sourceLine" id="cb214-6" data-line-number="6">logreg.model &lt;-<span class="st"> </span><span class="kw">glm</span>(tumor.type <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">family=</span><span class="st">&quot;binomial&quot;</span>, <span class="dt">data=</span>biopsy)</a>
-<a class="sourceLine" id="cb214-7" data-line-number="7">RF.model &lt;-<span class="st"> </span><span class="kw">randomForest</span>(class <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">data=</span>biopsy, <span class="dt">ntree =</span> <span class="dv">500</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb232-1" data-line-number="1"><span class="kw">library</span>(rpart)</a>
+<a class="sourceLine" id="cb232-2" data-line-number="2"><span class="kw">library</span>(randomForest)</a>
+<a class="sourceLine" id="cb232-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb232-4" data-line-number="4"><span class="co"># Fit CART, logistic regression, and random forest</span></a>
+<a class="sourceLine" id="cb232-5" data-line-number="5">cart.model &lt;-<span class="st"> </span><span class="kw">rpart</span>(class <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">data=</span>biopsy)</a>
+<a class="sourceLine" id="cb232-6" data-line-number="6">logreg.model &lt;-<span class="st"> </span><span class="kw">glm</span>(tumor.type <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">family=</span><span class="st">&quot;binomial&quot;</span>, <span class="dt">data=</span>biopsy)</a>
+<a class="sourceLine" id="cb232-7" data-line-number="7">RF.model &lt;-<span class="st"> </span><span class="kw">randomForest</span>(class <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">data=</span>biopsy, <span class="dt">ntree =</span> <span class="dv">500</span>)</a></code></pre></div>
 <ul>
 <li>Let’s then compute “risk scores” from each method.</li>
 </ul>
-<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb215-1" data-line-number="1">probs.cart &lt;-<span class="st"> </span><span class="kw">predict</span>(cart.model)</a>
-<a class="sourceLine" id="cb215-2" data-line-number="2"><span class="kw">head</span>(probs.cart)</a></code></pre></div>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb233-1" data-line-number="1">probs.cart &lt;-<span class="st"> </span><span class="kw">predict</span>(cart.model)</a>
+<a class="sourceLine" id="cb233-2" data-line-number="2"><span class="kw">head</span>(probs.cart)</a></code></pre></div>
 <pre><code>##      benign malignant
 ## 1 0.9837587 0.0162413
 ## 2 0.0952381 0.9047619
@@ -356,26 +359,26 @@ average value of the risk score <span class="math inline">\(g_{s}\)</span> in st
 ## 4 0.0952381 0.9047619
 ## 5 0.9837587 0.0162413
 ## 6 0.0952381 0.9047619</code></pre>
-<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb217-1" data-line-number="1"><span class="co"># We want the second column of this matrix for the CART fitted probabilities</span></a>
-<a class="sourceLine" id="cb217-2" data-line-number="2">risk.cart &lt;-<span class="st"> </span>probs.cart[,<span class="dv">2</span>]</a>
-<a class="sourceLine" id="cb217-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb217-4" data-line-number="4"><span class="co"># logistic regression </span></a>
-<a class="sourceLine" id="cb217-5" data-line-number="5">risk.logreg &lt;-<span class="st"> </span><span class="kw">predict</span>(logreg.model, <span class="dt">newdata=</span>biopsy, <span class="dt">type=</span><span class="st">&quot;response&quot;</span>)</a>
-<a class="sourceLine" id="cb217-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb217-7" data-line-number="7"><span class="co"># random forest risk scores</span></a>
-<a class="sourceLine" id="cb217-8" data-line-number="8">risk.RF &lt;-<span class="st"> </span><span class="kw">predict</span>(RF.model, <span class="dt">newdata=</span>biopsy, <span class="dt">type =</span> <span class="st">&quot;prob&quot;</span>)[,<span class="dv">2</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb235-1" data-line-number="1"><span class="co"># We want the second column of this matrix for the CART fitted probabilities</span></a>
+<a class="sourceLine" id="cb235-2" data-line-number="2">risk.cart &lt;-<span class="st"> </span>probs.cart[,<span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb235-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb235-4" data-line-number="4"><span class="co"># logistic regression </span></a>
+<a class="sourceLine" id="cb235-5" data-line-number="5">risk.logreg &lt;-<span class="st"> </span><span class="kw">predict</span>(logreg.model, <span class="dt">newdata=</span>biopsy, <span class="dt">type=</span><span class="st">&quot;response&quot;</span>)</a>
+<a class="sourceLine" id="cb235-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb235-7" data-line-number="7"><span class="co"># random forest risk scores</span></a>
+<a class="sourceLine" id="cb235-8" data-line-number="8">risk.RF &lt;-<span class="st"> </span><span class="kw">predict</span>(RF.model, <span class="dt">newdata=</span>biopsy, <span class="dt">type =</span> <span class="st">&quot;prob&quot;</span>)[,<span class="dv">2</span>]</a></code></pre></div>
 <ul>
 <li>The <strong>in-sample</strong> Brier scores for each method are:
 <ul>
 <li>“In-sample” here meaning we are computing the Brier score using the same outcomes we used to construct the risk scores.</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb218-1" data-line-number="1">brier.cart &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.cart <span class="op">-</span><span class="st"> </span>biopsy<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb218-2" data-line-number="2">brier.logreg &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.logreg <span class="op">-</span><span class="st"> </span>biopsy<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb218-3" data-line-number="3">brier.RF &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.RF <span class="op">-</span><span class="st"> </span>biopsy<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb218-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb218-5" data-line-number="5"><span class="kw">round</span>(<span class="kw">c</span>(brier.cart, brier.logreg, brier.RF), <span class="dv">4</span>)</a></code></pre></div>
-<pre><code>## [1] 0.0450 0.0280 0.0056</code></pre>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb236-1" data-line-number="1">brier.cart &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.cart <span class="op">-</span><span class="st"> </span>biopsy<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb236-2" data-line-number="2">brier.logreg &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.logreg <span class="op">-</span><span class="st"> </span>biopsy<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb236-3" data-line-number="3">brier.RF &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.RF <span class="op">-</span><span class="st"> </span>biopsy<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb236-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb236-5" data-line-number="5"><span class="kw">round</span>(<span class="kw">c</span>(brier.cart, brier.logreg, brier.RF), <span class="dv">4</span>)</a></code></pre></div>
+<pre><code>## [1] 0.0450 0.0280 0.0057</code></pre>
 <ul>
 <li>When comparing <strong>in-sample</strong> Brier scores, CART is the worst, logistic regression is in the middle, and random forest is the best.</li>
 </ul>
@@ -393,29 +396,29 @@ Figure 6.1: Fitted CART model for the biopsy data
 <li><p>Let’s try a validation exercise by <strong>“training”</strong> our models on the first <span class="math inline">\(400\)</span> observations
 of <code>biopsy</code> and then testing relative performance on the remaining observations.</p></li>
 </ul>
-<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb220-1" data-line-number="1"><span class="co"># Create train/test splits for biopsy data</span></a>
-<a class="sourceLine" id="cb220-2" data-line-number="2">biopsy.train &lt;-<span class="st"> </span>biopsy[<span class="dv">1</span><span class="op">:</span><span class="dv">400</span>,]</a>
-<a class="sourceLine" id="cb220-3" data-line-number="3">biopsy.test &lt;-<span class="st"> </span>biopsy[<span class="dv">401</span><span class="op">:</span><span class="dv">699</span>,]</a></code></pre></div>
-<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb221-1" data-line-number="1"><span class="co"># Now, use each type of method on this training data</span></a>
-<a class="sourceLine" id="cb221-2" data-line-number="2">cart.model.train &lt;-<span class="st"> </span><span class="kw">rpart</span>(class <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">data=</span>biopsy.train)</a>
-<a class="sourceLine" id="cb221-3" data-line-number="3">logreg.model.train &lt;-<span class="st"> </span><span class="kw">glm</span>(tumor.type <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">family=</span><span class="st">&quot;binomial&quot;</span>, </a>
-<a class="sourceLine" id="cb221-4" data-line-number="4">                    <span class="dt">data=</span>biopsy.train)</a>
-<a class="sourceLine" id="cb221-5" data-line-number="5">RF.model.train &lt;-<span class="st"> </span><span class="kw">randomForest</span>(class <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">data=</span>biopsy.train, </a>
-<a class="sourceLine" id="cb221-6" data-line-number="6">                         <span class="dt">ntree =</span> <span class="dv">500</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb238-1" data-line-number="1"><span class="co"># Create train/test splits for biopsy data</span></a>
+<a class="sourceLine" id="cb238-2" data-line-number="2">biopsy.train &lt;-<span class="st"> </span>biopsy[<span class="dv">1</span><span class="op">:</span><span class="dv">400</span>,]</a>
+<a class="sourceLine" id="cb238-3" data-line-number="3">biopsy.test &lt;-<span class="st"> </span>biopsy[<span class="dv">401</span><span class="op">:</span><span class="dv">699</span>,]</a></code></pre></div>
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb239-1" data-line-number="1"><span class="co"># Now, use each type of method on this training data</span></a>
+<a class="sourceLine" id="cb239-2" data-line-number="2">cart.model.train &lt;-<span class="st"> </span><span class="kw">rpart</span>(class <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">data=</span>biopsy.train)</a>
+<a class="sourceLine" id="cb239-3" data-line-number="3">logreg.model.train &lt;-<span class="st"> </span><span class="kw">glm</span>(tumor.type <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">family=</span><span class="st">&quot;binomial&quot;</span>, </a>
+<a class="sourceLine" id="cb239-4" data-line-number="4">                    <span class="dt">data=</span>biopsy.train)</a>
+<a class="sourceLine" id="cb239-5" data-line-number="5">RF.model.train &lt;-<span class="st"> </span><span class="kw">randomForest</span>(class <span class="op">~</span><span class="st"> </span>V1 <span class="op">+</span><span class="st"> </span>V3 <span class="op">+</span><span class="st"> </span>V4 <span class="op">+</span><span class="st"> </span>V7 <span class="op">+</span><span class="st"> </span>V8, <span class="dt">data=</span>biopsy.train, </a>
+<a class="sourceLine" id="cb239-6" data-line-number="6">                         <span class="dt">ntree =</span> <span class="dv">500</span>)</a></code></pre></div>
 <ul>
 <li>Using these models built on the training data, get the fitted probabilities for the <strong>test data</strong></li>
 </ul>
-<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb222-1" data-line-number="1">risk.cart.test &lt;-<span class="st"> </span><span class="kw">predict</span>(cart.model.train, <span class="dt">newdata=</span>biopsy.test)[,<span class="dv">2</span>]</a>
-<a class="sourceLine" id="cb222-2" data-line-number="2">risk.logreg.test &lt;-<span class="st"> </span><span class="kw">predict</span>(logreg.model.train, <span class="dt">newdata=</span>biopsy.test, <span class="dt">type=</span><span class="st">&quot;response&quot;</span>)</a>
-<a class="sourceLine" id="cb222-3" data-line-number="3">risk.RF.test &lt;-<span class="st"> </span><span class="kw">predict</span>(RF.model.train, <span class="dt">newdata=</span>biopsy.test, <span class="dt">type =</span> <span class="st">&quot;prob&quot;</span>)[,<span class="dv">2</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb240-1" data-line-number="1">risk.cart.test &lt;-<span class="st"> </span><span class="kw">predict</span>(cart.model.train, <span class="dt">newdata=</span>biopsy.test)[,<span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb240-2" data-line-number="2">risk.logreg.test &lt;-<span class="st"> </span><span class="kw">predict</span>(logreg.model.train, <span class="dt">newdata=</span>biopsy.test, <span class="dt">type=</span><span class="st">&quot;response&quot;</span>)</a>
+<a class="sourceLine" id="cb240-3" data-line-number="3">risk.RF.test &lt;-<span class="st"> </span><span class="kw">predict</span>(RF.model.train, <span class="dt">newdata=</span>biopsy.test, <span class="dt">type =</span> <span class="st">&quot;prob&quot;</span>)[,<span class="dv">2</span>]</a></code></pre></div>
 <ul>
 <li>Now, using these fitted probabilities on the test data, compute the <strong>Brier scores</strong>:</li>
 </ul>
-<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb223-1" data-line-number="1">brier.cart.test &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.cart.test <span class="op">-</span><span class="st"> </span>biopsy.test<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb223-2" data-line-number="2">brier.logreg.test &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.logreg.test <span class="op">-</span><span class="st"> </span>biopsy.test<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb223-3" data-line-number="3">brier.RF.test &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.RF.test <span class="op">-</span><span class="st"> </span>biopsy.test<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb223-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb223-5" data-line-number="5"><span class="kw">round</span>(<span class="kw">c</span>(brier.cart.test, brier.logreg.test, brier.RF.test), <span class="dv">4</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb241-1" data-line-number="1">brier.cart.test &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.cart.test <span class="op">-</span><span class="st"> </span>biopsy.test<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb241-2" data-line-number="2">brier.logreg.test &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.logreg.test <span class="op">-</span><span class="st"> </span>biopsy.test<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb241-3" data-line-number="3">brier.RF.test &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.RF.test <span class="op">-</span><span class="st"> </span>biopsy.test<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb241-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb241-5" data-line-number="5"><span class="kw">round</span>(<span class="kw">c</span>(brier.cart.test, brier.logreg.test, brier.RF.test), <span class="dv">4</span>)</a></code></pre></div>
 <pre><code>## [1] 0.0359 0.0135 0.0186</code></pre>
 <ul>
 <li><p>For the out-of-sample Brier score, both logistic regression and random forest are notably
@@ -430,9 +433,9 @@ better than CART.</p></li>
 <ul>
 <li>Let’s revisit the <code>ohio</code> data again from the <code>geepack</code> package</li>
 </ul>
-<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb225-1" data-line-number="1"><span class="kw">library</span>(geepack)</a>
-<a class="sourceLine" id="cb225-2" data-line-number="2"><span class="kw">data</span>(ohio)</a>
-<a class="sourceLine" id="cb225-3" data-line-number="3"><span class="kw">head</span>(ohio, <span class="dv">10</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb243-1" data-line-number="1"><span class="kw">library</span>(geepack)</a>
+<a class="sourceLine" id="cb243-2" data-line-number="2"><span class="kw">data</span>(ohio)</a>
+<a class="sourceLine" id="cb243-3" data-line-number="3"><span class="kw">head</span>(ohio, <span class="dv">10</span>)</a></code></pre></div>
 <pre><code>##    resp id age smoke
 ## 1     0  0  -2     0
 ## 2     0  0  -1     0
@@ -472,16 +475,16 @@ an individual had at least one positive wheezing status over the first two visit
 <li><code>atleastone2</code> will record whether or not an individual has at least one positive wheezing status over the last two visits.</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb227-1" data-line-number="1"><span class="kw">data</span>(ohio)</a>
-<a class="sourceLine" id="cb227-2" data-line-number="2">baseline.ohio &lt;-<span class="st"> </span><span class="kw">subset</span>(ohio, age<span class="op">==</span><span class="st"> </span><span class="dv">-1</span>) <span class="co"># data from baseline visit</span></a>
-<a class="sourceLine" id="cb227-3" data-line-number="3">firsttwo.ohio &lt;-<span class="st"> </span><span class="kw">subset</span>(ohio, age<span class="op">==</span><span class="st"> </span><span class="dv">-1</span> <span class="op">|</span><span class="st"> </span>age <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) <span class="co"># data from visits 1-2</span></a>
-<a class="sourceLine" id="cb227-4" data-line-number="4">lasttwo.ohio &lt;-<span class="st"> </span><span class="kw">subset</span>(ohio, age<span class="op">==</span><span class="dv">1</span> <span class="op">|</span><span class="st"> </span>age<span class="op">==</span><span class="dv">2</span>) <span class="co"># data from visits 3-4</span></a>
-<a class="sourceLine" id="cb227-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb227-6" data-line-number="6">tmp &lt;-<span class="st"> </span><span class="kw">aggregate</span>(firsttwo.ohio<span class="op">$</span>resp, <span class="dt">by=</span><span class="kw">list</span>(<span class="dt">id=</span>firsttwo.ohio<span class="op">$</span>id), <span class="dt">FUN=</span>max)</a>
-<a class="sourceLine" id="cb227-7" data-line-number="7">tmp2 &lt;-<span class="st"> </span><span class="kw">aggregate</span>(lasttwo.ohio<span class="op">$</span>resp, <span class="dt">by=</span><span class="kw">list</span>(<span class="dt">id=</span>lasttwo.ohio<span class="op">$</span>id), <span class="dt">FUN=</span>max)</a>
-<a class="sourceLine" id="cb227-8" data-line-number="8">atleastone1 &lt;-<span class="st"> </span><span class="kw">merge</span>(tmp, baseline.ohio, <span class="dt">by=</span><span class="st">&quot;id&quot;</span>)</a>
-<a class="sourceLine" id="cb227-9" data-line-number="9">atleastone2 &lt;-<span class="st"> </span><span class="kw">merge</span>(tmp2, baseline.ohio, <span class="dt">by=</span><span class="st">&quot;id&quot;</span>)</a>
-<a class="sourceLine" id="cb227-10" data-line-number="10"><span class="kw">head</span>(atleastone1)</a></code></pre></div>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb245-1" data-line-number="1"><span class="kw">data</span>(ohio)</a>
+<a class="sourceLine" id="cb245-2" data-line-number="2">baseline.ohio &lt;-<span class="st"> </span><span class="kw">subset</span>(ohio, age<span class="op">==</span><span class="st"> </span><span class="dv">-1</span>) <span class="co"># data from baseline visit</span></a>
+<a class="sourceLine" id="cb245-3" data-line-number="3">firsttwo.ohio &lt;-<span class="st"> </span><span class="kw">subset</span>(ohio, age<span class="op">==</span><span class="st"> </span><span class="dv">-1</span> <span class="op">|</span><span class="st"> </span>age <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) <span class="co"># data from visits 1-2</span></a>
+<a class="sourceLine" id="cb245-4" data-line-number="4">lasttwo.ohio &lt;-<span class="st"> </span><span class="kw">subset</span>(ohio, age<span class="op">==</span><span class="dv">1</span> <span class="op">|</span><span class="st"> </span>age<span class="op">==</span><span class="dv">2</span>) <span class="co"># data from visits 3-4</span></a>
+<a class="sourceLine" id="cb245-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb245-6" data-line-number="6">tmp &lt;-<span class="st"> </span><span class="kw">aggregate</span>(firsttwo.ohio<span class="op">$</span>resp, <span class="dt">by=</span><span class="kw">list</span>(<span class="dt">id=</span>firsttwo.ohio<span class="op">$</span>id), <span class="dt">FUN=</span>max)</a>
+<a class="sourceLine" id="cb245-7" data-line-number="7">tmp2 &lt;-<span class="st"> </span><span class="kw">aggregate</span>(lasttwo.ohio<span class="op">$</span>resp, <span class="dt">by=</span><span class="kw">list</span>(<span class="dt">id=</span>lasttwo.ohio<span class="op">$</span>id), <span class="dt">FUN=</span>max)</a>
+<a class="sourceLine" id="cb245-8" data-line-number="8">atleastone1 &lt;-<span class="st"> </span><span class="kw">merge</span>(tmp, baseline.ohio, <span class="dt">by=</span><span class="st">&quot;id&quot;</span>)</a>
+<a class="sourceLine" id="cb245-9" data-line-number="9">atleastone2 &lt;-<span class="st"> </span><span class="kw">merge</span>(tmp2, baseline.ohio, <span class="dt">by=</span><span class="st">&quot;id&quot;</span>)</a>
+<a class="sourceLine" id="cb245-10" data-line-number="10"><span class="kw">head</span>(atleastone1)</a></code></pre></div>
 <pre><code>##   id x resp age smoke
 ## 1  0 0    0  -1     0
 ## 2  1 0    0  -1     0
@@ -489,7 +492,7 @@ an individual had at least one positive wheezing status over the first two visit
 ## 4  3 0    0  -1     0
 ## 5  4 0    0  -1     0
 ## 6  5 0    0  -1     0</code></pre>
-<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb229-1" data-line-number="1"><span class="kw">table</span>(atleastone1<span class="op">$</span>resp)</a></code></pre></div>
+<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb247-1" data-line-number="1"><span class="kw">table</span>(atleastone1<span class="op">$</span>resp)</a></code></pre></div>
 <pre><code>## 
 ##   0   1 
 ## 446  91</code></pre>
@@ -497,11 +500,11 @@ an individual had at least one positive wheezing status over the first two visit
 <ul>
 <li>Let’s now build a risk score using only variable <code>smoke</code> as a covariate and a random choice of <span class="math inline">\(300\)</span> observations</li>
 </ul>
-<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb231-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
-<a class="sourceLine" id="cb231-2" data-line-number="2">train.ind &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">537</span>, <span class="dt">size=</span><span class="dv">300</span>)</a>
-<a class="sourceLine" id="cb231-3" data-line-number="3">atleastone1.train &lt;-<span class="st"> </span>atleastone1[train.ind,]</a>
-<a class="sourceLine" id="cb231-4" data-line-number="4">mod1 &lt;-<span class="st"> </span><span class="kw">glm</span>(resp <span class="op">~</span><span class="st"> </span>smoke, <span class="dt">family=</span><span class="st">&quot;binomial&quot;</span>, <span class="dt">data=</span>atleastone1.train)</a>
-<a class="sourceLine" id="cb231-5" data-line-number="5"><span class="kw">summary</span>(mod1)</a></code></pre></div>
+<div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb249-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
+<a class="sourceLine" id="cb249-2" data-line-number="2">train.ind &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">537</span>, <span class="dt">size=</span><span class="dv">300</span>)</a>
+<a class="sourceLine" id="cb249-3" data-line-number="3">atleastone1.train &lt;-<span class="st"> </span>atleastone1[train.ind,]</a>
+<a class="sourceLine" id="cb249-4" data-line-number="4">mod1 &lt;-<span class="st"> </span><span class="kw">glm</span>(resp <span class="op">~</span><span class="st"> </span>smoke, <span class="dt">family=</span><span class="st">&quot;binomial&quot;</span>, <span class="dt">data=</span>atleastone1.train)</a>
+<a class="sourceLine" id="cb249-5" data-line-number="5"><span class="kw">summary</span>(mod1)</a></code></pre></div>
 <pre><code>## 
 ## Call:
 ## glm(formula = resp ~ smoke, family = &quot;binomial&quot;, data = atleastone1.train)
@@ -528,31 +531,31 @@ an individual had at least one positive wheezing status over the first two visit
 <ul>
 <li>The risk scores for the hold-out individuals for the later follow-up times are given by</li>
 </ul>
-<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb233-1" data-line-number="1">risk1 &lt;-<span class="st"> </span><span class="kw">predict</span>(mod1, <span class="dt">newdata=</span>atleastone2[<span class="op">-</span>train.ind,],</a>
-<a class="sourceLine" id="cb233-2" data-line-number="2">                 <span class="dt">type=</span><span class="st">&quot;response&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb251-1" data-line-number="1">risk1 &lt;-<span class="st"> </span><span class="kw">predict</span>(mod1, <span class="dt">newdata=</span>atleastone2[<span class="op">-</span>train.ind,],</a>
+<a class="sourceLine" id="cb251-2" data-line-number="2">                 <span class="dt">type=</span><span class="st">&quot;response&quot;</span>)</a></code></pre></div>
 <ul>
 <li>Now, let’s look at the Brier score on the remaining individuals in the <code>atleast2</code> data set.</li>
 </ul>
-<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb234-1" data-line-number="1"><span class="kw">mean</span>((risk1 <span class="op">-</span><span class="st"> </span>atleastone2[<span class="op">-</span>train.ind,]<span class="op">$</span>resp)<span class="op">^</span><span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb252-1" data-line-number="1"><span class="kw">mean</span>((risk1 <span class="op">-</span><span class="st"> </span>atleastone2[<span class="op">-</span>train.ind,]<span class="op">$</span>resp)<span class="op">^</span><span class="dv">2</span>)</a></code></pre></div>
 <pre><code>## [1] 0.1574466</code></pre>
 <ul>
 <li><p>An AUC probably does not make much sense here since there are only two possible values of the risk score.</p></li>
 <li><p>For calibration, we can just compare the predicted risk scores and the mean number of successes
 in each of the smoking categories in the hold-out sample:</p></li>
 </ul>
-<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb236-1" data-line-number="1"><span class="kw">table</span>(risk1)</a></code></pre></div>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb254-1" data-line-number="1"><span class="kw">table</span>(risk1)</a></code></pre></div>
 <pre><code>## risk1
 ## 0.142105263157904 0.163636363636364 
 ##               160                77</code></pre>
-<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb238-1" data-line-number="1"><span class="kw">table</span>(atleastone2[<span class="op">-</span>train.ind,]<span class="op">$</span>resp, atleastone2[<span class="op">-</span>train.ind,]<span class="op">$</span>smoke)</a></code></pre></div>
+<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb256-1" data-line-number="1"><span class="kw">table</span>(atleastone2[<span class="op">-</span>train.ind,]<span class="op">$</span>resp, atleastone2[<span class="op">-</span>train.ind,]<span class="op">$</span>smoke)</a></code></pre></div>
 <pre><code>##    
 ##       0   1
 ##   0 135  56
 ##   1  25  21</code></pre>
-<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb240-1" data-line-number="1"><span class="co"># Compare risk scores with </span></a>
-<a class="sourceLine" id="cb240-2" data-line-number="2"><span class="dv">25</span><span class="op">/</span>(<span class="dv">25</span> <span class="op">+</span><span class="st"> </span><span class="dv">135</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb258-1" data-line-number="1"><span class="co"># Compare risk scores with </span></a>
+<a class="sourceLine" id="cb258-2" data-line-number="2"><span class="dv">25</span><span class="op">/</span>(<span class="dv">25</span> <span class="op">+</span><span class="st"> </span><span class="dv">135</span>)</a></code></pre></div>
 <pre><code>## [1] 0.15625</code></pre>
-<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb242-1" data-line-number="1"><span class="dv">21</span><span class="op">/</span>(<span class="dv">21</span> <span class="op">+</span><span class="st"> </span><span class="dv">56</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb260-1" data-line-number="1"><span class="dv">21</span><span class="op">/</span>(<span class="dv">21</span> <span class="op">+</span><span class="st"> </span><span class="dv">56</span>)</a></code></pre></div>
 <pre><code>## [1] 0.2727273</code></pre>
 <ul>
 <li>This risk score does not seem all that well-calibrated for later time points.
@@ -570,15 +573,15 @@ in each of the smoking categories in the hold-out sample:</p></li>
 <li><p>In this case, I would probably just compute a Brier score by just averaging over all time points.</p></li>
 <li><p>For example, with a <strong>GEE</strong>, you might do the following:</p></li>
 </ul>
-<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb244-1" data-line-number="1">ind &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">400</span>, <span class="dv">801</span><span class="op">:</span><span class="dv">1200</span>, <span class="dv">1601</span><span class="op">:</span><span class="dv">2000</span>) <span class="co">## index of training set</span></a>
-<a class="sourceLine" id="cb244-2" data-line-number="2">ohio.train &lt;-<span class="st"> </span><span class="kw">subset</span>(ohio[ind,], age<span class="op">==-</span><span class="dv">1</span> <span class="op">|</span><span class="st"> </span>age <span class="op">==</span><span class="st"> </span><span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb244-3" data-line-number="3">ohio.test &lt;-<span class="st"> </span><span class="kw">subset</span>(ohio[<span class="op">-</span>ind,], age<span class="op">==</span><span class="dv">1</span> <span class="op">|</span><span class="st"> </span>age<span class="op">==</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb244-4" data-line-number="4">fit.ex &lt;-<span class="st"> </span><span class="kw">geeglm</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>age<span class="op">:</span>smoke, <span class="dt">id=</span>id, <span class="dt">data=</span>ohio.train,</a>
-<a class="sourceLine" id="cb244-5" data-line-number="5">                 <span class="dt">family=</span>binomial, <span class="dt">corstr=</span><span class="st">&quot;exch&quot;</span>)</a>
-<a class="sourceLine" id="cb244-6" data-line-number="6">rs2 &lt;-<span class="st"> </span><span class="kw">predict</span>(fit.ex, <span class="dt">newdata=</span>ohio.test, <span class="dt">type=</span><span class="st">&quot;response&quot;</span>)</a>
-<a class="sourceLine" id="cb244-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb244-8" data-line-number="8"><span class="co">## Now, find Brier score that the takes average across all individuals and time points</span></a>
-<a class="sourceLine" id="cb244-9" data-line-number="9"><span class="kw">mean</span>((rs2 <span class="op">-</span><span class="st"> </span>ohio.test<span class="op">$</span>resp)<span class="op">^</span><span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb262-1" data-line-number="1">ind &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">400</span>, <span class="dv">801</span><span class="op">:</span><span class="dv">1200</span>, <span class="dv">1601</span><span class="op">:</span><span class="dv">2000</span>) <span class="co">## index of training set</span></a>
+<a class="sourceLine" id="cb262-2" data-line-number="2">ohio.train &lt;-<span class="st"> </span><span class="kw">subset</span>(ohio[ind,], age<span class="op">==-</span><span class="dv">1</span> <span class="op">|</span><span class="st"> </span>age <span class="op">==</span><span class="st"> </span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb262-3" data-line-number="3">ohio.test &lt;-<span class="st"> </span><span class="kw">subset</span>(ohio[<span class="op">-</span>ind,], age<span class="op">==</span><span class="dv">1</span> <span class="op">|</span><span class="st"> </span>age<span class="op">==</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb262-4" data-line-number="4">fit.ex &lt;-<span class="st"> </span><span class="kw">geeglm</span>(resp <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>smoke <span class="op">+</span><span class="st"> </span>age<span class="op">:</span>smoke, <span class="dt">id=</span>id, <span class="dt">data=</span>ohio.train,</a>
+<a class="sourceLine" id="cb262-5" data-line-number="5">                 <span class="dt">family=</span>binomial, <span class="dt">corstr=</span><span class="st">&quot;exch&quot;</span>)</a>
+<a class="sourceLine" id="cb262-6" data-line-number="6">rs2 &lt;-<span class="st"> </span><span class="kw">predict</span>(fit.ex, <span class="dt">newdata=</span>ohio.test, <span class="dt">type=</span><span class="st">&quot;response&quot;</span>)</a>
+<a class="sourceLine" id="cb262-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb262-8" data-line-number="8"><span class="co">## Now, find Brier score that the takes average across all individuals and time points</span></a>
+<a class="sourceLine" id="cb262-9" data-line-number="9"><span class="kw">mean</span>((rs2 <span class="op">-</span><span class="st"> </span>ohio.test<span class="op">$</span>resp)<span class="op">^</span><span class="dv">2</span>)</a></code></pre></div>
 <pre><code>## [1] 0.1270949</code></pre>
 <hr />
 

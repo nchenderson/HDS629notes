@@ -671,7 +671,7 @@ sum(abs(m0$coefficients) < 1e-4)
     + a large value $\lambda_{max}$ where most of the coefficients are zero.
     + then, perform cross-validation over the range $(\lambda_{min}, \lambda_{max})$. 
 
-* Setting $\lambda_{min} = 0.01$ and $\lambda_{max} = 0.03$ seems reasonable.
+* Setting $\lambda_{min} = 0.01$ and $\lambda_{max} = 0.3$ seems reasonable.
     + This gives a range of 12-92 for the number of zero coefficients
 
 

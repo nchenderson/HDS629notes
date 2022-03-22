@@ -376,12 +376,12 @@ vs. the fitted probabilities for several risk strata.
 * Specifically, if we have risk score-cutoffs $r_{1}, \ldots, r_{G}$, the observed proportion
 of successes in the $k^{th}$ risk stratum is
 \begin{equation}
-O_{k} = \frac{1}{n}\sum_{i=1}^{n} Y_{i}I\{ r_{k-1} < g(\mathbf{x}_{i}) \leq r_{k} \}
+O_{k} = \sum_{i=1}^{n} Y_{i}I\{ r_{k-1} < g(\mathbf{x}_{i}) \leq r_{k} \} \Big/\sum_{i=1}^{n} I\{ r_{k-1} < g(\mathbf{x}_{i}) \leq r_{k} \}
 \end{equation}
 
 * The expected proportion of successes in the $k^{th}$ risk stratum is
 \begin{equation}
-P_{k} = \frac{1}{n}\sum_{i=1}^{n} g(\mathbf{x}_{i})I\{ r_{k-1} < g(\mathbf{x}_{i}) \leq r_{k} \}
+P_{k} = \sum_{i=1}^{n} g(\mathbf{x}_{i})I\{ r_{k-1} < g(\mathbf{x}_{i}) \leq r_{k} \} \Big/\sum_{i=1}^{n} I\{ r_{k-1} < g(\mathbf{x}_{i}) \leq r_{k} \}
 \end{equation}
 
 * If $g(\mathbf{x}_{i})$ is **well-calibrated**, $O_{k}$ and $P_{k}$ should be fairly similar
@@ -405,8 +405,8 @@ rr
 observed.freq <- pred.freq <- rep(0, 10)
 for(k in 2:11) {
    ind <- risk.score <= rr[k] & risk.score > rr[k-1] # stratum indicators
-   observed.freq[k] <- mean(biopsy$tumor.type[ind])
-   pred.freq[k] <- mean(risk.score[ind])
+   observed.freq[k] <- sum(biopsy$tumor.type[ind])/sum(ind)
+   pred.freq[k] <- sum(risk.score[ind])/sum(ind)
 }
 plot(observed.freq, pred.freq, xlab="Observed Frequency",
      ylab = "Predicted Frequency",
@@ -469,9 +469,8 @@ is hypertensive over a particular time window.
 * To **"validate"** a risk score, you generally want to look at **out-of-sample** performance of 
 the risk score. 
 
-* For example, you might build your risk model using data from a **specific six-month time window**
-and look at the AUC statistic for outcomes in a **later six-month time window**.
-    + The risk score in the later time window would be constructed only using covariate information.
+* For example, you might build your risk model using data from individuals enrolled within a **specific six-month time window**
+and look at the AUC statistic for outcomes for individuals who enrolled in a different **time window**.
 
 * Looking at the out-of-sample performance over a different time window or 
 using data from a different source is often a good way of justifying 

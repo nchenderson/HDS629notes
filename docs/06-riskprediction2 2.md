@@ -163,7 +163,7 @@ round(c(brier.cart, brier.logreg, brier.RF), 4)
 ```
 
 ```
-## [1] 0.0450 0.0280 0.0057
+## [1] 0.0450 0.0280 0.0054
 ```
 
 * When comparing **in-sample** Brier scores, CART is the worst, logistic regression is in the middle, and random forest is the best.
@@ -216,7 +216,7 @@ round(c(brier.cart.test, brier.logreg.test, brier.RF.test), 4)
 ```
 
 ```
-## [1] 0.0359 0.0135 0.0192
+## [1] 0.0359 0.0135 0.0185
 ```
 
 * For the out-of-sample Brier score, both logistic regression and random forest are notably

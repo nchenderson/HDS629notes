@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2022-03-15" />
+<meta name="date" content="2022-03-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -611,11 +611,11 @@ vs. the fitted probabilities for several risk strata.</p></li>
 <li><p>Specifically, if we have risk score-cutoffs <span class="math inline">\(r_{1}, \ldots, r_{G}\)</span>, the observed proportion
 of successes in the <span class="math inline">\(k^{th}\)</span> risk stratum is
 <span class="math display">\[\begin{equation}
-O_{k} = \frac{1}{n}\sum_{i=1}^{n} Y_{i}I\{ r_{k-1} &lt; g(\mathbf{x}_{i}) \leq r_{k} \}
+O_{k} = \sum_{i=1}^{n} Y_{i}I\{ r_{k-1} &lt; g(\mathbf{x}_{i}) \leq r_{k} \} \Big/\sum_{i=1}^{n} I\{ r_{k-1} &lt; g(\mathbf{x}_{i}) \leq r_{k} \}
 \end{equation}\]</span></p></li>
 <li><p>The expected proportion of successes in the <span class="math inline">\(k^{th}\)</span> risk stratum is
 <span class="math display">\[\begin{equation}
-P_{k} = \frac{1}{n}\sum_{i=1}^{n} g(\mathbf{x}_{i})I\{ r_{k-1} &lt; g(\mathbf{x}_{i}) \leq r_{k} \}
+P_{k} = \sum_{i=1}^{n} g(\mathbf{x}_{i})I\{ r_{k-1} &lt; g(\mathbf{x}_{i}) \leq r_{k} \} \Big/\sum_{i=1}^{n} I\{ r_{k-1} &lt; g(\mathbf{x}_{i}) \leq r_{k} \}
 \end{equation}\]</span></p></li>
 <li><p>If <span class="math inline">\(g(\mathbf{x}_{i})\)</span> is <strong>well-calibrated</strong>, <span class="math inline">\(O_{k}\)</span> and <span class="math inline">\(P_{k}\)</span> should be fairly similar
 for each <span class="math inline">\(k\)</span>.</p></li>
@@ -637,8 +637,8 @@ for each <span class="math inline">\(k\)</span>.</p></li>
 <div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb227-1" data-line-number="1">observed.freq &lt;-<span class="st"> </span>pred.freq &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">10</span>)</a>
 <a class="sourceLine" id="cb227-2" data-line-number="2"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span><span class="dv">11</span>) {</a>
 <a class="sourceLine" id="cb227-3" data-line-number="3">   ind &lt;-<span class="st"> </span>risk.score <span class="op">&lt;=</span><span class="st"> </span>rr[k] <span class="op">&amp;</span><span class="st"> </span>risk.score <span class="op">&gt;</span><span class="st"> </span>rr[k<span class="dv">-1</span>] <span class="co"># stratum indicators</span></a>
-<a class="sourceLine" id="cb227-4" data-line-number="4">   observed.freq[k] &lt;-<span class="st"> </span><span class="kw">mean</span>(biopsy<span class="op">$</span>tumor.type[ind])</a>
-<a class="sourceLine" id="cb227-5" data-line-number="5">   pred.freq[k] &lt;-<span class="st"> </span><span class="kw">mean</span>(risk.score[ind])</a>
+<a class="sourceLine" id="cb227-4" data-line-number="4">   observed.freq[k] &lt;-<span class="st"> </span><span class="kw">sum</span>(biopsy<span class="op">$</span>tumor.type[ind])<span class="op">/</span><span class="kw">sum</span>(ind)</a>
+<a class="sourceLine" id="cb227-5" data-line-number="5">   pred.freq[k] &lt;-<span class="st"> </span><span class="kw">sum</span>(risk.score[ind])<span class="op">/</span><span class="kw">sum</span>(ind)</a>
 <a class="sourceLine" id="cb227-6" data-line-number="6">}</a>
 <a class="sourceLine" id="cb227-7" data-line-number="7"><span class="kw">plot</span>(observed.freq, pred.freq, <span class="dt">xlab=</span><span class="st">&quot;Observed Frequency&quot;</span>,</a>
 <a class="sourceLine" id="cb227-8" data-line-number="8">     <span class="dt">ylab =</span> <span class="st">&quot;Predicted Frequency&quot;</span>,</a>
@@ -704,11 +704,8 @@ is hypertensive over a particular time window.</p></li>
 <ul>
 <li><p>To <strong>“validate”</strong> a risk score, you generally want to look at <strong>out-of-sample</strong> performance of
 the risk score.</p></li>
-<li>For example, you might build your risk model using data from a <strong>specific six-month time window</strong>
-and look at the AUC statistic for outcomes in a <strong>later six-month time window</strong>.
-<ul>
-<li>The risk score in the later time window would be constructed only using covariate information.</li>
-</ul></li>
+<li><p>For example, you might build your risk model using data from individuals enrolled within a <strong>specific six-month time window</strong>
+and look at the AUC statistic for outcomes for individuals who enrolled in a different <strong>time window</strong>.</p></li>
 <li><p>Looking at the out-of-sample performance over a different time window or
 using data from a different source is often a good way of justifying
 the robustness/generalizability of a particular risk model.</p></li>

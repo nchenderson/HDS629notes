@@ -166,12 +166,51 @@ for example, the paper: @wang2012
 * This dataset has **54 observations** with **23 unique teams**.
 
 * Each row in this dataset corresponds to data taken from a single team in a single season.
-```{r, echo=TRUE}
+
+```r
 library(glmmLasso)
 data("soccer")
 dim(soccer)  ## 54 observations and 16 variables
+```
+
+```
+## [1] 54 16
+```
+
+```r
 head(soccer)
+```
+
+```
+##     pos            team points transfer.spendings transfer.receits yellow.card
+## 338  12     1. FC Koeln     39            5150000           750000          70
+## 357  13     1. FC Koeln     38           11500000           900000          70
+## 324  16 1. FC Nuernberg     31            5400000          6350000          61
+## 360  16 1. FC Nuernberg     31             450000          1900000          53
+## 353   9 1. FSV Mainz 05     47            3000000           200000          58
+## 333   7 1899 Hoffenheim     55           11950000           125000          70
+##     yellow.red.card red.card unfair.score ave.unfair.score ball.possession
+## 338               2        2           86             2.53           49.02
+## 357               1        3           88             2.59           48.23
+## 324               3        0           70             2.06           52.02
+## 360               2        0           59             1.74           50.41
+## 353               1        3           76             2.24           47.76
+## 333               3        3           94             2.76           49.64
+##     tackles capacity total.attend ave.attend sold.out
+## 338   49.17    50076       853767      50222       11
+## 357   48.94    50076       822102      48359        6
+## 324   51.26    48548       742739      43691        2
+## 360   49.61    48548       719705      42336        5
+## 353   49.44    20300       342350      20138       11
+## 333   50.38    30164       477414      28083       17
+```
+
+```r
 length(unique(soccer$team)) ## 23 unique teams
+```
+
+```
+## [1] 23
 ```
 
 ---
@@ -189,7 +228,8 @@ points scored: `ball.possession`, `tackles`, etc.
 * We will use `points` and 10 of the other variables as the fixed-effects covariates.
 
 * It is common in practice to **center and scale** the covariates before running the lasso:
-```{r, echo=TRUE}
+
+```r
 soccer[,c(4,5,9:16)] <- scale(soccer[,c(4,5,9:16)], center=TRUE, scale=TRUE)
 soccer <- data.frame(soccer)
 ```
@@ -198,7 +238,8 @@ soccer <- data.frame(soccer)
 
 * To fit an lmm-lasso with $\lambda = 100$ and a random intercept for each team, we can use the following code
 
-```{r, echo=TRUE}
+
+```r
 lm.lambda100 <- glmmLasso(points ~ transfer.spendings + ave.unfair.score 
                                    + ball.possession + tackles 
                                    + ave.attend + sold.out, rnd = list(team=~1), 
@@ -212,8 +253,35 @@ lm.lambda100 <- glmmLasso(points ~ transfer.spendings + ave.unfair.score
 
 
 * To look at the summary of the parameter estimates, use `summary` 
-```{r, echo=TRUE}
+
+```r
 summary(lm.lambda100)
+```
+
+```
+## Call:
+## glmmLasso(fix = points ~ transfer.spendings + ave.unfair.score + 
+##     ball.possession + tackles + ave.attend + sold.out, rnd = list(team = ~1), 
+##     data = soccer, lambda = 100)
+## 
+## 
+## Fixed Effects:
+## 
+## Coefficients:
+##                    Estimate StdErr z.value p.value
+## (Intercept)        43.74460     NA      NA      NA
+## transfer.spendings  3.13598     NA      NA      NA
+## ave.unfair.score    0.00000     NA      NA      NA
+## ball.possession     1.00441     NA      NA      NA
+## tackles             0.51338     NA      NA      NA
+## ave.attend          1.55091     NA      NA      NA
+## sold.out            3.54361     NA      NA      NA
+## 
+## Random Effects:
+## 
+## StdDev:
+##          team
+## team 2.431689
 ```
 
 * All coefficient estimates are non-zero except for the "average unfariness score per match" variable
@@ -221,7 +289,8 @@ summary(lm.lambda100)
 ---
 
 * If we set $\lambda = 500$, all of the coefficient estimates will be zero:
-```{r, echo=TRUE}
+
+```r
 lm.lambda500 <- glmmLasso(points ~ transfer.spendings + ave.unfair.score 
                                    + ball.possession + tackles 
                                    + ave.attend + sold.out, rnd = list(team=~1), 
@@ -230,13 +299,45 @@ lm.lambda500 <- glmmLasso(points ~ transfer.spendings + ave.unfair.score
 summary(lm.lambda500)
 ```
 
+```
+## Call:
+## glmmLasso(fix = points ~ transfer.spendings + ave.unfair.score + 
+##     ball.possession + tackles + ave.attend + sold.out, rnd = list(team = ~1), 
+##     data = soccer, lambda = 500)
+## 
+## 
+## Fixed Effects:
+## 
+## Coefficients:
+##                    Estimate StdErr z.value p.value
+## (Intercept)          42.575     NA      NA      NA
+## transfer.spendings    0.000     NA      NA      NA
+## ave.unfair.score      0.000     NA      NA      NA
+## ball.possession       0.000     NA      NA      NA
+## tackles               0.000     NA      NA      NA
+## ave.attend            0.000     NA      NA      NA
+## sold.out              0.000     NA      NA      NA
+## 
+## Random Effects:
+## 
+## StdDev:
+##          team
+## team 11.88068
+```
+
 
 
 ---
 
 * We can find the value of BIC by looking at the `$bic` component of lm.lambda100
-```{r, echo=TRUE}
+
+```r
 lm.lambda100$bic
+```
+
+```
+##           [,1]
+## [1,] -122872.8
 ```
 
 ### Choosing the tuning parameter for the soccer data
@@ -246,7 +347,8 @@ that the "best" value of $\lambda$ should be somewhere between $0$ and $500$.
 
 * Let's compute the **BIC** across a grid of $\lambda$ values from $0$ to $500$ and plot the 
 result
-```{r, echo=TRUE}
+
+```r
 lam.seq <- seq(0, 500, by=5)
 BIC.values <- rep(0, length(lam.seq))
 for(k in 1:length(lam.seq)) {
@@ -259,10 +361,13 @@ BIC.values[k] <- lm.tmp$bic
 plot(lam.seq, BIC.values, xlab=expression(lambda), ylab="BIC", main="BIC for soccer data")
 ```
 
+<img src="04-glmmlasso_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+
 * It looks like the lowest **BIC** value is in between 0 and 50. 
     + Let's plot the BIC values for a denser grid of $\lambda$ values between 0 and 50
 
-```{r, echo=TRUE}   
+
+```r
 lam.seq <- seq(0, 50, by=1)
 BIC.values <- rep(0, length(lam.seq))
 for(k in 1:length(lam.seq)) {
@@ -276,21 +381,55 @@ plot(lam.seq, BIC.values, xlab=expression(lambda), ylab="BIC", main="BIC for soc
 lines(lam.seq, BIC.values)
 ```
 
+<img src="04-glmmlasso_files/figure-html/unnamed-chunk-8-1.png" width="672" />
+
 * The best value of $\lambda$ according to the BIC criterion is $16$:
-```{r, echo=TRUE}
+
+```r
 lam.seq[which.min(BIC.values)]
+```
+
+```
+## [1] 16
 ```
 
 ---
 
 * Let's look at the regression coefficient estimates using $\lambda = 16$
-```{r, echo=TRUE}
+
+```r
 lm.lambda16 <- glmmLasso(points ~ transfer.spendings + ave.unfair.score 
                                    + ball.possession + tackles 
                                    + ave.attend + sold.out, rnd = list(team=~1), 
                                    lambda=16, data = soccer)
 
 summary(lm.lambda16)
+```
+
+```
+## Call:
+## glmmLasso(fix = points ~ transfer.spendings + ave.unfair.score + 
+##     ball.possession + tackles + ave.attend + sold.out, rnd = list(team = ~1), 
+##     data = soccer, lambda = 16)
+## 
+## 
+## Fixed Effects:
+## 
+## Coefficients:
+##                     Estimate StdErr z.value p.value
+## (Intercept)        43.858182     NA      NA      NA
+## transfer.spendings  2.779951     NA      NA      NA
+## ave.unfair.score   -0.130634     NA      NA      NA
+## ball.possession    -0.082063     NA      NA      NA
+## tackles             0.000000     NA      NA      NA
+## ave.attend          3.361656     NA      NA      NA
+## sold.out            4.970522     NA      NA      NA
+## 
+## Random Effects:
+## 
+## StdDev:
+##          team
+## team 5.632609
 ```
 
 ## Cross-Validation for Longitudinal Data
@@ -320,19 +459,52 @@ at **"future" time points** when compared with the training set.
 * Let's try doing **5-fold** cross-validation with the `soccer` data.
 
 * To do this, it's easier to just create a **team id** variable first
-```{r, echo=TRUE}
+
+```r
 team.labels<-data.frame(team=unique(soccer$team),team.id=as.numeric(unique(soccer$team)))
 soccer <- merge(soccer, team.labels, by="team")
 head(soccer)
 ```
 
+```
+##              team pos points transfer.spendings transfer.receits yellow.card
+## 1     1. FC Koeln  12     39        -0.47350170       -0.6774385          70
+## 2     1. FC Koeln  13     38        -0.08019776       -0.6624274          70
+## 3 1. FC Nuernberg  16     31        -0.45801729       -0.1170267          61
+## 4 1. FC Nuernberg  16     31        -0.76460855       -0.5623539          53
+## 5 1. FSV Mainz 05   9     47        -0.60666760       -0.7324789          58
+## 6 1899 Hoffenheim   7     55        -0.05232583       -0.7399844          70
+##   yellow.red.card red.card unfair.score ave.unfair.score ball.possession
+## 1               2        2    1.0002188        1.0005114      -0.2847609
+## 2               1        3    1.1494227        1.1527733      -0.5154026
+## 3               3        0   -0.1934125       -0.1922072       0.5910938
+## 4               2        0   -1.0140340       -1.0042709       0.1210518
+## 5               1        3    0.2541992        0.2645786      -0.6526198
+## 6               3        3    1.5970344        1.5841821      -0.1037509
+##      tackles   capacity total.attend  ave.attend   sold.out team.id
+## 1 -0.5594251  0.1908255   0.52774513  0.52776771  0.9696315       1
+## 2 -0.7152112  0.1908255   0.41510241  0.41510371 -0.1303706       1
+## 3  0.8561964  0.1027586   0.13278238  0.13280873 -1.0103723       2
+## 4 -0.2613995  0.1027586   0.05084294  0.05086578 -0.3503711       2
+## 5 -0.3765458 -1.5253268  -1.29153165 -1.29154724  0.9696315       3
+## 6  0.2601452 -0.9568110  -0.81106503 -0.81107731  2.2896341       4
+```
+
 * Now create each of the 5 **test sets**.
-```{r, echo=TRUE}
+
+```r
 set.seed(2352)
 ## first create the indices for the test sets
 nfolds <- 5
 test.groups <- sample(1:nfolds, size=23, replace=TRUE)
 test.groups
+```
+
+```
+##  [1] 2 5 2 5 4 3 1 4 1 2 3 5 3 1 5 2 1 4 3 2 4 5 4
+```
+
+```r
 ## test.groups == k means that the observation will be in the kth test set
 ## For such a small dataset, you may want to randomly generate the
 ## test sets so that they all have the same size.
@@ -342,7 +514,8 @@ test.groups
 
 * Now, compute cross-validation estimates of the **mean-squared error** over a grid of $\lambda$ values
 
-```{r, echo=TRUE}
+
+```r
 lam.seq <- seq(0, 200, by=5)
 MSE <- matrix(0, nfolds, length(lam.seq))
 for(j in 1:length(lam.seq)) {
@@ -364,6 +537,8 @@ plot(lam.seq, colMeans(MSE), xlab=expression(lambda), ylab="MSE", main="5-fold
      cross-validation for the soccer data")
 lines(lam.seq, colMeans(MSE))
 ```
+
+<img src="04-glmmlasso_files/figure-html/unnamed-chunk-13-1.png" width="672" />
 
 * According to the cross-validation estimates of prediction error, the 
 best value of $\lambda$ is roughly $80$. 
@@ -414,12 +589,23 @@ t & \text{ for } t < \lambda \\
 
 * Just to show the basics of how the PGEE package works, we can look at the **yeastG1** dataset from the PGEE package
 
-```{r, echo=TRUE, message=FALSE, warning=FALSE}
+
+```r
 library(PGEE)
 data(yeastG1)
 
 ## look at first 6 rows and first 5 columns
 yeastG1[1:6, 1:5]
+```
+
+```
+##   id     y time        ABF1       ACE2
+## 1  1  0.88    3 -0.09702788  8.3839614
+## 2  1  0.32    4 -0.09702788  8.3839614
+## 3  1  1.09   12 -0.09702788  8.3839614
+## 4  1  0.73   13 -0.09702788  8.3839614
+## 5  2  0.66    3 -0.34618104 -0.1418099
+## 6  2 -0.05    4 -0.34618104 -0.1418099
 ```
 
 * The response of interest is the continuous measurement `y`.
@@ -437,84 +623,45 @@ E(Y_{ij}|\mathbf{x}_{ijk}) = \gamma_{0} + \gamma_{1}t_{ij} + \sum_{k=1}^{96}\bet
    + Note that $x_{ijk}$ does not change across values of $j$.
 
 * To fit the above model with an **AR(1)** correlation structure and $\lambda = 0.1$, you can use the following **R** code
-```{r, echo=TRUE, eval=FALSE}
+
+```r
 m0 <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=0.1, data=yeastG1)
 ```
 
-```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
-m0 <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=0.1, data=yeastG1)
-```
+
 
 * Let's look at the values of the first 5 estimated regression coefficients:
-```{r, echo=TRUE}
+
+```r
 m0$coefficients[1:5]
+```
+
+```
+##   (Intercept)          time          ABF1          ACE2          ADR1 
+##  1.879532e-03  1.795182e-02 -1.366213e-02  4.360565e-06  2.988796e-07
 ```
 
 * The `PGEE` function does not automatically return **exactly zero** regression coefficients,
 but you can set those coefficients whose absolute value is less than some small threshold equal to zero.
-```{r, echo=TRUE}
+
+```r
 length(m0$coefficients)
+```
+
+```
+## [1] 98
+```
+
+```r
 ## 71 out of 98 coefficients are "zero"
 sum(abs(m0$coefficients) < 1e-4)
 ```
 
----
-
-* The `PGEE` package does have a function to select the best value of $\lambda$ through cross-validation.
-     + However, you do have to provide a range of lambda values for the function to search over.
-
-* By trial and error, you can find 
-    + a small value $\lambda_{min}$ where most of the coefficients are nonzero.
-    + a large value $\lambda_{max}$ where most of the coefficients are zero.
-    + then, perform cross-validation over the range $(\lambda_{min}, \lambda_{max})$. 
-
-* Setting $\lambda_{min} = 0.01$ and $\lambda_{max} = 0.3$ seems reasonable.
-    + This gives a range of 12-92 for the number of zero coefficients
-
-```{r, results='hide', message=FALSE, warning=FALSE}
-mlow <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=0.01, data=yeastG1)
-mhigh <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=0.3, data=yeastG1)
-
-sum(abs(mlow$coefficients) < 1e-4) ## only 12 out of 98 are zero
-sum(abs(mhigh$coefficients) < 1e-4) ## now, 92 out of 98 are zero
+```
+## [1] 71
 ```
 
 ---
-
-* Now, let's use the `CVfit` function from the `PGEE` package to get the best value of $\lambda$ over
-the range $(\lambda_{min}, \lambda_{max})$.
-    + Use 5-fold cross-validation using the `fold` argument in `CVfit`.
-    + Use a lambda sequence of length 10 from 0.01 to 0.3
-
-```{r, results='hide', message=FALSE, warning=FALSE}
-cv.yeast <- CVfit(y ~. -id, id=id, lambda=seq(0.01, 0.3, length.out=10), 
-                  fold = 5, data=yeastG1)
-```
-
-* The cross-validation done by `CVfit` does automatically assume an **"independent"** working correlation structure.
-
-* The `lam.opt` component of `cv.yeast` gives the optimal value of lambda.
-```{r, echo=TRUE}
-cv.yeast$lam.opt
-```
-
-* Now, we can just use `PGEE` with the optimal value of lambda.
-```{r, results='hide', message=FALSE, warning=FALSE}
-mfinal <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=cv.yeast$lam.opt, data=yeastG1)
-```
-
-* From the `mfinal` object returned by `PGEE`, we can look at the selected **nonzero** coefficients
-```{r, echo=TRUE}
-mfinal$coefficients[abs(mfinal$coefficients) > 1e-4]
-```
-
-* We can also look at the estimated working correlation matrix
-```{r, echo=TRUE}
-round(mfinal$working.correlation, 3)
-```
-
-* `PGEE` also returns most of the other types of components that functions
-  like `lm`, `glm`, `geeglm` return: e.g., `fitted.values`, `residuals`, etc.
 
 
 
@@ -523,26 +670,61 @@ round(mfinal$working.correlation, 3)
 * You can use `glmmLasso` with **binary outcomes** by adding the `family=binomial()` argument.
 
 * As a quick example, let's look at the `ohio` data from the `geepack` package.
-```{r, echo=TRUE}
+
+```r
 library(geepack)
 data(ohio)
 head(ohio)
 ```
 
+```
+##   resp id age smoke
+## 1    0  0  -2     0
+## 2    0  0  -1     0
+## 3    0  0   0     0
+## 4    0  0   1     0
+## 5    0  1  -2     0
+## 6    0  1  -1     0
+```
+
 * For the `glmmLasso` function, you do need to make sure the "id variable" is a factor.
-```{r, echo=TRUE}
+
+```r
 ohio$id <- factor(ohio$id) 
 ```
 
 * Let's now fit a penalized generalized linear mixed model with $\lambda = 10$:
-```{r, echo=TRUE}
+
+```r
 ohio.fit10 <- glmmLasso(smoke ~ resp + age, family=binomial(), rnd = list(id=~1),
                       lambda=10, data = ohio)
 ```
 
 * It looks like the **wheeze status** variable was selected while the **age** variable was not.
-```{r, echo=TRUE}
+
+```r
 summary(ohio.fit10)
+```
+
+```
+## Call:
+## glmmLasso(fix = smoke ~ resp + age, rnd = list(id = ~1), data = ohio, 
+##     lambda = 10, family = binomial())
+## 
+## 
+## Fixed Effects:
+## 
+## Coefficients:
+##             Estimate StdErr z.value p.value
+## (Intercept) -1.03844     NA      NA      NA
+## resp         0.10501     NA      NA      NA
+## age          0.00000     NA      NA      NA
+## 
+## Random Effects:
+## 
+## StdDev:
+##          id
+## id 2.674618
 ```
 
 ---

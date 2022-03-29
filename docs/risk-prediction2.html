@@ -24,7 +24,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2022-03-22" />
+<meta name="date" content="2022-03-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +32,7 @@
   
   
 <link rel="prev" href="risk-prediction.html"/>
-
+<link rel="next" href="ordinal-regression.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -218,6 +218,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.2.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-1"><i class="fa fa-check"></i><b>6.2.1</b> Option 1</a></li>
 <li class="chapter" data-level="6.2.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-2"><i class="fa fa-check"></i><b>6.2.2</b> Option 2</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="ordinal-regression.html"><a href="ordinal-regression.html"><i class="fa fa-check"></i><b>7</b> Ordinal Regression</a><ul>
+<li class="chapter" data-level="7.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression"><i class="fa fa-check"></i><b>7.1</b> Ordinal Logistic Regression</a></li>
+<li class="chapter" data-level="7.2" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-regression-details"><i class="fa fa-check"></i><b>7.2</b> Ordinal Regression Details</a><ul>
+<li class="chapter" data-level="7.2.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression-in-r"><i class="fa fa-check"></i><b>7.2.1</b> Ordinal Logistic Regression in R</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="ordinal-regression.html"><a href="ordinal-regression.html#generalized-estimating-equations"><i class="fa fa-check"></i><b>7.3</b> Generalized Estimating Equations</a><ul>
+<li class="chapter" data-level="7.3.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#using-geepack-and-ordgee"><i class="fa fa-check"></i><b>7.3.1</b> Using geepack and ordgee</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="ordinal-regression.html"><a href="ordinal-regression.html#penalized-regression-with-ordinal-outcomes"><i class="fa fa-check"></i><b>7.4</b> Penalized Regression with Ordinal Outcomes</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -419,7 +429,7 @@ of <code>biopsy</code> and then testing relative performance on the remaining ob
 <a class="sourceLine" id="cb241-3" data-line-number="3">brier.RF.test &lt;-<span class="st"> </span><span class="kw">mean</span>((risk.RF.test <span class="op">-</span><span class="st"> </span>biopsy.test<span class="op">$</span>tumor.type)<span class="op">^</span><span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb241-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb241-5" data-line-number="5"><span class="kw">round</span>(<span class="kw">c</span>(brier.cart.test, brier.logreg.test, brier.RF.test), <span class="dv">4</span>)</a></code></pre></div>
-<pre><code>## [1] 0.0359 0.0135 0.0192</code></pre>
+<pre><code>## [1] 0.0359 0.0135 0.0198</code></pre>
 <ul>
 <li><p>For the out-of-sample Brier score, both logistic regression and random forest are notably
 better than CART.</p></li>
@@ -585,23 +595,6 @@ in each of the smoking categories in the hold-out sample:</p></li>
 <pre><code>## [1] 0.1270949</code></pre>
 <hr />
 
-<div id="refs" class="references">
-<div>
-<p>Buuren, S van, and Karin Groothuis-Oudshoorn. 2010. “Mice: Multivariate Imputation by Chained Equations in R.” <em>Journal of Statistical Software</em>, 1–68.</p>
-</div>
-<div>
-<p>Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.</p>
-</div>
-<div>
-<p>Rice, John A, and Bernard W Silverman. 1991. “Estimating the Mean and Covariance Structure Nonparametrically When the Data Are Curves.” <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 53 (1): 233–43.</p>
-</div>
-<div>
-<p>Schelldorfer, Jürg, Peter Bühlmann, and Sara Van De Geer. 2011. “Estimation for High-Dimensional Linear Mixed-Effects Models Using <span class="math inline">\(\ell_{1}\)</span>-Penalization.” <em>Scandinavian Journal of Statistics</em> 38 (2): 197–214.</p>
-</div>
-<div>
-<p>Wang, Lan, Jianhui Zhou, and Annie Qu. 2012. “Penalized Generalized Estimating Equations for High-Dimensional Longitudinal Data Analysis.” <em>Biometrics</em> 68 (2): 353–60.</p>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -610,8 +603,8 @@ in each of the smoking categories in the hold-out sample:</p></li>
           </div>
         </div>
       </div>
-<a href="risk-prediction.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="risk-prediction.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="ordinal-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -2,6 +2,6 @@ book_filename: "HDS629CourseNotes"
 chapter_name: "Chapter "
 repo: https://github.com/nchenderson/HDS629note
 output_dir: docs
-rmd_files: ["index.Rmd", "01-MixedModels.Rmd", "02-MissingData.Rmd", "03-NonParRegression.Rmd", "04-glmmlasso.Rmd", "05-riskprediction.Rmd", "06-riskprediction2.Rmd", "07-OrdinalRegression.Rmd"]
+rmd_files: ["index.Rmd", "01-MixedModels.Rmd", "02-MissingData.Rmd", "03-NonParRegression.Rmd", "04-glmmlasso.Rmd", "05-riskprediction.Rmd", "06-riskprediction2.Rmd", "07-OrdinalRegression.Rmd", "08-ExtraTopics.Rmd"]
 clean: [packages.bib, bookdown.bbl]
 new_session: yes

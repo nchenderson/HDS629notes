@@ -8,7 +8,7 @@
 * **Longitudinal data** refers to data that:
     + Has multiple individuals/subjects.  
     
-    + Each individual has multiple observations that were taken across time. 
+    + Each individual has **multiple observations** over time. 
 
 * We will denote the outcomes of interest with $Y_{ij}$.
     + $Y_{ij}$ - outcome for individual $i$ at time $t_{ij}$.

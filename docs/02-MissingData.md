@@ -347,7 +347,7 @@ summary(air.multi.imputelm)
 ```
 
 ```
-## # A tibble: 20 x 6
+## # A tibble: 20 × 6
 ##    term        estimate std.error statistic  p.value  nobs
 ##    <chr>          <dbl>     <dbl>     <dbl>    <dbl> <int>
 ##  1 (Intercept) -90.3      19.1        -4.72 5.44e- 6   153

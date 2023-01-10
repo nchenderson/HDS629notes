@@ -6,9 +6,9 @@
 ## Methods for Analyzing Longitudinal Data {#sec:methods-overview}
 
 * **Longitudinal data** refers to data that:
-    + Has multiple individuals/subjects.  
+    + Has **multiple** individuals.  
     
-    + Each individual has multiple observations that were taken across time. 
+    + Each individual has **multiple observations** over time. 
 
 * We will denote the outcomes of interest with $Y_{ij}$.
     + $Y_{ij}$ - outcome for individual $i$ at time $t_{ij}$.
@@ -19,13 +19,17 @@
     
     + $\mathbf{x}_{ij} = (x_{ij1}, \ldots, x_{ijp})$ is the vector of covariates for individual $i$ at time $t_{ij}$.
     
-    + **Note:** The data that you analyze for this project could be "asynchronous", meaning that the outcomes $Y_{ij}$ and
-    the covariates are not exactly matched in time. 
+* **Note:** For your project, you may have to do some pre-processing of the data to get it into the form $(Y_{ij}, \mathbf{x}_{ij})$, for $j = 1,\ldots,n_{i}$.
+
+    + For example, although the data that you analyze for the project look at certain variables over time, they could be "asynchronous" in some way.
     
-    + For example, on a given day, you may observe $Y_{ij}$ at 9:00, 10:00, and 11:00, but
-    observe the covariate of interest at 9:17, 9:53, and 11:08.
+    + This means meaning that the outcomes $Y_{ij}$ and the covariates are not exactly matched in time. 
     
-    + We will probably discuss some ways of processing asynchronous longitudinal data later in the class.
+    + For example, on a given day, you may observe $Y_{ij}$ at 9:00, 10:00, and 11:00, but observe the covariate of interest at 9:17, 9:53, and 11:08.
+    
+    + Or, your outcome $Y_{ij}$ may only be observed once per week, while the covariates of interest are measured multiple times per week.
+    
+    + We will discuss some ways of organizing asynchronous longitudinal data later in the class.
 
 ---
 
@@ -51,7 +55,7 @@ categories:
     + **Transition models**
 
 * **Random effects/Mixed Models**
-    + "Random effects" are added to the regression model describing
+    + **"Random effects"** are added to the regression model describing
     the outcomes for each individual.
     
     + These "random regression coefficients" are viewed as a sample from some distribution.
@@ -82,19 +86,17 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
 of covariates for individual $i$ at time $t_{ij}$.
 
 * The vector $\mathbf{x}_{ij}$ could contain individual information such as smoking status or age. 
-    + $\mathbf{x}_{ij}$ could also contain some of the actual time points: $t_{ij}, t_{ij-1}, ...$
-or transformations of these time points.
+    + $\mathbf{x}_{ij}$ could also contain some of the actual time points: $t_{ij}, t_{ij-1}, ...$ or transformations of these time points.
 
 ---
 
 * The regression model \@ref(eq:fixed-reg-model) assumes the same
-mean function $\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}$ holds for all individuals that
-have the same value of $\mathbf{x}_{ij}$.
+mean function $\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}$ holds for all individuals that have the same value of $\mathbf{x}_{ij}$.
 
-* It is often reasonable to assume that the regression coefficients vary across individuals. 
-    + This can often better account for heterogeneity across individuals.
+* It is often reasonable to assume that the regression coefficients **vary** across individuals. 
+    + This can often better account for **heterogeneity** across individuals.
 
-* The figure below shows 3 different regression lines from the **sleepstudy** data.
+* The figure below shows **3 different regression lines** from the `sleepstudy` data.
     + Each regression line was estimated using only data from one individual.
 
 
@@ -197,8 +199,7 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}
    + In this case, $\mathbf{z}_{ij} = 1$ and $u_{i} \sim \textrm{Normal}(0, \sigma_{u}^{2})$
    + $\sigma^{2}$ is the variance of the residual term $e_{ij}$
 
-* For longitudinal data, one criticism of the random intercept model is that the within-subject
-correlation **does not vary** across time.
+* For longitudinal data, one criticism of the random intercept model is that the within-subject correlation **does not vary** across time.
 
 
 ### Inference about Heterogeneity - Variance of Random Effects
@@ -399,7 +400,7 @@ fit linear mixed models.
 
 ### Fitting LMMs with the sleepstudy data
 
-* To start off, let's use the **sleepstudy** longitudinal data in **lme4**
+* To start off, let's use the `sleepstudy` longitudinal data in `lme4`
 and look at the data from the first two individuals in this data.
 
 
@@ -446,15 +447,15 @@ sleepstudy[1:20,] # Data from the subjects with ids: 308 and 309
 
 ---
 
-* The **lmer** function in **lme4** fits linear mixed models. 
+* The `lmer` function in `lme4` fits linear mixed models. 
     + This has many of the same features as the **lm** function in **R**.
 
-* To fit an LMM with **lmer**, the main thing to do is to specify
-the "X" part of the model (i.e., the fixed effects) and the "Z" part of the 
+* To fit an LMM with `lmer`, the main thing to do is to specify
+the **"X" part** of the model (i.e., the fixed effects) and the **"Z" part** of the 
 model (i.e., the random effects).
 
 * The "X" part of the model is done using 
-the exact same "formula notation" used in the **lm** function.
+the exact same **"formula notation"** used in the `lm` function.
 
 * The "Z" part of the model is done using the following type of syntax:
 
@@ -463,7 +464,9 @@ the exact same "formula notation" used in the **lm** function.
 ```
 
 * `group_var` is the "grouping variable" used for the random effects
-    + For longitudinal data, this would be the variable which identifies each individual.
+    + For longitudinal data, this would be the variable which identifies **each individual**.
+    
+    + For example, this might be an identifier variable which stores a separate id for each person. 
 
 #### LMM with a single, random intercept for each subject
 
@@ -478,7 +481,7 @@ Y_{ij} = \beta_{0} + \beta_{1}t_{j} + u_{i} + e_{ij}
    + This gives us a fixed intercept and a fixed slope for the `Days` variable.
 
 * For the "Z" part of this model, we just add `(1|Subject)`.
-   + This says that there is only a random intercept within the grouping variable `Subject`.
+   + This says that there is **only a random intercept** within the grouping variable `Subject`.
    
 * Putting these two together, we can fit the LMM \@ref(eq:lmm-intercept-sleep) using the following code:
 
@@ -796,9 +799,86 @@ for(k in 1:ndraws) {
       
 <!-- * You may also find it useful to report it in terms of "variance explained" by thinking of the vari -->
 
+### Model Comparison of LMMs using anova
 
+* The `anova` function can directly compare **nested** linear mixed models
+that are fit by `lmer`. 
+    + That is, where one larger model contains all of the components of the smaller model.
+    
+* To use `anova`, you should include the argument `REML = FALSE` so `lmer`
+uses maximum likelihood estimation.
 
-#### Extracting BLUPs in lme4
+---
+
+* As an example, let's compare the following two models on the `sleelpstudy` data
+    + **Model M0:** Only has an intercept as a fixed effect and a random intercept for each person.
+    + **Model M1:** Has an intercept and slope as the fixed effects and a random intercept for each person.
+    
+* Let's first fit these models using `REML = FALSE`:
+
+```r
+M0 <- lmer(Reaction ~ 1 + (1|Subject), data = sleepstudy, REML=FALSE)
+M1 <- lmer(Reaction ~ Days + (1|Subject), data = sleepstudy, REML=FALSE)
+```
+
+* Running `anova(M0, M1)` will perform a chi-square test comparing 
+these two models.
+     + `anova(M0, M1)` also reports an **AIC** and **BIC** measure.
+     
+
+```r
+anova(M0, M1)
+```
+
+```
+## Data: sleepstudy
+## Models:
+## M0: Reaction ~ 1 + (1 | Subject)
+## M1: Reaction ~ Days + (1 | Subject)
+##    npar    AIC    BIC  logLik deviance  Chisq Df Pr(>Chisq)    
+## M0    3 1916.5 1926.1 -955.27   1910.5                         
+## M1    4 1802.1 1814.8 -897.04   1794.1 116.46  1  < 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+* We can see that the chi-square statistic is very large.
+    + There is strong evidence in favor of model **M1** over **M0**.
+    
+---
+
+* Now, suppose we want to compare the following two models
+    + **Model M1:** Has an intercept and slope as the fixed effects and a random intercept for each person.
+    + **Model M2:** Has an intercept and slope as the fixed effects and a random intercept **and slope** for each person.
+
+* To compare **M1** with **M2**, let's fit **M2** with `REML = FALSE`:
+
+```r
+M2 <- lmer(Reaction ~ Days + (Days|Subject), data = sleepstudy, REML=FALSE)
+```
+
+* Now, use `anova(M1, M2)` to compare these models directly
+
+```r
+anova(M1, M2)
+```
+
+```
+## Data: sleepstudy
+## Models:
+## M1: Reaction ~ Days + (1 | Subject)
+## M2: Reaction ~ Days + (Days | Subject)
+##    npar    AIC    BIC  logLik deviance  Chisq Df Pr(>Chisq)    
+## M1    4 1802.1 1814.8 -897.04   1794.1                         
+## M2    6 1763.9 1783.1 -875.97   1751.9 42.139  2  7.072e-10 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+* Based on the chi-square statistic and associated p-value, 
+there is strong evidence favoring **M2** over **M1**.
+
+### Extracting BLUPs in lme4
 
 * To get the "BLUPs" the intercepts and slopes $\textrm{BLUP}(u_{i0})$ and $\textrm{BLUP}(u_{i1})$,
 use `ranef`
@@ -818,7 +898,7 @@ dotplot(blups.slope)
 ## $Subject
 ```
 
-<img src="01-MixedModels_files/figure-html/unnamed-chunk-18-1.png" width="672" />
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-22-1.png" width="672" />
 
 ```r
 ## This plots subjects sorted by individual-specific estimates of intercepts
@@ -875,7 +955,7 @@ ggplot(sleepstudy, aes(x=Days, y=blups, group=Subject)) +
        y = "Reaction Time")
 ```
 
-<img src="01-MixedModels_files/figure-html/unnamed-chunk-21-1.png" width="672" />
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-25-1.png" width="672" />
 
 ---
 
@@ -952,7 +1032,7 @@ prop_summary_ohio
 ```
 
 ```
-## # A tibble: 8 x 3
+## # A tibble: 8 × 3
 ## # Groups:   smoke [2]
 ##   smoke   age prop_wheeze
 ##   <int> <int>       <dbl>
@@ -1064,8 +1144,8 @@ legend("topright", legend = c("Smoke", "No Smoke"), col=c("black", "red"), bty='
 ```
 
 <div class="figure">
-<img src="01-MixedModels_files/figure-html/unnamed-chunk-29-1.png" alt="Distribution of Wheezing probability across individuals for different values of age and smoking status" width="672" />
-<p class="caption">(\#fig:unnamed-chunk-29)Distribution of Wheezing probability across individuals for different values of age and smoking status</p>
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-33-1.png" alt="Distribution of Wheezing probability across individuals for different values of age and smoking status" width="672" />
+<p class="caption">(\#fig:unnamed-chunk-33)Distribution of Wheezing probability across individuals for different values of age and smoking status</p>
 </div>
 
 

@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2023-01-10" />
+<meta name="date" content="2023-01-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -667,24 +667,44 @@ the individual datasets “<strong>stacked</strong> on top of each other.”</p>
 <li><p>Suppose we have data from <span class="math inline">\(q\)</span> variables <span class="math inline">\(Z_{i1}, \ldots, Z_{iq}\)</span>.</p></li>
 <li><p>Let <span class="math inline">\(\mathbf{Z}_{mis}\)</span> denote the <strong>entire collection</strong> of missing observations and <span class="math inline">\(\mathbf{Z}_{obs}\)</span>
 the <strong>entire collection</strong> of observed values, and let <span class="math inline">\(\mathbf{Z} = (\mathbf{Z}_{obs}, \mathbf{Z}_{mis})\)</span>.</p></li>
+<li><p>Let <span class="math inline">\(\mathbf{R}\)</span> be an indicator of missingness.</p>
+<ul>
+<li>That is, <span class="math inline">\(R_{ij} = 1\)</span> if <span class="math inline">\(Z_{ij}\)</span> was missing and <span class="math inline">\(R_{ij} = 0\)</span> if <span class="math inline">\(Z_{ij}\)</span> was observed.</li>
+</ul></li>
 <li><p>The <strong>basic idea behind</strong> multiple imputation is to, in some way, generate samples <span class="math inline">\(\mathbf{Z}_{mis}^{(1)}, \ldots, \mathbf{Z}_{mis}^{(K)}\)</span> from a flexible probability model <span class="math inline">\(p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})\)</span></p>
 <ul>
 <li><span class="math inline">\(p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})\)</span> represents the conditional distribution of <span class="math inline">\(\mathbf{Z}_{mis}\)</span> given the observed <span class="math inline">\(\mathbf{Z}_{obs}\)</span>.</li>
 </ul></li>
+<li><p>The <strong>missing at random</strong> (MAR) assumption implies we only need to work with the conditional distribution <span class="math inline">\(\mathbf{Z}_{mis}|\mathbf{Z}_{obs}\)</span>.</p>
+<ul>
+<li>The MAR assumption implies the distribution of <span class="math inline">\(\mathbf{Z}_{mis}\)</span> given <span class="math inline">\(\mathbf{Z}_{obs}, \mathbf{R}\)</span> is the same as the distribution of <span class="math inline">\(\mathbf{Z}_{mis}\)</span> given <span class="math inline">\(\mathbf{Z}_{obs}\)</span>.</li>
+</ul></li>
 </ul>
 <hr />
 <ul>
-<li>A valid estimate <span class="math inline">\(\hat{\theta}\)</span> of the parameter of interest <span class="math inline">\(\theta\)</span> can often be thought of as
-a posterior mean:
+<li>A valid estimate <span class="math inline">\(\hat{\theta}\)</span> of the parameter of interest <span class="math inline">\(\theta\)</span> can often be thought of as a posterior mean:
 <ul>
-<li><span class="math inline">\(\hat{\theta} = E(\theta|\mathbf{Z}_{obs})\)</span> is the expectation of <span class="math inline">\(\theta\)</span> given the observed data <span class="math inline">\(\mathbf{Z}_{obs}\)</span>.</li>
+<li><span class="math inline">\(\hat{\theta} = E(\theta|\mathbf{Z}_{obs}, \mathbf{R})\)</span> is the expectation of <span class="math inline">\(\theta\)</span> given the observed data values <span class="math inline">\(\mathbf{Z}_{obs}\)</span> and missingness indicators.</li>
 </ul></li>
 <li>Then, <span class="math inline">\(\hat{\theta}\)</span> can be expressed as:
 <span class="math display">\[\begin{eqnarray}
-\hat{\theta} &amp;=&amp; E( \theta |\mathbf{Z}_{obs}  )
-= \int E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{Z}_{mis} \Big\} p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs}) d\mathbf{Z}_{mis} \nonumber \\
-&amp;\approx&amp; \frac{1}{K} \sum_{k=1}^{K} E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{Z}_{mis}^{(k)} \Big\}
+\hat{\theta} &amp;=&amp; E( \theta |\mathbf{Z}_{obs}, \mathbf{R}  )
+= \int E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{R} \mathbf{Z}_{mis} \Big\} p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs}, \mathbf{R}) d\mathbf{Z}_{mis} \nonumber \\
+&amp;=&amp; \int E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{R}, \mathbf{Z}_{mis} \Big\} p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs} ) d\mathbf{Z}_{mis} \nonumber \\
+&amp;\approx&amp; \frac{1}{K} \sum_{k=1}^{K} E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{R}, \mathbf{Z}_{mis}^{(k)} \Big\}
 \end{eqnarray}\]</span></li>
+</ul>
+<hr />
+<ul>
+<li><p>For a more non-Bayesian interpretation, you can often think of an estimate <span class="math inline">\(\hat{\theta}_{full}\)</span> with no missing data (such as maximum likelihood) as the solution of an <strong>estimating equation</strong>
+<span class="math display">\[\begin{equation}
+U(\theta; \mathbf{Z}_{mis}, \mathbf{Z}_{obs}) = 0
+\end{equation}\]</span></p></li>
+<li><p>With multiple imputation, <span class="math inline">\(\hat{\theta}\)</span> is approximately finding a solution of the following
+estimating equation
+<span class="math display">\[\begin{equation}
+\frac{1}{K} \sum_{k=1}^{K} U(\theta; \mathbf{Z}_{mis}^{(k)}, \mathbf{Z}_{obs}) \approx E\Big\{ U(\theta; \mathbf{Z}_{mis}, \mathbf{Z}_{obs}) | \mathbf{Z}_{obs}, \mathbf{R} \Big\} = 0
+\end{equation}\]</span></p></li>
 </ul>
 <hr />
 <ul>

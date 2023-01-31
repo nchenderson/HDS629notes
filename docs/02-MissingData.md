@@ -475,21 +475,40 @@ round(colMeans(BetaMat), 3)  # compare with the results from using the "with" fu
 * Let $\mathbf{Z}_{mis}$ denote the **entire collection** of missing observations and $\mathbf{Z}_{obs}$
 the **entire collection** of observed values, and let $\mathbf{Z} = (\mathbf{Z}_{obs}, \mathbf{Z}_{mis})$.
 
+* Let $\mathbf{R}$ be an indicator of missingness.
+    + That is, $R_{ij} = 1$ if $Z_{ij}$ was missing and $R_{ij} = 0$ if $Z_{ij}$ was observed. 
+
 * The **basic idea behind** multiple imputation is to, in some way, generate samples $\mathbf{Z}_{mis}^{(1)}, \ldots, \mathbf{Z}_{mis}^{(K)}$ from a flexible probability model $p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})$
     + $p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs})$ represents the conditional distribution of $\mathbf{Z}_{mis}$ given the observed $\mathbf{Z}_{obs}$.
 
+* The **missing at random** (MAR) assumption implies we only need to work with the conditional distribution $\mathbf{Z}_{mis}|\mathbf{Z}_{obs}$. 
+   + The MAR assumption implies the distribution of $\mathbf{Z}_{mis}$ given $\mathbf{Z}_{obs}, \mathbf{R}$ is the same as the distribution of $\mathbf{Z}_{mis}$ given $\mathbf{Z}_{obs}$.
+
 ---
 
-* A valid estimate $\hat{\theta}$ of the parameter of interest $\theta$ can often be thought of as
-a posterior mean:
-    + $\hat{\theta} = E(\theta|\mathbf{Z}_{obs})$ is the expectation of $\theta$ given the observed data $\mathbf{Z}_{obs}$.
+* A valid estimate $\hat{\theta}$ of the parameter of interest $\theta$ can often be thought of as a posterior mean:
+    + $\hat{\theta} = E(\theta|\mathbf{Z}_{obs}, \mathbf{R})$ is the expectation of $\theta$ given the observed data values $\mathbf{Z}_{obs}$ and missingness indicators.
 
 * Then, $\hat{\theta}$ can be expressed as:
 \begin{eqnarray}
-\hat{\theta} &=& E( \theta |\mathbf{Z}_{obs}  )
-= \int E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{Z}_{mis} \Big\} p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs}) d\mathbf{Z}_{mis} \nonumber \\ 
-&\approx& \frac{1}{K} \sum_{k=1}^{K} E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{Z}_{mis}^{(k)} \Big\} 
+\hat{\theta} &=& E( \theta |\mathbf{Z}_{obs}, \mathbf{R}  )
+= \int E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{R} \mathbf{Z}_{mis} \Big\} p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs}, \mathbf{R}) d\mathbf{Z}_{mis} \nonumber \\ 
+&=& \int E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{R}, \mathbf{Z}_{mis} \Big\} p(\mathbf{Z}_{mis}|\mathbf{Z}_{obs} ) d\mathbf{Z}_{mis} \nonumber \\
+&\approx& \frac{1}{K} \sum_{k=1}^{K} E\Big\{ \theta \Big| \mathbf{Z}_{obs}, \mathbf{R}, \mathbf{Z}_{mis}^{(k)} \Big\} 
 \end{eqnarray}
+
+---
+
+* For a more non-Bayesian interpretation, you can often think of an estimate $\hat{\theta}_{full}$ with no missing data (such as maximum likelihood) as the solution of an **estimating equation**
+\begin{equation}
+U(\theta; \mathbf{Z}_{mis}, \mathbf{Z}_{obs}) = 0
+\end{equation}
+
+* With multiple imputation, $\hat{\theta}$ is approximately finding a solution of the following
+estimating equation
+\begin{equation}
+\frac{1}{K} \sum_{k=1}^{K} U(\theta; \mathbf{Z}_{mis}^{(k)}, \mathbf{Z}_{obs}) \approx E\Big\{ U(\theta; \mathbf{Z}_{mis}, \mathbf{Z}_{obs}) | \mathbf{Z}_{obs}, \mathbf{R} \Big\} = 0
+\end{equation}
 
 ---
 

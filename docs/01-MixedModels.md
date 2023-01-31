@@ -172,7 +172,7 @@ Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}
 \end{equation}
     + $i^{th}$ row of $\mathbf{X}$ is $(1, \mathbf{x}_{ij}^{T})$.
     + $i^{th}$ row of $\mathbf{Z}$ is $\mathbf{z}_{ij}^{T}$.
-    + $\tilde{\boldsymbol{\beta}} = (1, \boldsymbol{\beta})$.
+    + $\tilde{\boldsymbol{\beta}} = (\beta_{0}, \boldsymbol{\beta})$.
 
 * Constructing an LMM can be thought of as choosing the desired "$\mathbf{X}$" and "$\mathbf{Z}$" matrices.
 

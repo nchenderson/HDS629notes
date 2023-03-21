@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2023-01-30" />
+<meta name="date" content="2023-03-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -274,6 +274,7 @@ div.csl-indent {
 <li class="chapter" data-level="7.2" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-regression-details"><i class="fa fa-check"></i><b>7.2</b> Ordinal Regression Details</a>
 <ul>
 <li class="chapter" data-level="7.2.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression-in-r"><i class="fa fa-check"></i><b>7.2.1</b> Ordinal Logistic Regression in R</a></li>
+<li class="chapter" data-level="7.2.2" data-path="ordinal-regression.html"><a href="ordinal-regression.html#the-respdis-data"><i class="fa fa-check"></i><b>7.2.2</b> The respdis data</a></li>
 </ul></li>
 <li class="chapter" data-level="7.3" data-path="ordinal-regression.html"><a href="ordinal-regression.html#generalized-estimating-equations"><i class="fa fa-check"></i><b>7.3</b> Generalized Estimating Equations</a>
 <ul>
@@ -605,7 +606,7 @@ mean function.</p></li>
 for the set of cubic splines with knots <span class="math inline">\(u_{1} &lt; u_{2} &lt; \ldots &lt; u_{q}\)</span>, we can represent any cubic spline
 estimate of the mean function as
 <span class="math display">\[\begin{equation}
-\hat{\mu}(x) = \sum_{j=1}^{q+4} \hat{\beta}_{1}\varphi_{j, B}(x)
+\hat{\mu}(x) = \sum_{j=1}^{q+4} \hat{\beta}_{j}\varphi_{j, B}(x)
 \end{equation}\]</span></p></li>
 <li><p>The nice thing about using regression splines is that they can estimated
 in the <strong>same way</strong> as in a “typical” regression setting.</p></li>

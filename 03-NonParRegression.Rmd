@@ -336,7 +336,7 @@ mean function.
 for the set of cubic splines with knots $u_{1} < u_{2} < \ldots < u_{q}$, we can represent any cubic spline
 estimate of the mean function as
 \begin{equation}
-\hat{\mu}(x) = \sum_{j=1}^{q+4} \hat{\beta}_{1}\varphi_{j, B}(x)
+\hat{\mu}(x) = \sum_{j=1}^{q+4} \hat{\beta}_{j}\varphi_{j, B}(x)
 \end{equation}
 
 * The nice thing about using regression splines is that they can estimated

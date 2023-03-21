@@ -92,6 +92,7 @@ ordinal-regression
 ordinal-logistic-regression
 ordinal-regression-details
 ordinal-logistic-regression-in-r
+the-respdis-data
 generalized-estimating-equations
 using-geepack-and-ordgee
 penalized-regression-with-ordinal-outcomes

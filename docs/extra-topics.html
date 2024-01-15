@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2023-03-20" />
+<meta name="date" content="2024-01-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -181,6 +181,10 @@ div.csl-indent {
 <li class="chapter" data-level="1.5.3" data-path="mixed-models.html"><a href="mixed-models.html#extracting-blups-in-lme4"><i class="fa fa-check"></i><b>1.5.3</b> Extracting BLUPs in lme4</a></li>
 <li class="chapter" data-level="1.5.4" data-path="mixed-models.html"><a href="mixed-models.html#fitting-binary-glmms-using-the-ohio-data"><i class="fa fa-check"></i><b>1.5.4</b> Fitting Binary GLMMs using the Ohio data</a></li>
 </ul></li>
+<li class="chapter" data-level="1.6" data-path="mixed-models.html"><a href="mixed-models.html#exercises"><i class="fa fa-check"></i><b>1.6</b> Exercises</a>
+<ul>
+<li class="chapter" data-level="1.6.1" data-path="mixed-models.html"><a href="mixed-models.html#questions"><i class="fa fa-check"></i><b>1.6.1</b> Questions</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>2</b> Missing Data and Multiple Imputation</a>
 <ul>
@@ -337,7 +341,7 @@ is to use some form of repeated <strong>subsampling/sample splitting</strong>.</
 compute variable importance scores. Then, estimate the variance
 of each variable importance score using their variation across different subsamples</p>
 <ul>
-<li>See <span class="citation">Ishwaran and Lu (<a href="#ref-ishwaran2019" role="doc-biblioref">2019</a>)</span> for more details of this approach.</li>
+<li>See <span class="citation">Ishwaran and Lu (<a href="#ref-ishwaran2019">2019</a>)</span> for more details of this approach.</li>
 </ul></li>
 </ul>
 <hr />
@@ -369,9 +373,9 @@ I_{j} \pm 1.96 \times \sqrt{\hat{v}_{j}}
 <li><p>This dataset has 442 <strong>observations</strong> and 10 <strong>covariates</strong></p></li>
 <li><p>The outcome variable of interest is <strong>prog</strong></p></li>
 </ul>
-<div class="sourceCode" id="cb333"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb333-1"><a href="extra-topics.html#cb333-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(diabetes)</span></code></pre></div>
+<div class="sourceCode" id="cb335"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb335-1"><a href="extra-topics.html#cb335-1" tabindex="-1"></a><span class="fu">dim</span>(diabetes)</span></code></pre></div>
 <pre><code>## [1] 442  11</code></pre>
-<div class="sourceCode" id="cb335"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb335-1"><a href="extra-topics.html#cb335-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(diabetes)</span></code></pre></div>
+<div class="sourceCode" id="cb337"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb337-1"><a href="extra-topics.html#cb337-1" tabindex="-1"></a><span class="fu">head</span>(diabetes)</span></code></pre></div>
 <pre><code>##   age sex  bmi map  tc   ldl hdl tch      ltg glu prog
 ## 1  59   1 32.1 101 157  93.2  38   4 2.110590  87  151
 ## 2  48   0 21.6  87 183 103.2  70   3 1.690196  69   75
@@ -384,110 +388,110 @@ I_{j} \pm 1.96 \times \sqrt{\hat{v}_{j}}
 <li>Let’s first fit a <strong>randomForest</strong> to the entire dataset and plot
 the variable importance measures</li>
 </ul>
-<div class="sourceCode" id="cb337"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb337-1"><a href="extra-topics.html#cb337-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span></code></pre></div>
+<div class="sourceCode" id="cb339"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb339-1"><a href="extra-topics.html#cb339-1" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span></code></pre></div>
 <pre><code>## randomForest 4.7-1</code></pre>
 <pre><code>## Type rfNews() to see new features/changes/bug fixes.</code></pre>
-<div class="sourceCode" id="cb340"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb340-1"><a href="extra-topics.html#cb340-1" aria-hidden="true" tabindex="-1"></a>rf.full <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(prog <span class="sc">~</span> ., <span class="at">data=</span>diabetes)</span>
-<span id="cb340-2"><a href="extra-topics.html#cb340-2" aria-hidden="true" tabindex="-1"></a><span class="fu">varImpPlot</span>(rf.full)</span></code></pre></div>
+<div class="sourceCode" id="cb342"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb342-1"><a href="extra-topics.html#cb342-1" tabindex="-1"></a>rf.full <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(prog <span class="sc">~</span> ., <span class="at">data=</span>diabetes)</span>
+<span id="cb342-2"><a href="extra-topics.html#cb342-2" tabindex="-1"></a><span class="fu">varImpPlot</span>(rf.full)</span></code></pre></div>
 <p><img src="08-ExtraTopics_files/figure-html/unnamed-chunk-3-1.png" width="528" /></p>
 <ul>
 <li>You can extract the actual values of the variable importance scores by
 using the <code>importance</code> function.</li>
 </ul>
-<div class="sourceCode" id="cb341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb341-1"><a href="extra-topics.html#cb341-1" aria-hidden="true" tabindex="-1"></a>Imp.Full <span class="ot">&lt;-</span> <span class="fu">importance</span>(rf.full)</span>
-<span id="cb341-2"><a href="extra-topics.html#cb341-2" aria-hidden="true" tabindex="-1"></a>Imp.Full <span class="do">## This is a 10 x 1 matrix</span></span></code></pre></div>
+<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="extra-topics.html#cb343-1" tabindex="-1"></a>Imp.Full <span class="ot">&lt;-</span> <span class="fu">importance</span>(rf.full)</span>
+<span id="cb343-2"><a href="extra-topics.html#cb343-2" tabindex="-1"></a>Imp.Full <span class="do">## This is a 10 x 1 matrix</span></span></code></pre></div>
 <pre><code>##     IncNodePurity
-## age     143554.53
-## sex      32633.05
-## bmi     588334.78
-## map     289077.77
-## tc      138179.36
-## ldl     161186.31
-## hdl     205055.89
-## tch     158051.99
-## ltg     577379.44
-## glu     215077.96</code></pre>
+## age     144638.60
+## sex      33285.71
+## bmi     593069.69
+## map     294895.68
+## tc      141704.80
+## ldl     153616.12
+## hdl     198728.85
+## tch     171273.03
+## ltg     547339.39
+## glu     215691.80</code></pre>
 <hr />
 <ul>
 <li>Now, let’s compute variable importance scores across <span class="math inline">\(S = 100\)</span> subsamples (each of size 50)
 and store it in a <span class="math inline">\(10 \times S\)</span> matrix called <code>Imp.Subs</code></li>
 </ul>
-<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="extra-topics.html#cb343-1" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb343-2"><a href="extra-topics.html#cb343-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb343-3"><a href="extra-topics.html#cb343-3" aria-hidden="true" tabindex="-1"></a>Imp.Subs <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="fu">nrow</span>(Imp.Full), <span class="at">ncol=</span>S)</span>
-<span id="cb343-4"><a href="extra-topics.html#cb343-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(Imp.Subs) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(Imp.Full)</span>
-<span id="cb343-5"><a href="extra-topics.html#cb343-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>S) {</span>
-<span id="cb343-6"><a href="extra-topics.html#cb343-6" aria-hidden="true" tabindex="-1"></a>    <span class="do">## sample without replacement</span></span>
-<span id="cb343-7"><a href="extra-topics.html#cb343-7" aria-hidden="true" tabindex="-1"></a>    subs <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(diabetes), <span class="at">size=</span>b)</span>
-<span id="cb343-8"><a href="extra-topics.html#cb343-8" aria-hidden="true" tabindex="-1"></a>    diabetes.sub <span class="ot">&lt;-</span> diabetes[subs,]</span>
-<span id="cb343-9"><a href="extra-topics.html#cb343-9" aria-hidden="true" tabindex="-1"></a>    rf.sub <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(prog <span class="sc">~</span> ., <span class="at">data=</span>diabetes.sub)</span>
-<span id="cb343-10"><a href="extra-topics.html#cb343-10" aria-hidden="true" tabindex="-1"></a>    Imp.Subs[,k] <span class="ot">&lt;-</span> <span class="fu">importance</span>(rf.sub)</span>
-<span id="cb343-11"><a href="extra-topics.html#cb343-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb345"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb345-1"><a href="extra-topics.html#cb345-1" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb345-2"><a href="extra-topics.html#cb345-2" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb345-3"><a href="extra-topics.html#cb345-3" tabindex="-1"></a>Imp.Subs <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="fu">nrow</span>(Imp.Full), <span class="at">ncol=</span>S)</span>
+<span id="cb345-4"><a href="extra-topics.html#cb345-4" tabindex="-1"></a><span class="fu">rownames</span>(Imp.Subs) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(Imp.Full)</span>
+<span id="cb345-5"><a href="extra-topics.html#cb345-5" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>S) {</span>
+<span id="cb345-6"><a href="extra-topics.html#cb345-6" tabindex="-1"></a>    <span class="do">## sample without replacement</span></span>
+<span id="cb345-7"><a href="extra-topics.html#cb345-7" tabindex="-1"></a>    subs <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(diabetes), <span class="at">size=</span>b)</span>
+<span id="cb345-8"><a href="extra-topics.html#cb345-8" tabindex="-1"></a>    diabetes.sub <span class="ot">&lt;-</span> diabetes[subs,]</span>
+<span id="cb345-9"><a href="extra-topics.html#cb345-9" tabindex="-1"></a>    rf.sub <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(prog <span class="sc">~</span> ., <span class="at">data=</span>diabetes.sub)</span>
+<span id="cb345-10"><a href="extra-topics.html#cb345-10" tabindex="-1"></a>    Imp.Subs[,k] <span class="ot">&lt;-</span> <span class="fu">importance</span>(rf.sub)</span>
+<span id="cb345-11"><a href="extra-topics.html#cb345-11" tabindex="-1"></a>}</span></code></pre></div>
 <ul>
 <li>From <code>Imp.Subs</code>, we can compute the <strong>variance estimates</strong> <span class="math inline">\(\hat{v}_{j}\)</span>.</li>
 </ul>
-<div class="sourceCode" id="cb344"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb344-1"><a href="extra-topics.html#cb344-1" aria-hidden="true" tabindex="-1"></a>imp.mean <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(Imp.Subs)</span>
-<span id="cb344-2"><a href="extra-topics.html#cb344-2" aria-hidden="true" tabindex="-1"></a>vhat <span class="ot">&lt;-</span> (b<span class="sc">/</span><span class="fu">nrow</span>(diabetes))<span class="sc">*</span><span class="fu">rowMeans</span>((Imp.Subs <span class="sc">-</span> imp.mean)<span class="sc">^</span><span class="dv">2</span>)  </span>
-<span id="cb344-3"><a href="extra-topics.html#cb344-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(vhat)</span></code></pre></div>
+<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="extra-topics.html#cb346-1" tabindex="-1"></a>imp.mean <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(Imp.Subs)</span>
+<span id="cb346-2"><a href="extra-topics.html#cb346-2" tabindex="-1"></a>vhat <span class="ot">&lt;-</span> (b<span class="sc">/</span><span class="fu">nrow</span>(diabetes))<span class="sc">*</span><span class="fu">rowMeans</span>((Imp.Subs <span class="sc">-</span> imp.mean)<span class="sc">^</span><span class="dv">2</span>)  </span>
+<span id="cb346-3"><a href="extra-topics.html#cb346-3" tabindex="-1"></a><span class="fu">print</span>(vhat)</span></code></pre></div>
 <pre><code>##         age         sex         bmi         map          tc         ldl 
-##   1220590.0    454317.4 238333134.8  61584257.3    861009.3   3027988.2 
+##  13192664.3    601547.2  52250616.2 290025834.7   1375095.0    675488.1 
 ##         hdl         tch         ltg         glu 
-##   7666522.4   9200530.9  14415261.8  37300746.5</code></pre>
+##  21869462.7  11187228.0  26977809.6  46746693.7</code></pre>
 <hr />
 <ul>
 <li>We can now report <strong>confidence intervals</strong> for the variable importance scores:</li>
 </ul>
-<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="extra-topics.html#cb346-1" aria-hidden="true" tabindex="-1"></a>vi.upper <span class="ot">&lt;-</span> Imp.Full[,<span class="dv">1</span>] <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span><span class="fu">sqrt</span>(vhat)</span>
-<span id="cb346-2"><a href="extra-topics.html#cb346-2" aria-hidden="true" tabindex="-1"></a>vi.lower <span class="ot">&lt;-</span> Imp.Full[,<span class="dv">1</span>] <span class="sc">-</span> <span class="fl">1.96</span><span class="sc">*</span><span class="fu">sqrt</span>(vhat)</span>
-<span id="cb346-3"><a href="extra-topics.html#cb346-3" aria-hidden="true" tabindex="-1"></a>VIMP_CI <span class="ot">&lt;-</span> <span class="fu">cbind</span>(Imp.Full[,<span class="dv">1</span>], vi.lower, vi.upper)</span>
-<span id="cb346-4"><a href="extra-topics.html#cb346-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(VIMP_CI) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;estimate&quot;</span>, <span class="st">&quot;lower&quot;</span>, <span class="st">&quot;upper&quot;</span>)</span>
-<span id="cb346-5"><a href="extra-topics.html#cb346-5" aria-hidden="true" tabindex="-1"></a>VIMP_CI[<span class="fu">order</span>(<span class="sc">-</span>VIMP_CI[,<span class="dv">1</span>]),]</span></code></pre></div>
+<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb348-1"><a href="extra-topics.html#cb348-1" tabindex="-1"></a>vi.upper <span class="ot">&lt;-</span> Imp.Full[,<span class="dv">1</span>] <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span><span class="fu">sqrt</span>(vhat)</span>
+<span id="cb348-2"><a href="extra-topics.html#cb348-2" tabindex="-1"></a>vi.lower <span class="ot">&lt;-</span> Imp.Full[,<span class="dv">1</span>] <span class="sc">-</span> <span class="fl">1.96</span><span class="sc">*</span><span class="fu">sqrt</span>(vhat)</span>
+<span id="cb348-3"><a href="extra-topics.html#cb348-3" tabindex="-1"></a>VIMP_CI <span class="ot">&lt;-</span> <span class="fu">cbind</span>(Imp.Full[,<span class="dv">1</span>], vi.lower, vi.upper)</span>
+<span id="cb348-4"><a href="extra-topics.html#cb348-4" tabindex="-1"></a><span class="fu">colnames</span>(VIMP_CI) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;estimate&quot;</span>, <span class="st">&quot;lower&quot;</span>, <span class="st">&quot;upper&quot;</span>)</span>
+<span id="cb348-5"><a href="extra-topics.html#cb348-5" tabindex="-1"></a>VIMP_CI[<span class="fu">order</span>(<span class="sc">-</span>VIMP_CI[,<span class="dv">1</span>]),]</span></code></pre></div>
 <pre><code>##      estimate     lower     upper
-## bmi 588334.78 558076.22 618593.34
-## ltg 577379.44 569937.83 584821.06
-## map 289077.77 273696.55 304459.00
-## glu 215077.96 203107.39 227048.53
-## hdl 205055.89 199628.95 210482.83
-## ldl 161186.31 157775.69 164596.92
-## tch 158051.99 152106.84 163997.13
-## age 143554.53 141389.12 145719.95
-## tc  138179.36 136360.66 139998.05
-## sex  32633.05  31311.95  33954.15</code></pre>
+## bmi 593069.69 578901.91 607237.47
+## ltg 547339.39 537159.12 557519.66
+## map 294895.68 261516.60 328274.76
+## glu 215691.80 202290.97 229092.62
+## hdl 198728.85 189562.95 207894.75
+## tch 171273.03 164717.36 177828.70
+## ldl 153616.12 152005.24 155227.01
+## age 144638.60 137519.55 151757.66
+## tc  141704.80 139406.42 144003.19
+## sex  33285.71  31765.54  34805.87</code></pre>
 </div>
 <div id="stability-selection-for-penalized-regression" class="section level3 hasAnchor" number="8.1.2">
 <h3><span class="header-section-number">8.1.2</span> Stability Selection for Penalized Regression<a href="extra-topics.html#stability-selection-for-penalized-regression" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <ul>
 <li>Let’s use the <strong>lasso</strong> with penalty <span class="math inline">\(\lambda = 10\)</span> on the <code>diabetes</code> data:</li>
 </ul>
-<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb348-1"><a href="extra-topics.html#cb348-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code></pre></div>
+<div class="sourceCode" id="cb350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb350-1"><a href="extra-topics.html#cb350-1" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code></pre></div>
 <pre><code>## Loading required package: Matrix</code></pre>
 <pre><code>## Loaded glmnet 4.1-3</code></pre>
-<div class="sourceCode" id="cb351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb351-1"><a href="extra-topics.html#cb351-1" aria-hidden="true" tabindex="-1"></a>diabet.mod <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(<span class="at">x=</span>diabetes.sub[,<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="at">y=</span>diabetes.sub<span class="sc">$</span>prog, </span>
-<span id="cb351-2"><a href="extra-topics.html#cb351-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">lambda=</span><span class="dv">20</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb353-1"><a href="extra-topics.html#cb353-1" tabindex="-1"></a>diabet.mod <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(<span class="at">x=</span>diabetes.sub[,<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="at">y=</span>diabetes.sub<span class="sc">$</span>prog, </span>
+<span id="cb353-2"><a href="extra-topics.html#cb353-2" tabindex="-1"></a>                     <span class="at">lambda=</span><span class="dv">20</span>)</span></code></pre></div>
 <ul>
 <li>We can look at the estimated coefficients to see which variables were <strong>selected</strong></li>
 </ul>
-<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="extra-topics.html#cb352-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(diabet.mod)</span></code></pre></div>
+<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="extra-topics.html#cb354-1" tabindex="-1"></a><span class="fu">coef</span>(diabet.mod)</span></code></pre></div>
 <pre><code>## 11 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
 ##                      s0
-## (Intercept) -108.107948
+## (Intercept) -146.993852
 ## age            .       
 ## sex            .       
-## bmi            5.157343
-## map            .       
+## bmi            3.451718
+## map            1.063922
 ## tc             .       
 ## ldl            .       
 ## hdl            .       
-## tch            2.898551
-## ltg           56.072983
-## glu            .</code></pre>
+## tch            .       
+## ltg           41.322772
+## glu            0.271600</code></pre>
 <ul>
 <li>The <strong>selected</strong> variables are those with nonzero coefficients:</li>
 </ul>
-<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="extra-topics.html#cb354-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at selected coefficients ignoring the intercept:</span></span>
-<span id="cb354-2"><a href="extra-topics.html#cb354-2" aria-hidden="true" tabindex="-1"></a>selected <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">coef</span>(diabet.mod)[<span class="sc">-</span><span class="dv">1</span>]) <span class="sc">&gt;</span> <span class="dv">0</span></span>
-<span id="cb354-3"><a href="extra-topics.html#cb354-3" aria-hidden="true" tabindex="-1"></a>selected</span></code></pre></div>
-<pre><code>##  [1] FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE  TRUE FALSE</code></pre>
+<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="extra-topics.html#cb356-1" tabindex="-1"></a><span class="co"># Look at selected coefficients ignoring the intercept:</span></span>
+<span id="cb356-2"><a href="extra-topics.html#cb356-2" tabindex="-1"></a>selected <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">coef</span>(diabet.mod)[<span class="sc">-</span><span class="dv">1</span>]) <span class="sc">&gt;</span> <span class="dv">0</span></span>
+<span id="cb356-3"><a href="extra-topics.html#cb356-3" tabindex="-1"></a>selected</span></code></pre></div>
+<pre><code>##  [1] FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE  TRUE  TRUE</code></pre>
 <hr />
 <ul>
 <li><p>When thinking about how certain you might be about a given set of selected variables, one
@@ -506,7 +510,7 @@ defined as
 where …</p></li>
 <li><p><span class="math inline">\(A_{j,s}(\lambda) = 1\)</span> if variable <span class="math inline">\(j\)</span> in data subsample <span class="math inline">\(s\)</span> is <strong>selected</strong> and</p></li>
 <li><p><span class="math inline">\(A_{j,s}(\lambda) = 0\)</span> if variable <span class="math inline">\(j\)</span> in data subsample <span class="math inline">\(s\)</span> is <strong>not selected</strong></p></li>
-<li><p><span class="citation">Meinshausen and Bühlmann (<a href="#ref-meinshausen2010" role="doc-biblioref">2010</a>)</span> recommend drawing subsamples of size <span class="math inline">\(n/2\)</span>.</p></li>
+<li><p><span class="citation">Meinshausen and Bühlmann (<a href="#ref-meinshausen2010">2010</a>)</span> recommend drawing subsamples of size <span class="math inline">\(n/2\)</span>.</p></li>
 </ul>
 <hr />
 <ul>
@@ -522,22 +526,22 @@ a sense of the range of selection stability.</p></li>
 where the <span class="math inline">\((k, h, j)\)</span> element of this array equals <span class="math inline">\(1\)</span> if variable <span class="math inline">\(j\)</span>
 was selected in subsample <span class="math inline">\(k\)</span> with penalty term <span class="math inline">\(\lambda_{h}\)</span>:</li>
 </ul>
-<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="extra-topics.html#cb356-1" aria-hidden="true" tabindex="-1"></a>nsamps <span class="ot">&lt;-</span> <span class="dv">200</span></span>
-<span id="cb356-2"><a href="extra-topics.html#cb356-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fu">nrow</span>(diabetes)<span class="sc">/</span><span class="dv">2</span>)</span>
-<span id="cb356-3"><a href="extra-topics.html#cb356-3" aria-hidden="true" tabindex="-1"></a>nlambda <span class="ot">&lt;-</span> <span class="dv">40</span> <span class="do">## 40 different lambda values</span></span>
-<span id="cb356-4"><a href="extra-topics.html#cb356-4" aria-hidden="true" tabindex="-1"></a>lambda.seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">20.1</span>, <span class="at">length.out=</span>nlambda)</span>
-<span id="cb356-5"><a href="extra-topics.html#cb356-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Create an nsamps x nlambda x 10 array</span></span>
-<span id="cb356-6"><a href="extra-topics.html#cb356-6" aria-hidden="true" tabindex="-1"></a>SelectionArr <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim=</span><span class="fu">c</span>(nsamps, nlambda, <span class="dv">10</span>))</span>
-<span id="cb356-7"><a href="extra-topics.html#cb356-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nsamps) {</span>
-<span id="cb356-8"><a href="extra-topics.html#cb356-8" aria-hidden="true" tabindex="-1"></a>   subs <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(diabetes), <span class="at">size=</span>b)</span>
-<span id="cb356-9"><a href="extra-topics.html#cb356-9" aria-hidden="true" tabindex="-1"></a>   diabetes.sub <span class="ot">&lt;-</span> diabetes[subs,]</span>
-<span id="cb356-10"><a href="extra-topics.html#cb356-10" aria-hidden="true" tabindex="-1"></a>   <span class="cf">for</span>(h <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nlambda) {</span>
-<span id="cb356-11"><a href="extra-topics.html#cb356-11" aria-hidden="true" tabindex="-1"></a>      sub.fit <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(<span class="at">x=</span>diabetes.sub[,<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="at">y=</span>diabetes.sub<span class="sc">$</span>prog, </span>
-<span id="cb356-12"><a href="extra-topics.html#cb356-12" aria-hidden="true" tabindex="-1"></a>                        <span class="at">lambda=</span>lambda.seq[h])</span>
-<span id="cb356-13"><a href="extra-topics.html#cb356-13" aria-hidden="true" tabindex="-1"></a>      selected <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">coef</span>(sub.fit)[<span class="sc">-</span><span class="dv">1</span>]) <span class="sc">&gt;</span> <span class="dv">0</span></span>
-<span id="cb356-14"><a href="extra-topics.html#cb356-14" aria-hidden="true" tabindex="-1"></a>      SelectionArr[k,h,] <span class="ot">&lt;-</span> selected</span>
-<span id="cb356-15"><a href="extra-topics.html#cb356-15" aria-hidden="true" tabindex="-1"></a>   }</span>
-<span id="cb356-16"><a href="extra-topics.html#cb356-16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb358"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb358-1"><a href="extra-topics.html#cb358-1" tabindex="-1"></a>nsamps <span class="ot">&lt;-</span> <span class="dv">200</span></span>
+<span id="cb358-2"><a href="extra-topics.html#cb358-2" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fu">nrow</span>(diabetes)<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb358-3"><a href="extra-topics.html#cb358-3" tabindex="-1"></a>nlambda <span class="ot">&lt;-</span> <span class="dv">40</span> <span class="do">## 40 different lambda values</span></span>
+<span id="cb358-4"><a href="extra-topics.html#cb358-4" tabindex="-1"></a>lambda.seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">20.1</span>, <span class="at">length.out=</span>nlambda)</span>
+<span id="cb358-5"><a href="extra-topics.html#cb358-5" tabindex="-1"></a><span class="do">## Create an nsamps x nlambda x 10 array</span></span>
+<span id="cb358-6"><a href="extra-topics.html#cb358-6" tabindex="-1"></a>SelectionArr <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim=</span><span class="fu">c</span>(nsamps, nlambda, <span class="dv">10</span>))</span>
+<span id="cb358-7"><a href="extra-topics.html#cb358-7" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nsamps) {</span>
+<span id="cb358-8"><a href="extra-topics.html#cb358-8" tabindex="-1"></a>   subs <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(diabetes), <span class="at">size=</span>b)</span>
+<span id="cb358-9"><a href="extra-topics.html#cb358-9" tabindex="-1"></a>   diabetes.sub <span class="ot">&lt;-</span> diabetes[subs,]</span>
+<span id="cb358-10"><a href="extra-topics.html#cb358-10" tabindex="-1"></a>   <span class="cf">for</span>(h <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nlambda) {</span>
+<span id="cb358-11"><a href="extra-topics.html#cb358-11" tabindex="-1"></a>      sub.fit <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(<span class="at">x=</span>diabetes.sub[,<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="at">y=</span>diabetes.sub<span class="sc">$</span>prog, </span>
+<span id="cb358-12"><a href="extra-topics.html#cb358-12" tabindex="-1"></a>                        <span class="at">lambda=</span>lambda.seq[h])</span>
+<span id="cb358-13"><a href="extra-topics.html#cb358-13" tabindex="-1"></a>      selected <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">coef</span>(sub.fit)[<span class="sc">-</span><span class="dv">1</span>]) <span class="sc">&gt;</span> <span class="dv">0</span></span>
+<span id="cb358-14"><a href="extra-topics.html#cb358-14" tabindex="-1"></a>      SelectionArr[k,h,] <span class="ot">&lt;-</span> selected</span>
+<span id="cb358-15"><a href="extra-topics.html#cb358-15" tabindex="-1"></a>   }</span>
+<span id="cb358-16"><a href="extra-topics.html#cb358-16" tabindex="-1"></a>}</span></code></pre></div>
 <ul>
 <li>From this <strong>array</strong>, we can compute a matrix containing
 selection probability estimates <span class="math inline">\(\hat{\pi}_{j}(\lambda)\)</span>.
@@ -545,49 +549,49 @@ selection probability estimates <span class="math inline">\(\hat{\pi}_{j}(\lambd
 <li>The <span class="math inline">\((j, h)\)</span> component of this matrix has the value <span class="math inline">\(\hat{\pi}_{j}(\lambda_{h})\)</span></li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb357-1"><a href="extra-topics.html#cb357-1" aria-hidden="true" tabindex="-1"></a>SelectionProb <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="dv">10</span>, <span class="at">ncol=</span>nlambda)</span>
-<span id="cb357-2"><a href="extra-topics.html#cb357-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(SelectionProb) <span class="ot">&lt;-</span> <span class="fu">names</span>(diabetes)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
-<span id="cb357-3"><a href="extra-topics.html#cb357-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(h <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nlambda) {</span>
-<span id="cb357-4"><a href="extra-topics.html#cb357-4" aria-hidden="true" tabindex="-1"></a>   SelectionProb[,h] <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(SelectionArr[,h,]) </span>
-<span id="cb357-5"><a href="extra-topics.html#cb357-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb359"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb359-1"><a href="extra-topics.html#cb359-1" tabindex="-1"></a>SelectionProb <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="dv">10</span>, <span class="at">ncol=</span>nlambda)</span>
+<span id="cb359-2"><a href="extra-topics.html#cb359-2" tabindex="-1"></a><span class="fu">rownames</span>(SelectionProb) <span class="ot">&lt;-</span> <span class="fu">names</span>(diabetes)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
+<span id="cb359-3"><a href="extra-topics.html#cb359-3" tabindex="-1"></a><span class="cf">for</span>(h <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nlambda) {</span>
+<span id="cb359-4"><a href="extra-topics.html#cb359-4" tabindex="-1"></a>   SelectionProb[,h] <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(SelectionArr[,h,]) </span>
+<span id="cb359-5"><a href="extra-topics.html#cb359-5" tabindex="-1"></a>}</span></code></pre></div>
 <ul>
 <li>The first few columns of <code>SelectionProb</code> look like the following:</li>
 </ul>
-<div class="sourceCode" id="cb358"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb358-1"><a href="extra-topics.html#cb358-1" aria-hidden="true" tabindex="-1"></a>SelectionProb[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb360"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb360-1"><a href="extra-topics.html#cb360-1" tabindex="-1"></a>SelectionProb[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
 <pre><code>##      [,1]  [,2]  [,3]  [,4]  [,5]
-## age 0.960 0.785 0.595 0.445 0.325
-## sex 1.000 1.000 1.000 0.995 0.995
+## age 0.980 0.795 0.620 0.485 0.360
+## sex 1.000 1.000 1.000 1.000 0.990
 ## bmi 1.000 1.000 1.000 1.000 1.000
 ## map 1.000 1.000 1.000 1.000 1.000
-## tc  0.960 0.895 0.800 0.685 0.590
-## ldl 0.890 0.220 0.260 0.275 0.315
-## hdl 0.850 0.945 0.975 0.995 1.000
-## tch 0.940 0.695 0.430 0.265 0.175
+## tc  0.965 0.925 0.815 0.710 0.565
+## ldl 0.840 0.215 0.240 0.295 0.355
+## hdl 0.905 0.950 0.985 0.995 1.000
+## tch 0.950 0.705 0.435 0.295 0.215
 ## ltg 1.000 1.000 1.000 1.000 1.000
-## glu 0.975 0.890 0.835 0.775 0.710</code></pre>
+## glu 0.990 0.925 0.830 0.780 0.725</code></pre>
 <hr />
 <ul>
 <li>We can now plot the stability measures as a function of <span class="math inline">\(\lambda\)</span></li>
 </ul>
-<div class="sourceCode" id="cb360"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb360-1"><a href="extra-topics.html#cb360-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Convert to long form:</span></span>
-<span id="cb360-2"><a href="extra-topics.html#cb360-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">varname=</span><span class="fu">rep</span>(<span class="fu">names</span>(diabetes)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>], <span class="at">each=</span>nlambda),</span>
-<span id="cb360-3"><a href="extra-topics.html#cb360-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">selection.prob=</span><span class="fu">c</span>(<span class="fu">t</span>(SelectionProb)), <span class="at">lambda=</span><span class="fu">rep</span>(lambda.seq, <span class="dv">10</span>))</span>
-<span id="cb360-4"><a href="extra-topics.html#cb360-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df)</span></code></pre></div>
+<div class="sourceCode" id="cb362"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb362-1"><a href="extra-topics.html#cb362-1" tabindex="-1"></a><span class="do">## Convert to long form:</span></span>
+<span id="cb362-2"><a href="extra-topics.html#cb362-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">varname=</span><span class="fu">rep</span>(<span class="fu">names</span>(diabetes)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>], <span class="at">each=</span>nlambda),</span>
+<span id="cb362-3"><a href="extra-topics.html#cb362-3" tabindex="-1"></a>                 <span class="at">selection.prob=</span><span class="fu">c</span>(<span class="fu">t</span>(SelectionProb)), <span class="at">lambda=</span><span class="fu">rep</span>(lambda.seq, <span class="dv">10</span>))</span>
+<span id="cb362-4"><a href="extra-topics.html#cb362-4" tabindex="-1"></a><span class="fu">head</span>(df)</span></code></pre></div>
 <pre><code>##   varname selection.prob    lambda
-## 1     age          0.960 0.1000000
-## 2     age          0.785 0.6128205
-## 3     age          0.595 1.1256410
-## 4     age          0.445 1.6384615
-## 5     age          0.325 2.1512821
-## 6     age          0.255 2.6641026</code></pre>
-<div class="sourceCode" id="cb362"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb362-1"><a href="extra-topics.html#cb362-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+## 1     age          0.980 0.1000000
+## 2     age          0.795 0.6128205
+## 3     age          0.620 1.1256410
+## 4     age          0.485 1.6384615
+## 5     age          0.360 2.1512821
+## 6     age          0.270 2.6641026</code></pre>
+<div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="extra-topics.html#cb364-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
 <pre><code>## 
 ## Attaching package: &#39;ggplot2&#39;</code></pre>
 <pre><code>## The following object is masked from &#39;package:randomForest&#39;:
 ## 
 ##     margin</code></pre>
-<div class="sourceCode" id="cb365"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb365-1"><a href="extra-topics.html#cb365-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df) <span class="sc">+</span> <span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y=</span>selection.prob, </span>
-<span id="cb365-2"><a href="extra-topics.html#cb365-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">group=</span>varname, <span class="at">color=</span>varname) <span class="sc">+</span> <span class="fu">geom_line</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb367"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb367-1"><a href="extra-topics.html#cb367-1" tabindex="-1"></a><span class="fu">ggplot</span>(df) <span class="sc">+</span> <span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y=</span>selection.prob, </span>
+<span id="cb367-2"><a href="extra-topics.html#cb367-2" tabindex="-1"></a>                 <span class="at">group=</span>varname, <span class="at">color=</span>varname) <span class="sc">+</span> <span class="fu">geom_line</span>()</span></code></pre></div>
 <p><img src="08-ExtraTopics_files/figure-html/unnamed-chunk-15-1.png" width="480" /></p>
 
 <div id="refs" class="references csl-bib-body hanging-indent">

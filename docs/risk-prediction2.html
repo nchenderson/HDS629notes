@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2024-01-15" />
+<meta name="date" content="2024-01-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -453,7 +453,7 @@ average value of the risk score <span class="math inline">\(g_{s}\)</span> in st
 <span id="cb252-3"><a href="risk-prediction2.html#cb252-3" tabindex="-1"></a>brier.RF <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.RF <span class="sc">-</span> biopsy<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
 <span id="cb252-4"><a href="risk-prediction2.html#cb252-4" tabindex="-1"></a></span>
 <span id="cb252-5"><a href="risk-prediction2.html#cb252-5" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(brier.cart, brier.logreg, brier.RF), <span class="dv">4</span>)</span></code></pre></div>
-<pre><code>## [1] 0.0450 0.0280 0.0055</code></pre>
+<pre><code>## [1] 0.0450 0.0280 0.0056</code></pre>
 <ul>
 <li>When comparing <strong>in-sample</strong> Brier scores, CART is the worst, logistic regression is in the middle, and random forest is the best.</li>
 </ul>
@@ -494,7 +494,7 @@ of <code>biopsy</code> and then testing relative performance on the remaining ob
 <span id="cb257-3"><a href="risk-prediction2.html#cb257-3" tabindex="-1"></a>brier.RF.test <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.RF.test <span class="sc">-</span> biopsy.test<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
 <span id="cb257-4"><a href="risk-prediction2.html#cb257-4" tabindex="-1"></a></span>
 <span id="cb257-5"><a href="risk-prediction2.html#cb257-5" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(brier.cart.test, brier.logreg.test, brier.RF.test), <span class="dv">4</span>)</span></code></pre></div>
-<pre><code>## [1] 0.0359 0.0135 0.0184</code></pre>
+<pre><code>## [1] 0.0359 0.0135 0.0189</code></pre>
 <ul>
 <li><p>For the out-of-sample Brier score, both logistic regression and random forest are notably
 better than CART.</p></li>

@@ -28,7 +28,8 @@ editor_options:
 
     -   $\mathbf{x}_{ij} = (x_{ij1}, \ldots, x_{ijp})$ is the vector of
         covariates for individual $i$ at time $t_{ij}$.
-            + The vector $\mathbf{x}_{ij}$ will often include the time point $t_{ij}$ as a covariate.
+        
+    -   Note that the vector $\mathbf{x}_{ij}$ will often include the time point $t_{ij}$ as a covariate.
 
 -   **Note:** For your project, you may have to do some **data processing**
     of the data to get it into the form $(Y_{ij}, \mathbf{x}_{ij})$, for
@@ -108,7 +109,8 @@ editor_options:
 
 -   If each $Y_{ij}$ is a **continuous outcome** and we were to build a
     regression model without any random effects, we might assume
-    something like: \begin{equation}
+    something like: 
+    \begin{equation}
     Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
     (\#eq:fixed-reg-model)
     \end{equation}
@@ -1316,17 +1318,21 @@ was obtained from https://content.sph.harvard.edu/fitzmaur/ala2e/cd4-data.txt.
 * When you load the dataset into R, it should look like the following
 
 ```r
-head( actg_trial )
+head( actg_trial, 10)
 ```
 
 ```
-##   SubjectID Treatment     Age Sex    Week      CD4
-## 1         1         2 36.4271   1  0.0000 3.135494
-## 2         1         2 36.4271   1  7.5714 3.044522
-## 3         1         2 36.4271   1 15.5714 2.772589
-## 4         1         2 36.4271   1 23.5714 2.833213
-## 5         1         2 36.4271   1 32.5714 3.218876
-## 6         1         2 36.4271   1 40.0000 3.044522
+##    SubjectID Treatment     Age Sex    Week      CD4
+## 1          1         2 36.4271   1  0.0000 3.135494
+## 2          1         2 36.4271   1  7.5714 3.044522
+## 3          1         2 36.4271   1 15.5714 2.772589
+## 4          1         2 36.4271   1 23.5714 2.833213
+## 5          1         2 36.4271   1 32.5714 3.218876
+## 6          1         2 36.4271   1 40.0000 3.044522
+## 7          2         4 47.8467   1  0.0000 3.068053
+## 8          2         4 47.8467   1  8.0000 3.891820
+## 9          2         4 47.8467   1 16.0000 3.970292
+## 10         2         4 47.8467   1 23.0000 3.610918
 ```
 
 * This longitudinal dataset has 5036 observations with the following 6 variables:
@@ -1339,7 +1345,7 @@ head( actg_trial )
     
 ### Questions
 
-* How many individuals are in the trial
+* How many individuals are in the trial?
 
 * What are the smallest and largest values of $n_{i}$ in this data set?
 

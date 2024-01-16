@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2024-01-15" />
+<meta name="date" content="2024-01-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -333,8 +333,8 @@ div.csl-indent {
 <li><p>There will be <span class="math inline">\(m\)</span> individuals in the study (so
 <span class="math inline">\(1 \leq i \leq m\)</span>).</p></li>
 <li><p><span class="math inline">\(\mathbf{x}_{ij} = (x_{ij1}, \ldots, x_{ijp})\)</span> is the vector of
-covariates for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.
-+ The vector <span class="math inline">\(\mathbf{x}_{ij}\)</span> will often include the time point <span class="math inline">\(t_{ij}\)</span> as a covariate.</p></li>
+covariates for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
+<li><p>Note that the vector <span class="math inline">\(\mathbf{x}_{ij}\)</span> will often include the time point <span class="math inline">\(t_{ij}\)</span> as a covariate.</p></li>
 </ul></li>
 <li><p><strong>Note:</strong> For your project, you may have to do some <strong>data processing</strong>
 of the data to get it into the form <span class="math inline">\((Y_{ij}, \mathbf{x}_{ij})\)</span>, for
@@ -415,9 +415,10 @@ the value of the outcome at the previous time point <span class="math inline">\(
 <ul>
 <li><p>If each <span class="math inline">\(Y_{ij}\)</span> is a <strong>continuous outcome</strong> and we were to build a
 regression model without any random effects, we might assume
-something like: <span class="math display">\[\begin{equation}
+something like:
+<span class="math display" id="eq:fixed-reg-model">\[\begin{equation}
 Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
-(\#eq:fixed-reg-model)
+\tag{1.1}
 \end{equation}\]</span></p></li>
 <li><p><span class="math inline">\(\mathbf{x}_{ij} = (x_{ij1}, \ldots, x_{ijp})\)</span> is the vector of
 covariates for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
@@ -431,7 +432,7 @@ points.</li>
 </ul>
 <hr />
 <ul>
-<li><p>The regression model <a href="#eq:fixed-reg-model">(<strong>??</strong>)</a> assumes the same mean
+<li><p>The regression model <a href="mixed-models.html#eq:fixed-reg-model">(1.1)</a> assumes the same mean
 function <span class="math inline">\(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}\)</span> holds
 for all individuals that have the same value of <span class="math inline">\(\mathbf{x}_{ij}\)</span>.</p></li>
 <li><p>It is often reasonable to assume that the regression coefficients
@@ -479,7 +480,7 @@ Y_{ij} = \beta_{0} + \beta_{1} t_{j} + e_{ij}
 slope</strong>, we could instead consider the following model
 <span class="math display" id="eq:mixed-sleep">\[\begin{equation}
 Y_{ij} = \beta_{0} + \beta_{1} t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
-\tag{1.1}
+\tag{1.2}
 \end{equation}\]</span></p></li>
 <li><p><span class="math inline">\(\beta_{0} + u_{i0}\)</span> - <strong>intercept</strong> for individual <span class="math inline">\(i\)</span>.</p></li>
 <li><p><span class="math inline">\(\beta_{1} + u_{i1}\)</span> - <strong>slope</strong> for individual <span class="math inline">\(i\)</span>.</p></li>
@@ -492,7 +493,7 @@ Y_{ij} = \beta_{0} + \beta_{1} t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
 multivariate normal distribution with mean zero: <span class="math display">\[\begin{equation}
 (u_{i0}, u_{i1}) \sim \textrm{Normal}( \mathbf{0}, \boldsymbol{\Sigma}_{\tau} )
 \end{equation}\]</span></p></li>
-<li><p>Model <a href="mixed-models.html#eq:mixed-sleep">(1.1)</a> is called a <strong>mixed model</strong> because it
+<li><p>Model <a href="mixed-models.html#eq:mixed-sleep">(1.2)</a> is called a <strong>mixed model</strong> because it
 contains both <strong>fixed effects</strong> <span class="math inline">\((\beta_{0}, \beta_{1})\)</span> and
 <strong>random effects</strong> <span class="math inline">\((u_{i0}, u_{i1})\)</span>.</p></li>
 </ul>
@@ -501,7 +502,7 @@ contains both <strong>fixed effects</strong> <span class="math inline">\((\beta_
 <li>More generally, a <strong>linear mixed model</strong> (LMM) for longitudinal data
 will have the form: <span class="math display" id="eq:lmm-generalform">\[\begin{equation}
 Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i} + e_{ij}
-\tag{1.2}
+\tag{1.3}
 \end{equation}\]</span>
 <ul>
 <li><span class="math inline">\(\boldsymbol{\beta}\)</span> - vector of fixed effects</li>
@@ -515,7 +516,7 @@ has length <span class="math inline">\(\sum_{k=1}^{m} n_{k}\)</span></li>
 <li><span class="math inline">\(\mathbf{u} = (u_{10}, u_{11}, ...., u_{mq})\)</span> - this vector has
 length <span class="math inline">\(m \times (q + 1)\)</span>.</li>
 </ul></li>
-<li>Then, we can write the general form <a href="mixed-models.html#eq:lmm-generalform">(1.2)</a> of the
+<li>Then, we can write the general form <a href="mixed-models.html#eq:lmm-generalform">(1.3)</a> of the
 LMM as <span class="math display">\[\begin{equation}
 \mathbf{Y} = \mathbf{X}\tilde{\boldsymbol{\beta}} + \mathbf{Z}\mathbf{u} + \mathbf{e}
 \end{equation}\]</span>
@@ -848,7 +849,7 @@ separate id for each person.</p></li>
 random intercept for each <code>Subject</code>
 <span class="math display" id="eq:lmm-intercept-sleep">\[\begin{equation}
 Y_{ij} = \beta_{0} + \beta_{1}t_{j} + u_{i} + e_{ij}
-\tag{1.3}
+\tag{1.4}
 \end{equation}\]</span></p></li>
 <li><p>For the <strong>“X” part</strong> of this model, we use <code>Reaction ~ Days</code>.</p>
 <ul>
@@ -861,7 +862,7 @@ variable.</li>
 grouping variable <code>Subject</code>.</li>
 </ul></li>
 <li><p>Putting these two together, we can fit the LMM
-<a href="mixed-models.html#eq:lmm-intercept-sleep">(1.3)</a> using the following code:</p></li>
+<a href="mixed-models.html#eq:lmm-intercept-sleep">(1.4)</a> using the following code:</p></li>
 </ul>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="mixed-models.html#cb7-1" tabindex="-1"></a>lmm.sleep.intercept <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Subject), <span class="at">data =</span> sleepstudy)</span></code></pre></div>
 <hr />
@@ -967,7 +968,7 @@ and the estimated fixed-effects slope is <span class="math inline">\(\hat{\beta}
 <li><p>Now, let’s fit an LMM where there is a fixed slope for time and both
 a random intercept and slope for each <code>Subject</code> <span class="math display" id="eq:lmm-slope-sleep">\[\begin{equation}
 Y_{ij} = \beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
-\tag{1.4}
+\tag{1.5}
 \end{equation}\]</span></p></li>
 <li><p>This is done with <code>lmer</code> using the following code:</p></li>
 </ul>
@@ -1369,10 +1370,10 @@ as</li>
 <span class="math display" id="eq:ohio-intercept">\[\begin{equation}
 \textrm{logit}\{ p_{ij}(u_{i}) \}  = \beta_{0} + \beta_{age}\textrm{age}_{ij}
 + \beta_{smk}\textrm{smoke}_{i} + u_{i}
-\tag{1.5}
+\tag{1.6}
 \end{equation}\]</span>
 <ul>
-<li>Model <a href="mixed-models.html#eq:ohio-intercept">(1.5)</a> can be fit with the following code</li>
+<li>Model <a href="mixed-models.html#eq:ohio-intercept">(1.6)</a> can be fit with the following code</li>
 </ul>
 <div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="mixed-models.html#cb52-1" tabindex="-1"></a><span class="co"># id is the grouping variable</span></span>
 <span id="cb52-2"><a href="mixed-models.html#cb52-2" tabindex="-1"></a>ohio.intercept <span class="ot">&lt;-</span> <span class="fu">glmer</span>(resp <span class="sc">~</span> age <span class="sc">+</span> smoke <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> id), <span class="at">data =</span> ohio, <span class="at">family =</span> binomial)</span></code></pre></div>
@@ -1460,14 +1461,18 @@ was obtained from <a href="https://content.sph.harvard.edu/fitzmaur/ala2e/cd4-da
 </ul></li>
 <li>When you load the dataset into R, it should look like the following</li>
 </ul>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="mixed-models.html#cb58-1" tabindex="-1"></a><span class="fu">head</span>( actg_trial )</span></code></pre></div>
-<pre><code>##   SubjectID Treatment     Age Sex    Week      CD4
-## 1         1         2 36.4271   1  0.0000 3.135494
-## 2         1         2 36.4271   1  7.5714 3.044522
-## 3         1         2 36.4271   1 15.5714 2.772589
-## 4         1         2 36.4271   1 23.5714 2.833213
-## 5         1         2 36.4271   1 32.5714 3.218876
-## 6         1         2 36.4271   1 40.0000 3.044522</code></pre>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="mixed-models.html#cb58-1" tabindex="-1"></a><span class="fu">head</span>( actg_trial, <span class="dv">10</span>)</span></code></pre></div>
+<pre><code>##    SubjectID Treatment     Age Sex    Week      CD4
+## 1          1         2 36.4271   1  0.0000 3.135494
+## 2          1         2 36.4271   1  7.5714 3.044522
+## 3          1         2 36.4271   1 15.5714 2.772589
+## 4          1         2 36.4271   1 23.5714 2.833213
+## 5          1         2 36.4271   1 32.5714 3.218876
+## 6          1         2 36.4271   1 40.0000 3.044522
+## 7          2         4 47.8467   1  0.0000 3.068053
+## 8          2         4 47.8467   1  8.0000 3.891820
+## 9          2         4 47.8467   1 16.0000 3.970292
+## 10         2         4 47.8467   1 23.0000 3.610918</code></pre>
 <ul>
 <li>This longitudinal dataset has 5036 observations with the following 6 variables:
 <ul>
@@ -1482,19 +1487,19 @@ was obtained from <a href="https://content.sph.harvard.edu/fitzmaur/ala2e/cd4-da
 <div id="questions" class="section level3 hasAnchor" number="1.6.1">
 <h3><span class="header-section-number">1.6.1</span> Questions<a href="mixed-models.html#questions" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <ul>
-<li><p>How many individuals are in the trial</p></li>
+<li><p>How many individuals are in the trial?</p></li>
 <li><p>What are the smallest and largest values of <span class="math inline">\(n_{i}\)</span> in this data set?</p></li>
 <li><p>Ignoring the longitudinal correlation, try fitting the linear model
 <span class="math display" id="eq:linearmod-exercise">\[\begin{equation}
 Y_{ij} = \beta_{1} + \gamma_{1}t_{ij} + \sum_{j=2}^{4}\beta_{j}I(Trtment = j) + \sum_{j=2}^{4}\gamma_{j}t_{ij}I(Trtment = j) + e_{ij}
-\tag{1.6}
+\tag{1.7}
 \end{equation}\]</span>
 where <span class="math inline">\(Y_{ij}\)</span> is the value of <code>CD4</code> of subject <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span> and
 where <span class="math inline">\(t_{i1}, ..., t_{in_{i}}\)</span> are the values of the <code>Week</code> variable for person <span class="math inline">\(i\)</span>.</p></li>
-<li><p>For model <a href="mixed-models.html#eq:linearmod-exercise">(1.6)</a>, what is the interpretation of <span class="math inline">\(\beta_{1}\)</span>, <span class="math inline">\(\beta_{2}\)</span>, <span class="math inline">\(\beta_{3}\)</span>, <span class="math inline">\(\beta_{4}\)</span>?</p></li>
+<li><p>For model <a href="mixed-models.html#eq:linearmod-exercise">(1.7)</a>, what is the interpretation of <span class="math inline">\(\beta_{1}\)</span>, <span class="math inline">\(\beta_{2}\)</span>, <span class="math inline">\(\beta_{3}\)</span>, <span class="math inline">\(\beta_{4}\)</span>?</p></li>
 <li><p>What are the interpretations of <span class="math inline">\(\beta_{2} - \beta_{1}\)</span>, <span class="math inline">\(\beta_{3} - \beta_{1}\)</span>, and <span class="math inline">\(\beta_{4} - \beta_{1}\)</span>? If this is a randomized trial, what do you expect the values of <span class="math inline">\(\beta_{2} - \beta_{1}\)</span>, <span class="math inline">\(\beta_{3} - \beta_{1}\)</span>, <span class="math inline">\(\beta_{4} - \beta_{1}\)</span> will be?</p></li>
-<li><p>In model <a href="mixed-models.html#eq:linearmod-exercise">(1.6)</a>, what is the interpretation of <span class="math inline">\(\gamma_{1}\)</span>?</p></li>
-<li><p>In model <a href="mixed-models.html#eq:linearmod-exercise">(1.6)</a>, what term represents the change in CD4 from time 0 to 24 weeks for those assigned to treatment 2? What is the standard error for this term?</p></li>
+<li><p>In model <a href="mixed-models.html#eq:linearmod-exercise">(1.7)</a>, what is the interpretation of <span class="math inline">\(\gamma_{1}\)</span>?</p></li>
+<li><p>In model <a href="mixed-models.html#eq:linearmod-exercise">(1.7)</a>, what term represents the change in CD4 from time 0 to 24 weeks for those assigned to treatment 2? What is the standard error for this term?</p></li>
 </ul>
 <hr />
 <ul>

@@ -28,7 +28,8 @@ editor_options:
 
     -   $\mathbf{x}_{ij} = (x_{ij1}, \ldots, x_{ijp})$ is the vector of
         covariates for individual $i$ at time $t_{ij}$.
-            + The vector $\mathbf{x}_{ij}$ will often include the time point $t_{ij}$ as a covariate.
+        
+    -   Note that the vector $\mathbf{x}_{ij}$ will often include the time point $t_{ij}$ as a covariate.
 
 -   **Note:** For your project, you may have to do some **data processing**
     of the data to get it into the form $(Y_{ij}, \mathbf{x}_{ij})$, for
@@ -129,7 +130,8 @@ set.seed(5178)
 
 -   If each $Y_{ij}$ is a **continuous outcome** and we were to build a
     regression model without any random effects, we might assume
-    something like: \begin{equation}
+    something like: 
+    \begin{equation}
     Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
     (\#eq:fixed-reg-model)
     \end{equation}
@@ -1032,7 +1034,7 @@ actg_trial <- read.csv("~/Documents/HDS629/actg_trial.csv")
 
 * When you load the dataset into R, it should look like the following
 ```{r}
-head( actg_trial )
+head( actg_trial, 10)
 ```
 
 * This longitudinal dataset has 5036 observations with the following 6 variables:
@@ -1045,7 +1047,7 @@ head( actg_trial )
     
 ### Questions
 
-* How many individuals are in the trial
+* How many individuals are in the trial?
 
 * What are the smallest and largest values of $n_{i}$ in this data set?
 

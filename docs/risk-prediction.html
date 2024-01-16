@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2023-03-20" />
+<meta name="date" content="2024-01-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -180,6 +180,10 @@ div.csl-indent {
 <li class="chapter" data-level="1.5.2" data-path="mixed-models.html"><a href="mixed-models.html#model-comparison-of-lmms-using-anova"><i class="fa fa-check"></i><b>1.5.2</b> Model Comparison of LMMs using anova</a></li>
 <li class="chapter" data-level="1.5.3" data-path="mixed-models.html"><a href="mixed-models.html#extracting-blups-in-lme4"><i class="fa fa-check"></i><b>1.5.3</b> Extracting BLUPs in lme4</a></li>
 <li class="chapter" data-level="1.5.4" data-path="mixed-models.html"><a href="mixed-models.html#fitting-binary-glmms-using-the-ohio-data"><i class="fa fa-check"></i><b>1.5.4</b> Fitting Binary GLMMs using the Ohio data</a></li>
+</ul></li>
+<li class="chapter" data-level="1.6" data-path="mixed-models.html"><a href="mixed-models.html#exercises"><i class="fa fa-check"></i><b>1.6</b> Exercises</a>
+<ul>
+<li class="chapter" data-level="1.6.1" data-path="mixed-models.html"><a href="mixed-models.html#questions"><i class="fa fa-check"></i><b>1.6.1</b> Questions</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>2</b> Missing Data and Multiple Imputation</a>
@@ -444,9 +448,9 @@ to be roughly equal to <span class="math inline">\(P(g(\mathbf{x}_{i}) \geq t)\)
 <li>To try computing an <strong>ROC</strong> curve, we will use the Wisconsin Breast Cancer dataset
 which is available in the <code>biopsy</code> dataset from the <code>MASS</code> package.</li>
 </ul>
-<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb219-1"><a href="risk-prediction.html#cb219-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
-<span id="cb219-2"><a href="risk-prediction.html#cb219-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(biopsy)</span>
-<span id="cb219-3"><a href="risk-prediction.html#cb219-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(biopsy)</span></code></pre></div>
+<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="risk-prediction.html#cb221-1" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb221-2"><a href="risk-prediction.html#cb221-2" tabindex="-1"></a><span class="fu">data</span>(biopsy)</span>
+<span id="cb221-3"><a href="risk-prediction.html#cb221-3" tabindex="-1"></a><span class="fu">head</span>(biopsy)</span></code></pre></div>
 <pre><code>##        ID V1 V2 V3 V4 V5 V6 V7 V8 V9     class
 ## 1 1000025  5  1  1  1  2  1  3  1  1    benign
 ## 2 1002945  5  4  4  5  7 10  3  2  1    benign
@@ -454,13 +458,13 @@ which is available in the <code>biopsy</code> dataset from the <code>MASS</code>
 ## 4 1016277  6  8  8  1  3  4  3  7  1    benign
 ## 5 1017023  4  1  1  3  2  1  3  1  1    benign
 ## 6 1017122  8 10 10  8  7 10  9  7  1 malignant</code></pre>
-<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="risk-prediction.html#cb221-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Look at number of &quot;benign&quot; and &quot;malignant&quot; tumors</span></span>
-<span id="cb221-2"><a href="risk-prediction.html#cb221-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(biopsy<span class="sc">$</span>class)</span></code></pre></div>
+<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="risk-prediction.html#cb223-1" tabindex="-1"></a><span class="do">## Look at number of &quot;benign&quot; and &quot;malignant&quot; tumors</span></span>
+<span id="cb223-2"><a href="risk-prediction.html#cb223-2" tabindex="-1"></a><span class="fu">table</span>(biopsy<span class="sc">$</span>class)</span></code></pre></div>
 <pre><code>## 
 ##    benign malignant 
 ##       458       241</code></pre>
-<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="risk-prediction.html#cb223-1" aria-hidden="true" tabindex="-1"></a>biopsy<span class="sc">$</span>tumor.type <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(biopsy<span class="sc">$</span>class<span class="sc">==</span><span class="st">&quot;malignant&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb223-2"><a href="risk-prediction.html#cb223-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(biopsy<span class="sc">$</span>tumor.type)</span></code></pre></div>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="risk-prediction.html#cb225-1" tabindex="-1"></a>biopsy<span class="sc">$</span>tumor.type <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(biopsy<span class="sc">$</span>class<span class="sc">==</span><span class="st">&quot;malignant&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb225-2"><a href="risk-prediction.html#cb225-2" tabindex="-1"></a><span class="fu">table</span>(biopsy<span class="sc">$</span>tumor.type)</span></code></pre></div>
 <pre><code>## 
 ##   0   1 
 ## 458 241</code></pre>
@@ -470,20 +474,20 @@ with <code>class</code> as the <strong>outcome</strong> and variables <code>V1, 
 <li><p>Our risk score for the <span class="math inline">\(i^{th}\)</span> case,
 will be the predicted probability of having a malignant tumor given the covariate information</p></li>
 </ul>
-<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="risk-prediction.html#cb225-1" aria-hidden="true" tabindex="-1"></a>logreg.model <span class="ot">&lt;-</span> <span class="fu">glm</span>(tumor.type <span class="sc">~</span> V1 <span class="sc">+</span> V3 <span class="sc">+</span> V4 <span class="sc">+</span> V7 <span class="sc">+</span> V8, <span class="at">family=</span><span class="st">&quot;binomial&quot;</span>, <span class="at">data=</span>biopsy)</span>
-<span id="cb225-2"><a href="risk-prediction.html#cb225-2" aria-hidden="true" tabindex="-1"></a>risk.score <span class="ot">&lt;-</span> logreg.model<span class="sc">$</span>fitted.values</span></code></pre></div>
+<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="risk-prediction.html#cb227-1" tabindex="-1"></a>logreg.model <span class="ot">&lt;-</span> <span class="fu">glm</span>(tumor.type <span class="sc">~</span> V1 <span class="sc">+</span> V3 <span class="sc">+</span> V4 <span class="sc">+</span> V7 <span class="sc">+</span> V8, <span class="at">family=</span><span class="st">&quot;binomial&quot;</span>, <span class="at">data=</span>biopsy)</span>
+<span id="cb227-2"><a href="risk-prediction.html#cb227-2" tabindex="-1"></a>risk.score <span class="ot">&lt;-</span> logreg.model<span class="sc">$</span>fitted.values</span></code></pre></div>
 <ul>
 <li>Let’s now compute the <strong>sensitivity</strong> and <strong>specificity</strong> for a threshold of <span class="math inline">\(t = 0.5\)</span></li>
 </ul>
-<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="risk-prediction.html#cb226-1" aria-hidden="true" tabindex="-1"></a>Sensitivity <span class="ot">&lt;-</span> <span class="cf">function</span>(thresh, Y, risk.score) {</span>
-<span id="cb226-2"><a href="risk-prediction.html#cb226-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sum</span>((risk.score <span class="sc">&gt;=</span> thresh)<span class="sc">*</span>Y)<span class="sc">/</span><span class="fu">sum</span>(Y)</span>
-<span id="cb226-3"><a href="risk-prediction.html#cb226-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb226-4"><a href="risk-prediction.html#cb226-4" aria-hidden="true" tabindex="-1"></a>Specificity <span class="ot">&lt;-</span> <span class="cf">function</span>(thresh, Y, risk.score) {</span>
-<span id="cb226-5"><a href="risk-prediction.html#cb226-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sum</span>((risk.score <span class="sc">&lt;</span> thresh)<span class="sc">*</span>(<span class="dv">1</span> <span class="sc">-</span> Y))<span class="sc">/</span><span class="fu">sum</span>(<span class="dv">1</span> <span class="sc">-</span> Y)</span>
-<span id="cb226-6"><a href="risk-prediction.html#cb226-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb226-7"><a href="risk-prediction.html#cb226-7" aria-hidden="true" tabindex="-1"></a><span class="fu">Sensitivity</span>(<span class="fl">0.5</span>, <span class="at">Y=</span>biopsy<span class="sc">$</span>tumor.type, risk.score)</span></code></pre></div>
+<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="risk-prediction.html#cb228-1" tabindex="-1"></a>Sensitivity <span class="ot">&lt;-</span> <span class="cf">function</span>(thresh, Y, risk.score) {</span>
+<span id="cb228-2"><a href="risk-prediction.html#cb228-2" tabindex="-1"></a>    <span class="fu">sum</span>((risk.score <span class="sc">&gt;=</span> thresh)<span class="sc">*</span>Y)<span class="sc">/</span><span class="fu">sum</span>(Y)</span>
+<span id="cb228-3"><a href="risk-prediction.html#cb228-3" tabindex="-1"></a>}</span>
+<span id="cb228-4"><a href="risk-prediction.html#cb228-4" tabindex="-1"></a>Specificity <span class="ot">&lt;-</span> <span class="cf">function</span>(thresh, Y, risk.score) {</span>
+<span id="cb228-5"><a href="risk-prediction.html#cb228-5" tabindex="-1"></a>    <span class="fu">sum</span>((risk.score <span class="sc">&lt;</span> thresh)<span class="sc">*</span>(<span class="dv">1</span> <span class="sc">-</span> Y))<span class="sc">/</span><span class="fu">sum</span>(<span class="dv">1</span> <span class="sc">-</span> Y)</span>
+<span id="cb228-6"><a href="risk-prediction.html#cb228-6" tabindex="-1"></a>}</span>
+<span id="cb228-7"><a href="risk-prediction.html#cb228-7" tabindex="-1"></a><span class="fu">Sensitivity</span>(<span class="fl">0.5</span>, <span class="at">Y=</span>biopsy<span class="sc">$</span>tumor.type, risk.score)</span></code></pre></div>
 <pre><code>## [1] 0.9502075</code></pre>
-<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="risk-prediction.html#cb228-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Specificity</span>(<span class="fl">0.5</span>, <span class="at">Y=</span>biopsy<span class="sc">$</span>tumor.type, risk.score)</span></code></pre></div>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="risk-prediction.html#cb230-1" tabindex="-1"></a><span class="fu">Specificity</span>(<span class="fl">0.5</span>, <span class="at">Y=</span>biopsy<span class="sc">$</span>tumor.type, risk.score)</span></code></pre></div>
 <pre><code>## [1] 0.9759825</code></pre>
 <ul>
 <li>For the threshold of <span class="math inline">\(t = 0.5\)</span>, we have a sensitivity of about <span class="math inline">\(0.95\)</span> and a specificity of
@@ -494,40 +498,40 @@ about <span class="math inline">\(0.975\)</span>.</li>
 <li>Now, let’s compute the ROC curve by computing sensitivity and specificity
 for each risk score (plus the values of 0 and 1).</li>
 </ul>
-<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="risk-prediction.html#cb230-1" aria-hidden="true" tabindex="-1"></a>sorted.riskscores <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fu">sort</span>(risk.score, <span class="at">decreasing=</span><span class="cn">TRUE</span>), <span class="dv">0</span>) </span>
-<span id="cb230-2"><a href="risk-prediction.html#cb230-2" aria-hidden="true" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="fu">length</span>(sorted.riskscores)</span>
-<span id="cb230-3"><a href="risk-prediction.html#cb230-3" aria-hidden="true" tabindex="-1"></a>roc.y <span class="ot">&lt;-</span> roc.x <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, mm)</span>
-<span id="cb230-4"><a href="risk-prediction.html#cb230-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>mm) {</span>
-<span id="cb230-5"><a href="risk-prediction.html#cb230-5" aria-hidden="true" tabindex="-1"></a>   thresh.val <span class="ot">&lt;-</span> sorted.riskscores[k]</span>
-<span id="cb230-6"><a href="risk-prediction.html#cb230-6" aria-hidden="true" tabindex="-1"></a>   roc.y[k] <span class="ot">&lt;-</span> <span class="fu">Sensitivity</span>(thresh.val, <span class="at">Y=</span>biopsy<span class="sc">$</span>tumor.type, risk.score)</span>
-<span id="cb230-7"><a href="risk-prediction.html#cb230-7" aria-hidden="true" tabindex="-1"></a>   roc.x[k] <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">Specificity</span>(thresh.val, <span class="at">Y=</span>biopsy<span class="sc">$</span>tumor.type, risk.score)</span>
-<span id="cb230-8"><a href="risk-prediction.html#cb230-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb230-9"><a href="risk-prediction.html#cb230-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(roc.x, roc.y, <span class="at">main=</span><span class="st">&quot;ROC curve for biopsy data&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;1 - Specificity&quot;</span>,</span>
-<span id="cb230-10"><a href="risk-prediction.html#cb230-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">&quot;Sensitivity&quot;</span>, <span class="at">las=</span><span class="dv">1</span>)</span>
-<span id="cb230-11"><a href="risk-prediction.html#cb230-11" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(roc.x, roc.y, <span class="at">type=</span><span class="st">&quot;s&quot;</span>)</span>
-<span id="cb230-12"><a href="risk-prediction.html#cb230-12" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="risk-prediction.html#cb232-1" tabindex="-1"></a>sorted.riskscores <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fu">sort</span>(risk.score, <span class="at">decreasing=</span><span class="cn">TRUE</span>), <span class="dv">0</span>) </span>
+<span id="cb232-2"><a href="risk-prediction.html#cb232-2" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="fu">length</span>(sorted.riskscores)</span>
+<span id="cb232-3"><a href="risk-prediction.html#cb232-3" tabindex="-1"></a>roc.y <span class="ot">&lt;-</span> roc.x <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, mm)</span>
+<span id="cb232-4"><a href="risk-prediction.html#cb232-4" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>mm) {</span>
+<span id="cb232-5"><a href="risk-prediction.html#cb232-5" tabindex="-1"></a>   thresh.val <span class="ot">&lt;-</span> sorted.riskscores[k]</span>
+<span id="cb232-6"><a href="risk-prediction.html#cb232-6" tabindex="-1"></a>   roc.y[k] <span class="ot">&lt;-</span> <span class="fu">Sensitivity</span>(thresh.val, <span class="at">Y=</span>biopsy<span class="sc">$</span>tumor.type, risk.score)</span>
+<span id="cb232-7"><a href="risk-prediction.html#cb232-7" tabindex="-1"></a>   roc.x[k] <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">Specificity</span>(thresh.val, <span class="at">Y=</span>biopsy<span class="sc">$</span>tumor.type, risk.score)</span>
+<span id="cb232-8"><a href="risk-prediction.html#cb232-8" tabindex="-1"></a>}</span>
+<span id="cb232-9"><a href="risk-prediction.html#cb232-9" tabindex="-1"></a><span class="fu">plot</span>(roc.x, roc.y, <span class="at">main=</span><span class="st">&quot;ROC curve for biopsy data&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;1 - Specificity&quot;</span>,</span>
+<span id="cb232-10"><a href="risk-prediction.html#cb232-10" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">&quot;Sensitivity&quot;</span>, <span class="at">las=</span><span class="dv">1</span>)</span>
+<span id="cb232-11"><a href="risk-prediction.html#cb232-11" tabindex="-1"></a><span class="fu">lines</span>(roc.x, roc.y, <span class="at">type=</span><span class="st">&quot;s&quot;</span>)</span>
+<span id="cb232-12"><a href="risk-prediction.html#cb232-12" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="05-riskprediction_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <hr />
 <ul>
 <li>Let’s compare the <strong>logistic regression</strong> ROC curve with a worthless risk score where
 we generate risk scores randomly from a <strong>uniform distribution</strong>.</li>
 </ul>
-<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="risk-prediction.html#cb231-1" aria-hidden="true" tabindex="-1"></a>rr <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="fu">nrow</span>(biopsy))</span>
-<span id="cb231-2"><a href="risk-prediction.html#cb231-2" aria-hidden="true" tabindex="-1"></a>sorted.rr <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fu">sort</span>(rr, <span class="at">decreasing=</span><span class="cn">TRUE</span>), <span class="dv">0</span>) </span>
-<span id="cb231-3"><a href="risk-prediction.html#cb231-3" aria-hidden="true" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="fu">length</span>(sorted.rr)</span>
-<span id="cb231-4"><a href="risk-prediction.html#cb231-4" aria-hidden="true" tabindex="-1"></a>roc.random.y <span class="ot">&lt;-</span> roc.random.x <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, mm)</span>
-<span id="cb231-5"><a href="risk-prediction.html#cb231-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>mm) {</span>
-<span id="cb231-6"><a href="risk-prediction.html#cb231-6" aria-hidden="true" tabindex="-1"></a>   thresh.val <span class="ot">&lt;-</span> sorted.rr[k]</span>
-<span id="cb231-7"><a href="risk-prediction.html#cb231-7" aria-hidden="true" tabindex="-1"></a>   roc.random.y[k] <span class="ot">&lt;-</span> <span class="fu">Sensitivity</span>(thresh.val, <span class="at">Y=</span>biopsy<span class="sc">$</span>tumor.type, rr)</span>
-<span id="cb231-8"><a href="risk-prediction.html#cb231-8" aria-hidden="true" tabindex="-1"></a>   roc.random.x[k] <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">Specificity</span>(thresh.val, <span class="at">Y=</span>biopsy<span class="sc">$</span>tumor.type, rr)</span>
-<span id="cb231-9"><a href="risk-prediction.html#cb231-9" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb231-10"><a href="risk-prediction.html#cb231-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(roc.random.x, roc.random.y, <span class="at">main=</span><span class="st">&quot;ROC curve for biopsy data&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;1 - Specificity&quot;</span>,</span>
-<span id="cb231-11"><a href="risk-prediction.html#cb231-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">&quot;Sensitivity&quot;</span>, <span class="at">las=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>, <span class="at">type=</span><span class="st">&quot;n&quot;</span>)</span>
-<span id="cb231-12"><a href="risk-prediction.html#cb231-12" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(roc.random.x, roc.random.y, <span class="at">type=</span><span class="st">&quot;s&quot;</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span>
-<span id="cb231-13"><a href="risk-prediction.html#cb231-13" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(roc.x, roc.y, <span class="at">type=</span><span class="st">&quot;s&quot;</span>)</span>
-<span id="cb231-14"><a href="risk-prediction.html#cb231-14" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;logistic regression risk scores&quot;</span>, <span class="st">&quot;random risk scores&quot;</span>),</span>
-<span id="cb231-15"><a href="risk-prediction.html#cb231-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">bty=</span><span class="st">&#39;n&#39;</span>)</span>
-<span id="cb231-16"><a href="risk-prediction.html#cb231-16" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="risk-prediction.html#cb233-1" tabindex="-1"></a>rr <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="fu">nrow</span>(biopsy))</span>
+<span id="cb233-2"><a href="risk-prediction.html#cb233-2" tabindex="-1"></a>sorted.rr <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fu">sort</span>(rr, <span class="at">decreasing=</span><span class="cn">TRUE</span>), <span class="dv">0</span>) </span>
+<span id="cb233-3"><a href="risk-prediction.html#cb233-3" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="fu">length</span>(sorted.rr)</span>
+<span id="cb233-4"><a href="risk-prediction.html#cb233-4" tabindex="-1"></a>roc.random.y <span class="ot">&lt;-</span> roc.random.x <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, mm)</span>
+<span id="cb233-5"><a href="risk-prediction.html#cb233-5" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>mm) {</span>
+<span id="cb233-6"><a href="risk-prediction.html#cb233-6" tabindex="-1"></a>   thresh.val <span class="ot">&lt;-</span> sorted.rr[k]</span>
+<span id="cb233-7"><a href="risk-prediction.html#cb233-7" tabindex="-1"></a>   roc.random.y[k] <span class="ot">&lt;-</span> <span class="fu">Sensitivity</span>(thresh.val, <span class="at">Y=</span>biopsy<span class="sc">$</span>tumor.type, rr)</span>
+<span id="cb233-8"><a href="risk-prediction.html#cb233-8" tabindex="-1"></a>   roc.random.x[k] <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">Specificity</span>(thresh.val, <span class="at">Y=</span>biopsy<span class="sc">$</span>tumor.type, rr)</span>
+<span id="cb233-9"><a href="risk-prediction.html#cb233-9" tabindex="-1"></a>}</span>
+<span id="cb233-10"><a href="risk-prediction.html#cb233-10" tabindex="-1"></a><span class="fu">plot</span>(roc.random.x, roc.random.y, <span class="at">main=</span><span class="st">&quot;ROC curve for biopsy data&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;1 - Specificity&quot;</span>,</span>
+<span id="cb233-11"><a href="risk-prediction.html#cb233-11" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">&quot;Sensitivity&quot;</span>, <span class="at">las=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>, <span class="at">type=</span><span class="st">&quot;n&quot;</span>)</span>
+<span id="cb233-12"><a href="risk-prediction.html#cb233-12" tabindex="-1"></a><span class="fu">lines</span>(roc.random.x, roc.random.y, <span class="at">type=</span><span class="st">&quot;s&quot;</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span>
+<span id="cb233-13"><a href="risk-prediction.html#cb233-13" tabindex="-1"></a><span class="fu">lines</span>(roc.x, roc.y, <span class="at">type=</span><span class="st">&quot;s&quot;</span>)</span>
+<span id="cb233-14"><a href="risk-prediction.html#cb233-14" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;logistic regression risk scores&quot;</span>, <span class="st">&quot;random risk scores&quot;</span>),</span>
+<span id="cb233-15"><a href="risk-prediction.html#cb233-15" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">bty=</span><span class="st">&#39;n&#39;</span>)</span>
+<span id="cb233-16"><a href="risk-prediction.html#cb233-16" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="05-riskprediction_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 </div>
@@ -626,8 +630,8 @@ a risk score generated at random.</p></li>
 <ul>
 <li>Let’s compute the AUC for our logistic regression-based <strong>risk score</strong> for the <code>biopsy</code> data:</li>
 </ul>
-<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="risk-prediction.html#cb232-1" aria-hidden="true" tabindex="-1"></a>AUC.biopsy <span class="ot">&lt;-</span> <span class="fu">sum</span>(roc.y[<span class="sc">-</span><span class="fu">length</span>(roc.y)]<span class="sc">*</span><span class="fu">diff</span>(roc.x))</span>
-<span id="cb232-2"><a href="risk-prediction.html#cb232-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(AUC.biopsy, <span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="risk-prediction.html#cb234-1" tabindex="-1"></a>AUC.biopsy <span class="ot">&lt;-</span> <span class="fu">sum</span>(roc.y[<span class="sc">-</span><span class="fu">length</span>(roc.y)]<span class="sc">*</span><span class="fu">diff</span>(roc.x))</span>
+<span id="cb234-2"><a href="risk-prediction.html#cb234-2" tabindex="-1"></a><span class="fu">round</span>(AUC.biopsy, <span class="dv">4</span>)</span></code></pre></div>
 <pre><code>## [1] 0.9928</code></pre>
 <ul>
 <li>This is a <strong>very high</strong> AUC: <span class="math inline">\(0.9928\)</span></li>
@@ -641,23 +645,23 @@ the <code>pROC</code> package.</p></li>
 <li><p>With the <code>pROC</code> package, you start by inputting your binary
 outcomes and risk scores into the <code>roc</code> function in order to get an “roc object”.</p></li>
 </ul>
-<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="risk-prediction.html#cb234-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pROC)</span>
-<span id="cb234-2"><a href="risk-prediction.html#cb234-2" aria-hidden="true" tabindex="-1"></a>roc.biopsy <span class="ot">&lt;-</span> <span class="fu">roc</span>(biopsy<span class="sc">$</span>tumor.type, risk.score)</span></code></pre></div>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="risk-prediction.html#cb236-1" tabindex="-1"></a><span class="fu">library</span>(pROC)</span>
+<span id="cb236-2"><a href="risk-prediction.html#cb236-2" tabindex="-1"></a>roc.biopsy <span class="ot">&lt;-</span> <span class="fu">roc</span>(biopsy<span class="sc">$</span>tumor.type, risk.score)</span></code></pre></div>
 <ul>
 <li>To find the AUC, you can then use <code>auc(roc.biopsy)</code></li>
 </ul>
-<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="risk-prediction.html#cb235-1" aria-hidden="true" tabindex="-1"></a><span class="fu">auc</span>( roc.biopsy )</span></code></pre></div>
+<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="risk-prediction.html#cb237-1" tabindex="-1"></a><span class="fu">auc</span>( roc.biopsy )</span></code></pre></div>
 <pre><code>## Area under the curve: 0.9928</code></pre>
 <hr />
 <ul>
 <li>You can <strong>plot</strong> the ROC curve by just plugging in the roc object into the <code>plot</code> function.</li>
 </ul>
-<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="risk-prediction.html#cb237-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(roc.biopsy)</span></code></pre></div>
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="risk-prediction.html#cb239-1" tabindex="-1"></a><span class="fu">plot</span>(roc.biopsy)</span></code></pre></div>
 <p><img src="05-riskprediction_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <ul>
 <li>To also print the <strong>AUC</strong> value, you can just add <code>print.auc=TRUE</code></li>
 </ul>
-<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="risk-prediction.html#cb238-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(roc.biopsy, <span class="at">print.auc=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="risk-prediction.html#cb240-1" tabindex="-1"></a><span class="fu">plot</span>(roc.biopsy, <span class="at">print.auc=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="05-riskprediction_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>
@@ -696,8 +700,8 @@ for each <span class="math inline">\(k\)</span>.</p></li>
 <li><p>Let’s make a <strong>calibration plot</strong> for the <code>biopsy</code> data.</p></li>
 <li><p>First, let’s make <strong>10 risk strata</strong> using the quantiles of our logistic regression-based risk score.</p></li>
 </ul>
-<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="risk-prediction.html#cb239-1" aria-hidden="true" tabindex="-1"></a>rr <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">quantile</span>(risk.score, <span class="at">prob=</span><span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by=</span><span class="fl">0.1</span>)), <span class="dv">1</span>)</span>
-<span id="cb239-2"><a href="risk-prediction.html#cb239-2" aria-hidden="true" tabindex="-1"></a>rr</span></code></pre></div>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="risk-prediction.html#cb241-1" tabindex="-1"></a>rr <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">quantile</span>(risk.score, <span class="at">prob=</span><span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by=</span><span class="fl">0.1</span>)), <span class="dv">1</span>)</span>
+<span id="cb241-2"><a href="risk-prediction.html#cb241-2" tabindex="-1"></a>rr</span></code></pre></div>
 <pre><code>##                     10%         20%         30%         40%         50% 
 ## 0.000000000 0.001505966 0.002756161 0.005385182 0.010154320 0.019231612 
 ##         60%         70%         80%         90%             
@@ -705,17 +709,17 @@ for each <span class="math inline">\(k\)</span>.</p></li>
 <ul>
 <li>Now, compute <strong>observed and expected frequencies</strong> for each of the risk strata and plot the result:</li>
 </ul>
-<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="risk-prediction.html#cb241-1" aria-hidden="true" tabindex="-1"></a>observed.freq <span class="ot">&lt;-</span> pred.freq <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">10</span>)</span>
-<span id="cb241-2"><a href="risk-prediction.html#cb241-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">11</span>) {</span>
-<span id="cb241-3"><a href="risk-prediction.html#cb241-3" aria-hidden="true" tabindex="-1"></a>   ind <span class="ot">&lt;-</span> risk.score <span class="sc">&lt;=</span> rr[k] <span class="sc">&amp;</span> risk.score <span class="sc">&gt;</span> rr[k<span class="dv">-1</span>] <span class="co"># stratum indicators</span></span>
-<span id="cb241-4"><a href="risk-prediction.html#cb241-4" aria-hidden="true" tabindex="-1"></a>   observed.freq[k] <span class="ot">&lt;-</span> <span class="fu">sum</span>(biopsy<span class="sc">$</span>tumor.type[ind])<span class="sc">/</span><span class="fu">sum</span>(ind)</span>
-<span id="cb241-5"><a href="risk-prediction.html#cb241-5" aria-hidden="true" tabindex="-1"></a>   pred.freq[k] <span class="ot">&lt;-</span> <span class="fu">sum</span>(risk.score[ind])<span class="sc">/</span><span class="fu">sum</span>(ind)</span>
-<span id="cb241-6"><a href="risk-prediction.html#cb241-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb241-7"><a href="risk-prediction.html#cb241-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(observed.freq, pred.freq, <span class="at">xlab=</span><span class="st">&quot;Observed Frequency&quot;</span>,</span>
-<span id="cb241-8"><a href="risk-prediction.html#cb241-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Predicted Frequency&quot;</span>,</span>
-<span id="cb241-9"><a href="risk-prediction.html#cb241-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">las=</span><span class="dv">1</span>, <span class="at">main=</span><span class="st">&quot;Calibration plot for biopsy data&quot;</span>)</span>
-<span id="cb241-10"><a href="risk-prediction.html#cb241-10" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(observed.freq, pred.freq)</span>
-<span id="cb241-11"><a href="risk-prediction.html#cb241-11" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">lty=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="risk-prediction.html#cb243-1" tabindex="-1"></a>observed.freq <span class="ot">&lt;-</span> pred.freq <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb243-2"><a href="risk-prediction.html#cb243-2" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">11</span>) {</span>
+<span id="cb243-3"><a href="risk-prediction.html#cb243-3" tabindex="-1"></a>   ind <span class="ot">&lt;-</span> risk.score <span class="sc">&lt;=</span> rr[k] <span class="sc">&amp;</span> risk.score <span class="sc">&gt;</span> rr[k<span class="dv">-1</span>] <span class="co"># stratum indicators</span></span>
+<span id="cb243-4"><a href="risk-prediction.html#cb243-4" tabindex="-1"></a>   observed.freq[k] <span class="ot">&lt;-</span> <span class="fu">sum</span>(biopsy<span class="sc">$</span>tumor.type[ind])<span class="sc">/</span><span class="fu">sum</span>(ind)</span>
+<span id="cb243-5"><a href="risk-prediction.html#cb243-5" tabindex="-1"></a>   pred.freq[k] <span class="ot">&lt;-</span> <span class="fu">sum</span>(risk.score[ind])<span class="sc">/</span><span class="fu">sum</span>(ind)</span>
+<span id="cb243-6"><a href="risk-prediction.html#cb243-6" tabindex="-1"></a>}</span>
+<span id="cb243-7"><a href="risk-prediction.html#cb243-7" tabindex="-1"></a><span class="fu">plot</span>(observed.freq, pred.freq, <span class="at">xlab=</span><span class="st">&quot;Observed Frequency&quot;</span>,</span>
+<span id="cb243-8"><a href="risk-prediction.html#cb243-8" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Predicted Frequency&quot;</span>,</span>
+<span id="cb243-9"><a href="risk-prediction.html#cb243-9" tabindex="-1"></a>     <span class="at">las=</span><span class="dv">1</span>, <span class="at">main=</span><span class="st">&quot;Calibration plot for biopsy data&quot;</span>)</span>
+<span id="cb243-10"><a href="risk-prediction.html#cb243-10" tabindex="-1"></a><span class="fu">lines</span>(observed.freq, pred.freq)</span>
+<span id="cb243-11"><a href="risk-prediction.html#cb243-11" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">lty=</span><span class="dv">2</span>)</span></code></pre></div>
 <p><img src="05-riskprediction_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <hr />
 <ul>
@@ -730,7 +734,7 @@ a regression of expected vs. observed frequencies is reported.
 <li>We should expect that the intercept should be close to <span class="math inline">\(0\)</span> and the slope should be close to <span class="math inline">\(1\)</span> for a well-calibrated risk score.</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="risk-prediction.html#cb242-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(pred.freq <span class="sc">~</span> observed.freq)</span></code></pre></div>
+<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="risk-prediction.html#cb244-1" tabindex="-1"></a><span class="fu">lm</span>(pred.freq <span class="sc">~</span> observed.freq)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = pred.freq ~ observed.freq)

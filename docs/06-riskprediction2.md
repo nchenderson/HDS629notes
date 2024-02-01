@@ -216,7 +216,7 @@ round(c(brier.cart.test, brier.logreg.test, brier.RF.test), 4)
 ```
 
 ```
-## [1] 0.0359 0.0135 0.0189
+## [1] 0.0359 0.0135 0.0191
 ```
 
 * For the out-of-sample Brier score, both logistic regression and random forest are notably

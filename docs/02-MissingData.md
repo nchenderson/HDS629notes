@@ -466,6 +466,102 @@ round(colMeans(BetaMat), 3)  # compare with the results from using the "with" fu
 ## [1] -62.731   0.059  -3.108   1.600
 ```
 
+### Categorical Variables in MICE
+
+* You can impute values of missing **categorical variables** directly with the `mice` function
+
+* The only thing to remember is that any categorical variable should be stored 
+in your data frame as a **factor**.
+
+* As an example, let's define the data frame `testdf` as
+
+```r
+testdf <- data.frame(wt=c(103.2, 57.6, 33.4, 87.2, NA, NA, 98.5, 77.3),
+                     age=c(NA, "old", "middle_age", "young", NA,
+                           "old", "young", "middle_age"))
+```
+
+* This data frame **does not** store `age` as a factor
+
+```r
+str(testdf)
+```
+
+```
+## 'data.frame':	8 obs. of  2 variables:
+##  $ wt : num  103.2 57.6 33.4 87.2 NA ...
+##  $ age: chr  NA "old" "middle_age" "young" ...
+```
+
+* `mice` will not run if we try to use `testdf` as the input data frame to `mice`
+
+* However, it will work if we just change the variable `age` to a **factor**.
+
+* So, if we define the data frame `testdf_fac` as
+
+```r
+testdf_fac <- testdf
+testdf_fac$age <- as.factor(testdf_fac$age)
+str(testdf_fac)
+```
+
+```
+## 'data.frame':	8 obs. of  2 variables:
+##  $ wt : num  103.2 57.6 33.4 87.2 NA ...
+##  $ age: Factor w/ 3 levels "middle_age","old",..: NA 2 1 3 NA 2 3 1
+```
+
+* Then, we should be able to use `mice` with `testdf_fac`
+
+```r
+imptest <- mice(testdf_fac)
+```
+
+```
+## 
+##  iter imp variable
+##   1   1  wt  age
+##   1   2  wt  age
+##   1   3  wt  age
+##   1   4  wt  age
+##   1   5  wt  age
+##   2   1  wt  age
+##   2   2  wt  age
+##   2   3  wt  age
+##   2   4  wt  age
+##   2   5  wt  age
+##   3   1  wt  age
+##   3   2  wt  age
+##   3   3  wt  age
+##   3   4  wt  age
+##   3   5  wt  age
+##   4   1  wt  age
+##   4   2  wt  age
+##   4   3  wt  age
+##   4   4  wt  age
+##   4   5  wt  age
+##   5   1  wt  age
+##   5   2  wt  age
+##   5   3  wt  age
+##   5   4  wt  age
+##   5   5  wt  age
+```
+
+* Look at imputed values of `age`:
+
+```r
+imptest$imp$age
+```
+
+```
+##            1          2          3     4     5
+## 1      young      young        old young young
+## 5 middle_age middle_age middle_age young   old
+```
+
+* Also, remember that if you are reading a .csv file into R,
+including the argument `stringsAsFactors=TRUE` in `read.csv` will **automatically**
+make all the string variables in the .csv file **factors** in the data frame that is read into R.
 
 
 ## What is MICE doing?

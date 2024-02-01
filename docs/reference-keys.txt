@@ -45,6 +45,7 @@ multiple-imputation
 short-overview-of-multiple-imputation
 multiple-imputation-with-mice
 with-pool-complete
+categorical-variables-in-mice
 what-is-mice-doing
 longitudinal-data
 different-missing-data-mechanisms

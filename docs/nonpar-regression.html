@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2024-01-16" />
+<meta name="date" content="2024-02-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -197,6 +197,7 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="2.2.1" data-path="missing-data.html"><a href="missing-data.html#short-overview-of-multiple-imputation"><i class="fa fa-check"></i><b>2.2.1</b> Short Overview of Multiple Imputation</a></li>
 <li class="chapter" data-level="2.2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation-with-mice"><i class="fa fa-check"></i><b>2.2.2</b> Multiple imputation with mice</a></li>
+<li class="chapter" data-level="2.2.3" data-path="missing-data.html"><a href="missing-data.html#categorical-variables-in-mice"><i class="fa fa-check"></i><b>2.2.3</b> Categorical Variables in MICE</a></li>
 </ul></li>
 <li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#what-is-mice-doing"><i class="fa fa-check"></i><b>2.3</b> What is MICE doing?</a></li>
 <li class="chapter" data-level="2.4" data-path="missing-data.html"><a href="missing-data.html#longitudinal-data"><i class="fa fa-check"></i><b>2.4</b> Longitudinal Data</a></li>
@@ -401,10 +402,10 @@ by a larger number of observations.</p></li>
 <li><p>The <strong>sleepstudy</strong> data had 18 participants with <strong>reaction time</strong>
 measured across 10 days.</p></li>
 </ul>
-<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="nonpar-regression.html#cb130-1" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code></pre></div>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="nonpar-regression.html#cb139-1" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code></pre></div>
 <pre><code>## Loading required package: Matrix</code></pre>
-<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="nonpar-regression.html#cb132-1" tabindex="-1"></a><span class="fu">data</span>(sleepstudy)</span>
-<span id="cb132-2"><a href="nonpar-regression.html#cb132-2" tabindex="-1"></a><span class="fu">head</span>(sleepstudy)</span></code></pre></div>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="nonpar-regression.html#cb141-1" tabindex="-1"></a><span class="fu">data</span>(sleepstudy)</span>
+<span id="cb141-2"><a href="nonpar-regression.html#cb141-2" tabindex="-1"></a><span class="fu">head</span>(sleepstudy)</span></code></pre></div>
 <pre><code>##   Reaction Days Subject
 ## 1 249.5600    0     308
 ## 2 258.7047    1     308
@@ -421,21 +422,21 @@ measured across 10 days.</p></li>
 <li>That is, we will assume that <span class="math inline">\(\mu(t) = \beta_{0} + \beta_{1} t\)</span>.</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="nonpar-regression.html#cb134-1" tabindex="-1"></a><span class="fu">library</span>(geepack)</span>
-<span id="cb134-2"><a href="nonpar-regression.html#cb134-2" tabindex="-1"></a><span class="do">## Use AR(1) correlation structure</span></span>
-<span id="cb134-3"><a href="nonpar-regression.html#cb134-3" tabindex="-1"></a>sleep.gee <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(Reaction <span class="sc">~</span> Days, <span class="at">data=</span>sleepstudy, <span class="at">id=</span>Subject, <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>) </span></code></pre></div>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="nonpar-regression.html#cb143-1" tabindex="-1"></a><span class="fu">library</span>(geepack)</span>
+<span id="cb143-2"><a href="nonpar-regression.html#cb143-2" tabindex="-1"></a><span class="do">## Use AR(1) correlation structure</span></span>
+<span id="cb143-3"><a href="nonpar-regression.html#cb143-3" tabindex="-1"></a>sleep.gee <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(Reaction <span class="sc">~</span> Days, <span class="at">data=</span>sleepstudy, <span class="at">id=</span>Subject, <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>) </span></code></pre></div>
 <ul>
 <li>To get the value of the estimated <strong>regression function</strong>, we can use the first
 <span class="math inline">\(10\)</span> fitted values (because the fitted values for each subject are the same as the overall mean function)</li>
 </ul>
-<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="nonpar-regression.html#cb135-1" tabindex="-1"></a><span class="do">## Estimated mean function at each time point</span></span>
-<span id="cb135-2"><a href="nonpar-regression.html#cb135-2" tabindex="-1"></a>gee.regfn <span class="ot">&lt;-</span> sleep.gee<span class="sc">$</span>fitted.values[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">1</span>] </span>
-<span id="cb135-3"><a href="nonpar-regression.html#cb135-3" tabindex="-1"></a></span>
-<span id="cb135-4"><a href="nonpar-regression.html#cb135-4" tabindex="-1"></a><span class="do">### Now plot the estimated mean function</span></span>
-<span id="cb135-5"><a href="nonpar-regression.html#cb135-5" tabindex="-1"></a><span class="fu">plot</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">las=</span><span class="dv">1</span>, <span class="at">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Days&quot;</span>,</span>
-<span id="cb135-6"><a href="nonpar-regression.html#cb135-6" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Sleepstudy: GEE estimate of Mean Function&quot;</span>, <span class="at">type=</span><span class="st">&quot;n&quot;</span>)</span>
-<span id="cb135-7"><a href="nonpar-regression.html#cb135-7" tabindex="-1"></a><span class="fu">points</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">pch=</span><span class="dv">16</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
-<span id="cb135-8"><a href="nonpar-regression.html#cb135-8" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">9</span>, gee.regfn, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="nonpar-regression.html#cb144-1" tabindex="-1"></a><span class="do">## Estimated mean function at each time point</span></span>
+<span id="cb144-2"><a href="nonpar-regression.html#cb144-2" tabindex="-1"></a>gee.regfn <span class="ot">&lt;-</span> sleep.gee<span class="sc">$</span>fitted.values[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">1</span>] </span>
+<span id="cb144-3"><a href="nonpar-regression.html#cb144-3" tabindex="-1"></a></span>
+<span id="cb144-4"><a href="nonpar-regression.html#cb144-4" tabindex="-1"></a><span class="do">### Now plot the estimated mean function</span></span>
+<span id="cb144-5"><a href="nonpar-regression.html#cb144-5" tabindex="-1"></a><span class="fu">plot</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">las=</span><span class="dv">1</span>, <span class="at">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Days&quot;</span>,</span>
+<span id="cb144-6"><a href="nonpar-regression.html#cb144-6" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Sleepstudy: GEE estimate of Mean Function&quot;</span>, <span class="at">type=</span><span class="st">&quot;n&quot;</span>)</span>
+<span id="cb144-7"><a href="nonpar-regression.html#cb144-7" tabindex="-1"></a><span class="fu">points</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">pch=</span><span class="dv">16</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
+<span id="cb144-8"><a href="nonpar-regression.html#cb144-8" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">9</span>, gee.regfn, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
 <p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <hr />
 <ul>
@@ -444,8 +445,8 @@ measured across 10 days.</p></li>
 <li><p>Using a <strong>bandwidth</strong> of <span class="math inline">\(0.5\)</span> and a <strong>Gaussian kernel</strong>, we can find the kernel regression estimate of the mean function
 with the following <strong>R</strong> code:</p></li>
 </ul>
-<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="nonpar-regression.html#cb136-1" tabindex="-1"></a>sleep.kernel <span class="ot">&lt;-</span> <span class="fu">ksmooth</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">kernel=</span><span class="st">&quot;normal&quot;</span>,</span>
-<span id="cb136-2"><a href="nonpar-regression.html#cb136-2" tabindex="-1"></a>                        <span class="at">bandwidth =</span> <span class="fl">0.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="nonpar-regression.html#cb145-1" tabindex="-1"></a>sleep.kernel <span class="ot">&lt;-</span> <span class="fu">ksmooth</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">kernel=</span><span class="st">&quot;normal&quot;</span>,</span>
+<span id="cb145-2"><a href="nonpar-regression.html#cb145-2" tabindex="-1"></a>                        <span class="at">bandwidth =</span> <span class="fl">0.5</span>)</span></code></pre></div>
 <ul>
 <li><p>This will return a list with an “x vector” and a “y vector”.</p></li>
 <li><p>The <code>x</code> vector will be the vector of points at which the regression function
@@ -455,23 +456,23 @@ is estimated. The <code>y</code> vector will be a vector containing the estimate
 <ul>
 <li>Let’s <strong>plot</strong> the estimated mean function to see what it looks like:</li>
 </ul>
-<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="nonpar-regression.html#cb137-1" tabindex="-1"></a><span class="fu">plot</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">las=</span><span class="dv">1</span>, <span class="at">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Days&quot;</span>,</span>
-<span id="cb137-2"><a href="nonpar-regression.html#cb137-2" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Sleepstudy: Kernel Regression with Bandwidth = 0.5&quot;</span>, <span class="at">type=</span><span class="st">&quot;n&quot;</span>)</span>
-<span id="cb137-3"><a href="nonpar-regression.html#cb137-3" tabindex="-1"></a><span class="fu">points</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">pch=</span><span class="dv">16</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
-<span id="cb137-4"><a href="nonpar-regression.html#cb137-4" tabindex="-1"></a><span class="fu">lines</span>(sleep.kernel<span class="sc">$</span>x, sleep.kernel<span class="sc">$</span>y, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="nonpar-regression.html#cb146-1" tabindex="-1"></a><span class="fu">plot</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">las=</span><span class="dv">1</span>, <span class="at">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Days&quot;</span>,</span>
+<span id="cb146-2"><a href="nonpar-regression.html#cb146-2" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Sleepstudy: Kernel Regression with Bandwidth = 0.5&quot;</span>, <span class="at">type=</span><span class="st">&quot;n&quot;</span>)</span>
+<span id="cb146-3"><a href="nonpar-regression.html#cb146-3" tabindex="-1"></a><span class="fu">points</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">pch=</span><span class="dv">16</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
+<span id="cb146-4"><a href="nonpar-regression.html#cb146-4" tabindex="-1"></a><span class="fu">lines</span>(sleep.kernel<span class="sc">$</span>x, sleep.kernel<span class="sc">$</span>y, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
 <p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <ul>
 <li><p>This <strong>bandwidth</strong> looks too small. There are clear “near jumps” in between
 some of the days.</p></li>
 <li><p>We can try a <strong>bandwidth</strong> of <span class="math inline">\(1\)</span> to see if we can smooth this out a bit.</p></li>
 </ul>
-<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="nonpar-regression.html#cb138-1" tabindex="-1"></a>sleep.kernel.bw1 <span class="ot">&lt;-</span> <span class="fu">ksmooth</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">kernel=</span><span class="st">&quot;normal&quot;</span>,</span>
-<span id="cb138-2"><a href="nonpar-regression.html#cb138-2" tabindex="-1"></a>                        <span class="at">bandwidth =</span> <span class="dv">1</span>)</span>
-<span id="cb138-3"><a href="nonpar-regression.html#cb138-3" tabindex="-1"></a></span>
-<span id="cb138-4"><a href="nonpar-regression.html#cb138-4" tabindex="-1"></a><span class="fu">plot</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">las=</span><span class="dv">1</span>, <span class="at">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Days&quot;</span>,</span>
-<span id="cb138-5"><a href="nonpar-regression.html#cb138-5" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Sleepstudy: Kernel Regression with Bandwidth = 1&quot;</span>, <span class="at">type=</span><span class="st">&quot;n&quot;</span>)</span>
-<span id="cb138-6"><a href="nonpar-regression.html#cb138-6" tabindex="-1"></a><span class="fu">points</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">pch=</span><span class="dv">16</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
-<span id="cb138-7"><a href="nonpar-regression.html#cb138-7" tabindex="-1"></a><span class="fu">lines</span>(sleep.kernel.bw1<span class="sc">$</span>x, sleep.kernel.bw1<span class="sc">$</span>y, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="nonpar-regression.html#cb147-1" tabindex="-1"></a>sleep.kernel.bw1 <span class="ot">&lt;-</span> <span class="fu">ksmooth</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">kernel=</span><span class="st">&quot;normal&quot;</span>,</span>
+<span id="cb147-2"><a href="nonpar-regression.html#cb147-2" tabindex="-1"></a>                        <span class="at">bandwidth =</span> <span class="dv">1</span>)</span>
+<span id="cb147-3"><a href="nonpar-regression.html#cb147-3" tabindex="-1"></a></span>
+<span id="cb147-4"><a href="nonpar-regression.html#cb147-4" tabindex="-1"></a><span class="fu">plot</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">las=</span><span class="dv">1</span>, <span class="at">ylab=</span><span class="st">&quot;Reaction Time&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Days&quot;</span>,</span>
+<span id="cb147-5"><a href="nonpar-regression.html#cb147-5" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Sleepstudy: Kernel Regression with Bandwidth = 1&quot;</span>, <span class="at">type=</span><span class="st">&quot;n&quot;</span>)</span>
+<span id="cb147-6"><a href="nonpar-regression.html#cb147-6" tabindex="-1"></a><span class="fu">points</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">pch=</span><span class="dv">16</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
+<span id="cb147-7"><a href="nonpar-regression.html#cb147-7" tabindex="-1"></a><span class="fu">lines</span>(sleep.kernel.bw1<span class="sc">$</span>x, sleep.kernel.bw1<span class="sc">$</span>y, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
 <p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="bandwidth-selection" class="section level3 hasAnchor" number="3.2.3">
@@ -513,9 +514,9 @@ defined as
 <li><p>This is actual the difference in mineral density taken on two consecutive visits divided
 by the average mineral density on those visits.</p></li>
 </ul>
-<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="nonpar-regression.html#cb139-1" tabindex="-1"></a>bonedat <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">&quot;https://web.stanford.edu/~hastie/ElemStatLearn/datasets/bone.data&quot;</span>, </span>
-<span id="cb139-2"><a href="nonpar-regression.html#cb139-2" tabindex="-1"></a>                      <span class="at">header=</span><span class="cn">TRUE</span>)</span>
-<span id="cb139-3"><a href="nonpar-regression.html#cb139-3" tabindex="-1"></a><span class="fu">head</span>(bonedat)</span></code></pre></div>
+<div class="sourceCode" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb148-1"><a href="nonpar-regression.html#cb148-1" tabindex="-1"></a>bonedat <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">&quot;https://web.stanford.edu/~hastie/ElemStatLearn/datasets/bone.data&quot;</span>, </span>
+<span id="cb148-2"><a href="nonpar-regression.html#cb148-2" tabindex="-1"></a>                      <span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb148-3"><a href="nonpar-regression.html#cb148-3" tabindex="-1"></a><span class="fu">head</span>(bonedat)</span></code></pre></div>
 <pre><code>##   idnum   age gender      spnbmd
 ## 1     1 11.70   male 0.018080670
 ## 2     1 12.70   male 0.060109290
@@ -533,25 +534,25 @@ density (the variable <code>spnbmd</code>) as a function of <code>age</code></li
 <li>We can compute the leave-one-out cross-validation score for the <strong>bone</strong> data
 for <strong>different</strong> values of <span class="math inline">\(h_{n}\)</span> (here <span class="math inline">\(0.1 \leq h_{n} \leq 1\)</span>) with the following code:</li>
 </ul>
-<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="nonpar-regression.html#cb141-1" tabindex="-1"></a>nh <span class="ot">&lt;-</span> <span class="dv">200</span></span>
-<span id="cb141-2"><a href="nonpar-regression.html#cb141-2" tabindex="-1"></a>hh <span class="ot">&lt;-</span> <span class="fu">seq</span>(.<span class="dv">1</span>, <span class="dv">1</span>, <span class="at">length.out=</span>nh)</span>
-<span id="cb141-3"><a href="nonpar-regression.html#cb141-3" tabindex="-1"></a>LOOCV <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, nh)</span>
-<span id="cb141-4"><a href="nonpar-regression.html#cb141-4" tabindex="-1"></a>subj.list <span class="ot">&lt;-</span> <span class="fu">unique</span>(bonedat<span class="sc">$</span>idnum)</span>
-<span id="cb141-5"><a href="nonpar-regression.html#cb141-5" tabindex="-1"></a>nsubj <span class="ot">&lt;-</span> <span class="fu">length</span>(subj.list)</span>
-<span id="cb141-6"><a href="nonpar-regression.html#cb141-6" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nh) {</span>
-<span id="cb141-7"><a href="nonpar-regression.html#cb141-7" tabindex="-1"></a>    ss <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb141-8"><a href="nonpar-regression.html#cb141-8" tabindex="-1"></a>    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nsubj) {</span>
-<span id="cb141-9"><a href="nonpar-regression.html#cb141-9" tabindex="-1"></a>        ind <span class="ot">&lt;-</span> bonedat<span class="sc">$</span>idnum<span class="sc">==</span>subj.list[i]</span>
-<span id="cb141-10"><a href="nonpar-regression.html#cb141-10" tabindex="-1"></a>        yy <span class="ot">&lt;-</span> bonedat<span class="sc">$</span>spnbmd[<span class="sc">-</span>ind]</span>
-<span id="cb141-11"><a href="nonpar-regression.html#cb141-11" tabindex="-1"></a>        xx <span class="ot">&lt;-</span> bonedat<span class="sc">$</span>age[<span class="sc">-</span>ind]</span>
-<span id="cb141-12"><a href="nonpar-regression.html#cb141-12" tabindex="-1"></a>        tmp <span class="ot">&lt;-</span> <span class="fu">ksmooth</span>(xx, yy, <span class="at">kernel=</span><span class="st">&quot;normal&quot;</span>, <span class="at">bandwidth =</span> hh[k],</span>
-<span id="cb141-13"><a href="nonpar-regression.html#cb141-13" tabindex="-1"></a>                       <span class="at">x.points=</span>bonedat<span class="sc">$</span>age[ind])</span>
-<span id="cb141-14"><a href="nonpar-regression.html#cb141-14" tabindex="-1"></a>        mu.hat <span class="ot">&lt;-</span> tmp<span class="sc">$</span>y</span>
-<span id="cb141-15"><a href="nonpar-regression.html#cb141-15" tabindex="-1"></a>        ss <span class="ot">&lt;-</span> ss <span class="sc">+</span> <span class="fu">sum</span>((bonedat<span class="sc">$</span>spnbmd[ind] <span class="sc">-</span> mu.hat)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb141-16"><a href="nonpar-regression.html#cb141-16" tabindex="-1"></a>    }</span>
-<span id="cb141-17"><a href="nonpar-regression.html#cb141-17" tabindex="-1"></a>    LOOCV[k] <span class="ot">&lt;-</span> ss</span>
-<span id="cb141-18"><a href="nonpar-regression.html#cb141-18" tabindex="-1"></a>}</span>
-<span id="cb141-19"><a href="nonpar-regression.html#cb141-19" tabindex="-1"></a>hh[<span class="fu">which.min</span>(LOOCV)] <span class="do">## best seems to be 0.1</span></span></code></pre></div>
+<div class="sourceCode" id="cb150"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb150-1"><a href="nonpar-regression.html#cb150-1" tabindex="-1"></a>nh <span class="ot">&lt;-</span> <span class="dv">200</span></span>
+<span id="cb150-2"><a href="nonpar-regression.html#cb150-2" tabindex="-1"></a>hh <span class="ot">&lt;-</span> <span class="fu">seq</span>(.<span class="dv">1</span>, <span class="dv">1</span>, <span class="at">length.out=</span>nh)</span>
+<span id="cb150-3"><a href="nonpar-regression.html#cb150-3" tabindex="-1"></a>LOOCV <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, nh)</span>
+<span id="cb150-4"><a href="nonpar-regression.html#cb150-4" tabindex="-1"></a>subj.list <span class="ot">&lt;-</span> <span class="fu">unique</span>(bonedat<span class="sc">$</span>idnum)</span>
+<span id="cb150-5"><a href="nonpar-regression.html#cb150-5" tabindex="-1"></a>nsubj <span class="ot">&lt;-</span> <span class="fu">length</span>(subj.list)</span>
+<span id="cb150-6"><a href="nonpar-regression.html#cb150-6" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nh) {</span>
+<span id="cb150-7"><a href="nonpar-regression.html#cb150-7" tabindex="-1"></a>    ss <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb150-8"><a href="nonpar-regression.html#cb150-8" tabindex="-1"></a>    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nsubj) {</span>
+<span id="cb150-9"><a href="nonpar-regression.html#cb150-9" tabindex="-1"></a>        ind <span class="ot">&lt;-</span> bonedat<span class="sc">$</span>idnum<span class="sc">==</span>subj.list[i]</span>
+<span id="cb150-10"><a href="nonpar-regression.html#cb150-10" tabindex="-1"></a>        yy <span class="ot">&lt;-</span> bonedat<span class="sc">$</span>spnbmd[<span class="sc">-</span>ind]</span>
+<span id="cb150-11"><a href="nonpar-regression.html#cb150-11" tabindex="-1"></a>        xx <span class="ot">&lt;-</span> bonedat<span class="sc">$</span>age[<span class="sc">-</span>ind]</span>
+<span id="cb150-12"><a href="nonpar-regression.html#cb150-12" tabindex="-1"></a>        tmp <span class="ot">&lt;-</span> <span class="fu">ksmooth</span>(xx, yy, <span class="at">kernel=</span><span class="st">&quot;normal&quot;</span>, <span class="at">bandwidth =</span> hh[k],</span>
+<span id="cb150-13"><a href="nonpar-regression.html#cb150-13" tabindex="-1"></a>                       <span class="at">x.points=</span>bonedat<span class="sc">$</span>age[ind])</span>
+<span id="cb150-14"><a href="nonpar-regression.html#cb150-14" tabindex="-1"></a>        mu.hat <span class="ot">&lt;-</span> tmp<span class="sc">$</span>y</span>
+<span id="cb150-15"><a href="nonpar-regression.html#cb150-15" tabindex="-1"></a>        ss <span class="ot">&lt;-</span> ss <span class="sc">+</span> <span class="fu">sum</span>((bonedat<span class="sc">$</span>spnbmd[ind] <span class="sc">-</span> mu.hat)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb150-16"><a href="nonpar-regression.html#cb150-16" tabindex="-1"></a>    }</span>
+<span id="cb150-17"><a href="nonpar-regression.html#cb150-17" tabindex="-1"></a>    LOOCV[k] <span class="ot">&lt;-</span> ss</span>
+<span id="cb150-18"><a href="nonpar-regression.html#cb150-18" tabindex="-1"></a>}</span>
+<span id="cb150-19"><a href="nonpar-regression.html#cb150-19" tabindex="-1"></a>hh[<span class="fu">which.min</span>(LOOCV)] <span class="do">## best seems to be 0.1</span></span></code></pre></div>
 <pre><code>## [1] 0.1</code></pre>
 <ul>
 <li>In this case, the best <strong>bandwidth</strong> was <span class="math inline">\(0.1\)</span> according to the
@@ -561,13 +562,13 @@ subject-level leave-one-out cross-validation criterion.</li>
 <ul>
 <li>The kernel regression estimate of the mean function with the bandwidth of <span class="math inline">\(0.1\)</span> is plotted below:</li>
 </ul>
-<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="nonpar-regression.html#cb143-1" tabindex="-1"></a>bone.kernel <span class="ot">&lt;-</span> <span class="fu">ksmooth</span>(bonedat<span class="sc">$</span>age, bonedat<span class="sc">$</span>spnbmd, <span class="at">kernel=</span><span class="st">&quot;normal&quot;</span>,</span>
-<span id="cb143-2"><a href="nonpar-regression.html#cb143-2" tabindex="-1"></a>                        <span class="at">bandwidth =</span> <span class="fl">0.1</span>, <span class="at">x.points=</span><span class="fu">seq</span>(<span class="fl">9.4</span>, <span class="dv">25</span>, <span class="at">length.out=</span><span class="dv">100</span>))</span>
-<span id="cb143-3"><a href="nonpar-regression.html#cb143-3" tabindex="-1"></a></span>
-<span id="cb143-4"><a href="nonpar-regression.html#cb143-4" tabindex="-1"></a><span class="fu">plot</span>(bonedat<span class="sc">$</span>age, bonedat<span class="sc">$</span>spnbmd, <span class="at">las=</span><span class="dv">1</span>, <span class="at">ylab=</span><span class="st">&quot;spnbmd&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;age&quot;</span>,</span>
-<span id="cb143-5"><a href="nonpar-regression.html#cb143-5" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Bone Data: Kernel Regression with Bandwidth = 0.1&quot;</span>, <span class="at">type=</span><span class="st">&quot;n&quot;</span>)</span>
-<span id="cb143-6"><a href="nonpar-regression.html#cb143-6" tabindex="-1"></a><span class="fu">points</span>(bonedat<span class="sc">$</span>age, bonedat<span class="sc">$</span>spnbmd, <span class="at">pch=</span><span class="dv">16</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
-<span id="cb143-7"><a href="nonpar-regression.html#cb143-7" tabindex="-1"></a><span class="fu">lines</span>(bone.kernel<span class="sc">$</span>x, bone.kernel<span class="sc">$</span>y, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb152"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb152-1"><a href="nonpar-regression.html#cb152-1" tabindex="-1"></a>bone.kernel <span class="ot">&lt;-</span> <span class="fu">ksmooth</span>(bonedat<span class="sc">$</span>age, bonedat<span class="sc">$</span>spnbmd, <span class="at">kernel=</span><span class="st">&quot;normal&quot;</span>,</span>
+<span id="cb152-2"><a href="nonpar-regression.html#cb152-2" tabindex="-1"></a>                        <span class="at">bandwidth =</span> <span class="fl">0.1</span>, <span class="at">x.points=</span><span class="fu">seq</span>(<span class="fl">9.4</span>, <span class="dv">25</span>, <span class="at">length.out=</span><span class="dv">100</span>))</span>
+<span id="cb152-3"><a href="nonpar-regression.html#cb152-3" tabindex="-1"></a></span>
+<span id="cb152-4"><a href="nonpar-regression.html#cb152-4" tabindex="-1"></a><span class="fu">plot</span>(bonedat<span class="sc">$</span>age, bonedat<span class="sc">$</span>spnbmd, <span class="at">las=</span><span class="dv">1</span>, <span class="at">ylab=</span><span class="st">&quot;spnbmd&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;age&quot;</span>,</span>
+<span id="cb152-5"><a href="nonpar-regression.html#cb152-5" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Bone Data: Kernel Regression with Bandwidth = 0.1&quot;</span>, <span class="at">type=</span><span class="st">&quot;n&quot;</span>)</span>
+<span id="cb152-6"><a href="nonpar-regression.html#cb152-6" tabindex="-1"></a><span class="fu">points</span>(bonedat<span class="sc">$</span>age, bonedat<span class="sc">$</span>spnbmd, <span class="at">pch=</span><span class="dv">16</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
+<span id="cb152-7"><a href="nonpar-regression.html#cb152-7" tabindex="-1"></a><span class="fu">lines</span>(bone.kernel<span class="sc">$</span>x, bone.kernel<span class="sc">$</span>y, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
 <p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <ul>
 <li>Using a bandwidth of <span class="math inline">\(1\)</span> gives a smoother mean function estimate.
@@ -622,11 +623,11 @@ in the <strong>same way</strong> as in a “typical” regression setting.</p></
 <ul>
 <li>Regression splines can be fitted in R by using the <code>splines</code> package</li>
 </ul>
-<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="nonpar-regression.html#cb144-1" tabindex="-1"></a><span class="fu">library</span>(splines)</span></code></pre></div>
+<div class="sourceCode" id="cb153"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb153-1"><a href="nonpar-regression.html#cb153-1" tabindex="-1"></a><span class="fu">library</span>(splines)</span></code></pre></div>
 <ul>
 <li>The <code>bs</code> function in <code>splines</code> generates the B-spline “design” matrix</li>
 </ul>
-<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="nonpar-regression.html#cb145-1" tabindex="-1"></a><span class="fu">bs</span>(x, df, knots, degree)</span></code></pre></div>
+<div class="sourceCode" id="cb154"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb154-1"><a href="nonpar-regression.html#cb154-1" tabindex="-1"></a><span class="fu">bs</span>(x, df, knots, degree)</span></code></pre></div>
 <ul>
 <li><code>x</code> - vector of covariates values. This can also just be the name of a variable when <code>bs</code> is used inside a function such as <code>geeglm</code>.</li>
 <li><code>df</code> - the “degrees of freedom”. For a cubic spline this is actually <span class="math inline">\(q + 3\)</span> rather than <span class="math inline">\(q + 4\)</span>. If you just enter <code>df</code>, the <code>bs</code> function will pick the knots for you.</li>
@@ -645,8 +646,8 @@ in the <strong>same way</strong> as in a “typical” regression setting.</p></
 </ul></li>
 <li><p>To fit this with an <strong>AR1 correlation structure</strong>, you would use the following code:</p></li>
 </ul>
-<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="nonpar-regression.html#cb146-1" tabindex="-1"></a>gee.bone0 <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(spnbmd <span class="sc">~</span> <span class="fu">bs</span>(age, <span class="at">df=</span><span class="dv">6</span>), <span class="at">id=</span>idnum, <span class="at">data=</span>bonedat,</span>
-<span id="cb146-2"><a href="nonpar-regression.html#cb146-2" tabindex="-1"></a>                    <span class="at">corstr =</span> <span class="st">&quot;ar1&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb155-1"><a href="nonpar-regression.html#cb155-1" tabindex="-1"></a>gee.bone0 <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(spnbmd <span class="sc">~</span> <span class="fu">bs</span>(age, <span class="at">df=</span><span class="dv">6</span>), <span class="at">id=</span>idnum, <span class="at">data=</span>bonedat,</span>
+<span id="cb155-2"><a href="nonpar-regression.html#cb155-2" tabindex="-1"></a>                    <span class="at">corstr =</span> <span class="st">&quot;ar1&quot;</span>)</span></code></pre></div>
 <hr />
 <ul>
 <li>The argument <code>df = 6</code> means that the number of columns in the design matrix is 7 (due to the intercept), and the number of knots is is determined by the equation <span class="math inline">\(q + 4 = 7\)</span> (so <span class="math inline">\(q = 3\)</span>).
@@ -655,7 +656,7 @@ in the <strong>same way</strong> as in a “typical” regression setting.</p></
 </ul></li>
 <li>We can look at the estimates of the regression coefficients by using <code>summary</code>.</li>
 </ul>
-<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="nonpar-regression.html#cb147-1" tabindex="-1"></a><span class="fu">summary</span>( gee.bone0 )</span></code></pre></div>
+<div class="sourceCode" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb156-1"><a href="nonpar-regression.html#cb156-1" tabindex="-1"></a><span class="fu">summary</span>( gee.bone0 )</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## geeglm(formula = spnbmd ~ bs(age, df = 6), data = bonedat, id = idnum, 
@@ -693,22 +694,22 @@ in the <strong>same way</strong> as in a “typical” regression setting.</p></
 <li>The <code>gee.bone0</code> object has a component called “fitted values” which contains the values
 of <span class="math inline">\(\hat{f}_{0}(t_{ij})\)</span> for each <span class="math inline">\(t_{ij}\)</span>.</li>
 </ul>
-<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="nonpar-regression.html#cb149-1" tabindex="-1"></a><span class="do">## First 5 observations and corresponding fitted values</span></span>
-<span id="cb149-2"><a href="nonpar-regression.html#cb149-2" tabindex="-1"></a>bonedat<span class="sc">$</span>age[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb158"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb158-1"><a href="nonpar-regression.html#cb158-1" tabindex="-1"></a><span class="do">## First 5 observations and corresponding fitted values</span></span>
+<span id="cb158-2"><a href="nonpar-regression.html#cb158-2" tabindex="-1"></a>bonedat<span class="sc">$</span>age[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
 <pre><code>## [1] 11.70 12.70 13.75 13.25 14.30</code></pre>
-<div class="sourceCode" id="cb151"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb151-1"><a href="nonpar-regression.html#cb151-1" tabindex="-1"></a>gee.bone0<span class="sc">$</span>fitted.values[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb160-1"><a href="nonpar-regression.html#cb160-1" tabindex="-1"></a>gee.bone0<span class="sc">$</span>fitted.values[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
 <pre><code>## [1] 0.07000 0.08114 0.07288 0.07918 0.06279</code></pre>
 <hr />
 <ul>
 <li>To <strong>plot</strong> the estimated mean function, we can just draw lines through the fitted values:</li>
 </ul>
-<div class="sourceCode" id="cb153"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb153-1"><a href="nonpar-regression.html#cb153-1" tabindex="-1"></a><span class="fu">plot</span>(bonedat<span class="sc">$</span>age, bonedat<span class="sc">$</span>spnbmd, <span class="at">xlab=</span><span class="st">&quot;age&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;spnbmd&quot;</span>, </span>
-<span id="cb153-2"><a href="nonpar-regression.html#cb153-2" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Regression Spline Estimate for Bone Data&quot;</span>, <span class="at">las=</span><span class="dv">1</span>)</span>
-<span id="cb153-3"><a href="nonpar-regression.html#cb153-3" tabindex="-1"></a><span class="fu">lines</span>(bonedat<span class="sc">$</span>age[<span class="fu">order</span>(bonedat<span class="sc">$</span>age)], </span>
-<span id="cb153-4"><a href="nonpar-regression.html#cb153-4" tabindex="-1"></a>      gee.bone0<span class="sc">$</span>fitted.values[<span class="fu">order</span>(bonedat<span class="sc">$</span>age)], <span class="at">lwd=</span><span class="dv">2</span>) <span class="do">## plot spline estimate</span></span></code></pre></div>
+<div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb162-1"><a href="nonpar-regression.html#cb162-1" tabindex="-1"></a><span class="fu">plot</span>(bonedat<span class="sc">$</span>age, bonedat<span class="sc">$</span>spnbmd, <span class="at">xlab=</span><span class="st">&quot;age&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;spnbmd&quot;</span>, </span>
+<span id="cb162-2"><a href="nonpar-regression.html#cb162-2" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Regression Spline Estimate for Bone Data&quot;</span>, <span class="at">las=</span><span class="dv">1</span>)</span>
+<span id="cb162-3"><a href="nonpar-regression.html#cb162-3" tabindex="-1"></a><span class="fu">lines</span>(bonedat<span class="sc">$</span>age[<span class="fu">order</span>(bonedat<span class="sc">$</span>age)], </span>
+<span id="cb162-4"><a href="nonpar-regression.html#cb162-4" tabindex="-1"></a>      gee.bone0<span class="sc">$</span>fitted.values[<span class="fu">order</span>(bonedat<span class="sc">$</span>age)], <span class="at">lwd=</span><span class="dv">2</span>) <span class="do">## plot spline estimate</span></span></code></pre></div>
 <p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
-<div class="sourceCode" id="cb154"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb154-1"><a href="nonpar-regression.html#cb154-1" tabindex="-1"></a><span class="do">## Use order(bonedat$age) so that the observations are</span></span>
-<span id="cb154-2"><a href="nonpar-regression.html#cb154-2" tabindex="-1"></a><span class="do">## sorted by age.</span></span></code></pre></div>
+<div class="sourceCode" id="cb163"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb163-1"><a href="nonpar-regression.html#cb163-1" tabindex="-1"></a><span class="do">## Use order(bonedat$age) so that the observations are</span></span>
+<span id="cb163-2"><a href="nonpar-regression.html#cb163-2" tabindex="-1"></a><span class="do">## sorted by age.</span></span></code></pre></div>
 </div>
 <div id="looking-at-a-continuous-and-a-binary-covariate" class="section level3 hasAnchor" number="3.3.3">
 <h3><span class="header-section-number">3.3.3</span> Looking at a Continuous and a Binary Covariate<a href="nonpar-regression.html#looking-at-a-continuous-and-a-binary-covariate" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -729,29 +730,29 @@ and <span class="math inline">\(A_{ij} = 0\)</span> if the <span class="math inl
 <ul>
 <li>To fit model <a href="nonpar-regression.html#eq:gee-bone">(3.2)</a> using the <code>geepack</code> package, you can use the following code</li>
 </ul>
-<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb155-1"><a href="nonpar-regression.html#cb155-1" tabindex="-1"></a><span class="fu">library</span>(splines)</span>
-<span id="cb155-2"><a href="nonpar-regression.html#cb155-2" tabindex="-1"></a>gee.bone01 <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(spnbmd <span class="sc">~</span> <span class="fu">bs</span>(age, <span class="at">df=</span><span class="dv">6</span>) <span class="sc">+</span> gender<span class="sc">*</span><span class="fu">bs</span>(age,<span class="at">df=</span><span class="dv">6</span>), <span class="at">id=</span>idnum, <span class="at">data=</span>bonedat,</span>
-<span id="cb155-3"><a href="nonpar-regression.html#cb155-3" tabindex="-1"></a>                   <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb164"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb164-1"><a href="nonpar-regression.html#cb164-1" tabindex="-1"></a><span class="fu">library</span>(splines)</span>
+<span id="cb164-2"><a href="nonpar-regression.html#cb164-2" tabindex="-1"></a>gee.bone01 <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(spnbmd <span class="sc">~</span> <span class="fu">bs</span>(age, <span class="at">df=</span><span class="dv">6</span>) <span class="sc">+</span> gender<span class="sc">*</span><span class="fu">bs</span>(age,<span class="at">df=</span><span class="dv">6</span>), <span class="at">id=</span>idnum, <span class="at">data=</span>bonedat,</span>
+<span id="cb164-3"><a href="nonpar-regression.html#cb164-3" tabindex="-1"></a>                   <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>)</span></code></pre></div>
 <ul>
 <li>We can plot the estimated mean functions by first extracting the <strong>fitted values</strong> for both the male and female groups:</li>
 </ul>
-<div class="sourceCode" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb156-1"><a href="nonpar-regression.html#cb156-1" tabindex="-1"></a>male.fitted <span class="ot">&lt;-</span> gee.bone01<span class="sc">$</span>fitted.values[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;male&quot;</span>]</span>
-<span id="cb156-2"><a href="nonpar-regression.html#cb156-2" tabindex="-1"></a>male.age <span class="ot">&lt;-</span> bonedat<span class="sc">$</span>age[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;male&quot;</span>]</span>
-<span id="cb156-3"><a href="nonpar-regression.html#cb156-3" tabindex="-1"></a>female.fitted <span class="ot">&lt;-</span> gee.bone01<span class="sc">$</span>fitted.values[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;female&quot;</span>]</span>
-<span id="cb156-4"><a href="nonpar-regression.html#cb156-4" tabindex="-1"></a>female.age <span class="ot">&lt;-</span> bonedat<span class="sc">$</span>age[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;female&quot;</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb165"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb165-1"><a href="nonpar-regression.html#cb165-1" tabindex="-1"></a>male.fitted <span class="ot">&lt;-</span> gee.bone01<span class="sc">$</span>fitted.values[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;male&quot;</span>]</span>
+<span id="cb165-2"><a href="nonpar-regression.html#cb165-2" tabindex="-1"></a>male.age <span class="ot">&lt;-</span> bonedat<span class="sc">$</span>age[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;male&quot;</span>]</span>
+<span id="cb165-3"><a href="nonpar-regression.html#cb165-3" tabindex="-1"></a>female.fitted <span class="ot">&lt;-</span> gee.bone01<span class="sc">$</span>fitted.values[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;female&quot;</span>]</span>
+<span id="cb165-4"><a href="nonpar-regression.html#cb165-4" tabindex="-1"></a>female.age <span class="ot">&lt;-</span> bonedat<span class="sc">$</span>age[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;female&quot;</span>]</span></code></pre></div>
 <ul>
 <li>Now, plot the fitted curves for both groups</li>
 </ul>
-<div class="sourceCode" id="cb157"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb157-1"><a href="nonpar-regression.html#cb157-1" tabindex="-1"></a><span class="fu">plot</span>(bonedat<span class="sc">$</span>age, bonedat<span class="sc">$</span>spnbmd, <span class="at">lwd=</span><span class="dv">1</span>, <span class="at">xlab=</span><span class="st">&quot;age&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;spnbmd&quot;</span>, </span>
-<span id="cb157-2"><a href="nonpar-regression.html#cb157-2" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Regression Splines for the Bone Data&quot;</span>, <span class="at">las=</span><span class="dv">1</span>)</span>
-<span id="cb157-3"><a href="nonpar-regression.html#cb157-3" tabindex="-1"></a><span class="fu">points</span>(bonedat<span class="sc">$</span>age[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;male&quot;</span>], bonedat<span class="sc">$</span>spnbmd[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;male&quot;</span>], </span>
-<span id="cb157-4"><a href="nonpar-regression.html#cb157-4" tabindex="-1"></a>       <span class="at">cex=</span><span class="fl">0.8</span>)</span>
-<span id="cb157-5"><a href="nonpar-regression.html#cb157-5" tabindex="-1"></a><span class="fu">points</span>(bonedat<span class="sc">$</span>age[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;female&quot;</span>], bonedat<span class="sc">$</span>spnbmd[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;female&quot;</span>], </span>
-<span id="cb157-6"><a href="nonpar-regression.html#cb157-6" tabindex="-1"></a>       <span class="at">pch=</span><span class="dv">16</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
-<span id="cb157-7"><a href="nonpar-regression.html#cb157-7" tabindex="-1"></a><span class="fu">lines</span>(male.age[<span class="fu">order</span>(male.age)], male.fitted[<span class="fu">order</span>(male.age)], <span class="at">col=</span><span class="st">&quot;red&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb157-8"><a href="nonpar-regression.html#cb157-8" tabindex="-1"></a><span class="fu">lines</span>(female.age[<span class="fu">order</span>(female.age)], female.fitted[<span class="fu">order</span>(female.age)], <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, </span>
-<span id="cb157-9"><a href="nonpar-regression.html#cb157-9" tabindex="-1"></a>      <span class="at">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb157-10"><a href="nonpar-regression.html#cb157-10" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>), <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>), <span class="at">lwd=</span><span class="dv">3</span>, <span class="at">bty=</span><span class="st">&#39;n&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb166"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb166-1"><a href="nonpar-regression.html#cb166-1" tabindex="-1"></a><span class="fu">plot</span>(bonedat<span class="sc">$</span>age, bonedat<span class="sc">$</span>spnbmd, <span class="at">lwd=</span><span class="dv">1</span>, <span class="at">xlab=</span><span class="st">&quot;age&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;spnbmd&quot;</span>, </span>
+<span id="cb166-2"><a href="nonpar-regression.html#cb166-2" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Regression Splines for the Bone Data&quot;</span>, <span class="at">las=</span><span class="dv">1</span>)</span>
+<span id="cb166-3"><a href="nonpar-regression.html#cb166-3" tabindex="-1"></a><span class="fu">points</span>(bonedat<span class="sc">$</span>age[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;male&quot;</span>], bonedat<span class="sc">$</span>spnbmd[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;male&quot;</span>], </span>
+<span id="cb166-4"><a href="nonpar-regression.html#cb166-4" tabindex="-1"></a>       <span class="at">cex=</span><span class="fl">0.8</span>)</span>
+<span id="cb166-5"><a href="nonpar-regression.html#cb166-5" tabindex="-1"></a><span class="fu">points</span>(bonedat<span class="sc">$</span>age[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;female&quot;</span>], bonedat<span class="sc">$</span>spnbmd[bonedat<span class="sc">$</span>gender<span class="sc">==</span><span class="st">&quot;female&quot;</span>], </span>
+<span id="cb166-6"><a href="nonpar-regression.html#cb166-6" tabindex="-1"></a>       <span class="at">pch=</span><span class="dv">16</span>, <span class="at">cex=</span><span class="fl">0.8</span>)</span>
+<span id="cb166-7"><a href="nonpar-regression.html#cb166-7" tabindex="-1"></a><span class="fu">lines</span>(male.age[<span class="fu">order</span>(male.age)], male.fitted[<span class="fu">order</span>(male.age)], <span class="at">col=</span><span class="st">&quot;red&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb166-8"><a href="nonpar-regression.html#cb166-8" tabindex="-1"></a><span class="fu">lines</span>(female.age[<span class="fu">order</span>(female.age)], female.fitted[<span class="fu">order</span>(female.age)], <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, </span>
+<span id="cb166-9"><a href="nonpar-regression.html#cb166-9" tabindex="-1"></a>      <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb166-10"><a href="nonpar-regression.html#cb166-10" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>), <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>), <span class="at">lwd=</span><span class="dv">3</span>, <span class="at">bty=</span><span class="st">&#39;n&#39;</span>)</span></code></pre></div>
 <p><img src="03-NonParRegression_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <hr />
 <ul>
@@ -763,8 +764,8 @@ and <span class="math inline">\(A_{ij} = 0\)</span> if the <span class="math inl
 <li><p>The mean function for females would be <span class="math inline">\(f_{0}(t)\)</span>.</p></li>
 <li><p>This could be fit with the following code:</p></li>
 </ul>
-<div class="sourceCode" id="cb158"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb158-1"><a href="nonpar-regression.html#cb158-1" tabindex="-1"></a>gee.bone1 <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(spnbmd <span class="sc">~</span> <span class="fu">bs</span>(age, <span class="at">df=</span><span class="dv">6</span>) <span class="sc">+</span> gender, <span class="at">id=</span>idnum, <span class="at">data=</span>bonedat,</span>
-<span id="cb158-2"><a href="nonpar-regression.html#cb158-2" tabindex="-1"></a>                    <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb167-1"><a href="nonpar-regression.html#cb167-1" tabindex="-1"></a>gee.bone1 <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(spnbmd <span class="sc">~</span> <span class="fu">bs</span>(age, <span class="at">df=</span><span class="dv">6</span>) <span class="sc">+</span> gender, <span class="at">id=</span>idnum, <span class="at">data=</span>bonedat,</span>
+<span id="cb167-2"><a href="nonpar-regression.html#cb167-2" tabindex="-1"></a>                    <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>)</span></code></pre></div>
 <hr />
 <ul>
 <li><p>If we plot the estimated mean functions from <code>gee.bone1</code>, it looks like the following:
@@ -792,7 +793,7 @@ and <span class="math inline">\(A_{ij} = 0\)</span> if the <span class="math inl
 <li><p>We can formally compare the models using the <code>anova</code> method in <strong>R</strong></p></li>
 <li><p>To compare, <span class="math inline">\(\mu(t_{ij}) = f_{0}(t_{ij})\)</span> vs. <span class="math inline">\(\mu(t_{ij}) = f_{0}(t_{ij}) + \beta_{1}A_{ij}\)</span> do the following:</p></li>
 </ul>
-<div class="sourceCode" id="cb159"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb159-1"><a href="nonpar-regression.html#cb159-1" tabindex="-1"></a><span class="fu">anova</span>( gee.bone0, gee.bone1)</span></code></pre></div>
+<div class="sourceCode" id="cb168"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb168-1"><a href="nonpar-regression.html#cb168-1" tabindex="-1"></a><span class="fu">anova</span>( gee.bone0, gee.bone1)</span></code></pre></div>
 <pre><code>## Analysis of &#39;Wald statistic&#39; Table
 ## 
 ## Model 1 spnbmd ~ bs(age, df = 6) + gender 
@@ -811,7 +812,7 @@ model <span class="math inline">\(\mu(t_{ij}) = f_{0}(t_{ij}) + \beta_{1}A_{ij}\
 <ul>
 <li>Now, let’s compare the models <span class="math inline">\(\mu(t_{ij}) = f_{0}(t_{ij})\)</span> vs. <span class="math inline">\(\mu(t_{ij}) = f_{0}(t_{ij}) + A_{ij}f_{1}(t_{ij})\)</span></li>
 </ul>
-<div class="sourceCode" id="cb161"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb161-1"><a href="nonpar-regression.html#cb161-1" tabindex="-1"></a><span class="fu">anova</span>( gee.bone0, gee.bone01)</span></code></pre></div>
+<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="nonpar-regression.html#cb170-1" tabindex="-1"></a><span class="fu">anova</span>( gee.bone0, gee.bone01)</span></code></pre></div>
 <pre><code>## Analysis of &#39;Wald statistic&#39; Table
 ## 
 ## Model 1 spnbmd ~ bs(age, df = 6) + gender * bs(age, df = 6) 

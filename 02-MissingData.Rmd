@@ -271,6 +271,49 @@ for(k in 1:5) {
 round(colMeans(BetaMat), 3)  # compare with the results from using the "with" function
 ```
 
+### Categorical Variables in MICE
+
+* You can impute values of missing **categorical variables** directly with the `mice` function
+
+* The only thing to remember is that any categorical variable should be stored 
+in your data frame as a **factor**.
+
+* As an example, let's define the data frame `testdf` as
+```{r}
+testdf <- data.frame(wt=c(103.2, 57.6, 33.4, 87.2, NA, NA, 98.5, 77.3),
+                     age=c(NA, "old", "middle_age", "young", NA,
+                           "old", "young", "middle_age"))
+```
+
+* This data frame **does not** store `age` as a factor
+```{r}
+str(testdf)
+```
+
+* `mice` will not run if we try to use `testdf` as the input data frame to `mice`
+
+* However, it will work if we just change the variable `age` to a **factor**.
+
+* So, if we define the data frame `testdf_fac` as
+```{r}
+testdf_fac <- testdf
+testdf_fac$age <- as.factor(testdf_fac$age)
+str(testdf_fac)
+```
+
+* Then, we should be able to use `mice` with `testdf_fac`
+```{r}
+imptest <- mice(testdf_fac)
+```
+
+* Look at imputed values of `age`:
+```{r}
+imptest$imp$age
+```
+
+* Also, remember that if you are reading a .csv file into R,
+including the argument `stringsAsFactors=TRUE` in `read.csv` will **automatically**
+make all the string variables in the .csv file **factors** in the data frame that is read into R.
 
 
 ## What is MICE doing?

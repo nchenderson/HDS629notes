@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2024-01-16" />
+<meta name="date" content="2024-02-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -197,6 +197,7 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="2.2.1" data-path="missing-data.html"><a href="missing-data.html#short-overview-of-multiple-imputation"><i class="fa fa-check"></i><b>2.2.1</b> Short Overview of Multiple Imputation</a></li>
 <li class="chapter" data-level="2.2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation-with-mice"><i class="fa fa-check"></i><b>2.2.2</b> Multiple imputation with mice</a></li>
+<li class="chapter" data-level="2.2.3" data-path="missing-data.html"><a href="missing-data.html#categorical-variables-in-mice"><i class="fa fa-check"></i><b>2.2.3</b> Categorical Variables in MICE</a></li>
 </ul></li>
 <li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#what-is-mice-doing"><i class="fa fa-check"></i><b>2.3</b> What is MICE doing?</a></li>
 <li class="chapter" data-level="2.4" data-path="missing-data.html"><a href="missing-data.html#longitudinal-data"><i class="fa fa-check"></i><b>2.4</b> Longitudinal Data</a></li>
@@ -665,6 +666,79 @@ the individual datasets “<strong>stacked</strong> on top of each other.”</p>
 <pre><code>## [1] -62.731   0.059  -3.108   1.600</code></pre>
 </div>
 </div>
+<div id="categorical-variables-in-mice" class="section level3 hasAnchor" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> Categorical Variables in MICE<a href="missing-data.html#categorical-variables-in-mice" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li><p>You can impute values of missing <strong>categorical variables</strong> directly with the <code>mice</code> function</p></li>
+<li><p>The only thing to remember is that any categorical variable should be stored
+in your data frame as a <strong>factor</strong>.</p></li>
+<li><p>As an example, let’s define the data frame <code>testdf</code> as</p></li>
+</ul>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="missing-data.html#cb104-1" tabindex="-1"></a>testdf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">wt=</span><span class="fu">c</span>(<span class="fl">103.2</span>, <span class="fl">57.6</span>, <span class="fl">33.4</span>, <span class="fl">87.2</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">98.5</span>, <span class="fl">77.3</span>),</span>
+<span id="cb104-2"><a href="missing-data.html#cb104-2" tabindex="-1"></a>                     <span class="at">age=</span><span class="fu">c</span>(<span class="cn">NA</span>, <span class="st">&quot;old&quot;</span>, <span class="st">&quot;middle_age&quot;</span>, <span class="st">&quot;young&quot;</span>, <span class="cn">NA</span>,</span>
+<span id="cb104-3"><a href="missing-data.html#cb104-3" tabindex="-1"></a>                           <span class="st">&quot;old&quot;</span>, <span class="st">&quot;young&quot;</span>, <span class="st">&quot;middle_age&quot;</span>))</span></code></pre></div>
+<ul>
+<li>This data frame <strong>does not</strong> store <code>age</code> as a factor</li>
+</ul>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="missing-data.html#cb105-1" tabindex="-1"></a><span class="fu">str</span>(testdf)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    8 obs. of  2 variables:
+##  $ wt : num  103.2 57.6 33.4 87.2 NA ...
+##  $ age: chr  NA &quot;old&quot; &quot;middle_age&quot; &quot;young&quot; ...</code></pre>
+<ul>
+<li><p><code>mice</code> will not run if we try to use <code>testdf</code> as the input data frame to <code>mice</code></p></li>
+<li><p>However, it will work if we just change the variable <code>age</code> to a <strong>factor</strong>.</p></li>
+<li><p>So, if we define the data frame <code>testdf_fac</code> as</p></li>
+</ul>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="missing-data.html#cb107-1" tabindex="-1"></a>testdf_fac <span class="ot">&lt;-</span> testdf</span>
+<span id="cb107-2"><a href="missing-data.html#cb107-2" tabindex="-1"></a>testdf_fac<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(testdf_fac<span class="sc">$</span>age)</span>
+<span id="cb107-3"><a href="missing-data.html#cb107-3" tabindex="-1"></a><span class="fu">str</span>(testdf_fac)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    8 obs. of  2 variables:
+##  $ wt : num  103.2 57.6 33.4 87.2 NA ...
+##  $ age: Factor w/ 3 levels &quot;middle_age&quot;,&quot;old&quot;,..: NA 2 1 3 NA 2 3 1</code></pre>
+<ul>
+<li>Then, we should be able to use <code>mice</code> with <code>testdf_fac</code></li>
+</ul>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="missing-data.html#cb109-1" tabindex="-1"></a>imptest <span class="ot">&lt;-</span> <span class="fu">mice</span>(testdf_fac)</span></code></pre></div>
+<pre><code>## 
+##  iter imp variable
+##   1   1  wt  age
+##   1   2  wt  age
+##   1   3  wt  age
+##   1   4  wt  age
+##   1   5  wt  age
+##   2   1  wt  age
+##   2   2  wt  age
+##   2   3  wt  age
+##   2   4  wt  age
+##   2   5  wt  age
+##   3   1  wt  age
+##   3   2  wt  age
+##   3   3  wt  age
+##   3   4  wt  age
+##   3   5  wt  age
+##   4   1  wt  age
+##   4   2  wt  age
+##   4   3  wt  age
+##   4   4  wt  age
+##   4   5  wt  age
+##   5   1  wt  age
+##   5   2  wt  age
+##   5   3  wt  age
+##   5   4  wt  age
+##   5   5  wt  age</code></pre>
+<ul>
+<li>Look at imputed values of <code>age</code>:</li>
+</ul>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="missing-data.html#cb111-1" tabindex="-1"></a>imptest<span class="sc">$</span>imp<span class="sc">$</span>age</span></code></pre></div>
+<pre><code>##            1          2          3     4     5
+## 1      young      young        old young young
+## 5 middle_age middle_age middle_age young   old</code></pre>
+<ul>
+<li>Also, remember that if you are reading a .csv file into R,
+including the argument <code>stringsAsFactors=TRUE</code> in <code>read.csv</code> will <strong>automatically</strong>
+make all the string variables in the .csv file <strong>factors</strong> in the data frame that is read into R.</li>
+</ul>
+</div>
 </div>
 <div id="what-is-mice-doing" class="section level2 hasAnchor" number="2.3">
 <h2><span class="header-section-number">2.3</span> What is MICE doing?<a href="missing-data.html#what-is-mice-doing" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -764,9 +838,9 @@ observations across individuals will be <strong>correlated</strong>.</p></li>
 <ul>
 <li>Let’s look at the <strong>ohio</strong> data from the <strong>geepack</strong> package again</li>
 </ul>
-<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="missing-data.html#cb104-1" tabindex="-1"></a><span class="fu">library</span>(geepack)</span>
-<span id="cb104-2"><a href="missing-data.html#cb104-2" tabindex="-1"></a><span class="fu">data</span>(ohio)</span>
-<span id="cb104-3"><a href="missing-data.html#cb104-3" tabindex="-1"></a><span class="fu">head</span>(ohio)</span></code></pre></div>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="missing-data.html#cb113-1" tabindex="-1"></a><span class="fu">library</span>(geepack)</span>
+<span id="cb113-2"><a href="missing-data.html#cb113-2" tabindex="-1"></a><span class="fu">data</span>(ohio)</span>
+<span id="cb113-3"><a href="missing-data.html#cb113-3" tabindex="-1"></a><span class="fu">head</span>(ohio)</span></code></pre></div>
 <pre><code>##   resp id age smoke
 ## 1    0  0  -2     0
 ## 2    0  0  -1     0
@@ -782,12 +856,12 @@ observations across individuals will be <strong>correlated</strong>.</p></li>
 <li>(Use <strong>gather</strong> to go from <strong>wide to long</strong>)</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="missing-data.html#cb106-1" tabindex="-1"></a><span class="fu">library</span>( tidyr )</span>
-<span id="cb106-2"><a href="missing-data.html#cb106-2" tabindex="-1"></a>ohio.wide <span class="ot">&lt;-</span> <span class="fu">spread</span>(ohio, <span class="at">key=</span>age, <span class="at">value=</span>resp)</span>
-<span id="cb106-3"><a href="missing-data.html#cb106-3" tabindex="-1"></a></span>
-<span id="cb106-4"><a href="missing-data.html#cb106-4" tabindex="-1"></a><span class="do">## Change variable names to so that ages go from 7 to 10</span></span>
-<span id="cb106-5"><a href="missing-data.html#cb106-5" tabindex="-1"></a><span class="fu">names</span>(ohio.wide) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;smoke&quot;</span>, <span class="st">&quot;age7&quot;</span>, <span class="st">&quot;age8&quot;</span>, <span class="st">&quot;age9&quot;</span>, <span class="st">&quot;age10&quot;</span>)</span>
-<span id="cb106-6"><a href="missing-data.html#cb106-6" tabindex="-1"></a><span class="fu">head</span>(ohio.wide)</span></code></pre></div>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="missing-data.html#cb115-1" tabindex="-1"></a><span class="fu">library</span>( tidyr )</span>
+<span id="cb115-2"><a href="missing-data.html#cb115-2" tabindex="-1"></a>ohio.wide <span class="ot">&lt;-</span> <span class="fu">spread</span>(ohio, <span class="at">key=</span>age, <span class="at">value=</span>resp)</span>
+<span id="cb115-3"><a href="missing-data.html#cb115-3" tabindex="-1"></a></span>
+<span id="cb115-4"><a href="missing-data.html#cb115-4" tabindex="-1"></a><span class="do">## Change variable names to so that ages go from 7 to 10</span></span>
+<span id="cb115-5"><a href="missing-data.html#cb115-5" tabindex="-1"></a><span class="fu">names</span>(ohio.wide) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;smoke&quot;</span>, <span class="st">&quot;age7&quot;</span>, <span class="st">&quot;age8&quot;</span>, <span class="st">&quot;age9&quot;</span>, <span class="st">&quot;age10&quot;</span>)</span>
+<span id="cb115-6"><a href="missing-data.html#cb115-6" tabindex="-1"></a><span class="fu">head</span>(ohio.wide)</span></code></pre></div>
 <pre><code>##   id smoke age7 age8 age9 age10
 ## 1  0     0    0    0    0     0
 ## 2  1     0    0    0    0     0
@@ -803,8 +877,8 @@ observations across individuals will be <strong>correlated</strong>.</p></li>
 <ul>
 <li><strong>reshape</strong> from base <strong>R</strong> can also be used to go from <strong>long to wide</strong></li>
 </ul>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="missing-data.html#cb108-1" tabindex="-1"></a><span class="co"># Example of using reshape</span></span>
-<span id="cb108-2"><a href="missing-data.html#cb108-2" tabindex="-1"></a><span class="co">#ohio.wide2 &lt;- reshape(ohio, v.names=&quot;resp&quot;, idvar=&quot;id&quot;, timevar=&quot;age&quot;, direction=&quot;wide&quot;)</span></span></code></pre></div>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="missing-data.html#cb117-1" tabindex="-1"></a><span class="co"># Example of using reshape</span></span>
+<span id="cb117-2"><a href="missing-data.html#cb117-2" tabindex="-1"></a><span class="co">#ohio.wide2 &lt;- reshape(ohio, v.names=&quot;resp&quot;, idvar=&quot;id&quot;, timevar=&quot;age&quot;, direction=&quot;wide&quot;)</span></span></code></pre></div>
 <hr />
 <ul>
 <li><p>The <strong>ohio</strong> dataset does not have any missing values.</p></li>
@@ -830,19 +904,19 @@ P( R_{ij} = 1| \textrm{smoke}_{i})
 <li>We will call the new data frame <code>ohio.wide.miss</code></li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="missing-data.html#cb109-1" tabindex="-1"></a>ohio.wide.miss <span class="ot">&lt;-</span> ohio.wide</span>
-<span id="cb109-2"><a href="missing-data.html#cb109-2" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">nrow</span>(ohio.wide.miss) <span class="do">## number of individuals in study</span></span>
-<span id="cb109-3"><a href="missing-data.html#cb109-3" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>m) {</span>
-<span id="cb109-4"><a href="missing-data.html#cb109-4" tabindex="-1"></a>    resp.values <span class="ot">&lt;-</span> ohio.wide[k, <span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>]  <span class="co"># values of resp for individual k</span></span>
-<span id="cb109-5"><a href="missing-data.html#cb109-5" tabindex="-1"></a>    <span class="cf">if</span>(ohio.wide[k,<span class="dv">2</span>] <span class="sc">==</span> <span class="dv">1</span>) {  <span class="co"># if smoke = 1</span></span>
-<span id="cb109-6"><a href="missing-data.html#cb109-6" tabindex="-1"></a>        Rij <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">size=</span><span class="dv">4</span>, <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.3</span>))</span>
-<span id="cb109-7"><a href="missing-data.html#cb109-7" tabindex="-1"></a>    } <span class="cf">else</span> { <span class="co"># if smoke = 0</span></span>
-<span id="cb109-8"><a href="missing-data.html#cb109-8" tabindex="-1"></a>        Rij <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">size=</span><span class="dv">4</span>, <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.95</span>, <span class="fl">0.05</span>))</span>
-<span id="cb109-9"><a href="missing-data.html#cb109-9" tabindex="-1"></a>    }</span>
-<span id="cb109-10"><a href="missing-data.html#cb109-10" tabindex="-1"></a>    resp.values[Rij<span class="sc">==</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span> <span class="co"># insert NA values where Rij = 1</span></span>
-<span id="cb109-11"><a href="missing-data.html#cb109-11" tabindex="-1"></a>    ohio.wide.miss[k, <span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>] <span class="ot">&lt;-</span> resp.values</span>
-<span id="cb109-12"><a href="missing-data.html#cb109-12" tabindex="-1"></a>}</span></code></pre></div>
-<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="missing-data.html#cb110-1" tabindex="-1"></a><span class="fu">head</span>(ohio.wide.miss, <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="missing-data.html#cb118-1" tabindex="-1"></a>ohio.wide.miss <span class="ot">&lt;-</span> ohio.wide</span>
+<span id="cb118-2"><a href="missing-data.html#cb118-2" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">nrow</span>(ohio.wide.miss) <span class="do">## number of individuals in study</span></span>
+<span id="cb118-3"><a href="missing-data.html#cb118-3" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>m) {</span>
+<span id="cb118-4"><a href="missing-data.html#cb118-4" tabindex="-1"></a>    resp.values <span class="ot">&lt;-</span> ohio.wide[k, <span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>]  <span class="co"># values of resp for individual k</span></span>
+<span id="cb118-5"><a href="missing-data.html#cb118-5" tabindex="-1"></a>    <span class="cf">if</span>(ohio.wide[k,<span class="dv">2</span>] <span class="sc">==</span> <span class="dv">1</span>) {  <span class="co"># if smoke = 1</span></span>
+<span id="cb118-6"><a href="missing-data.html#cb118-6" tabindex="-1"></a>        Rij <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">size=</span><span class="dv">4</span>, <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.3</span>))</span>
+<span id="cb118-7"><a href="missing-data.html#cb118-7" tabindex="-1"></a>    } <span class="cf">else</span> { <span class="co"># if smoke = 0</span></span>
+<span id="cb118-8"><a href="missing-data.html#cb118-8" tabindex="-1"></a>        Rij <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">size=</span><span class="dv">4</span>, <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.95</span>, <span class="fl">0.05</span>))</span>
+<span id="cb118-9"><a href="missing-data.html#cb118-9" tabindex="-1"></a>    }</span>
+<span id="cb118-10"><a href="missing-data.html#cb118-10" tabindex="-1"></a>    resp.values[Rij<span class="sc">==</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span> <span class="co"># insert NA values where Rij = 1</span></span>
+<span id="cb118-11"><a href="missing-data.html#cb118-11" tabindex="-1"></a>    ohio.wide.miss[k, <span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>] <span class="ot">&lt;-</span> resp.values</span>
+<span id="cb118-12"><a href="missing-data.html#cb118-12" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="missing-data.html#cb119-1" tabindex="-1"></a><span class="fu">head</span>(ohio.wide.miss, <span class="dv">10</span>)</span></code></pre></div>
 <pre><code>##    id smoke age7 age8 age9 age10
 ## 1   0     0    0    0   NA     0
 ## 2   1     0    0    0    0     0
@@ -857,7 +931,7 @@ P( R_{ij} = 1| \textrm{smoke}_{i})
 <ul>
 <li><code>ohio.wide.miss</code> now has 257 missing entries</li>
 </ul>
-<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="missing-data.html#cb112-1" tabindex="-1"></a><span class="fu">sum</span>( <span class="fu">is.na</span>(ohio.wide.miss))</span></code></pre></div>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="missing-data.html#cb121-1" tabindex="-1"></a><span class="fu">sum</span>( <span class="fu">is.na</span>(ohio.wide.miss))</span></code></pre></div>
 <pre><code>## [1] 296</code></pre>
 <hr />
 <ul>
@@ -865,14 +939,14 @@ P( R_{ij} = 1| \textrm{smoke}_{i})
 estimates that would be obtained with a <strong>complete case analysis</strong>.</p></li>
 <li><p>To use <code>glmer</code> on the <strong>missing-data version</strong> of <code>ohio</code>, we need to first convert <code>ohio.wide.miss</code> back into <strong>long form</strong>:</p></li>
 </ul>
-<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="missing-data.html#cb114-1" tabindex="-1"></a>ohio.miss <span class="ot">&lt;-</span> <span class="fu">gather</span>(ohio.wide.miss, age, resp, age7<span class="sc">:</span>age10)</span>
-<span id="cb114-2"><a href="missing-data.html#cb114-2" tabindex="-1"></a>ohio.miss<span class="sc">$</span>age[ohio.miss<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age7&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span></span>
-<span id="cb114-3"><a href="missing-data.html#cb114-3" tabindex="-1"></a>ohio.miss<span class="sc">$</span>age[ohio.miss<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age8&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span></span>
-<span id="cb114-4"><a href="missing-data.html#cb114-4" tabindex="-1"></a>ohio.miss<span class="sc">$</span>age[ohio.miss<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age9&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb114-5"><a href="missing-data.html#cb114-5" tabindex="-1"></a>ohio.miss<span class="sc">$</span>age[ohio.miss<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age10&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb114-6"><a href="missing-data.html#cb114-6" tabindex="-1"></a>ohio.miss <span class="ot">&lt;-</span> ohio.miss[<span class="fu">order</span>(ohio.miss<span class="sc">$</span>id),]  <span class="do">## sort everything according to id</span></span>
-<span id="cb114-7"><a href="missing-data.html#cb114-7" tabindex="-1"></a>ohio.miss<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(ohio.miss<span class="sc">$</span>age)</span>
-<span id="cb114-8"><a href="missing-data.html#cb114-8" tabindex="-1"></a><span class="fu">head</span>(ohio.miss)</span></code></pre></div>
+<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="missing-data.html#cb123-1" tabindex="-1"></a>ohio.miss <span class="ot">&lt;-</span> <span class="fu">gather</span>(ohio.wide.miss, age, resp, age7<span class="sc">:</span>age10)</span>
+<span id="cb123-2"><a href="missing-data.html#cb123-2" tabindex="-1"></a>ohio.miss<span class="sc">$</span>age[ohio.miss<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age7&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span></span>
+<span id="cb123-3"><a href="missing-data.html#cb123-3" tabindex="-1"></a>ohio.miss<span class="sc">$</span>age[ohio.miss<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age8&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span></span>
+<span id="cb123-4"><a href="missing-data.html#cb123-4" tabindex="-1"></a>ohio.miss<span class="sc">$</span>age[ohio.miss<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age9&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb123-5"><a href="missing-data.html#cb123-5" tabindex="-1"></a>ohio.miss<span class="sc">$</span>age[ohio.miss<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age10&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb123-6"><a href="missing-data.html#cb123-6" tabindex="-1"></a>ohio.miss <span class="ot">&lt;-</span> ohio.miss[<span class="fu">order</span>(ohio.miss<span class="sc">$</span>id),]  <span class="do">## sort everything according to id</span></span>
+<span id="cb123-7"><a href="missing-data.html#cb123-7" tabindex="-1"></a>ohio.miss<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(ohio.miss<span class="sc">$</span>age)</span>
+<span id="cb123-8"><a href="missing-data.html#cb123-8" tabindex="-1"></a><span class="fu">head</span>(ohio.miss)</span></code></pre></div>
 <pre><code>##      id smoke age resp
 ## 1     0     0  -2    0
 ## 538   0     0  -1    0
@@ -883,13 +957,13 @@ estimates that would be obtained with a <strong>complete case analysis</strong>.
 <ul>
 <li>Let’s use a <strong>random intercept</strong> model as we did in our earlier discussion of generalized linear mixed models:</li>
 </ul>
-<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="missing-data.html#cb116-1" tabindex="-1"></a><span class="do">## Complete case analysis</span></span>
-<span id="cb116-2"><a href="missing-data.html#cb116-2" tabindex="-1"></a></span>
-<span id="cb116-3"><a href="missing-data.html#cb116-3" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb116-4"><a href="missing-data.html#cb116-4" tabindex="-1"></a>ohio.cca <span class="ot">&lt;-</span> <span class="fu">glmer</span>(resp <span class="sc">~</span> age <span class="sc">+</span> smoke <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> id), <span class="at">data =</span> ohio.miss, <span class="at">family =</span> binomial)</span>
-<span id="cb116-5"><a href="missing-data.html#cb116-5" tabindex="-1"></a></span>
-<span id="cb116-6"><a href="missing-data.html#cb116-6" tabindex="-1"></a><span class="co"># Now look at estimated regression coefficients for complete case analysis:</span></span>
-<span id="cb116-7"><a href="missing-data.html#cb116-7" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">coef</span>(<span class="fu">summary</span>(ohio.cca)), <span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="missing-data.html#cb125-1" tabindex="-1"></a><span class="do">## Complete case analysis</span></span>
+<span id="cb125-2"><a href="missing-data.html#cb125-2" tabindex="-1"></a></span>
+<span id="cb125-3"><a href="missing-data.html#cb125-3" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb125-4"><a href="missing-data.html#cb125-4" tabindex="-1"></a>ohio.cca <span class="ot">&lt;-</span> <span class="fu">glmer</span>(resp <span class="sc">~</span> age <span class="sc">+</span> smoke <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> id), <span class="at">data =</span> ohio.miss, <span class="at">family =</span> binomial)</span>
+<span id="cb125-5"><a href="missing-data.html#cb125-5" tabindex="-1"></a></span>
+<span id="cb125-6"><a href="missing-data.html#cb125-6" tabindex="-1"></a><span class="co"># Now look at estimated regression coefficients for complete case analysis:</span></span>
+<span id="cb125-7"><a href="missing-data.html#cb125-7" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">coef</span>(<span class="fu">summary</span>(ohio.cca)), <span class="dv">4</span>)</span></code></pre></div>
 <pre><code>##             Estimate Std. Error z value Pr(&gt;|z|)
 ## (Intercept)  -3.8009     0.4346 -8.7459   0.0000
 ## age          -0.1580     0.0783 -2.0165   0.0437
@@ -898,7 +972,7 @@ estimates that would be obtained with a <strong>complete case analysis</strong>.
 <ul>
 <li>Now, let’s use <strong>mice</strong> to create 10 <strong>“completed versions”</strong> of <code>ohio.wide.miss</code></li>
 </ul>
-<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="missing-data.html#cb118-1" tabindex="-1"></a>imputed.ohio <span class="ot">&lt;-</span> <span class="fu">mice</span>(ohio.wide.miss, <span class="at">m=</span><span class="dv">10</span>, <span class="at">print=</span><span class="cn">FALSE</span>, <span class="at">seed=</span><span class="dv">101</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="missing-data.html#cb127-1" tabindex="-1"></a>imputed.ohio <span class="ot">&lt;-</span> <span class="fu">mice</span>(ohio.wide.miss, <span class="at">m=</span><span class="dv">10</span>, <span class="at">print=</span><span class="cn">FALSE</span>, <span class="at">seed=</span><span class="dv">101</span>)</span></code></pre></div>
 <ul>
 <li>For the case of <strong>longitudinal data</strong>, we probably want to actually extract each
 complete dataset.
@@ -907,8 +981,8 @@ complete dataset.
 </ul></li>
 <li>This can be done with the following code:</li>
 </ul>
-<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="missing-data.html#cb119-1" tabindex="-1"></a>completed.ohio <span class="ot">&lt;-</span> mice<span class="sc">::</span><span class="fu">complete</span>(imputed.ohio, <span class="st">&quot;long&quot;</span>)</span>
-<span id="cb119-2"><a href="missing-data.html#cb119-2" tabindex="-1"></a><span class="fu">head</span>(completed.ohio)</span></code></pre></div>
+<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="missing-data.html#cb128-1" tabindex="-1"></a>completed.ohio <span class="ot">&lt;-</span> mice<span class="sc">::</span><span class="fu">complete</span>(imputed.ohio, <span class="st">&quot;long&quot;</span>)</span>
+<span id="cb128-2"><a href="missing-data.html#cb128-2" tabindex="-1"></a><span class="fu">head</span>(completed.ohio)</span></code></pre></div>
 <pre><code>##   .imp .id id smoke age7 age8 age9 age10
 ## 1    1   1  0     0    0    0    0     0
 ## 2    1   2  1     0    0    0    0     0
@@ -919,14 +993,14 @@ complete dataset.
 <ul>
 <li><code>completed.ohio</code> will be a <strong>dataframe</strong> that has <strong>10 times</strong> as many rows as the original <code>ohio.wide</code> data frame</li>
 </ul>
-<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="missing-data.html#cb121-1" tabindex="-1"></a><span class="fu">dim</span>(ohio.wide)</span></code></pre></div>
+<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="missing-data.html#cb130-1" tabindex="-1"></a><span class="fu">dim</span>(ohio.wide)</span></code></pre></div>
 <pre><code>## [1] 537   6</code></pre>
-<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="missing-data.html#cb123-1" tabindex="-1"></a><span class="fu">dim</span>(completed.ohio)</span></code></pre></div>
+<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="missing-data.html#cb132-1" tabindex="-1"></a><span class="fu">dim</span>(completed.ohio)</span></code></pre></div>
 <pre><code>## [1] 5370    8</code></pre>
 <ul>
 <li>The variable <code>.imp</code> in <code>completed.ohio</code> is an indicator of which of the 10 “imputed datasets” this is from:</li>
 </ul>
-<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="missing-data.html#cb125-1" tabindex="-1"></a><span class="fu">table</span>( completed.ohio<span class="sc">$</span>.imp ) <span class="co"># Tabulate impute indicators</span></span></code></pre></div>
+<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="missing-data.html#cb134-1" tabindex="-1"></a><span class="fu">table</span>( completed.ohio<span class="sc">$</span>.imp ) <span class="co"># Tabulate impute indicators</span></span></code></pre></div>
 <pre><code>## 
 ##   1   2   3   4   5   6   7   8   9  10 
 ## 537 537 537 537 537 537 537 537 537 537</code></pre>
@@ -935,28 +1009,28 @@ complete dataset.
 <li>For <strong>each</strong> of the 10 complete datasets, we need to <strong>convert</strong> the wide dataset
 into long form before using <code>glmer</code>:</li>
 </ul>
-<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="missing-data.html#cb127-1" tabindex="-1"></a><span class="do">## Multiple imputation-based estimates of regression coefficients </span></span>
-<span id="cb127-2"><a href="missing-data.html#cb127-2" tabindex="-1"></a><span class="do">## for the missing version of the ohio data.</span></span>
-<span id="cb127-3"><a href="missing-data.html#cb127-3" tabindex="-1"></a>BetaMat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow=</span><span class="dv">10</span>, <span class="at">ncol=</span><span class="dv">3</span>)</span>
-<span id="cb127-4"><a href="missing-data.html#cb127-4" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) {</span>
-<span id="cb127-5"><a href="missing-data.html#cb127-5" tabindex="-1"></a>    tmp.ohio <span class="ot">&lt;-</span> completed.ohio[completed.ohio<span class="sc">$</span>.imp<span class="sc">==</span>k,<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]</span>
-<span id="cb127-6"><a href="missing-data.html#cb127-6" tabindex="-1"></a>    </span>
-<span id="cb127-7"><a href="missing-data.html#cb127-7" tabindex="-1"></a>    tmp.ohio.long <span class="ot">&lt;-</span> <span class="fu">gather</span>(tmp.ohio, age, resp, age7<span class="sc">:</span>age10)</span>
-<span id="cb127-8"><a href="missing-data.html#cb127-8" tabindex="-1"></a>    tmp.ohio.long<span class="sc">$</span>age[tmp.ohio.long<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age7&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span></span>
-<span id="cb127-9"><a href="missing-data.html#cb127-9" tabindex="-1"></a>    tmp.ohio.long<span class="sc">$</span>age[tmp.ohio.long<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age8&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span></span>
-<span id="cb127-10"><a href="missing-data.html#cb127-10" tabindex="-1"></a>    tmp.ohio.long<span class="sc">$</span>age[tmp.ohio.long<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age9&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb127-11"><a href="missing-data.html#cb127-11" tabindex="-1"></a>    tmp.ohio.long<span class="sc">$</span>age[tmp.ohio.long<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age10&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb127-12"><a href="missing-data.html#cb127-12" tabindex="-1"></a>    tmp.ohio.long<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(tmp.ohio.long<span class="sc">$</span>age)</span>
-<span id="cb127-13"><a href="missing-data.html#cb127-13" tabindex="-1"></a>    </span>
-<span id="cb127-14"><a href="missing-data.html#cb127-14" tabindex="-1"></a>    ohio.tmpfit <span class="ot">&lt;-</span> <span class="fu">glmer</span>(resp <span class="sc">~</span> age <span class="sc">+</span> smoke <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> id), <span class="at">data =</span> tmp.ohio.long, </span>
-<span id="cb127-15"><a href="missing-data.html#cb127-15" tabindex="-1"></a>                         <span class="at">family =</span> binomial)</span>
-<span id="cb127-16"><a href="missing-data.html#cb127-16" tabindex="-1"></a>    BetaMat[k,] <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(ohio.tmpfit))[,<span class="dv">1</span>]</span>
-<span id="cb127-17"><a href="missing-data.html#cb127-17" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="missing-data.html#cb136-1" tabindex="-1"></a><span class="do">## Multiple imputation-based estimates of regression coefficients </span></span>
+<span id="cb136-2"><a href="missing-data.html#cb136-2" tabindex="-1"></a><span class="do">## for the missing version of the ohio data.</span></span>
+<span id="cb136-3"><a href="missing-data.html#cb136-3" tabindex="-1"></a>BetaMat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow=</span><span class="dv">10</span>, <span class="at">ncol=</span><span class="dv">3</span>)</span>
+<span id="cb136-4"><a href="missing-data.html#cb136-4" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) {</span>
+<span id="cb136-5"><a href="missing-data.html#cb136-5" tabindex="-1"></a>    tmp.ohio <span class="ot">&lt;-</span> completed.ohio[completed.ohio<span class="sc">$</span>.imp<span class="sc">==</span>k,<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]</span>
+<span id="cb136-6"><a href="missing-data.html#cb136-6" tabindex="-1"></a>    </span>
+<span id="cb136-7"><a href="missing-data.html#cb136-7" tabindex="-1"></a>    tmp.ohio.long <span class="ot">&lt;-</span> <span class="fu">gather</span>(tmp.ohio, age, resp, age7<span class="sc">:</span>age10)</span>
+<span id="cb136-8"><a href="missing-data.html#cb136-8" tabindex="-1"></a>    tmp.ohio.long<span class="sc">$</span>age[tmp.ohio.long<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age7&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span></span>
+<span id="cb136-9"><a href="missing-data.html#cb136-9" tabindex="-1"></a>    tmp.ohio.long<span class="sc">$</span>age[tmp.ohio.long<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age8&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span></span>
+<span id="cb136-10"><a href="missing-data.html#cb136-10" tabindex="-1"></a>    tmp.ohio.long<span class="sc">$</span>age[tmp.ohio.long<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age9&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb136-11"><a href="missing-data.html#cb136-11" tabindex="-1"></a>    tmp.ohio.long<span class="sc">$</span>age[tmp.ohio.long<span class="sc">$</span>age <span class="sc">==</span> <span class="st">&quot;age10&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb136-12"><a href="missing-data.html#cb136-12" tabindex="-1"></a>    tmp.ohio.long<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(tmp.ohio.long<span class="sc">$</span>age)</span>
+<span id="cb136-13"><a href="missing-data.html#cb136-13" tabindex="-1"></a>    </span>
+<span id="cb136-14"><a href="missing-data.html#cb136-14" tabindex="-1"></a>    ohio.tmpfit <span class="ot">&lt;-</span> <span class="fu">glmer</span>(resp <span class="sc">~</span> age <span class="sc">+</span> smoke <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> id), <span class="at">data =</span> tmp.ohio.long, </span>
+<span id="cb136-15"><a href="missing-data.html#cb136-15" tabindex="-1"></a>                         <span class="at">family =</span> binomial)</span>
+<span id="cb136-16"><a href="missing-data.html#cb136-16" tabindex="-1"></a>    BetaMat[k,] <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(ohio.tmpfit))[,<span class="dv">1</span>]</span>
+<span id="cb136-17"><a href="missing-data.html#cb136-17" tabindex="-1"></a>}</span></code></pre></div>
 <ul>
 <li>The <strong>multiple imputation-based</strong> estimates of the regression coefficients for
 the missing version of <strong>ohio</strong> are:</li>
 </ul>
-<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="missing-data.html#cb128-1" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">colMeans</span>(BetaMat), <span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="missing-data.html#cb137-1" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">colMeans</span>(BetaMat), <span class="dv">4</span>)</span></code></pre></div>
 <pre><code>## [1] -3.5711 -0.1066  0.2865</code></pre>
 <ul>
 <li>Compare the above regression coefficients with those from the <strong>complete-case</strong> analysis.</li>

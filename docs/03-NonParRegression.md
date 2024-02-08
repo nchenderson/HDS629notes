@@ -637,4 +637,169 @@ anova( gee.bone0, gee.bone01)
 * This is strong evidence in favor of the model $\mu(t_{ij}) = f_{0}(t_{ij}) + A_{ij}f_{1}(t_{ij})$
 over the model $\mu(t_{ij}) = f_{0}(t_{ij})$.
 
----
+### ACTG trial example
+
+
+```r
+actg_trial <- read.csv("~/Documents/HDS629/actg_trial.csv")
+```
+
+* When you load the dataset into R, it should look like the following
+
+```r
+head( actg_trial, 10)
+```
+
+```
+##    SubjectID Treatment   Age Sex   Week   CD4
+## 1          1         2 36.43   1  0.000 3.135
+## 2          1         2 36.43   1  7.571 3.045
+## 3          1         2 36.43   1 15.571 2.773
+## 4          1         2 36.43   1 23.571 2.833
+## 5          1         2 36.43   1 32.571 3.219
+## 6          1         2 36.43   1 40.000 3.045
+## 7          2         4 47.85   1  0.000 3.068
+## 8          2         4 47.85   1  8.000 3.892
+## 9          2         4 47.85   1 16.000 3.970
+## 10         2         4 47.85   1 23.000 3.611
+```
+
+* This longitudinal dataset has 5036 observations with the following 6 variables:
+  + SubjectID - subject identifier 
++ Treatment - treatment received (4 possible treatments) 
++ Age - age in years at baseline
++ Sex - 1=M, 0=F
++ Week - time in weeks from baseline 
++ CD4 - this is the natural logarithm of the CD4 count + 1
+
+* Note that Treatment should be a factor variable
+
+```r
+actg_trial$Treatment <- factor(actg_trial$Treatment)
+```
+
+
+* Let's plot of CD4 vs. week for just individuals in Treatment 1. This plot includes a lowess smoothing line.
+<img src="03-NonParRegression_files/figure-html/unnamed-chunk-30-1.png" width="672" />
+
+* Not any clear evidence that change in CD4 over time is not linear in the treatment 1 group.
+
+```r
+Trt1Dat <- subset(actg_trial, Treatment==1)
+```
+
+We can compare the following two models
+\begin{eqnarray}
+\mu(t_{ij}) &=& \beta_{0} + \beta_{1}t_{ij} \\
+\mu(t_{ij}) &=& f_{0}(t_{ij}) 
+\end{eqnarray}
+where $f_{0}$ will be modeled with a spline function.
+
+
+* We can fit these two models with `geeglm` using the following code:
+
+```r
+actg_trt1_linear <- geeglm(CD4 ~ Week, id=SubjectID, data=Trt1Dat,
+                           corstr="ar1")
+
+actg_trt1_spline <- geeglm(CD4 ~ bs(Week, df=4), id=SubjectID, data=Trt1Dat,
+                    corstr="ar1")
+```
+
+* Now, do a formal comparison:
+
+```r
+anova(actg_trt1_linear, actg_trt1_spline)
+```
+
+```
+## Analysis of 'Wald statistic' Table
+## 
+## Model 1 CD4 ~ bs(Week, df = 4) 
+## Model 2 CD4 ~ Week
+##   Df    X2 P(>|Chi|)
+## 1  3 0.975      0.81
+```
+
+* No evidence to favor the nonparametric model over the linear model.
+
+* For this type of data where, the time point of observations fall into clear "groups",
+another direct nonparametric approach is just to have an indicator for each one of the time
+groups (e.g., weeks 0 - 5, weeks 5-12, weeks 12-20, etc.)
+
+----
+  
+* Now, suppose we are interested in looking at 
+differences in response to treatments in some way.
+
+* Consider the following 3 models (where $A_{i}$ is treatment assigned at baseline):
+\begin{eqnarray}
+\mu(t_{ij}, a) &=& \beta_{0} + \beta_{1}t_{ij} \\
+\mu(t_{ij}, a) &=& \beta_{0} + \beta_{1}t_{ij} + I(A_{i}=a, a \geq 2)\beta_{a} \\
+\mu(t_{ij}, a) &=& \beta_{0} + \beta_{1}t_{ij} + I(A_{i}=a, a \geq 2)\beta_{a} + 
+  I(A_{i}=a, a \geq 2)\gamma_{a}t_{ij} \\
+\end{eqnarray}
+* Now, the mean function depends on time and treatment
+
+* What is the interpretation of each of these models? Which model does not 
+really make sense since this is a randomized trial? 
+
+
+```r
+actg_mod1 <- geeglm(CD4 ~ Week, id=SubjectID, data=actg_trial,
+                           corstr="ar1")
+
+actg_mod2 <- geeglm(CD4 ~ Week + Treatment, id=SubjectID, data=actg_trial,
+                           corstr="ar1")
+
+actg_mod3 <- geeglm(CD4 ~ Week*Treatment, id=SubjectID, data=actg_trial,
+                    corstr="ar1")
+```
+
+* Compare model 3 vs model 2
+
+
+```r
+anova(actg_mod2, actg_mod3)
+```
+
+```
+## Analysis of 'Wald statistic' Table
+## 
+## Model 1 CD4 ~ Week * Treatment 
+## Model 2 CD4 ~ Week + Treatment
+##   Df   X2 P(>|Chi|)    
+## 1  3 49.7   9.4e-11 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+* Compare model 2 vs model 1
+
+```r
+anova(actg_mod2, actg_mod1)
+```
+
+```
+## Analysis of 'Wald statistic' Table
+## 
+## Model 1 CD4 ~ Week + Treatment 
+## Model 2 CD4 ~ Week
+##   Df   X2 P(>|Chi|)  
+## 1  3 6.53     0.089 .
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+* How would we fit the model
+\begin{equation}
+\mu(t_{ij}, a) = \beta_{0} + \beta_{1}t_{ij}  + I(A_{i}=a, a \geq 2)\gamma_{a}t_{ij} 
+\end{equation}
+
+* Use:
+
+```r
+actg_mod4 <- geeglm(CD4 ~ Week + Week:Treatment, id=SubjectID, data=actg_trial,
+                    corstr="ar1")
+```
+

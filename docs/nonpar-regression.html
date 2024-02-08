@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2024-02-01" />
+<meta name="date" content="2024-02-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -224,6 +224,7 @@ div.csl-indent {
 <li class="chapter" data-level="3.3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines-with-longitudinal-data-in-r"><i class="fa fa-check"></i><b>3.3.2</b> Regression Splines with Longitudinal Data in R</a></li>
 <li class="chapter" data-level="3.3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#looking-at-a-continuous-and-a-binary-covariate"><i class="fa fa-check"></i><b>3.3.3</b> Looking at a Continuous and a Binary Covariate</a></li>
 <li class="chapter" data-level="3.3.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#model-comparison"><i class="fa fa-check"></i><b>3.3.4</b> Model Comparison</a></li>
+<li class="chapter" data-level="3.3.5" data-path="nonpar-regression.html"><a href="nonpar-regression.html#actg-trial-example"><i class="fa fa-check"></i><b>3.3.5</b> ACTG trial example</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="glmm-lasso.html"><a href="glmm-lasso.html"><i class="fa fa-check"></i><b>4</b> Sparse Regression for Longitudinal Data</a>
@@ -826,7 +827,130 @@ model <span class="math inline">\(\mu(t_{ij}) = f_{0}(t_{ij}) + \beta_{1}A_{ij}\
 <li><p>This is strong evidence in favor of the model <span class="math inline">\(\mu(t_{ij}) = f_{0}(t_{ij}) + A_{ij}f_{1}(t_{ij})\)</span>
 over the model <span class="math inline">\(\mu(t_{ij}) = f_{0}(t_{ij})\)</span>.</p></li>
 </ul>
+</div>
+<div id="actg-trial-example" class="section level3 hasAnchor" number="3.3.5">
+<h3><span class="header-section-number">3.3.5</span> ACTG trial example<a href="nonpar-regression.html#actg-trial-example" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb172"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb172-1"><a href="nonpar-regression.html#cb172-1" tabindex="-1"></a>actg_trial <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;~/Documents/HDS629/actg_trial.csv&quot;</span>)</span></code></pre></div>
+<ul>
+<li>When you load the dataset into R, it should look like the following</li>
+</ul>
+<div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb173-1"><a href="nonpar-regression.html#cb173-1" tabindex="-1"></a><span class="fu">head</span>( actg_trial, <span class="dv">10</span>)</span></code></pre></div>
+<pre><code>##    SubjectID Treatment   Age Sex   Week   CD4
+## 1          1         2 36.43   1  0.000 3.135
+## 2          1         2 36.43   1  7.571 3.045
+## 3          1         2 36.43   1 15.571 2.773
+## 4          1         2 36.43   1 23.571 2.833
+## 5          1         2 36.43   1 32.571 3.219
+## 6          1         2 36.43   1 40.000 3.045
+## 7          2         4 47.85   1  0.000 3.068
+## 8          2         4 47.85   1  8.000 3.892
+## 9          2         4 47.85   1 16.000 3.970
+## 10         2         4 47.85   1 23.000 3.611</code></pre>
+<ul>
+<li><p>This longitudinal dataset has 5036 observations with the following 6 variables:</p>
+<ul>
+<li>SubjectID - subject identifier</li>
+</ul></li>
+<li><p>Treatment - treatment received (4 possible treatments)</p></li>
+<li><p>Age - age in years at baseline</p></li>
+<li><p>Sex - 1=M, 0=F</p></li>
+<li><p>Week - time in weeks from baseline</p></li>
+<li><p>CD4 - this is the natural logarithm of the CD4 count + 1</p></li>
+<li><p>Note that Treatment should be a factor variable</p></li>
+</ul>
+<div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="nonpar-regression.html#cb175-1" tabindex="-1"></a>actg_trial<span class="sc">$</span>Treatment <span class="ot">&lt;-</span> <span class="fu">factor</span>(actg_trial<span class="sc">$</span>Treatment)</span></code></pre></div>
+<ul>
+<li><p>Let’s plot of CD4 vs. week for just individuals in Treatment 1. This plot includes a lowess smoothing line.
+<img src="03-NonParRegression_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p></li>
+<li><p>Not any clear evidence that change in CD4 over time is not linear in the treatment 1 group.</p></li>
+</ul>
+<div class="sourceCode" id="cb176"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb176-1"><a href="nonpar-regression.html#cb176-1" tabindex="-1"></a>Trt1Dat <span class="ot">&lt;-</span> <span class="fu">subset</span>(actg_trial, Treatment<span class="sc">==</span><span class="dv">1</span>)</span></code></pre></div>
+<p>We can compare the following two models
+<span class="math display">\[\begin{eqnarray}
+\mu(t_{ij}) &amp;=&amp; \beta_{0} + \beta_{1}t_{ij} \\
+\mu(t_{ij}) &amp;=&amp; f_{0}(t_{ij})
+\end{eqnarray}\]</span>
+where <span class="math inline">\(f_{0}\)</span> will be modeled with a spline function.</p>
+<ul>
+<li>We can fit these two models with <code>geeglm</code> using the following code:</li>
+</ul>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="nonpar-regression.html#cb177-1" tabindex="-1"></a>actg_trt1_linear <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(CD4 <span class="sc">~</span> Week, <span class="at">id=</span>SubjectID, <span class="at">data=</span>Trt1Dat,</span>
+<span id="cb177-2"><a href="nonpar-regression.html#cb177-2" tabindex="-1"></a>                           <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>)</span>
+<span id="cb177-3"><a href="nonpar-regression.html#cb177-3" tabindex="-1"></a></span>
+<span id="cb177-4"><a href="nonpar-regression.html#cb177-4" tabindex="-1"></a>actg_trt1_spline <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(CD4 <span class="sc">~</span> <span class="fu">bs</span>(Week, <span class="at">df=</span><span class="dv">4</span>), <span class="at">id=</span>SubjectID, <span class="at">data=</span>Trt1Dat,</span>
+<span id="cb177-5"><a href="nonpar-regression.html#cb177-5" tabindex="-1"></a>                    <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>)</span></code></pre></div>
+<ul>
+<li>Now, do a formal comparison:</li>
+</ul>
+<div class="sourceCode" id="cb178"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb178-1"><a href="nonpar-regression.html#cb178-1" tabindex="-1"></a><span class="fu">anova</span>(actg_trt1_linear, actg_trt1_spline)</span></code></pre></div>
+<pre><code>## Analysis of &#39;Wald statistic&#39; Table
+## 
+## Model 1 CD4 ~ bs(Week, df = 4) 
+## Model 2 CD4 ~ Week
+##   Df    X2 P(&gt;|Chi|)
+## 1  3 0.975      0.81</code></pre>
+<ul>
+<li><p>No evidence to favor the nonparametric model over the linear model.</p></li>
+<li><p>For this type of data where, the time point of observations fall into clear “groups”,
+another direct nonparametric approach is just to have an indicator for each one of the time
+groups (e.g., weeks 0 - 5, weeks 5-12, weeks 12-20, etc.)</p></li>
+</ul>
 <hr />
+<ul>
+<li><p>Now, suppose we are interested in looking at
+differences in response to treatments in some way.</p></li>
+<li><p>Consider the following 3 models (where <span class="math inline">\(A_{i}\)</span> is treatment assigned at baseline):
+<span class="math display">\[\begin{eqnarray}
+\mu(t_{ij}, a) &amp;=&amp; \beta_{0} + \beta_{1}t_{ij} \\
+\mu(t_{ij}, a) &amp;=&amp; \beta_{0} + \beta_{1}t_{ij} + I(A_{i}=a, a \geq 2)\beta_{a} \\
+\mu(t_{ij}, a) &amp;=&amp; \beta_{0} + \beta_{1}t_{ij} + I(A_{i}=a, a \geq 2)\beta_{a} +
+I(A_{i}=a, a \geq 2)\gamma_{a}t_{ij} \\
+\end{eqnarray}\]</span></p></li>
+<li><p>Now, the mean function depends on time and treatment</p></li>
+<li><p>What is the interpretation of each of these models? Which model does not
+really make sense since this is a randomized trial?</p></li>
+</ul>
+<div class="sourceCode" id="cb180"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb180-1"><a href="nonpar-regression.html#cb180-1" tabindex="-1"></a>actg_mod1 <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(CD4 <span class="sc">~</span> Week, <span class="at">id=</span>SubjectID, <span class="at">data=</span>actg_trial,</span>
+<span id="cb180-2"><a href="nonpar-regression.html#cb180-2" tabindex="-1"></a>                           <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>)</span>
+<span id="cb180-3"><a href="nonpar-regression.html#cb180-3" tabindex="-1"></a></span>
+<span id="cb180-4"><a href="nonpar-regression.html#cb180-4" tabindex="-1"></a>actg_mod2 <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(CD4 <span class="sc">~</span> Week <span class="sc">+</span> Treatment, <span class="at">id=</span>SubjectID, <span class="at">data=</span>actg_trial,</span>
+<span id="cb180-5"><a href="nonpar-regression.html#cb180-5" tabindex="-1"></a>                           <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>)</span>
+<span id="cb180-6"><a href="nonpar-regression.html#cb180-6" tabindex="-1"></a></span>
+<span id="cb180-7"><a href="nonpar-regression.html#cb180-7" tabindex="-1"></a>actg_mod3 <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(CD4 <span class="sc">~</span> Week<span class="sc">*</span>Treatment, <span class="at">id=</span>SubjectID, <span class="at">data=</span>actg_trial,</span>
+<span id="cb180-8"><a href="nonpar-regression.html#cb180-8" tabindex="-1"></a>                    <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>)</span></code></pre></div>
+<ul>
+<li>Compare model 3 vs model 2</li>
+</ul>
+<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb181-1"><a href="nonpar-regression.html#cb181-1" tabindex="-1"></a><span class="fu">anova</span>(actg_mod2, actg_mod3)</span></code></pre></div>
+<pre><code>## Analysis of &#39;Wald statistic&#39; Table
+## 
+## Model 1 CD4 ~ Week * Treatment 
+## Model 2 CD4 ~ Week + Treatment
+##   Df   X2 P(&gt;|Chi|)    
+## 1  3 49.7   9.4e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<ul>
+<li>Compare model 2 vs model 1</li>
+</ul>
+<div class="sourceCode" id="cb183"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb183-1"><a href="nonpar-regression.html#cb183-1" tabindex="-1"></a><span class="fu">anova</span>(actg_mod2, actg_mod1)</span></code></pre></div>
+<pre><code>## Analysis of &#39;Wald statistic&#39; Table
+## 
+## Model 1 CD4 ~ Week + Treatment 
+## Model 2 CD4 ~ Week
+##   Df   X2 P(&gt;|Chi|)  
+## 1  3 6.53     0.089 .
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<ul>
+<li><p>How would we fit the model
+<span class="math display">\[\begin{equation}
+\mu(t_{ij}, a) = \beta_{0} + \beta_{1}t_{ij}  + I(A_{i}=a, a \geq 2)\gamma_{a}t_{ij}
+\end{equation}\]</span></p></li>
+<li><p>Use:</p></li>
+</ul>
+<div class="sourceCode" id="cb185"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb185-1"><a href="nonpar-regression.html#cb185-1" tabindex="-1"></a>actg_mod4 <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(CD4 <span class="sc">~</span> Week <span class="sc">+</span> Week<span class="sc">:</span>Treatment, <span class="at">id=</span>SubjectID, <span class="at">data=</span>actg_trial,</span>
+<span id="cb185-2"><a href="nonpar-regression.html#cb185-2" tabindex="-1"></a>                    <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>)</span></code></pre></div>
 
 </div>
 </div>

@@ -545,4 +545,119 @@ anova( gee.bone0, gee.bone01)
 * This is strong evidence in favor of the model $\mu(t_{ij}) = f_{0}(t_{ij}) + A_{ij}f_{1}(t_{ij})$
 over the model $\mu(t_{ij}) = f_{0}(t_{ij})$.
 
----
+### ACTG trial example
+
+```{r}
+actg_trial <- read.csv("~/Documents/HDS629/actg_trial.csv")
+```
+
+* When you load the dataset into R, it should look like the following
+```{r}
+head( actg_trial, 10)
+```
+
+* This longitudinal dataset has 5036 observations with the following 6 variables:
+  + SubjectID - subject identifier 
++ Treatment - treatment received (4 possible treatments) 
++ Age - age in years at baseline
++ Sex - 1=M, 0=F
++ Week - time in weeks from baseline 
++ CD4 - this is the natural logarithm of the CD4 count + 1
+
+* Note that Treatment should be a factor variable
+```{r}
+actg_trial$Treatment <- factor(actg_trial$Treatment)
+```
+
+
+* Let's plot of CD4 vs. week for just individuals in Treatment 1. This plot includes a lowess smoothing line.
+```{r, echo=FALSE}
+Trt1Dat <- subset(actg_trial, Treatment==1)
+ll <- lowess(Trt1Dat$CD4 ~ Trt1Dat$Week)
+plot(Trt1Dat$Week, Trt1Dat$CD4, ylab="log CD4", xlab="Weeks from Baseline")
+lines(ll$x, ll$y, lwd=2, col="red")
+```
+
+* Not any clear evidence that change in CD4 over time is not linear in the treatment 1 group.
+```{r}
+Trt1Dat <- subset(actg_trial, Treatment==1)
+```
+
+We can compare the following two models
+\begin{eqnarray}
+\mu(t_{ij}) &=& \beta_{0} + \beta_{1}t_{ij} \\
+\mu(t_{ij}) &=& f_{0}(t_{ij}) 
+\end{eqnarray}
+where $f_{0}$ will be modeled with a spline function.
+
+
+* We can fit these two models with `geeglm` using the following code:
+```{r}
+actg_trt1_linear <- geeglm(CD4 ~ Week, id=SubjectID, data=Trt1Dat,
+                           corstr="ar1")
+
+actg_trt1_spline <- geeglm(CD4 ~ bs(Week, df=4), id=SubjectID, data=Trt1Dat,
+                    corstr="ar1")
+```
+
+* Now, do a formal comparison:
+```{r}
+anova(actg_trt1_linear, actg_trt1_spline)
+```
+
+* No evidence to favor the nonparametric model over the linear model.
+
+* For this type of data where, the time point of observations fall into clear "groups",
+another direct nonparametric approach is just to have an indicator for each one of the time
+groups (e.g., weeks 0 - 5, weeks 5-12, weeks 12-20, etc.)
+
+----
+  
+* Now, suppose we are interested in looking at 
+differences in response to treatments in some way.
+
+* Consider the following 3 models (where $A_{i}$ is treatment assigned at baseline):
+\begin{eqnarray}
+\mu(t_{ij}, a) &=& \beta_{0} + \beta_{1}t_{ij} \\
+\mu(t_{ij}, a) &=& \beta_{0} + \beta_{1}t_{ij} + I(A_{i}=a, a \geq 2)\beta_{a} \\
+\mu(t_{ij}, a) &=& \beta_{0} + \beta_{1}t_{ij} + I(A_{i}=a, a \geq 2)\beta_{a} + 
+  I(A_{i}=a, a \geq 2)\gamma_{a}t_{ij} \\
+\end{eqnarray}
+* Now, the mean function depends on time and treatment
+
+* What is the interpretation of each of these models? Which model does not 
+really make sense since this is a randomized trial? 
+
+```{r}
+actg_mod1 <- geeglm(CD4 ~ Week, id=SubjectID, data=actg_trial,
+                           corstr="ar1")
+
+actg_mod2 <- geeglm(CD4 ~ Week + Treatment, id=SubjectID, data=actg_trial,
+                           corstr="ar1")
+
+actg_mod3 <- geeglm(CD4 ~ Week*Treatment, id=SubjectID, data=actg_trial,
+                    corstr="ar1")
+```
+
+* Compare model 3 vs model 2
+
+```{r}
+anova(actg_mod2, actg_mod3)
+```
+
+* Compare model 2 vs model 1
+```{r}
+anova(actg_mod2, actg_mod1)
+```
+
+* How would we fit the model
+\begin{equation}
+\mu(t_{ij}, a) = \beta_{0} + \beta_{1}t_{ij}  + I(A_{i}=a, a \geq 2)\gamma_{a}t_{ij} 
+\end{equation}
+
+* Use:
+```{r}
+actg_mod4 <- geeglm(CD4 ~ Week + Week:Treatment, id=SubjectID, data=actg_trial,
+                    corstr="ar1")
+```
+

@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2024-02-15" />
+<meta name="date" content="2024-02-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -225,6 +225,7 @@ div.csl-indent {
 <li class="chapter" data-level="3.3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#looking-at-a-continuous-and-a-binary-covariate"><i class="fa fa-check"></i><b>3.3.3</b> Looking at a Continuous and a Binary Covariate</a></li>
 <li class="chapter" data-level="3.3.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#model-comparison"><i class="fa fa-check"></i><b>3.3.4</b> Model Comparison</a></li>
 <li class="chapter" data-level="3.3.5" data-path="nonpar-regression.html"><a href="nonpar-regression.html#actg-trial-example"><i class="fa fa-check"></i><b>3.3.5</b> ACTG trial example</a></li>
+<li class="chapter" data-level="3.3.6" data-path="nonpar-regression.html"><a href="nonpar-regression.html#treatment-comparisons-for-the-actg-trial"><i class="fa fa-check"></i><b>3.3.6</b> Treatment Comparisons for the ACTG trial</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="glmm-lasso.html"><a href="glmm-lasso.html"><i class="fa fa-check"></i><b>4</b> Sparse Regression for Longitudinal Data</a>
@@ -951,6 +952,94 @@ really make sense since this is a randomized trial?</p></li>
 </ul>
 <div class="sourceCode" id="cb185"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb185-1"><a href="nonpar-regression.html#cb185-1" tabindex="-1"></a>actg_mod4 <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(CD4 <span class="sc">~</span> Week <span class="sc">+</span> Week<span class="sc">:</span>Treatment, <span class="at">id=</span>SubjectID, <span class="at">data=</span>actg_trial,</span>
 <span id="cb185-2"><a href="nonpar-regression.html#cb185-2" tabindex="-1"></a>                    <span class="at">corstr=</span><span class="st">&quot;ar1&quot;</span>)</span></code></pre></div>
+</div>
+<div id="treatment-comparisons-for-the-actg-trial" class="section level3 hasAnchor" number="3.3.6">
+<h3><span class="header-section-number">3.3.6</span> Treatment Comparisons for the ACTG trial<a href="nonpar-regression.html#treatment-comparisons-for-the-actg-trial" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li><p>For data like that in <code>actg_trial</code>, one is often interested in reporting
+measures which quantify the <strong>effect of different treatments</strong>.</p></li>
+<li><p>For treatment comparisons, it can be useful to thing about the <strong>“potential outcomes”</strong>
+of each individual.</p></li>
+<li><p>The potential outcome <span class="math inline">\(Y_{ij}^{(a)}\)</span> is the outcome for subject <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>
+if that subject had received treatment <span class="math inline">\(a\)</span> (where <span class="math inline">\(a=1,2,3,4\)</span>).</p>
+<ul>
+<li><p>Note that we do not observed <span class="math inline">\(Y_{ij}^{(a)}\)</span> for all four possible treatments.</p></li>
+<li><p>We only observe <span class="math inline">\(Y_{ij}^{(a)}\)</span> for the treatment that subject <span class="math inline">\(i\)</span> received.</p></li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>As a starting point for treatment comparisons, it is useful to first define what
+the <strong>“treatment effect”</strong> would be for subject <span class="math inline">\(i\)</span> if we could <strong>observe all</strong> of subject i’s
+potential outcomes.</p>
+<ul>
+<li>We will define this unobserved treatment effect of treatment a vs. treatment b as <span class="math inline">\(Z_{i}^{ab}\)</span>.</li>
+</ul></li>
+<li><p>For <strong>longitudinal data</strong>, the way to think about this treatment effect will depend somewhat on
+the <strong>context</strong> of the study.</p></li>
+<li><p>One possible way to define <span class="math inline">\(Z_{i}^{ab}\)</span> is to <strong>compare change</strong> in response over time:
+<span class="math display">\[\begin{equation}
+Z_{i}^{ab} = (Y_{iJ}^{(a)} - Y_{i1}^{(a)}) - (Y_{iJ}^{(b)} - Y_{i1}^{(b)})
+\end{equation}\]</span></p></li>
+<li><p>Another reasonable way to define <span class="math inline">\(Z_{i}^{ab}\)</span> with longitudinal data is
+to <strong>compare</strong> the average responses over time:
+<span class="math display">\[\begin{equation}
+Z_{i}^{ab} = \frac{1}{J}\sum_{j=1}^{J}Y_{ij}^{(a)} - \frac{1}{J}\sum_{j=1}^{J} Y_{ij}^{(b)}
+\end{equation}\]</span></p></li>
+<li><p>Or, one could define <span class="math inline">\(Z_{i}^{ab}\)</span> as the difference in the response
+at a certain time point <span class="math inline">\(t_{ik}\)</span>:
+<span class="math display">\[\begin{equation}
+Z_{i}^{ab} =  Y_{ik}^{(a)} - Y_{ik}^{(b)}
+\end{equation}\]</span></p></li>
+</ul>
+<hr />
+<ul>
+<li><p>Once you have defined <span class="math inline">\(Z_{i}^{ab}\)</span>, the treatment comparison using the entire dataset
+is typically reported as an <strong>average treatment effect</strong> or <strong>expected average treatment effect</strong>,
+where the average is over the individuals in your study.</p></li>
+<li><p>The expected <strong>average treatment effect</strong> (ATE) for treatment <span class="math inline">\(a\)</span> vs. treatment <span class="math inline">\(b\)</span>
+that we want to estimate is:
+<span class="math display">\[\begin{equation}
+ATE = \frac{1}{n}\sum_{i=1}^{n} E( Z_{i}^{ab} )
+\end{equation}\]</span></p></li>
+</ul>
+<hr />
+<ul>
+<li><p>As one example, suppose we wanted to estimate the expected ATE
+where <span class="math inline">\(Z_{i}^{ab} = (Y_{iJ}^{(a)} - Y_{i1}^{(a)}) - (Y_{iJ}^{(b)} - Y_{i1}^{(b)})\)</span>
+and where the mean model for the longitudinal outcomes was
+<span class="math display">\[\begin{equation}
+\mu(t_{ij}, a) = \beta_{0} + \beta_{1}t_{ij} + I(A_{i}=a, a \geq 2)\beta_{a} +
+I(A_{i}=a, a \geq 2)\gamma_{a}t_{ij}
+\end{equation}\]</span></p></li>
+<li><p>Assuming this model, the ATE for treatment 1 vs. treatment 2 is:
+<span class="math display">\[\begin{eqnarray}
+ATE &amp;=&amp; \frac{1}{n}\sum_{i=1}^{n} [ E( Y_{iJ}^{(a)} - Y_{i1}^{(a)}  ) - E( Y_{iJ}^{(b)} - Y_{i1}^{(b)}  )] \\
+&amp;=&amp; \frac{1}{n}\sum_{i=1}^{n} [ \mu(t_{iJ}, 1) - \mu(t_{i1}, 1) - \mu(t_{iJ}, 2) + \mu(t_{i1}, 2)] \\
+&amp;=&amp; (\beta_{0} + \beta_{1}t_{iJ}) -  (\beta_{0} + \beta_{1}t_{i1}) - (\beta_{0} + \beta_{1}t_{iJ} + \beta_{2} + \gamma_{2}t_{iJ}) + (\beta_{0} + \beta_{1}t_{i1} + \beta_{2} + \gamma_{2}t_{i1}) \\
+&amp;=&amp; \gamma_{2}(t_{i1} - t_{iJ})
+\end{eqnarray}\]</span></p></li>
+<li><p>So, you can report an estimate and confidence interval by
+using <span class="math inline">\(\hat{\gamma}_{2}(t_{i1} - t_{iJ})\)</span> and its corresponding confidence interval.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>As another example, suppose you are instead using the following
+model for the mean outcome
+<span class="math display">\[\begin{equation}
+\mu(t_{ij}, a, x_{i}) = \beta_{0} + \beta_{1}t_{ij} + I(A_{i}=a, a \geq 2)\beta_{a} + \beta_{5}x_{i} +
+I(A_{i}=a, a \geq 2)\gamma_{a}t_{ij} + I(A_{i}=a, a \geq 2)\theta_{a}x_{i}
+\end{equation}\]</span>
+where <span class="math inline">\(x_{i}\)</span> is the age at baseline.</p></li>
+<li><p>Assuming the above model which incorporates baseline age, the ATE for
+treatment 1 vs. treatment 2 is still the same:
+<span class="math display">\[\begin{eqnarray}
+ATE &amp;=&amp; \frac{1}{n}\sum_{i=1}^{n} [ E( Y_{iJ}^{(a)} - Y_{i1}^{(a)}  ) - E( Y_{iJ}^{(b)} - Y_{i1}^{(b)}  )] \\
+&amp;=&amp; \frac{1}{n}\sum_{i=1}^{n} [ \mu(t_{iJ}, 1, x_{i}) - \mu(t_{i1}, 1, x_{i}) - \mu(t_{iJ}, 2, x_{i}) + \mu(t_{i1}, 2, x_{i})] \\
+&amp;=&amp; \gamma_{2}(t_{i1} - t_{iJ})
+\end{eqnarray}\]</span></p></li>
+<li><p>The ATE would be slightly different if age was changing over time rather than only measured at baseline.</p></li>
+</ul>
 
 </div>
 </div>

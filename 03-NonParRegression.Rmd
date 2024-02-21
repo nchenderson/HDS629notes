@@ -661,3 +661,105 @@ actg_mod4 <- geeglm(CD4 ~ Week + Week:Treatment, id=SubjectID, data=actg_trial,
                     corstr="ar1")
 ```
 
+### Treatment Comparisons for the ACTG trial
+
+* For data like that in `actg_trial`, one is often interested in reporting
+measures which quantify the **effect of different treatments**.
+
+* For treatment comparisons, it can be useful to thing about the **"potential outcomes"**
+of each individual.
+
+* The potential outcome $Y_{ij}^{(a)}$ is the outcome for subject $i$ at time $t_{ij}$
+if that subject had received treatment $a$ (where $a=1,2,3,4$). 
+     
+     - Note that we do not observed $Y_{ij}^{(a)}$ for all four possible treatments.
+     
+     - We only observe $Y_{ij}^{(a)}$ for the treatment that subject $i$ received.
+
+---
+     
+
+* As a starting point for treatment comparisons, it is useful to first define what
+the **"treatment effect"** would be for subject $i$ if we could **observe all** of subject i's
+potential outcomes.
+    
+    - We will define this unobserved treatment effect of treatment a vs. treatment b as $Z_{i}^{ab}$.
+
+* For **longitudinal data**, the way to think about this treatment effect will depend somewhat on
+the **context** of the study. 
+
+
+* One possible way to define $Z_{i}^{ab}$ is to **compare change** in response over time:
+\begin{equation}
+Z_{i}^{ab} = (Y_{iJ}^{(a)} - Y_{i1}^{(a)}) - (Y_{iJ}^{(b)} - Y_{i1}^{(b)})
+\end{equation}
+
+* Another reasonable way to define $Z_{i}^{ab}$ with longitudinal data is 
+to  **compare** the average responses over time:
+\begin{equation}
+Z_{i}^{ab} = \frac{1}{J}\sum_{j=1}^{J}Y_{ij}^{(a)} - \frac{1}{J}\sum_{j=1}^{J} Y_{ij}^{(b)}
+\end{equation}
+
+* Or, one could define $Z_{i}^{ab}$ as the difference in the response 
+at a certain time point $t_{ik}$:
+\begin{equation}
+Z_{i}^{ab} =  Y_{ik}^{(a)} - Y_{ik}^{(b)}
+\end{equation}
+
+---
+
+* Once you have defined $Z_{i}^{ab}$, the treatment comparison using the entire dataset
+is typically reported as an **average treatment effect** or **expected average treatment effect**,
+where the average is over the individuals in your study.
+
+* The expected **average treatment effect** (ATE) for treatment $a$ vs. treatment $b$ 
+that we want to estimate is:
+\begin{equation}
+ATE = \frac{1}{n}\sum_{i=1}^{n} E( Z_{i}^{ab} )
+\end{equation}
+
+---
+
+* As one example, suppose we wanted to estimate the expected ATE
+where $Z_{i}^{ab} = (Y_{iJ}^{(a)} - Y_{i1}^{(a)}) - (Y_{iJ}^{(b)} - Y_{i1}^{(b)})$
+and where the mean model for the longitudinal outcomes was
+\begin{equation}
+\mu(t_{ij}, a) = \beta_{0} + \beta_{1}t_{ij} + I(A_{i}=a, a \geq 2)\beta_{a} + 
+  I(A_{i}=a, a \geq 2)\gamma_{a}t_{ij} 
+\end{equation}
+
+* Assuming this model, the ATE for treatment 1 vs. treatment 2 is:
+\begin{eqnarray}
+ATE &=& \frac{1}{n}\sum_{i=1}^{n} [ E( Y_{iJ}^{(a)} - Y_{i1}^{(a)}  ) - E( Y_{iJ}^{(b)} - Y_{i1}^{(b)}  )] \\
+&=& \frac{1}{n}\sum_{i=1}^{n} [ \mu(t_{iJ}, 1) - \mu(t_{i1}, 1) - \mu(t_{iJ}, 2) + \mu(t_{i1}, 2)] \\
+&=& (\beta_{0} + \beta_{1}t_{iJ}) -  (\beta_{0} + \beta_{1}t_{i1}) - (\beta_{0} + \beta_{1}t_{iJ} + \beta_{2} + \gamma_{2}t_{iJ}) + (\beta_{0} + \beta_{1}t_{i1} + \beta_{2} + \gamma_{2}t_{i1}) \\
+&=& \gamma_{2}(t_{i1} - t_{iJ})
+\end{eqnarray}
+
+* So, you can report an estimate and confidence interval by
+using $\hat{\gamma}_{2}(t_{i1} - t_{iJ})$ and its corresponding confidence interval.
+
+---
+
+* As another example, suppose you are instead using the following 
+model for the mean outcome
+\begin{equation}
+\mu(t_{ij}, a, x_{i}) = \beta_{0} + \beta_{1}t_{ij} + I(A_{i}=a, a \geq 2)\beta_{a} + \beta_{5}x_{i} + 
+  I(A_{i}=a, a \geq 2)\gamma_{a}t_{ij} + I(A_{i}=a, a \geq 2)\theta_{a}x_{i}
+\end{equation}
+where $x_{i}$ is the age at baseline.
+
+
+* Assuming the above model which incorporates baseline age, the ATE for 
+treatment 1 vs. treatment 2 is still the same:
+\begin{eqnarray}
+ATE &=& \frac{1}{n}\sum_{i=1}^{n} [ E( Y_{iJ}^{(a)} - Y_{i1}^{(a)}  ) - E( Y_{iJ}^{(b)} - Y_{i1}^{(b)}  )] \\
+&=& \frac{1}{n}\sum_{i=1}^{n} [ \mu(t_{iJ}, 1, x_{i}) - \mu(t_{i1}, 1, x_{i}) - \mu(t_{iJ}, 2, x_{i}) + \mu(t_{i1}, 2, x_{i})] \\
+&=& \gamma_{2}(t_{i1} - t_{iJ})
+\end{eqnarray}
+
+* The ATE would be slightly different if age was changing over time rather than only measured at baseline.
+
+
+
+

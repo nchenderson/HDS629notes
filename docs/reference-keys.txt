@@ -65,6 +65,7 @@ regression-splines-with-longitudinal-data-in-r
 looking-at-a-continuous-and-a-binary-covariate
 model-comparison
 actg-trial-example
+treatment-comparisons-for-the-actg-trial
 glmm-lasso
 sparse-regression-methods
 the-lasso-with-longitudinal-data

@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2024-02-15" />
+<meta name="date" content="2024-02-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -225,6 +225,7 @@ div.csl-indent {
 <li class="chapter" data-level="3.3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#looking-at-a-continuous-and-a-binary-covariate"><i class="fa fa-check"></i><b>3.3.3</b> Looking at a Continuous and a Binary Covariate</a></li>
 <li class="chapter" data-level="3.3.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#model-comparison"><i class="fa fa-check"></i><b>3.3.4</b> Model Comparison</a></li>
 <li class="chapter" data-level="3.3.5" data-path="nonpar-regression.html"><a href="nonpar-regression.html#actg-trial-example"><i class="fa fa-check"></i><b>3.3.5</b> ACTG trial example</a></li>
+<li class="chapter" data-level="3.3.6" data-path="nonpar-regression.html"><a href="nonpar-regression.html#treatment-comparisons-for-the-actg-trial"><i class="fa fa-check"></i><b>3.3.6</b> Treatment Comparisons for the ACTG trial</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="glmm-lasso.html"><a href="glmm-lasso.html"><i class="fa fa-check"></i><b>4</b> Sparse Regression for Longitudinal Data</a>
@@ -455,7 +456,7 @@ average value of the risk score <span class="math inline">\(g_{s}\)</span> in st
 <span id="cb275-3"><a href="risk-prediction2.html#cb275-3" tabindex="-1"></a>brier.RF <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.RF <span class="sc">-</span> biopsy<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
 <span id="cb275-4"><a href="risk-prediction2.html#cb275-4" tabindex="-1"></a></span>
 <span id="cb275-5"><a href="risk-prediction2.html#cb275-5" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(brier.cart, brier.logreg, brier.RF), <span class="dv">4</span>)</span></code></pre></div>
-<pre><code>## [1] 0.0450 0.0280 0.0054</code></pre>
+<pre><code>## [1] 0.0450 0.0280 0.0058</code></pre>
 <ul>
 <li>When comparing <strong>in-sample</strong> Brier scores, CART is the worst, logistic regression is in the middle, and random forest is the best.</li>
 </ul>
@@ -496,7 +497,7 @@ of <code>biopsy</code> and then testing relative performance on the remaining ob
 <span id="cb280-3"><a href="risk-prediction2.html#cb280-3" tabindex="-1"></a>brier.RF.test <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.RF.test <span class="sc">-</span> biopsy.test<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
 <span id="cb280-4"><a href="risk-prediction2.html#cb280-4" tabindex="-1"></a></span>
 <span id="cb280-5"><a href="risk-prediction2.html#cb280-5" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(brier.cart.test, brier.logreg.test, brier.RF.test), <span class="dv">4</span>)</span></code></pre></div>
-<pre><code>## [1] 0.0359 0.0135 0.0181</code></pre>
+<pre><code>## [1] 0.0359 0.0135 0.0182</code></pre>
 <ul>
 <li><p>For the out-of-sample Brier score, both logistic regression and random forest are notably
 better than CART.</p></li>

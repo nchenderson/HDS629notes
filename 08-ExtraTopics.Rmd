@@ -24,6 +24,9 @@ more "black box" prediction method.
 
 ---
 
+- The partical dependence function of $u$ is the "effect" of setting $x_{ik} = u$, while accounting
+for the average effect of all the other variables.
+
 - Plotting $\rho_{k}(u)$ versus $u$ captures how changing $x_{ik}$ influences the estimated prediction.
 
 - Note that partial dependence plots are mostly useful for **continuous covariates**. 

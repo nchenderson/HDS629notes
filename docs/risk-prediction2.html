@@ -502,7 +502,7 @@ of <code>biopsy</code> and then testing relative performance on the remaining ob
 <span id="cb280-3"><a href="risk-prediction2.html#cb280-3" tabindex="-1"></a>brier.RF.test <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.RF.test <span class="sc">-</span> biopsy.test<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
 <span id="cb280-4"><a href="risk-prediction2.html#cb280-4" tabindex="-1"></a></span>
 <span id="cb280-5"><a href="risk-prediction2.html#cb280-5" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(brier.cart.test, brier.logreg.test, brier.RF.test), <span class="dv">4</span>)</span></code></pre></div>
-<pre><code>## [1] 0.0359 0.0135 0.0190</code></pre>
+<pre><code>## [1] 0.0359 0.0135 0.0179</code></pre>
 <ul>
 <li><p>For the out-of-sample Brier score, both logistic regression and random forest are notably
 better than CART.</p></li>

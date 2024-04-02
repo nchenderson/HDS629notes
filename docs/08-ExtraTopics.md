@@ -24,6 +24,9 @@ more "black box" prediction method.
 
 ---
 
+- The partical dependence function of $u$ is the "effect" of setting $x_{ik} = u$, while accounting
+for the average effect of all the other variables.
+
 - Plotting $\rho_{k}(u)$ versus $u$ captures how changing $x_{ik}$ influences the estimated prediction.
 
 - Note that partial dependence plots are mostly useful for **continuous covariates**. 
@@ -144,16 +147,16 @@ Imp.Full ## This is a 10 x 1 matrix
 
 ```
 ##     IncNodePurity
-## age     142733.87
-## sex      31747.77
-## bmi     579528.45
-## map     299960.63
-## tc      145300.41
-## ldl     154247.81
-## hdl     207463.96
-## tch     163943.49
-## ltg     558491.96
-## glu     210089.27
+## age     141249.32
+## sex      32435.37
+## bmi     612407.41
+## map     284666.99
+## tc      144476.41
+## ldl     150885.57
+## hdl     210671.74
+## tch     167846.92
+## ltg     537171.84
+## glu     211884.82
 ```
 
 
@@ -185,10 +188,10 @@ print(vhat)
 ```
 
 ```
-##         age         sex         bmi         map          tc         ldl 
-##   3802632.6    438003.3  59610723.7 232968479.9   3260099.6   1317631.1 
-##         hdl         tch         ltg         glu 
-##  26016161.4  16557560.8 129036456.5   4840373.7
+##       age       sex       bmi       map        tc       ldl       hdl       tch 
+##  13733363   1494074 218590977 157047559   8533103  13044387  32060085   7451295 
+##       ltg       glu 
+## 295434866  22750273
 ```
 
 ---
@@ -205,16 +208,16 @@ VIMP_CI[order(-VIMP_CI[,1]),]
 
 ```
 ##      estimate     lower     upper
-## bmi 579528.45 564395.69 594661.22
-## ltg 558491.96 536227.49 580756.42
-## map 299960.63 270044.55 329876.70
-## glu 210089.27 205777.10 214401.44
-## hdl 207463.96 197466.77 217461.14
-## tch 163943.49 155968.05 171918.92
-## ldl 154247.81 151997.96 156497.66
-## tc  145300.41 141761.49 148839.34
-## age 142733.87 138911.80 146555.94
-## sex  31747.77  30450.61  33044.94
+## bmi 612407.41 583429.15 641385.66
+## ltg 537171.84 503482.93 570860.75
+## map 284666.99 260104.54 309229.44
+## glu 211884.82 202536.16 221233.48
+## hdl 210671.74 199573.90 221769.58
+## tch 167846.92 162496.69 173197.14
+## ldl 150885.57 143806.64 157964.51
+## tc  144476.41 138750.96 150201.86
+## age 141249.32 133985.84 148512.79
+## sex  32435.37  30039.62  34831.13
 ```
 
 ### Stability Selection for Penalized Regression
@@ -246,18 +249,18 @@ coef(diabet.mod)
 
 ```
 ## 11 x 1 sparse Matrix of class "dgCMatrix"
-##                     s0
-## (Intercept) -97.960901
-## age           .       
-## sex           .       
-## bmi           3.197026
-## map           .       
-## tc            .       
-## ldl           .       
-## hdl           .       
-## tch           3.278505
-## ltg          75.102716
-## glu           .
+##                       s0
+## (Intercept) -101.2122448
+## age            .        
+## sex            .        
+## bmi            3.6888059
+## map            0.3467875
+## tc             .        
+## ldl            .        
+## hdl            .        
+## tch            .        
+## ltg           63.9349390
+## glu            .
 ```
 
 * The **selected** variables are those with nonzero coefficients:
@@ -269,7 +272,7 @@ selected
 ```
 
 ```
-##  [1] FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE  TRUE FALSE
+##  [1] FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE
 ```
 
 ---
@@ -352,16 +355,16 @@ SelectionProb[,1:5]
 
 ```
 ##      [,1]  [,2]  [,3]  [,4]  [,5]
-## age 0.965 0.775 0.640 0.495 0.365
-## sex 1.000 1.000 1.000 1.000 0.990
+## age 0.990 0.835 0.665 0.490 0.370
+## sex 1.000 1.000 0.995 0.995 0.995
 ## bmi 1.000 1.000 1.000 1.000 1.000
 ## map 1.000 1.000 1.000 1.000 1.000
-## tc  0.965 0.870 0.790 0.665 0.570
-## ldl 0.925 0.270 0.265 0.285 0.290
-## hdl 0.880 0.925 0.970 0.985 0.990
-## tch 0.950 0.630 0.430 0.295 0.195
+## tc  0.975 0.915 0.780 0.660 0.470
+## ldl 0.885 0.175 0.215 0.295 0.340
+## hdl 0.910 0.955 0.990 0.995 1.000
+## tch 0.940 0.650 0.495 0.335 0.230
 ## ltg 1.000 1.000 1.000 1.000 1.000
-## glu 1.000 0.910 0.850 0.805 0.735
+## glu 0.985 0.870 0.785 0.735 0.675
 ```
 
 ---
@@ -377,12 +380,12 @@ head(df)
 
 ```
 ##   varname selection.prob    lambda
-## 1     age          0.965 0.1000000
-## 2     age          0.775 0.6128205
-## 3     age          0.640 1.1256410
-## 4     age          0.495 1.6384615
-## 5     age          0.365 2.1512821
-## 6     age          0.245 2.6641026
+## 1     age          0.990 0.1000000
+## 2     age          0.835 0.6128205
+## 3     age          0.665 1.1256410
+## 4     age          0.490 1.6384615
+## 5     age          0.370 2.1512821
+## 6     age          0.280 2.6641026
 ```
 
 

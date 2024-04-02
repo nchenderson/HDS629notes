@@ -2,6 +2,34 @@
 
 ---
 
+
+## Partial Dependence Plots
+
+- Beyond variable importance, assessing the impact of a particular covariate can be tricky with
+more "black box" prediction method.
+
+-  For these situations, [**partial dependence plots**]{style="color:#D96716"} are a useful way tool. 
+
+- Suppose we have a method that takes covariate vector $\mathbf{x}$ as input and generates a prediction $\hat{f}(\mathbf{x})$.
+     - For example, $\hat{f}(\mathbf{x})$ could be the output of random forest or from a boosting method
+
+-  For this method, the [**partial dependence function**]{style="color:#D96716"} for variable $k$ at point $u$ is defined as 
+\begin{equation}
+    \rho_{k}( u ) = \frac{1}{n}\sum_{i=1}^{n}\hat{f}(\mathbf{x}_{i,-k}, u)
+\end{equation}
+
+-   $\mathbf{x}_{i,-k}$ - all of the covariates for person $i$ [**except**]{style="color:#D96716"} for covariate $k$.
+
+-   $(\mathbf{x}_{i,-k}, u)$ - setting $x_{ik} = u$ and using the observed values for all other covariates.
+
+---
+
+- Plotting $\rho_{k}(u)$ versus $u$ captures how changing $x_{ik}$ influences the estimated prediction.
+
+- Note that partial dependence plots are mostly useful for **continuous covariates**. 
+
+
+
 ## Uncertainty in Variable Importance Measures
 
 * Many machine learning/penalized regression methods generate
@@ -116,16 +144,16 @@ Imp.Full ## This is a 10 x 1 matrix
 
 ```
 ##     IncNodePurity
-## age     142780.25
-## sex      36589.47
-## bmi     591416.26
-## map     292252.96
-## tc      146691.29
-## ldl     155147.57
-## hdl     195062.04
-## tch     173937.04
-## ltg     552046.42
-## glu     207960.99
+## age     142733.87
+## sex      31747.77
+## bmi     579528.45
+## map     299960.63
+## tc      145300.41
+## ldl     154247.81
+## hdl     207463.96
+## tch     163943.49
+## ltg     558491.96
+## glu     210089.27
 ```
 
 
@@ -157,10 +185,10 @@ print(vhat)
 ```
 
 ```
-##       age       sex       bmi       map        tc       ldl       hdl       tch 
-##  19722173   1023993  46658481 125151373   2981007   8844940  13221471  60122197 
-##       ltg       glu 
-## 183540478   6967993
+##         age         sex         bmi         map          tc         ldl 
+##   3802632.6    438003.3  59610723.7 232968479.9   3260099.6   1317631.1 
+##         hdl         tch         ltg         glu 
+##  26016161.4  16557560.8 129036456.5   4840373.7
 ```
 
 ---
@@ -177,16 +205,16 @@ VIMP_CI[order(-VIMP_CI[,1]),]
 
 ```
 ##      estimate     lower     upper
-## bmi 591416.26 578028.08 604804.43
-## ltg 552046.42 525492.91 578599.94
-## map 292252.96 270326.23 314179.69
-## glu 207960.99 202787.18 213134.79
-## hdl 195062.04 187935.22 202188.86
-## tch 173937.04 158739.49 189134.58
-## ldl 155147.57 149318.45 160976.70
-## tc  146691.29 143307.24 150075.35
-## age 142780.25 134075.95 151484.54
-## sex  36589.47  34606.09  38572.84
+## bmi 579528.45 564395.69 594661.22
+## ltg 558491.96 536227.49 580756.42
+## map 299960.63 270044.55 329876.70
+## glu 210089.27 205777.10 214401.44
+## hdl 207463.96 197466.77 217461.14
+## tch 163943.49 155968.05 171918.92
+## ldl 154247.81 151997.96 156497.66
+## tc  145300.41 141761.49 148839.34
+## age 142733.87 138911.80 146555.94
+## sex  31747.77  30450.61  33044.94
 ```
 
 ### Stability Selection for Penalized Regression
@@ -218,18 +246,18 @@ coef(diabet.mod)
 
 ```
 ## 11 x 1 sparse Matrix of class "dgCMatrix"
-##                      s0
-## (Intercept) -85.5495301
-## age           .        
-## sex           .        
-## bmi           4.8412252
-## map           .        
-## tc            .        
-## ldl           .        
-## hdl           .        
-## tch           .        
-## ltg          39.8275287
-## glu           0.2780754
+##                     s0
+## (Intercept) -97.960901
+## age           .       
+## sex           .       
+## bmi           3.197026
+## map           .       
+## tc            .       
+## ldl           .       
+## hdl           .       
+## tch           3.278505
+## ltg          75.102716
+## glu           .
 ```
 
 * The **selected** variables are those with nonzero coefficients:
@@ -241,7 +269,7 @@ selected
 ```
 
 ```
-##  [1] FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE
+##  [1] FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE  TRUE FALSE
 ```
 
 ---
@@ -324,16 +352,16 @@ SelectionProb[,1:5]
 
 ```
 ##      [,1]  [,2]  [,3]  [,4]  [,5]
-## age 0.945 0.760 0.595 0.475 0.350
-## sex 1.000 1.000 1.000 1.000 1.000
+## age 0.965 0.775 0.640 0.495 0.365
+## sex 1.000 1.000 1.000 1.000 0.990
 ## bmi 1.000 1.000 1.000 1.000 1.000
 ## map 1.000 1.000 1.000 1.000 1.000
-## tc  0.965 0.875 0.790 0.660 0.520
-## ldl 0.885 0.220 0.275 0.315 0.300
-## hdl 0.870 0.960 0.990 0.995 1.000
-## tch 0.945 0.715 0.420 0.235 0.145
+## tc  0.965 0.870 0.790 0.665 0.570
+## ldl 0.925 0.270 0.265 0.285 0.290
+## hdl 0.880 0.925 0.970 0.985 0.990
+## tch 0.950 0.630 0.430 0.295 0.195
 ## ltg 1.000 1.000 1.000 1.000 1.000
-## glu 0.990 0.900 0.845 0.775 0.730
+## glu 1.000 0.910 0.850 0.805 0.735
 ```
 
 ---
@@ -349,12 +377,12 @@ head(df)
 
 ```
 ##   varname selection.prob    lambda
-## 1     age          0.945 0.1000000
-## 2     age          0.760 0.6128205
-## 3     age          0.595 1.1256410
-## 4     age          0.475 1.6384615
-## 5     age          0.350 2.1512821
-## 6     age          0.220 2.6641026
+## 1     age          0.965 0.1000000
+## 2     age          0.775 0.6128205
+## 3     age          0.640 1.1256410
+## 4     age          0.495 1.6384615
+## 5     age          0.365 2.1512821
+## 6     age          0.245 2.6641026
 ```
 
 

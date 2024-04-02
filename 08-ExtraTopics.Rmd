@@ -2,6 +2,34 @@
 
 ---
 
+
+## Partial Dependence Plots
+
+- Beyond variable importance, assessing the impact of a particular covariate can be tricky with
+more "black box" prediction method.
+
+-  For these situations, [**partial dependence plots**]{style="color:#D96716"} are a useful way tool. 
+
+- Suppose we have a method that takes covariate vector $\mathbf{x}$ as input and generates a prediction $\hat{f}(\mathbf{x})$.
+     - For example, $\hat{f}(\mathbf{x})$ could be the output of random forest or from a boosting method
+
+-  For this method, the [**partial dependence function**]{style="color:#D96716"} for variable $k$ at point $u$ is defined as 
+\begin{equation}
+    \rho_{k}( u ) = \frac{1}{n}\sum_{i=1}^{n}\hat{f}(\mathbf{x}_{i,-k}, u)
+\end{equation}
+
+-   $\mathbf{x}_{i,-k}$ - all of the covariates for person $i$ [**except**]{style="color:#D96716"} for covariate $k$.
+
+-   $(\mathbf{x}_{i,-k}, u)$ - setting $x_{ik} = u$ and using the observed values for all other covariates.
+
+---
+
+- Plotting $\rho_{k}(u)$ versus $u$ captures how changing $x_{ik}$ influences the estimated prediction.
+
+- Note that partial dependence plots are mostly useful for **continuous covariates**. 
+
+
+
 ## Uncertainty in Variable Importance Measures
 
 * Many machine learning/penalized regression methods generate

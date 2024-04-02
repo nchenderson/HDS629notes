@@ -55,7 +55,7 @@ editor_options:
 
 ------------------------------------------------------------------------
 
-```{r, echo=FALSE, message=FALSE, fig.cap="Plots of individual-specific trajectories from the sleepstudy data with the trajectories of 4 individuals highlighted."}
+```{r, echo=FALSE, message=FALSE, fig.cap="Plots of individual-specific trajectories from the sleepstudy data with the trajectories of 4 individuals highlighted.", cache=TRUE}
 library(lme4)
 data(sleepstudy)
 ids <- unique(sleepstudy$Subject)
@@ -164,7 +164,7 @@ set.seed(5178)
     -   Each regression line was estimated using only data from one
         individual.
 
-```{r, echo=FALSE, fig.cap="Separately estimated regression lines for 3 subjects in the sleepstudy data."}
+```{r, echo=FALSE, fig.cap="Separately estimated regression lines for 3 subjects in the sleepstudy data.", cache=TRUE}
 pc <- c(1,4,3,4,5,6,16)
 cls <- c("black", "red", "black", "black","black","black", "blue")
 plot(sleepstudy$Days, sleepstudy$Reaction, type="n",
@@ -498,7 +498,7 @@ one thing you could report is the variation explained -->
 -   The **lme4** package is probably the most general package for
     fitting LMMs and GLMMs.
 
-```{r, echo=TRUE, eval=FALSE}
+```{r, echo=TRUE, eval=FALSE, cache=TRUE}
 library(lme4)
 ```
 
@@ -510,7 +510,7 @@ library(lme4)
 -   To start off, let's use the `sleepstudy` longitudinal data in `lme4`
     and look at the data from the first two individuals in this data.
 
-```{r}
+```{r, cache=TRUE}
 data(sleepstudy) 
 dim(sleepstudy) # 18 individuals, each with 10 observations
 sleepstudy[1:20,] # Data from the subjects with ids: 308 and 309
@@ -571,7 +571,7 @@ sleepstudy[1:20,] # Data from the subjects with ids: 308 and 309
 -   Putting these two together, we can fit the LMM
     \@ref(eq:lmm-intercept-sleep) using the following code:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 lmm.sleep.intercept <- lmer(Reaction ~ Days + (1|Subject), data = sleepstudy)
 ```
 
@@ -584,7 +584,7 @@ lmm.sleep.intercept <- lmer(Reaction ~ Days + (1|Subject), data = sleepstudy)
 -   Let's look at the **first 5 rows** of the "X" matrix from
     `lmm.sleep.intercept`
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 x.mat <- model.matrix(lmm.sleep.intercept)
 ## This design matrix should have an intercept column
 ## and a column which stores the "Days" variable
@@ -594,7 +594,7 @@ x.mat[1:5,]
 -   Let's look at the **first 20 rows** of the "Z" matrix from
     `lmm.intercept`
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 ## Use argument type = "random" to get random-effects design matrix
 z.mat <- model.matrix(lmm.sleep.intercept, type="random")
 z.mat[1:20,] # The . values in zmat correspond to zeros
@@ -611,7 +611,7 @@ z.mat[1:20,] # The . values in zmat correspond to zeros
 -   Let's look at the **estimated parameters** from the LMM with random
     intercepts using `summary`
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 summary(lmm.sleep.intercept)
 ```
 
@@ -635,14 +635,14 @@ summary(lmm.sleep.intercept)
 
 -   This is done with `lmer` using the following code:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 lmm.sleep.slope <- lmer(Reaction ~ Days + (Days|Subject), data = sleepstudy)
 ```
 
 -   Again, let's check the "X" and "Z" matrices from `lmm.sleep.slope`
     to double-check that everything makes sense
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 x.mat2 <- model.matrix(lmm.sleep.slope)
 ## This design matrix should be the same as that from lmm.sleep.intercept
 x.mat2[1:5,]
@@ -650,7 +650,7 @@ x.mat2[1:5,]
 
 -   First 20 rows of the "Z" matrix from `lmm.sleep.slope`:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 ## Use argument type = "random" to get random-effects design matrix
 z.mat2 <- model.matrix(lmm.sleep.slope, type="random")
 z.mat2[1:20,] # The . values in zmat2 correspond to zeros
@@ -663,7 +663,7 @@ z.mat2[1:20,] # The . values in zmat2 correspond to zeros
 
 -   Let's look at the **estimated parameters** from `lmm.sleep.slope`
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 summary(lmm.sleep.slope)
 ```
 
@@ -685,14 +685,14 @@ summary(lmm.sleep.slope)
 -   Rather than always printing out the entire summary, you can directly
     extract the estimates of the fixed effects with `coef`:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 coef( summary(lmm.sleep.slope) )
 ```
 
 -   To directly extract the estimates of the variance (or standard
     deviation) of the random effects, you can use:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 VarCorr( lmm.sleep.slope )
 ```
 
@@ -720,7 +720,7 @@ VarCorr( lmm.sleep.slope )
         where the pairs $(u_{i0}, u_{i1})$ are generated from the
         estimated joint Normal distribution.
 
-```{r, echo=TRUE, fig.cap="Random trajectories for sleepstudy data using the estimated intercept and slope random-effects variances."}
+```{r, echo=TRUE, cache=TRUE, fig.cap="Random trajectories for sleepstudy data using the estimated intercept and slope random-effects variances."}
 Sigma.hat <- VarCorr( lmm.sleep.slope )$Subject # This is the random-effects 
                                                 # covariance matrix
 ndraws <- 100
@@ -758,7 +758,7 @@ for(k in 1:ndraws) {
         and a random intercept for each person.
 -   Let's first fit these models using `REML = FALSE`:
 
-```{r}
+```{r, cache=TRUE}
 M0 <- lmer(Reaction ~ 1 + (1|Subject), data = sleepstudy, REML=FALSE)
 M1 <- lmer(Reaction ~ Days + (1|Subject), data = sleepstudy, REML=FALSE)
 ```
@@ -767,7 +767,7 @@ M1 <- lmer(Reaction ~ Days + (1|Subject), data = sleepstudy, REML=FALSE)
     these two models.
     -   `anova(M0, M1)` also reports an **AIC** and **BIC** measure.
 
-```{r}
+```{r, cache=TRUE}
 anova(M0, M1)
 ```
 
@@ -783,13 +783,13 @@ anova(M0, M1)
         and a random intercept **and slope** for each person.
 -   To compare **M1** with **M2**, let's fit **M2** with `REML = FALSE`:
 
-```{r}
+```{r, cache=TRUE}
 M2 <- lmer(Reaction ~ Days + (Days|Subject), data = sleepstudy, REML=FALSE)
 ```
 
 -   Now, use `anova(M1, M2)` to compare these models directly
 
-```{r}
+```{r, cache=TRUE}
 anova(M1, M2)
 ```
 
@@ -801,14 +801,14 @@ anova(M1, M2)
 -   To get the "BLUPs" the intercepts and slopes $\textrm{BLUP}(u_{i0})$
     and $\textrm{BLUP}(u_{i1})$, use `ranef`
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 blups.slope <- ranef( lmm.sleep.slope )
 ```
 
 -   To plot these, use `dotplot` (you will need to load the `lattice`
     package first)
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 library(lattice)
 dotplot(blups.slope)
 ## This plots subjects sorted by individual-specific estimates of intercepts
@@ -818,7 +818,7 @@ dotplot(blups.slope)
 
 -   To extract the "predicted" random effects into a `DataFrame` use
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 ranef.df <- as.data.frame( blups.slope)
 head(ranef.df)
 ```
@@ -837,7 +837,7 @@ head(ranef.df)
 
 -   These are obtained by using the `fitted` method
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 blup.full <- fitted( lmm.sleep.slope )  # Should be a vector of length 180
 ```
 
@@ -846,7 +846,7 @@ blup.full <- fitted( lmm.sleep.slope )  # Should be a vector of length 180
     as a function of time for all individuals, it will look like the
     following:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 library(ggplot2)
 # First add the BLUPs to the sleepstudy data as a separate variable
 sleepstudy$blups <- blup.full
@@ -865,13 +865,13 @@ ggplot(sleepstudy, aes(x=Days, y=blups, group=Subject)) +
 -   To use the **ohio** data, we will first load the **geepack** R
     package:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 library(geepack)
 ```
 
 -   This dataset has 2148 observations from 537 individuals
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 data(ohio)
 head(ohio, 12) # look at first 12 rows of ohio
 ```
@@ -918,7 +918,7 @@ glmer(formula, data, family)
     -   maternal smoking **increases** the probability of wheezing at
         each age
 
-```{r, echo=TRUE, message=FALSE}
+```{r, echo=TRUE, message=FALSE, cache=TRUE}
 library(dplyr)
 prop_summary_ohio <- ohio %>% 
                      group_by(smoke, age) %>% 
@@ -948,16 +948,16 @@ prop_summary_ohio
 ```
 -   Model \@ref(eq:ohio-intercept) can be fit with the following code
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 # id is the grouping variable
 ohio.intercept <- glmer(resp ~ age + smoke + (1 | id), data = ohio, family = binomial)
 ```
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 coef(summary(ohio.intercept))
 ```
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 VarCorr(ohio.intercept)
 ```
 
@@ -989,7 +989,7 @@ VarCorr(ohio.intercept)
     -   It would probably be better to use some sort of bounded density
         estimator for these plots.
 
-```{r, echo=TRUE, fig.cap="Distribution of Wheezing probability across individuals for different values of age and smoking status"}
+```{r, echo=TRUE, fig.cap="Distribution of Wheezing probability across individuals for different values of age and smoking status", cache=TRUE}
 beta.hat <- coef(summary(ohio.intercept))[,1]
 n <- 1000
 pneg2.smoke <- plogis(rnorm(n,sd=2.34) + beta.hat[1] - 2*beta.hat[2] + beta.hat[3]) #age -2 with smoke
@@ -1028,12 +1028,12 @@ legend("topright", legend = c("Smoke", "No Smoke"), col=c("black", "red"), bty='
 was obtained from https://content.sph.harvard.edu/fitzmaur/ala2e/cd4-data.txt.
     + I also placed this dataset in a file named `actg_trial.csv` inside the Data folder on Canvas.
     
-```{r, echo=FALSE}
+```{r, echo=FALSE, cache=TRUE}
 actg_trial <- read.csv("~/Documents/HDS629/actg_trial.csv")
 ```
 
 * When you load the dataset into R, it should look like the following
-```{r}
+```{r, cache=TRUE}
 head( actg_trial, 10)
 ```
 

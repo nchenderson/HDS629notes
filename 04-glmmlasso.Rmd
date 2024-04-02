@@ -166,7 +166,7 @@ for example, the paper: @wang2012
 * This dataset has **54 observations** with **23 unique teams**.
 
 * Each row in this dataset corresponds to data taken from a single team in a single season.
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 library(glmmLasso)
 data("soccer")
 dim(soccer)  ## 54 observations and 16 variables
@@ -189,7 +189,7 @@ points scored: `ball.possession`, `tackles`, etc.
 * We will use `points` and 10 of the other variables as the fixed-effects covariates.
 
 * It is common in practice to **center and scale** the covariates before running the lasso:
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 soccer[,c(4,5,9:16)] <- scale(soccer[,c(4,5,9:16)], center=TRUE, scale=TRUE)
 soccer <- data.frame(soccer)
 ```
@@ -198,7 +198,7 @@ soccer <- data.frame(soccer)
 
 * To fit an lmm-lasso with $\lambda = 100$ and a random intercept for each team, we can use the following code
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 lm.lambda100 <- glmmLasso(points ~ transfer.spendings + ave.unfair.score 
                                    + ball.possession + tackles 
                                    + ave.attend + sold.out, rnd = list(team=~1), 
@@ -212,7 +212,7 @@ lm.lambda100 <- glmmLasso(points ~ transfer.spendings + ave.unfair.score
 
 
 * To look at the summary of the parameter estimates, use `summary` 
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 summary(lm.lambda100)
 ```
 
@@ -221,7 +221,7 @@ summary(lm.lambda100)
 ---
 
 * If we set $\lambda = 500$, all of the coefficient estimates will be zero:
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 lm.lambda500 <- glmmLasso(points ~ transfer.spendings + ave.unfair.score 
                                    + ball.possession + tackles 
                                    + ave.attend + sold.out, rnd = list(team=~1), 
@@ -235,7 +235,7 @@ summary(lm.lambda500)
 ---
 
 * We can find the value of BIC by looking at the `$bic` component of lm.lambda100
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 lm.lambda100$bic
 ```
 
@@ -246,7 +246,7 @@ that the "best" value of $\lambda$ should be somewhere between $0$ and $500$.
 
 * Let's compute the **BIC** across a grid of $\lambda$ values from $0$ to $500$ and plot the 
 result
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 lam.seq <- seq(0, 500, by=5)
 BIC.values <- rep(0, length(lam.seq))
 for(k in 1:length(lam.seq)) {
@@ -262,7 +262,7 @@ plot(lam.seq, BIC.values, xlab=expression(lambda), ylab="BIC", main="BIC for soc
 * It looks like the lowest **BIC** value is in between 90 and 130. 
     + Let's plot the BIC values for a denser grid of $\lambda$ values between 90 and 130
 
-```{r, echo=TRUE}   
+```{r, echo=TRUE, cache=TRUE}   
 lam.seq <- seq(90, 130, by=1)
 BIC.values <- rep(0, length(lam.seq))
 for(k in 1:length(lam.seq)) {
@@ -277,14 +277,14 @@ lines(lam.seq, BIC.values)
 ```
 
 * The best value of $\lambda$ according to the BIC criterion is $119$:
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 lam.seq[which.min(BIC.values)]
 ```
 
 ---
 
 * Let's look at the regression coefficient estimates using $\lambda = 119$
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 lm.lambda19 <- glmmLasso(points ~ transfer.spendings + ave.unfair.score 
                                    + ball.possession + tackles 
                                    + ave.attend + sold.out, rnd = list(team=~1), 
@@ -320,14 +320,14 @@ at **"future" time points** when compared with the training set.
 * Let's try doing **5-fold** cross-validation with the `soccer` data.
 
 * To do this, it's easier to just create a **team id** variable first
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 team.labels<-data.frame(team=unique(soccer$team),team.id=as.numeric(unique(soccer$team)))
 soccer <- merge(soccer, team.labels, by="team")
 head(soccer)
 ```
 
 * Now create each of the 5 **test sets**.
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 set.seed(2352)
 ## first create the indices for the test sets
 nfolds <- 5
@@ -342,7 +342,7 @@ test.groups
 
 * Now, compute cross-validation estimates of the **mean-squared error** over a grid of $\lambda$ values
 
-```{r, echo=TRUE, warnings=FALSE}
+```{r, echo=TRUE, warnings=FALSE, cache=TRUE}
 lam.seq <- seq(80, 200, by=10)
 MSE <- matrix(0, nfolds, length(lam.seq))
 for(j in 1:length(lam.seq)) {
@@ -377,7 +377,7 @@ the `LongituRF` package.
 
 * To generate a longitudinal dataset with 30 individuals and 6 covariates,
 use the following code:
-```{R}
+```{R, cache=TRUE}
 library(LongituRF)
 DF <- DataLongGenerator(n=30, p=6)
 sim_long <- data.frame(y=DF$Y, time=DF$time, DF$X, id=DF$id)
@@ -391,14 +391,14 @@ length(unique(sim_long$id)) # 30 unique individuals
 * Then, to fit a mixed effects model using `glmmLasso` with
 a **random intercept** and a **random slope** for the time variable,
 you can use the following code.
-```{r}
+```{r, cache=TRUE}
 glmm_fit_sim <- glmmLasso(y ~ time + X1 + X2 + X3 + X4 + X5 + X6, 
                           rnd = list(id=~1+time), lambda=10, data = sim_long)
 ```
 
 * The summary output should have estimates of both the random intercept
 standard deviation and the random slope standard deviation:
-```{r}
+```{r, cache=TRUE}
 summary(glmm_fit_sim)
 ```
 
@@ -448,7 +448,7 @@ t & \text{ for } t < \lambda \\
 
 * Just to show the basics of how the PGEE package works, we can look at the **yeastG1** dataset from the PGEE package
 
-```{r, echo=TRUE, message=FALSE, warning=FALSE}
+```{r, echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
 library(PGEE)
 data(yeastG1)
 
@@ -471,22 +471,22 @@ E(Y_{ij}|\mathbf{x}_{ijk}) = \gamma_{0} + \gamma_{1}t_{ij} + \sum_{k=1}^{96}\bet
    + Note that $x_{ijk}$ does not change across values of $j$.
 
 * To fit the above model with an **AR(1)** correlation structure and $\lambda = 0.1$, you can use the following **R** code
-```{r, echo=TRUE, eval=FALSE}
+```{r, echo=TRUE, eval=FALSE, cache=TRUE}
 m0 <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=0.1, data=yeastG1)
 ```
 
-```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE, cache=TRUE}
 m0 <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=0.1, data=yeastG1)
 ```
 
 * Let's look at the values of the first 5 estimated regression coefficients:
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 m0$coefficients[1:5]
 ```
 
 * The `PGEE` function does not automatically return **exactly zero** regression coefficients,
 but you can set those coefficients whose absolute value is less than some small threshold equal to zero.
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 length(m0$coefficients)
 ## 71 out of 98 coefficients are "zero"
 sum(abs(m0$coefficients) < 1e-4)
@@ -505,7 +505,7 @@ sum(abs(m0$coefficients) < 1e-4)
 * Setting $\lambda_{min} = 0.01$ and $\lambda_{max} = 0.3$ seems reasonable.
     + This gives a range of 12-92 for the number of zero coefficients
 
-```{r, results='hide', message=FALSE, warning=FALSE}
+```{r, results='hide', message=FALSE, warning=FALSE, cache=TRUE}
 mlow <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=0.01, data=yeastG1)
 mhigh <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=0.3, data=yeastG1)
 
@@ -531,7 +531,7 @@ the range $(\lambda_{min}, \lambda_{max})$.
     + Use 5-fold cross-validation using the `fold` argument in `CVfit`.
     + Use a lambda sequence of length 10 from 0.01 to 0.3
 
-```{r, results='hide', message=FALSE, warning=FALSE}
+```{r, results='hide', message=FALSE, warning=FALSE, cache=TRUE}
 cv.yeast <- CVfit(y ~. -id, id=id, lambda=seq(0.01, 0.3, length.out=10), 
                   fold = 5, data=yeastG1)
 ```
@@ -539,22 +539,22 @@ cv.yeast <- CVfit(y ~. -id, id=id, lambda=seq(0.01, 0.3, length.out=10),
 * The cross-validation done by `CVfit` does automatically assume an **"independent"** working correlation structure.
 
 * The `lam.opt` component of `cv.yeast` gives the optimal value of lambda.
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 cv.yeast$lam.opt
 ```
 
 * Now, we can just use `PGEE` with the optimal value of lambda.
-```{r, results='hide', message=FALSE, warning=FALSE}
+```{r, results='hide', message=FALSE, warning=FALSE, cache=TRUE}
 mfinal <- PGEE(y ~. -id, id=id, corstr="AR-1", lambda=cv.yeast$lam.opt, data=yeastG1)
 ```
 
 * From the `mfinal` object returned by `PGEE`, we can look at the selected **nonzero** coefficients
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 mfinal$coefficients[abs(mfinal$coefficients) > 1e-4]
 ```
 
 * We can also look at the estimated working correlation matrix
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 round(mfinal$working.correlation, 3)
 ```
 
@@ -568,25 +568,25 @@ round(mfinal$working.correlation, 3)
 * You can use `glmmLasso` with **binary outcomes** by adding the `family=binomial()` argument.
 
 * As a quick example, let's look at the `ohio` data from the `geepack` package.
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 library(geepack)
 data(ohio)
 head(ohio)
 ```
 
 * For the `glmmLasso` function, you do need to make sure the "id variable" is a factor.
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 ohio$id <- factor(ohio$id) 
 ```
 
 * Let's now fit a penalized generalized linear mixed model with $\lambda = 10$:
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 ohio.fit10 <- glmmLasso(smoke ~ resp + age, family=binomial(), rnd = list(id=~1),
                       lambda=10, data = ohio)
 ```
 
 * It looks like the **wheeze status** variable was selected while the **age** variable was not.
-```{r, echo=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 summary(ohio.fit10)
 ```
 

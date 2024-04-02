@@ -1,4 +1,4 @@
-# Extra Topics {#extra-topics}
+# Variable Importance Measures {#extra-topics}
 
 ---
 

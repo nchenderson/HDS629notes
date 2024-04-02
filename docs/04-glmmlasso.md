@@ -598,8 +598,8 @@ glmm_fit_sim <- glmmLasso(y ~ time + X1 + X2 + X3 + X4 + X5 + X6,
 ```
 
 ```
-## Warning in est.glmmLasso.RE(fix = fix, rnd = rnd, data = data, lambda =
-## lambda, : Random slopes are not standardized back!
+## Warning in est.glmmLasso.RE(fix = fix, rnd = rnd, data = data, lambda = lambda,
+## : Random slopes are not standardized back!
 ```
 
 * The summary output should have estimates of both the random intercept

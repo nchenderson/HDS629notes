@@ -619,7 +619,7 @@ z.mat[1:20,] # The . values in zmat correspond to zeros
 ```
 
 ```
-##    [[ suppressing 18 column names '308', '309', '310' ... ]]
+##   [[ suppressing 18 column names '308', '309', '310' ... ]]
 ```
 
 ```
@@ -747,7 +747,7 @@ z.mat2[1:20,] # The . values in zmat2 correspond to zeros
 ```
 
 ```
-##    [[ suppressing 36 column names '308', '308', '309' ... ]]
+##   [[ suppressing 36 column names '308', '308', '309' ... ]]
 ```
 
 ```

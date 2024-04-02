@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 6 Risk Prediction and Validation (Part II) | Notes for Case Studies in Health Big Data</title>
   <meta name="description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
-  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.38 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 6 Risk Prediction and Validation (Part II) | Notes for Case Studies in Health Big Data" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2024-02-21" />
+<meta name="date" content="2024-04-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -119,6 +119,10 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
 <style type="text/css">
 /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
 div.csl-bib-body { }
@@ -289,7 +293,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="7.4" data-path="ordinal-regression.html"><a href="ordinal-regression.html#penalized-regression-with-ordinal-outcomes"><i class="fa fa-check"></i><b>7.4</b> Penalized Regression with Ordinal Outcomes</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="extra-topics.html"><a href="extra-topics.html"><i class="fa fa-check"></i><b>8</b> Extra Topics</a>
+<li class="chapter" data-level="8" data-path="extra-topics.html"><a href="extra-topics.html"><i class="fa fa-check"></i><b>8</b> Variable Importance Measures</a>
 <ul>
 <li class="chapter" data-level="8.1" data-path="extra-topics.html"><a href="extra-topics.html#uncertainty-in-variable-importance-measures"><i class="fa fa-check"></i><b>8.1</b> Uncertainty in Variable Importance Measures</a>
 <ul>
@@ -456,7 +460,7 @@ average value of the risk score <span class="math inline">\(g_{s}\)</span> in st
 <span id="cb275-3"><a href="risk-prediction2.html#cb275-3" tabindex="-1"></a>brier.RF <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.RF <span class="sc">-</span> biopsy<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
 <span id="cb275-4"><a href="risk-prediction2.html#cb275-4" tabindex="-1"></a></span>
 <span id="cb275-5"><a href="risk-prediction2.html#cb275-5" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(brier.cart, brier.logreg, brier.RF), <span class="dv">4</span>)</span></code></pre></div>
-<pre><code>## [1] 0.0450 0.0280 0.0058</code></pre>
+<pre><code>## [1] 0.0450 0.0280 0.0056</code></pre>
 <ul>
 <li>When comparing <strong>in-sample</strong> Brier scores, CART is the worst, logistic regression is in the middle, and random forest is the best.</li>
 </ul>
@@ -497,7 +501,7 @@ of <code>biopsy</code> and then testing relative performance on the remaining ob
 <span id="cb280-3"><a href="risk-prediction2.html#cb280-3" tabindex="-1"></a>brier.RF.test <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.RF.test <span class="sc">-</span> biopsy.test<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
 <span id="cb280-4"><a href="risk-prediction2.html#cb280-4" tabindex="-1"></a></span>
 <span id="cb280-5"><a href="risk-prediction2.html#cb280-5" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(brier.cart.test, brier.logreg.test, brier.RF.test), <span class="dv">4</span>)</span></code></pre></div>
-<pre><code>## [1] 0.0359 0.0135 0.0182</code></pre>
+<pre><code>## [1] 0.0359 0.0135 0.0190</code></pre>
 <ul>
 <li><p>For the out-of-sample Brier score, both logistic regression and random forest are notably
 better than CART.</p></li>
@@ -732,7 +736,7 @@ gitbook.start({
     var script = document.createElement("script");
     script.type = "text/javascript";
     var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:")
       if (/^https?:/.test(src))
         src = src.replace(/^https?:/, '');

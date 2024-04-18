@@ -57,19 +57,38 @@ mean(cover) ## Should be close to 0.95
 ```
 
 ```
-## [1] 0.948
+## [1] 0.95
 ```
 
 ---
 
-* 
+* **Prediction intervals** for regression are a bit different than confidence intervals.
+
+* For prediction intervals, you usually imagine a **"future observation"** $Y_{n+1}$ that come from 
+the model
+\begin{equation}
+Y_{n+1} = \beta_{0} + \beta_{1}x_{n+1} + \varepsilon_{n+1},
+\end{equation}
+
+
+* A $100 \times (1 - \alpha)$ **prediction interval** $\hat{PI}(x_{n+1})$ constructed from data $(Y_{1}, \mathbf{x}_{1}), \ldots, (Y_{n}, \mathbf{x}_{n})$
+is supposed to have the following property:
+\begin{equation}
+P\Big( Y_{n+1} \in \hat{PI}(x_{n+1}) \Big) = 1 - \alpha
+\end{equation}
+
+* For the linear regression model with a single covariate, the standard $95\%$ prediction interval has the form
+\begin{equation}
+\hat{\beta}_{0} + \hat{\beta}_{1}x_{n+1} \pm 1.96 \times \hat{\sigma}\sqrt{1 + (1,x_{n+1})^{T}(\mathbf{X}^{T}\mathbf{X})^{-1}(1, x_{n+1})}
+\end{equation}
+
 
 
 ---
 
 ## Conformal Inference Procedure for Prediction Intervals
 
-* The standard **conformal inference** procedure works for the setting where you're thinking of
+* The **split-sample conformal inference** procedure works for the setting where you're thinking of
 outcomes $Y_{i}$ coming from the following model:
 \begin{equation}
 Y_{i} = f(\mathbf{x}_{i}) + \varepsilon_{i}
@@ -187,7 +206,22 @@ newdataset <- data.frame(Y=Y_new, xx=xx_new)
 ConformalInterval <- matrix(NA, nrow=n, ncol=2)
 ConformalInterval[,1] <- predict(proper_mod, newdat=newdataset) - qhat
 ConformalInterval[,2] <- predict(proper_mod, newdat=newdataset) + qhat
+
+print(head(ConformalInterval))
 ```
+
+```
+##            [,1]     [,2]
+## [1,] -0.5975258 2.894972
+## [2,] -0.6498182 2.842679
+## [3,] -0.4983627 2.994135
+## [4,] -0.1504342 3.342063
+## [5,] -0.5103764 2.982121
+## [6,] -0.3879992 3.104498
+```
+
+* Plot fitted values and prediction intervals:
+<img src="09-ConformalPrediction_files/figure-html/unnamed-chunk-8-1.png" width="672" />
 
 * You can check the **prediction coverage** of these intervals with the following code:
 
@@ -198,7 +232,7 @@ mean(Y_new > ConformalInterval[,1] & Y_new < ConformalInterval[,2])
 ```
 
 ```
-## [1] 0.87
+## [1] 0.94
 ```
 
 ## Why does this work?
@@ -210,13 +244,163 @@ and the **test residual** $R_{n + 1} = | Y_{n+1} - \hat{f}_{\mathcal{D}_{1}}(\ma
 * Specifically, $R_{n+1}, R_{i}, i \in \mathcal{D}_{2}$ is a collection of **i.i.d random variables**.
     - This is true because $\hat{f}_{\mathcal{D}_{1}}(\mathbf{x})$ was built from the **proper training set** and ...
     
-    - $R_{i}, i \in \mathcal{D}_{2}$ only uses outcomes from the **calibration dataset**.
+    - The values of $R_{i}$, for $i \in \mathcal{D}_{2}$ only uses outcomes from the **calibration dataset**.
     
+
+* Because of the i.i.d. property the probability that $R_{n+1}$ is **less than the $100(1 - \alpha)$ quantile**
+of the residuals is very close to $1 - \alpha$. 
+
+* Because of this:
+\begin{eqnarray}
+P\Big( Y_{n+1} \in \hat{C}_{n}(\mathbf{x}_{n+1}) \Big| \mathcal{D}_{1} \Big)
+&=& P(\hat{f}_{\mathcal{D}_{1}} - \hat{q}_{\mathcal{D}_{2}, \alpha} \leq Y_{n+1} \leq \hat{f}_{\mathcal{D}_{1}} + \hat{q}_{\mathcal{D}_{2}, \alpha} \Big| \mathcal{D}_{1} \Big) \nonumber \\
+&=& P(- \hat{q}_{\mathcal{D}_{2}, \alpha} \leq Y_{n+1} - \hat{f}_{\mathcal{D}_{1}} \leq \hat{q}_{\mathcal{D}_{2}, \alpha} \Big| \mathcal{D}_{1} \Big) \nonumber \\
+&=& P( R_{n+1} \leq \hat{q}_{\mathcal{D}_{2}, \alpha} \Big| \mathcal{D}_{1} \Big) \nonumber \\
+&\approx& 1 - \alpha
+\end{eqnarray}
     
     
 ## An example with Boosting.
 
+* First, generate example data:
+
+```r
+n <- 2000
+p <- 20
+
+X0 <- matrix(rnorm(n*p), nrow=n, ncol=p)
+
+## Baseline outcomes
+beta0 <- c(1, -1, 2, -2, rep(0, 16))
+Y0 <- X0%*%beta0 + rnorm(n)
+
+
+## Outcomes at week x:
+Y <- 0.3*Y0 + X0%*%beta0 + rnorm(n)
+
+#########################
+### Design matrix, we can use for analysis
+X <- cbind(Y0, X0)
+```
 
 
 
 
+* Split this data set into a "proper" training set and calibration set
+
+```r
+D1 <- sample(1:n, size=1000)
+D2 <- setdiff(1:n, D1)
+
+proper_dat <- data.frame(Y=Y[D1], X[D1,])
+calibration_dat <- data.frame(Y=Y[D2], X[D2,])
+```
+
+* Using `D1`, use boosting to 
+
+```r
+library(gbm)
+```
+
+```
+## Loaded gbm 2.1.9
+```
+
+```
+## This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3
+```
+
+```r
+gbm_mod <- gbm(Y ~ ., data = proper_dat, 
+           distribution = "gaussian", n.trees = 200, cv.folds=5)
+
+## Find the best number of trees using cross-validation
+best.iter <- gbm.perf(gbm_mod, method = "cv")
+```
+
+<img src="09-ConformalPrediction_files/figure-html/unnamed-chunk-12-1.png" width="672" />
+
+```r
+print(best.iter)
+```
+
+```
+## [1] 186
+```
+
+```r
+## Use boosting with best number of trees
+gbm_mod_final <- gbm(Y ~ ., data = proper_dat, 
+                     distribution = "gaussian", n.trees = best.iter)
+```
+
+* Get absolute residuals on calibration dataset
+
+```r
+calibration_fitted <- predict(gbm_mod_final, newdat=calibration_dat)
+```
+
+```
+## Using 186 trees...
+```
+
+```r
+calibration_resids <- abs(calibration_dat$Y - calibration_fitted)
+```
+
+* Get 95th quantile of these residuals
+
+```r
+qhat <- quantile(calibration_resids, probs=0.95)
+```
+
+* We can now use `qhat` to get prediction intervals for a "new dataset"
+
+```r
+X0 <- matrix(rnorm(n*p), nrow=n, ncol=p)
+
+## Baseline outcomes
+beta0 <- c(1, -1, 2, -2, rep(0, 16))
+Y0 <- X0%*%beta0 + rnorm(n)
+
+## Outcomes at week x:
+Y_new <- 0.3*Y0 + X0%*%beta0 + rnorm(n)
+X_new <- cbind(Y0, X0)
+
+##
+newdataset <- data.frame(Y=Y_new, X_new)
+
+### Construct prediction intervals as a n x 2 matrix
+ConformalInterval <- matrix(NA, nrow=n, ncol=2)
+ConformalInterval[,1] <- predict(gbm_mod_final, newdat=newdataset) - qhat
+```
+
+```
+## Using 186 trees...
+```
+
+```r
+ConformalInterval[,2] <- predict(gbm_mod_final, newdat=newdataset) + qhat
+```
+
+```
+## Using 186 trees...
+```
+
+
+
+* Check the **prediction coverage**:
+
+```r
+## This shouldn't be that far off 0.95, but there will be 
+## considerable variability since this is not a very large dataset
+mean(Y_new > ConformalInterval[,1] & Y_new < ConformalInterval[,2])
+```
+
+```
+## [1] 0.958
+```
+
+
+
+---

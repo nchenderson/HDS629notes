@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2024-04-17" />
+<meta name="date" content="2024-04-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -441,16 +441,16 @@ using the <code>importance</code> function.</li>
 <div class="sourceCode" id="cb366"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb366-1"><a href="extra-topics.html#cb366-1" tabindex="-1"></a>Imp.Full <span class="ot">&lt;-</span> <span class="fu">importance</span>(rf.full)</span>
 <span id="cb366-2"><a href="extra-topics.html#cb366-2" tabindex="-1"></a>Imp.Full <span class="do">## This is a 10 x 1 matrix</span></span></code></pre></div>
 <pre><code>##     IncNodePurity
-## age     142595.42
-## sex      33870.51
-## bmi     574536.85
-## map     295314.13
-## tc      146989.02
-## ldl     152520.06
-## hdl     201686.89
-## tch     173696.90
-## ltg     569828.87
-## glu     199673.03</code></pre>
+## age     142384.26
+## sex      32265.63
+## bmi     595349.82
+## map     295325.63
+## tc      146983.44
+## ldl     149014.08
+## hdl     201732.42
+## tch     164443.58
+## ltg     545383.65
+## glu     230024.81</code></pre>
 <hr />
 <ul>
 <li>Now, let’s compute variable importance scores across <span class="math inline">\(S = 100\)</span> subsamples (each of size 50)
@@ -474,9 +474,9 @@ and store it in a <span class="math inline">\(10 \times S\)</span> matrix called
 <span id="cb369-2"><a href="extra-topics.html#cb369-2" tabindex="-1"></a>vhat <span class="ot">&lt;-</span> (b<span class="sc">/</span><span class="fu">nrow</span>(diabetes))<span class="sc">*</span><span class="fu">rowMeans</span>((Imp.Subs <span class="sc">-</span> imp.mean)<span class="sc">^</span><span class="dv">2</span>)  </span>
 <span id="cb369-3"><a href="extra-topics.html#cb369-3" tabindex="-1"></a><span class="fu">print</span>(vhat)</span></code></pre></div>
 <pre><code>##         age         sex         bmi         map          tc         ldl 
-##   2041010.0    188463.3  51045706.2  40056652.2    308894.7   3095877.8 
+##  15586019.5    539851.9 250660310.7 137517689.8   1305928.4    377357.7 
 ##         hdl         tch         ltg         glu 
-##   1612878.6  33291881.7  71743137.3 137862881.4</code></pre>
+##  41431341.1  10972266.1  69701261.0  45808711.6</code></pre>
 <hr />
 <ul>
 <li>We can now report <strong>confidence intervals</strong> for the variable importance scores:</li>
@@ -486,17 +486,17 @@ and store it in a <span class="math inline">\(10 \times S\)</span> matrix called
 <span id="cb371-3"><a href="extra-topics.html#cb371-3" tabindex="-1"></a>VIMP_CI <span class="ot">&lt;-</span> <span class="fu">cbind</span>(Imp.Full[,<span class="dv">1</span>], vi.lower, vi.upper)</span>
 <span id="cb371-4"><a href="extra-topics.html#cb371-4" tabindex="-1"></a><span class="fu">colnames</span>(VIMP_CI) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;estimate&quot;</span>, <span class="st">&quot;lower&quot;</span>, <span class="st">&quot;upper&quot;</span>)</span>
 <span id="cb371-5"><a href="extra-topics.html#cb371-5" tabindex="-1"></a>VIMP_CI[<span class="fu">order</span>(<span class="sc">-</span>VIMP_CI[,<span class="dv">1</span>]),]</span></code></pre></div>
-<pre><code>##      estimate     lower    upper
-## bmi 574536.85 560533.38 588540.3
-## ltg 569828.87 553227.41 586430.3
-## map 295314.13 282909.22 307719.0
-## hdl 201686.89 199197.70 204176.1
-## glu 199673.03 176659.69 222686.4
-## tch 173696.90 162387.88 185005.9
-## ldl 152520.06 149071.42 155968.7
-## tc  146989.02 145899.68 148078.3
-## age 142595.42 139795.29 145395.6
-## sex  33870.51  33019.63  34721.4</code></pre>
+<pre><code>##      estimate     lower     upper
+## bmi 595349.82 564318.60 626381.04
+## ltg 545383.65 529020.14 561747.15
+## map 295325.63 272341.11 318310.14
+## glu 230024.81 216759.12 243290.51
+## hdl 201732.42 189116.45 214348.39
+## tch 164443.58 157951.20 170935.97
+## ldl 149014.08 147810.06 150218.10
+## tc  146983.44 144743.61 149223.28
+## age 142384.26 134646.35 150122.17
+## sex  32265.63  30825.52  33705.73</code></pre>
 </div>
 <div id="stability-selection-for-penalized-regression" class="section level3 hasAnchor" number="8.2.2">
 <h3><span class="header-section-number">8.2.2</span> Stability Selection for Penalized Regression<a href="extra-topics.html#stability-selection-for-penalized-regression" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -514,24 +514,24 @@ and store it in a <span class="math inline">\(10 \times S\)</span> matrix called
 <div class="sourceCode" id="cb377"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb377-1"><a href="extra-topics.html#cb377-1" tabindex="-1"></a><span class="fu">coef</span>(diabet.mod)</span></code></pre></div>
 <pre><code>## 11 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
 ##                       s0
-## (Intercept) -54.24427450
-## age           .         
-## sex           .         
-## bmi           1.61542892
-## map           0.03300751
-## tc            .         
-## ldl           .         
-## hdl           .         
-## tch           2.68238015
-## ltg          74.50616196
-## glu           .</code></pre>
+## (Intercept) -159.4129428
+## age            .        
+## sex            .        
+## bmi            1.2690867
+## map            0.7852953
+## tc             .        
+## ldl            .        
+## hdl            .        
+## tch            .        
+## ltg          100.9574403
+## glu            .</code></pre>
 <ul>
 <li>The <strong>selected</strong> variables are those with nonzero coefficients:</li>
 </ul>
 <div class="sourceCode" id="cb379"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb379-1"><a href="extra-topics.html#cb379-1" tabindex="-1"></a><span class="co"># Look at selected coefficients ignoring the intercept:</span></span>
 <span id="cb379-2"><a href="extra-topics.html#cb379-2" tabindex="-1"></a>selected <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">coef</span>(diabet.mod)[<span class="sc">-</span><span class="dv">1</span>]) <span class="sc">&gt;</span> <span class="dv">0</span></span>
 <span id="cb379-3"><a href="extra-topics.html#cb379-3" tabindex="-1"></a>selected</span></code></pre></div>
-<pre><code>##  [1] FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE</code></pre>
+<pre><code>##  [1] FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE</code></pre>
 <hr />
 <ul>
 <li><p>When thinking about how certain you might be about a given set of selected variables, one
@@ -598,17 +598,17 @@ selection probability estimates <span class="math inline">\(\hat{\pi}_{j}(\lambd
 <li>The first few columns of <code>SelectionProb</code> look like the following:</li>
 </ul>
 <div class="sourceCode" id="cb383"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb383-1"><a href="extra-topics.html#cb383-1" tabindex="-1"></a>SelectionProb[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
-<pre><code>##      [,1] [,2]  [,3]  [,4]  [,5]
-## age 0.985 0.78 0.645 0.475 0.350
-## sex 1.000 1.00 1.000 1.000 1.000
-## bmi 1.000 1.00 1.000 1.000 1.000
-## map 1.000 1.00 1.000 1.000 1.000
-## tc  0.980 0.94 0.895 0.740 0.630
-## ldl 0.875 0.17 0.205 0.230 0.250
-## hdl 0.875 0.93 0.960 0.980 0.990
-## tch 0.965 0.69 0.480 0.310 0.195
-## ltg 1.000 1.00 1.000 1.000 1.000
-## glu 0.970 0.88 0.805 0.780 0.735</code></pre>
+<pre><code>##      [,1]  [,2]  [,3]  [,4]  [,5]
+## age 0.930 0.750 0.580 0.475 0.315
+## sex 1.000 1.000 1.000 1.000 1.000
+## bmi 1.000 1.000 1.000 1.000 1.000
+## map 1.000 1.000 1.000 1.000 1.000
+## tc  0.980 0.920 0.840 0.705 0.565
+## ldl 0.890 0.220 0.225 0.255 0.270
+## hdl 0.930 0.915 0.980 0.995 1.000
+## tch 0.945 0.625 0.405 0.285 0.175
+## ltg 1.000 1.000 1.000 1.000 1.000
+## glu 0.990 0.890 0.805 0.730 0.660</code></pre>
 <hr />
 <ul>
 <li>We can now plot the stability measures as a function of <span class="math inline">\(\lambda\)</span></li>
@@ -618,12 +618,12 @@ selection probability estimates <span class="math inline">\(\hat{\pi}_{j}(\lambd
 <span id="cb385-3"><a href="extra-topics.html#cb385-3" tabindex="-1"></a>                 <span class="at">selection.prob=</span><span class="fu">c</span>(<span class="fu">t</span>(SelectionProb)), <span class="at">lambda=</span><span class="fu">rep</span>(lambda.seq, <span class="dv">10</span>))</span>
 <span id="cb385-4"><a href="extra-topics.html#cb385-4" tabindex="-1"></a><span class="fu">head</span>(df)</span></code></pre></div>
 <pre><code>##   varname selection.prob    lambda
-## 1     age          0.985 0.1000000
-## 2     age          0.780 0.6128205
-## 3     age          0.645 1.1256410
+## 1     age          0.930 0.1000000
+## 2     age          0.750 0.6128205
+## 3     age          0.580 1.1256410
 ## 4     age          0.475 1.6384615
-## 5     age          0.350 2.1512821
-## 6     age          0.230 2.6641026</code></pre>
+## 5     age          0.315 2.1512821
+## 6     age          0.250 2.6641026</code></pre>
 <div class="sourceCode" id="cb387"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb387-1"><a href="extra-topics.html#cb387-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
 <pre><code>## 
 ## Attaching package: &#39;ggplot2&#39;</code></pre>

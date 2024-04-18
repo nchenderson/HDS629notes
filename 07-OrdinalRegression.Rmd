@@ -1,0 +1,520 @@
+---
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+# Ordinal Regression {#ordinal-regression}
+
+------------------------------------------------------------------------
+
+## Ordinal Logistic Regression
+
+-   In many applications, the possible values of the response should be
+    thought of as **ordered categories**.
+
+-   **Examples:**
+
+    -   Survey ratings of a product: "poor", "good", "excellent".
+
+    -   Patient reported scale of pain from 1-10.
+
+    -   Different possible responses on a questionnaire.
+
+## Ordinal Regression Details
+
+-   With **ordinal regression**, only the **ranking** of the different
+    categories is relevant.
+
+------------------------------------------------------------------------
+
+-   Let $Y_{i}$ represent the **ordinal response** of interest.
+
+-   Assume $Y_{i}$ can take an integer value from 1 to C: $Y_{i} = 1$,
+    or $Y_{i} = 2$, ..., or $Y_{i} = C$.
+
+    -   Although we are assuming $Y_{i}$ takes numerical values, the
+        ordinal regression analysis would be the same if we assumed that
+        $Y_{i}$ could take values $2, 4, 6, ..., 2C$.
+
+------------------------------------------------------------------------
+
+-   The most common regression model for ordinal data is an **ordinal logistic regression model**.
+
+-   The ordinal logistic regression model uses a regression model for
+    the **"lesser-than probabilities"** $P( Y_{i} \leq c|\mathbf{x}_{i})$.
+
+-   Specifically, \begin{equation}
+    P(Y_{i} \leq c|\mathbf{x}_{i}) = \frac{1}{1 + \exp(-\alpha_{c} + \mathbf{x}_{i}^{T}\boldsymbol{\beta})}, \quad c = 1, \ldots, C-1
+    \end{equation}
+
+-   This is equivalent to saying that the **log-odds** (for the
+    event $\{Y_{i} \leq c\}$) is a **linear function** of the covariates:
+    \begin{equation}
+    \log \{ \text{odds}_{c}( \mathbf{x}_{i} ) \} = \log\left( \frac{ P(Y_{i} \leq c|\mathbf{x}_{i}) }{ 1 - P(Y_{i} \leq c|\mathbf{x}_{i}) }  \right) = \alpha_{c} - \mathbf{x}_{i}^{T}\boldsymbol{\beta} 
+    (\#eq:ologist-model)
+    \end{equation}
+
+------------------------------------------------------------------------
+
+-   Note that the ordinal logistic regression model is often expressed
+    using the probabilities $P(Y_{i} > c|\mathbf{x}_{i})$ instead of
+    $P( Y_{i} > c|\mathbf{x}_{i})$ where it is assumed that
+    \begin{equation}
+    \log\left( \frac{ P(Y_{i} > c|\mathbf{x}_{i}) }{ 1 - P(Y_{i} > c|\mathbf{x}_{i}) }  \right) = \alpha_{c} + \mathbf{x}_{i}^{T}\boldsymbol{\beta}
+    \end{equation}
+
+------------------------------------------------------------------------
+
+-   The regression model \@ref(eq:ologist-model) is often called a
+    **proportional odds** model.
+
+    -   This is because the odds ratio for the probability
+        $P(Y \leq c|\mathbf{x}_{i})$ vs. the probability
+        $P(Y \leq c|\mathbf{z}_{i})$ does not depend on the value of
+        $c$.
+
+-   To see the **proportional odds property**, note that
+    \begin{equation}
+    \frac{ \text{odds}_{c}( \mathbf{x}_{i} ) }{ \text{odds}_{c}( \mathbf{z}_{i} ) }
+    = \frac{ \exp( \alpha_{c} - \mathbf{x}_{i}^{T}\boldsymbol{\beta} ) }{ \exp( \alpha_{c} - \mathbf{z}_{i}^{T}\boldsymbol{\beta} ) }
+    = \exp\left[ (\mathbf{z}_{i}^{T} - \mathbf{x}_{i}^{T})\boldsymbol{\beta} \right]
+    \end{equation}
+
+-   The odds ratio **only depends** on $\boldsymbol{\beta}$ and **does not depend** on the value of $\alpha_{c}$.
+
+------------------------------------------------------------------------
+
+-   The proportional odds assumption allows the elements of
+    $\boldsymbol{\beta}$ to have an interpretation that **does not**
+    depend on $c$.
+
+-   **Interpretation**: If you have only one covariate $x_{i}$, then a
+    one-unit increase in $x_{i}$ leads to an increase of $\beta$ in the
+    **log-odds ratio** (for the event $\{Y_{i}\leq c\}$): \begin{equation}
+    \log\left( \frac{ \text{odds}_{c}( x_{i} + 1 ) }{ \text{odds}_{c}( x_{i} ) } \right)
+    =  -\beta
+    \end{equation}
+
+------------------------------------------------------------------------
+
+-   The model \@ref(eq:ologist-model) uses a **logit** link function,
+    but it's possible to choose any other link function.
+    -   Common alternative choices are the **complementary log-log** and
+        **probit** link functions.
+
+### Ordinal Logistic Regression in R
+
+-   The **polr** function in the **MASS** package let's you fit
+    **ordered logistic** or **ordered probit** regression models.
+
+-   The example dataset in the **polr** documentation is the `housing`
+    data
+
+```{r, echo=TRUE}
+library(MASS)  # load MASS package
+head(housing)  # look at first 6 rows
+dim(housing)  # 72 rows and 5 variables
+```
+
+------------------------------------------------------------------------
+
+-   The syntax for using `polr` is similar to other common regression-fitting functions in **R** such as `lm` or `glm`.
+
+-   The main thing to be aware of when using `polr` is that the response
+    variable should be an **ordered factor**.
+
+```{r, echo=TRUE}
+str(housing)
+```
+
+-   The **response variable** of interest here is `Sat` which represents
+    householder satisfaction.
+
+    -   This has 3 possible responses: **"Low"**, **"Medium"**, or
+        **"High"**.
+
+    -   This is a categorical variable with a natural ordering ("Low" is worse than "Medium" which is worse than "High").
+
+    ```{r, echo=TRUE}
+    table(housing$Sat)
+    ```
+
+------------------------------------------------------------------------
+
+-   The categorial variables `Sat`, `Infl`, `Type`, and `Cont` don't
+    have the **"individual-level"** data.
+
+    -   Each row just represents one of the 72 possible configurations
+        of these variables.
+
+-   The variable `Freq` actually tells us **how many responses** we had for
+    each of the 72 categories.
+
+-   To fit this without using the individual-level data, we can use the
+    values of `Freq` as **weights** in an ordinal logistic regression.
+
+------------------------------------------------------------------------
+
+-   If we want to fit an ordinal logistic regression with `Sat` as the
+    **response** and `Infl` as a **covariate**, we can use the following code:
+
+```{r, echo=TRUE}
+infl.plr <- polr(Sat ~ Infl, weight=Freq, data = housing)
+```
+
+-   The above **R code** is going to fit the model \begin{equation}
+    \log \left( \frac{ P(Y_{i} \leq c|\mathbf{x}_{i}) }{1 - P(Y_{i} \leq c|\mathbf{x}_{i})} \right) = \alpha_{c} - \beta_{1}x_{i1} - \beta_{2}x_{i2},
+    \end{equation}
+    -   $Y_{i}$ is the satisfaction level with three levels
+    -   $x_{i1} = 1$ if influence is medium and $0$ otherwise
+    -   $x_{i2} = 1$ if influence is high and $0$ otherwise.
+
+------------------------------------------------------------------------
+
+-   To see the **estimates** of these parameters use the `summary`
+    function:
+
+```{r, echo=TRUE}
+summary(infl.plr)
+```
+
+-   The above coefficient estimates tell us that the odds of **low satisfaction** given **Medium** influence level vs. the odds of
+    **low satisfaction** given a **Low** influence level is
+    \begin{equation}
+    \frac{odds_{c}(\text{Medium Influence})}{odds_{c}(\text{Low Influence})} = \exp(-\hat{\beta}_{1}) = \exp(-0.563) \approx 0.57
+    \end{equation}
+
+    -   In other words, the odds of having **low satisfaction** are
+        higher in the low influence group when compared to the high
+        influence group.
+
+-   Similarly, the **odds ratio** for the high influence group vs. the
+    low influence group is given by \begin{equation}
+    \frac{\text{odds}_{c}(\text{High Influence})}{\text{odds}_{c}(\text{Low Influence})} = \exp(-\hat{\beta}_{2}) = \exp(-1.248) \approx 0.29
+    \end{equation}
+
+-   From this, you can get the **odds ratio** for high vs. medium
+    influence levels \begin{equation}
+    \frac{\text{odds}_{c}(\text{High Influence})}{\text{odds}_{c}(\text{Medium Influence})} = \exp(-1.248) \exp(0.563) \approx 0.5
+    \end{equation}
+
+------------------------------------------------------------------------
+
+-   The summary output from a `polr` fit will also give estimates of the
+    **"intercept terms"** $\alpha_{c}$.
+
+-   Since there are only **3 possible levels** of the response `Sat`, there
+    should only be two possible values of $\alpha_{c}$.
+
+-   The estimates $\hat{\alpha}_{c}$ are given in the `Intercepts` part
+    of the summary output.
+
+-   The estimate of $\hat{\alpha}_{1}$ means that the probability that
+    satisfaction is low (i.e., $Y_{i} \leq 1$) given low influence is
+    \begin{equation}
+    \hat{P}(Y_{i} \leq 1| \text{InflLow}) = 1/[1 + \exp(-\hat{\alpha}_{1})] \approx 0.45
+    \end{equation}
+
+-   Similarly, the estimated probability that satisfaction is low given
+    medium influence is \begin{equation}
+    \hat{P}(Y_{i} \leq 1| \text{InflMed}) = 1/[1 + \exp(-\hat{\alpha}_{1} + \hat{\beta}_{1})] \approx 0.31
+    \end{equation}
+
+------------------------------------------------------------------------
+
+-   In this case, because we are only looking at a single covariate, we
+    can verify these probability estimates with a direct calculation.
+
+-   The estimate of $P(Y_{i} \leq 1| \text{InflLow})$ should be equal to
+    the following ratio \begin{equation}
+    \hat{P}(Y_{i} \leq 1| \text{InflLow}) = \frac{ N_{satlow, infllow} }{ N_{infllow} }
+    \end{equation}
+
+-   This can be computed with the **R** code
+
+```{r, echo=TRUE}
+N_ll <- sum(housing$Freq[housing$Sat=="Low" & housing$Infl=="Low"])
+N_l <- sum(housing$Freq[housing$Infl=="Low"])
+N_ll/N_l
+```
+
+-   A direct estimate of $\hat{P}(Y_{i} \leq 1| \text{InflMed})$ can be
+    computed with the following **R** code
+
+```{r, echo=TRUE}
+N_lm <- sum(housing$Freq[housing$Sat=="Low" & housing$Infl=="Medium"])
+N_m <- sum(housing$Freq[housing$Infl=="Medium"])
+N_lm/N_m
+```
+
+### The respdis data
+
+* As another example, let's look at the `respdis` data from the 
+`geepack` package
+```{r}
+library(geepack)
+head(respdis)
+```
+
+* This is a **longitudinal dataset**. For this analysis,
+we will only look at the outcome at the **first visit**
+```{r}
+respdis_first <- respdis[,c(1,5)]
+head(respdis_first)
+```
+
+* The `y1` variable represents an **ordinal outcome** (poor, good, or excellent) at the first visit
+
+* The outcomes are coded as 1,2,3 in the `respdis_first` dataset
+```{r}
+table(respdis$y1)
+```
+
+---
+
+* Let's fit an **ordered regression model** using `trt` as the only covariate.
+    + We need to put `ordered(y1)` in the model formula since y1 is not stored as a **factor** in `respdis_first`
+```{r}
+respmod_first <- polr(ordered(y1) ~ trt, data=respdis_first)
+```
+
+* The above **R code** is going to fit the model 
+\begin{equation}
+\log \left( \frac{ P(Y_{i} \leq c|\mathbf{x}_{i}) }{1 - P(Y_{i} \leq c|\mathbf{x}_{i})} \right) = \alpha_{c} - \beta x_{i},
+\end{equation}
+-   $Y_{i}$ is the response level with three levels
+-   $x_{i} = 1$ if received treatment, $x_{i} = 0$ if received placebo
+
+---
+
+* Let's look at the **summary output** from `respmod_first`:
+```{r}
+summary(respmod_first)
+```
+
+* The estimate of $\hat{\beta}$ implies that:
+\begin{equation}
+\frac{\text{odds}_{c}(\text{Treatment})}{\text{odds}_{c}(\text{Placebo})} = \exp(-\hat{\beta}) = \exp(-0.447) \approx 0.64
+\end{equation}
+
+* In this context, having a low odds of $Y_{i} \leq c$ (for c=1,2) is good. 
+
+* Hence, the above odds ratio **suggests a benefit** of treatment vs. placebo.
+
+---
+
+* Using the **estimates** of $\alpha_{1}$ and $\alpha_{2}$, 
+you can get estimates of $Y_{i} \leq c$ for the **treatment and placebo** groups:
+\begin{eqnarray}
+\hat{P}( Y_{i} \leq 1| \text{treatment} ) &=& \frac{1}{ 1 + \exp(-\hat{\alpha}_{1} + \hat{\beta})} = \frac{1}{ 1 + \exp(1.73 + 0.45 )} \approx 0.10 \nonumber \\
+\hat{P}( Y_{i} \leq 1| \text{placebo} ) &=& \frac{1}{ 1 + \exp(-\hat{\alpha}_{1})} = \frac{1}{ 1 + \exp(1.73)} \approx 0.15
+\end{eqnarray}
+
+
+
+## Generalized Estimating Equations
+
+-   With **longitudinal data**, you can fit **random effects** ordinal
+    regression models with the `repolr` package.
+
+-   A **GEE approach for ordinal outcomes** can be done with the `ordgee`
+    function from the `geepack` package.
+
+------------------------------------------------------------------------
+
+-   For longitudinal data, let $Y_{ij}$ be the ordinal response for
+    individual $i$ at time $t_{ij}$.
+
+-   The GEE approach described in (@heagerty1996) assumes the **"mean part"** of the model has the form 
+\begin{equation}
+    P(Y_{ij} > c|\mathbf{x}_{i}) = \frac{1}{1 + \exp(-\alpha_{c} - \mathbf{x}_{i}^{T}\boldsymbol{\beta})}
+    \end{equation}
+
+-   The above equation handles the **marginal distribution** of $Y_{ij}$
+    at a specific time point.
+
+-   For a GEE, the only remaining part is how to handle the
+    **"correlation" structure** between observations from individual
+    $i$.
+
+------------------------------------------------------------------------
+
+-   Setting up a **"correlation" structure** for ordinal outcomes is not
+    that straightforward. The approach described below is that described
+    in ( @heagerty1996 ).
+
+    -   You don't want to work with the usual definition of correlation
+        because we are not treating these outcomes as **numeric
+        outcomes**.
+
+    -   Instead the **dependence** is expressed through different
+        **joint probabilities**.
+
+-   The dependence between ordinal outcomes $Y_{ij}$ and $Y_{ik}$ is
+    measured by the **"marginal odds ratios"** \begin{equation}
+    \psi_{i(j,k)(c_{1},c_{2})} = \frac{P(Y_{ij} > c_{1}, Y_{ik} > c_{2}|\mathbf{x}_{ij},\mathbf{x}_{ij}) P(Y_{ij} \leq c_{1}, Y_{ik} \leq c_{2}|\mathbf{x}_{ij},\mathbf{x}_{ij})}{P(Y_{ij} > c_{1}, Y_{ik} \leq c_{2}|\mathbf{x}_{ij},\mathbf{x}_{ij}) P(Y_{ij} \leq c_{1}, Y_{ik} > c_{2}|\mathbf{x}_{ij},\mathbf{x}_{ij})}
+    \end{equation}
+
+-   If $Y_{ij}$ and $Y_{ik}$ have high dependence, then
+    $\psi_{i(j,k)(c_{1},c_{2})}$ should be large.
+
+------------------------------------------------------------------------
+
+-   The "**exchangeable**" correlation structure assumes that the
+    odds-ratio parameter is constant \begin{equation}
+    \log\left( \psi_{i(j,k)(c_{1},c_{2})} \right) = \alpha
+    \end{equation} for all $(j,k)$ and $(c_{1}, c_{2})$.
+
+-   The "**independent**" correlation structure assumes that
+    $\alpha = 0$ since $\psi_{i(j,k)(c_{1},c_{2})} = 1$ if we assume
+    that $Y_{ij}$ and $Y_{ik}$ are independent.
+
+### Using geepack and ordgee
+
+-   The `ordgee` function from the `geepack` package allows you to fit a
+    GEE with **ordinal responses**.
+
+-   To show how to use `ordgee`, we can look at the `respdis` dataset
+    from the `geepack` package
+
+```{r, echo=TRUE}
+library(geepack)
+data(respdis)
+resp.l <- reshape(respdis, varying =list(c("y1", "y2", "y3", "y4")),
+                  v.names = "resp", direction = "long")
+resp.l <- resp.l[order(resp.l$id, resp.l$time),]
+head(resp.l)
+```
+
+-   The response of interest here is the variable `resp` which has 3
+    possible values:
+
+```{r, echo=TRUE}
+table(resp.l$resp)
+```
+
+------------------------------------------------------------------------
+
+-   The syntax for `ordgee` is basically the same as `geeglm`.
+    -   Just make sure the response is an **ordered factor**.
+
+    -   The main available correlation structures are **"independence"**
+        and **"exchangeable"**.
+
+```{r, echo=TRUE}
+## Fit GEE with just trt as a covariate
+fit.indep <- ordgee(ordered(resp) ~ trt, id=id, corstr="independence",
+                    data=resp.l)
+summary(fit.indep)
+```
+
+-   The terms `Inter:1`, `Inter:2` in the summary output represent the
+    estimates of the intercept parameters $\alpha_{1}$ and $\alpha_{2}$.
+
+-   The estimate of the `trt` regression coefficient implies that the
+    odds ratio (between `trt = 1` and `trt = 0`) for having a positive
+    outcome is roughly $2.6$ \begin{equation}
+    \frac{\text{odds}_{Y_{i} > c}(trt=1) }{\text{odds}_{Y_{i} > c}(trt=0) } = \exp(0.97) \approx 2.65
+    \end{equation}
+
+------------------------------------------------------------------------
+
+-   To fit the same model with an **exchangeable** correlation
+    structure, just use the `corstr = exchangeable` argument:
+
+```{r, echo=TRUE}
+## Fit GEE with just trt as a covariate
+fit.ex <- ordgee(ordered(resp) ~ trt, id=id, corstr="exchangeable",
+                    data=resp.l)
+summary(fit.ex)
+```
+
+## Penalized Regression with Ordinal Outcomes
+
+-   The `ordinalgmifs` package fits L1-penalized regression with
+    **ordinal** outcomes.
+    -   `ordinalNet` is another package that performs penalized
+        regression for **ordinal** outcomes.
+-   To use `ordinalgmifs`, we will use the `eyedisease` dataset in the
+    package.
+
+```{r, echo=TRUE}
+library(ordinalgmifs)
+data(eyedisease)
+names(eyedisease)
+```
+
+-   A variable of interest is `rerl`.
+    -   This is right eye severity of retinopathy.
+
+    -   This is an **ordered factor** with levels "None", "Mild",
+        "Moderate", and "Proliferative".
+
+```{r, echo=TRUE}
+table( eyedisease$rerl )
+```
+
+------------------------------------------------------------------------
+
+-   To fit a **penalized ordinal regression** where we can penalize all
+    variables, use the following code:
+
+```{r, echo=TRUE}
+## Fit ordinal logistic regression with covariates 
+## dose, prot, sex, bmi, dbp, sbp, pr, age
+eye.fit <- ordinalgmifs(rerl ~ 1, x=c("dose", "prot", "sex", 
+                        "bmi", "dbp", "sbp", "pr", "age"), data=eyedisease)
+```
+
+-   If we look at a `summary` of `eye.fit` it will display the best
+    regression coefficient estimates according to an **AIC** criterion:
+
+```{r, echo=TRUE}
+summary(eye.fit)
+```
+
+-   According to **AIC**, all variables are selected except for `sex`.
+
+------------------------------------------------------------------------
+
+-   To get the "full path" of coefficient solutions, look at the `beta`
+    component of `eye.fit`.
+
+-   `eye.fit$beta` is a 1453 x 8 matrix.
+
+    -   Row $k$ of `eye.fit$beta` has the value of the regression
+        coefficients at step $k$
+
+    -   Row $k$ of `eye.fit$alpha` has the value of the intercept
+        coefficient at step $k$
+
+```{r, echo=TRUE}
+dim(eye.fit$beta)
+## Look at an "early" row of eye.fit$beta
+## Most of the coefficients here should be zero
+eye.fit$beta[10,]
+```
+
+-   If we look at a later row, we should have more non-zero coefficients
+
+```{r, echo=TRUE}
+eye.fit$beta[800,]
+```
+
+-   The `model.select` component gives the row index of the **selected
+    model**
+
+```{r, echo=TRUE}
+eye.fit$model.select 
+eye.fit$beta[eye.fit$model.select,]
+```
+
+------------------------------------------------------------------------
+
+-   You can plot the "lasso path" for the regression coefficient
+    estimates:
+
+```{r, echo=TRUE}
+plot( eye.fit )
+```

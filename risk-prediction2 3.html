@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 6 Risk Prediction and Validation (Part II) | Notes for Case Studies in Health Big Data</title>
+  <meta name="description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 6 Risk Prediction and Validation (Part II) | Notes for Case Studies in Health Big Data" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  <meta name="github-repo" content="nchenderson/HDS629notes" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 6 Risk Prediction and Validation (Part II) | Notes for Case Studies in Health Big Data" />
+  
+  <meta name="twitter:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  
+
+<meta name="author" content="Nicholas Henderson" />
+
+
+<meta name="date" content="2023-01-30" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="risk-prediction.html"/>
+<link rel="next" href="ordinal-regression.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Biostat 629</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="mixed-models.html"><a href="mixed-models.html"><i class="fa fa-check"></i><b>1</b> Mixed Models for Longitudinal Data Analysis</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="mixed-models.html"><a href="mixed-models.html#sec:methods-overview"><i class="fa fa-check"></i><b>1.1</b> Methods for Analyzing Longitudinal Data</a></li>
+<li class="chapter" data-level="1.2" data-path="mixed-models.html"><a href="mixed-models.html#mixed-models-for-continuous-outcomes"><i class="fa fa-check"></i><b>1.2</b> Mixed Models for Continuous Outcomes</a></li>
+<li class="chapter" data-level="1.3" data-path="mixed-models.html"><a href="mixed-models.html#advantages-of-using-random-effects"><i class="fa fa-check"></i><b>1.3</b> Advantages of using random effects</a>
+<ul>
+<li class="chapter" data-level="1.3.1" data-path="mixed-models.html"><a href="mixed-models.html#within-subject-correlation"><i class="fa fa-check"></i><b>1.3.1</b> Within-subject correlation</a></li>
+<li class="chapter" data-level="1.3.2" data-path="mixed-models.html"><a href="mixed-models.html#inference-about-heterogeneity---variance-of-random-effects"><i class="fa fa-check"></i><b>1.3.2</b> Inference about Heterogeneity - Variance of Random Effects</a></li>
+<li class="chapter" data-level="1.3.3" data-path="mixed-models.html"><a href="mixed-models.html#best-linear-unbiased-prediction"><i class="fa fa-check"></i><b>1.3.3</b> Best Linear Unbiased Prediction</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="mixed-models.html"><a href="mixed-models.html#generalized-linear-mixed-models-glmms"><i class="fa fa-check"></i><b>1.4</b> Generalized linear mixed models (GLMMs)</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-binary-outcomes"><i class="fa fa-check"></i><b>1.4.1</b> GLMMs with Binary Outcomes</a></li>
+<li class="chapter" data-level="1.4.2" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-count-outcomes"><i class="fa fa-check"></i><b>1.4.2</b> GLMMs with Count Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="mixed-models.html"><a href="mixed-models.html#fitting-linear-mixed-models-lmms-and-generalized-linear-mixed-models-glmms-in-r"><i class="fa fa-check"></i><b>1.5</b> Fitting Linear Mixed Models (LMMs) and Generalized Linear Mixed models (GLMMs) in <strong>R</strong></a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="mixed-models.html"><a href="mixed-models.html#fitting-lmms-with-the-sleepstudy-data"><i class="fa fa-check"></i><b>1.5.1</b> Fitting LMMs with the sleepstudy data</a></li>
+<li class="chapter" data-level="1.5.2" data-path="mixed-models.html"><a href="mixed-models.html#model-comparison-of-lmms-using-anova"><i class="fa fa-check"></i><b>1.5.2</b> Model Comparison of LMMs using anova</a></li>
+<li class="chapter" data-level="1.5.3" data-path="mixed-models.html"><a href="mixed-models.html#extracting-blups-in-lme4"><i class="fa fa-check"></i><b>1.5.3</b> Extracting BLUPs in lme4</a></li>
+<li class="chapter" data-level="1.5.4" data-path="mixed-models.html"><a href="mixed-models.html#fitting-binary-glmms-using-the-ohio-data"><i class="fa fa-check"></i><b>1.5.4</b> Fitting Binary GLMMs using the Ohio data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>2</b> Missing Data and Multiple Imputation</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="missing-data.html"><a href="missing-data.html#missing-data-in-r-and-direct-approaches-for-handling-missing-data"><i class="fa fa-check"></i><b>2.1</b> Missing Data in R and “Direct Approaches” for Handling Missing Data</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="missing-data.html"><a href="missing-data.html#complete-case-analysis-listwise-deletion"><i class="fa fa-check"></i><b>2.1.1</b> Complete Case Analysis (Listwise Deletion)</a></li>
+<li class="chapter" data-level="2.1.2" data-path="missing-data.html"><a href="missing-data.html#other-direct-methods"><i class="fa fa-check"></i><b>2.1.2</b> Other “Direct” Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation"><i class="fa fa-check"></i><b>2.2</b> Multiple Imputation</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="missing-data.html"><a href="missing-data.html#short-overview-of-multiple-imputation"><i class="fa fa-check"></i><b>2.2.1</b> Short Overview of Multiple Imputation</a></li>
+<li class="chapter" data-level="2.2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation-with-mice"><i class="fa fa-check"></i><b>2.2.2</b> Multiple imputation with mice</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#what-is-mice-doing"><i class="fa fa-check"></i><b>2.3</b> What is MICE doing?</a></li>
+<li class="chapter" data-level="2.4" data-path="missing-data.html"><a href="missing-data.html#longitudinal-data"><i class="fa fa-check"></i><b>2.4</b> Longitudinal Data</a></li>
+<li class="chapter" data-level="2.5" data-path="missing-data.html"><a href="missing-data.html#different-missing-data-mechanisms"><i class="fa fa-check"></i><b>2.5</b> Different Missing Data Mechanisms</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="missing-data.html"><a href="missing-data.html#missing-completely-at-random-mcar"><i class="fa fa-check"></i><b>2.5.1</b> Missing Completely at Random (MCAR)</a></li>
+<li class="chapter" data-level="2.5.2" data-path="missing-data.html"><a href="missing-data.html#missing-at-random-mar"><i class="fa fa-check"></i><b>2.5.2</b> Missing at Random (MAR)</a></li>
+<li class="chapter" data-level="2.5.3" data-path="missing-data.html"><a href="missing-data.html#missing-not-at-random-mnar"><i class="fa fa-check"></i><b>2.5.3</b> Missing not at Random (MNAR)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="nonpar-regression.html"><a href="nonpar-regression.html"><i class="fa fa-check"></i><b>3</b> Nonparametric Regression with Longitudinal Data</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#notation"><i class="fa fa-check"></i><b>3.1</b> Notation</a></li>
+<li class="chapter" data-level="3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-smoothing"><i class="fa fa-check"></i><b>3.2</b> Kernel Smoothing</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#description-of-kernel-regression"><i class="fa fa-check"></i><b>3.2.1</b> Description of Kernel Regression</a></li>
+<li class="chapter" data-level="3.2.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-regression-in-the-sleepstudy-data"><i class="fa fa-check"></i><b>3.2.2</b> Kernel Regression in the sleepstudy data</a></li>
+<li class="chapter" data-level="3.2.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#bandwidth-selection"><i class="fa fa-check"></i><b>3.2.3</b> Bandwidth Selection</a></li>
+<li class="chapter" data-level="3.2.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#another-example-the-bone-data"><i class="fa fa-check"></i><b>3.2.4</b> Another Example: The Bone Data</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines"><i class="fa fa-check"></i><b>3.3</b> Regression Splines</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#overview"><i class="fa fa-check"></i><b>3.3.1</b> Overview</a></li>
+<li class="chapter" data-level="3.3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines-with-longitudinal-data-in-r"><i class="fa fa-check"></i><b>3.3.2</b> Regression Splines with Longitudinal Data in R</a></li>
+<li class="chapter" data-level="3.3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#looking-at-a-continuous-and-a-binary-covariate"><i class="fa fa-check"></i><b>3.3.3</b> Looking at a Continuous and a Binary Covariate</a></li>
+<li class="chapter" data-level="3.3.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#model-comparison"><i class="fa fa-check"></i><b>3.3.4</b> Model Comparison</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="glmm-lasso.html"><a href="glmm-lasso.html"><i class="fa fa-check"></i><b>4</b> Sparse Regression for Longitudinal Data</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#sparse-regression-methods"><i class="fa fa-check"></i><b>4.1</b> Sparse regression methods</a></li>
+<li class="chapter" data-level="4.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#the-lasso-with-longitudinal-data"><i class="fa fa-check"></i><b>4.2</b> The Lasso with longitudinal data</a></li>
+<li class="chapter" data-level="4.3" data-path="glmm-lasso.html"><a href="glmm-lasso.html#lasso-for-lmms-and-glmms-in-r"><i class="fa fa-check"></i><b>4.3</b> Lasso for LMMs and GLMMs in R</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#soccer-data"><i class="fa fa-check"></i><b>4.3.1</b> Soccer Data</a></li>
+<li class="chapter" data-level="4.3.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#choosing-the-tuning-parameter-for-the-soccer-data"><i class="fa fa-check"></i><b>4.3.2</b> Choosing the tuning parameter for the soccer data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="glmm-lasso.html"><a href="glmm-lasso.html#cross-validation-for-longitudinal-data"><i class="fa fa-check"></i><b>4.4</b> Cross-Validation for Longitudinal Data</a></li>
+<li class="chapter" data-level="4.5" data-path="glmm-lasso.html"><a href="glmm-lasso.html#penalized-generalized-estimating-equations"><i class="fa fa-check"></i><b>4.5</b> Penalized Generalized Estimating Equations</a>
+<ul>
+<li class="chapter" data-level="4.5.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#the-pgee-package"><i class="fa fa-check"></i><b>4.5.1</b> The PGEE package</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="glmm-lasso.html"><a href="glmm-lasso.html#glmm-lasso-with-binary-outcomes"><i class="fa fa-check"></i><b>4.6</b> GLMM-Lasso with Binary Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="risk-prediction.html"><a href="risk-prediction.html"><i class="fa fa-check"></i><b>5</b> Risk Prediction and Validation (Part I)</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="risk-prediction.html"><a href="risk-prediction.html#risk-predictionstratification"><i class="fa fa-check"></i><b>5.1</b> Risk Prediction/Stratification</a></li>
+<li class="chapter" data-level="5.2" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve-and-the-c-statistic"><i class="fa fa-check"></i><b>5.2</b> Area under the ROC curve and the C-statistic</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="risk-prediction.html"><a href="risk-prediction.html#sensitivity-and-specificity"><i class="fa fa-check"></i><b>5.2.1</b> Sensitivity and Specificity</a></li>
+<li class="chapter" data-level="5.2.2" data-path="risk-prediction.html"><a href="risk-prediction.html#the-roc-curve"><i class="fa fa-check"></i><b>5.2.2</b> The ROC curve</a></li>
+<li class="chapter" data-level="5.2.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-roc-curve"><i class="fa fa-check"></i><b>5.2.3</b> Computing the ROC curve</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve"><i class="fa fa-check"></i><b>5.3</b> Area under the ROC curve</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="risk-prediction.html"><a href="risk-prediction.html#rewriting-the-formula-for-the-auc"><i class="fa fa-check"></i><b>5.3.1</b> Rewriting the formula for the AUC</a></li>
+<li class="chapter" data-level="5.3.2" data-path="risk-prediction.html"><a href="risk-prediction.html#interpreting-the-auc"><i class="fa fa-check"></i><b>5.3.2</b> Interpreting the AUC</a></li>
+<li class="chapter" data-level="5.3.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-auc-in-r"><i class="fa fa-check"></i><b>5.3.3</b> Computing the AUC in R</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="risk-prediction.html"><a href="risk-prediction.html#calibration"><i class="fa fa-check"></i><b>5.4</b> Calibration</a></li>
+<li class="chapter" data-level="5.5" data-path="risk-prediction.html"><a href="risk-prediction.html#longitudinal-data-and-risk-score-validation"><i class="fa fa-check"></i><b>5.5</b> Longitudinal Data and Risk Score Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="risk-prediction2.html"><a href="risk-prediction2.html"><i class="fa fa-check"></i><b>6</b> Risk Prediction and Validation (Part II)</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#the-brier-score"><i class="fa fa-check"></i><b>6.1</b> The Brier Score</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-for-biopsy-data"><i class="fa fa-check"></i><b>6.1.1</b> Brier scores for biopsy data</a></li>
+<li class="chapter" data-level="6.1.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#out-of-sample-comparisons"><i class="fa fa-check"></i><b>6.1.2</b> Out-of-sample comparisons</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-with-longitudinal-data"><i class="fa fa-check"></i><b>6.2</b> Brier Scores with Longitudinal Data</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-1"><i class="fa fa-check"></i><b>6.2.1</b> Option 1</a></li>
+<li class="chapter" data-level="6.2.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-2"><i class="fa fa-check"></i><b>6.2.2</b> Option 2</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="ordinal-regression.html"><a href="ordinal-regression.html"><i class="fa fa-check"></i><b>7</b> Ordinal Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression"><i class="fa fa-check"></i><b>7.1</b> Ordinal Logistic Regression</a></li>
+<li class="chapter" data-level="7.2" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-regression-details"><i class="fa fa-check"></i><b>7.2</b> Ordinal Regression Details</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression-in-r"><i class="fa fa-check"></i><b>7.2.1</b> Ordinal Logistic Regression in R</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="ordinal-regression.html"><a href="ordinal-regression.html#generalized-estimating-equations"><i class="fa fa-check"></i><b>7.3</b> Generalized Estimating Equations</a>
+<ul>
+<li class="chapter" data-level="7.3.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#using-geepack-and-ordgee"><i class="fa fa-check"></i><b>7.3.1</b> Using geepack and ordgee</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="ordinal-regression.html"><a href="ordinal-regression.html#penalized-regression-with-ordinal-outcomes"><i class="fa fa-check"></i><b>7.4</b> Penalized Regression with Ordinal Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="extra-topics.html"><a href="extra-topics.html"><i class="fa fa-check"></i><b>8</b> Extra Topics</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="extra-topics.html"><a href="extra-topics.html#uncertainty-in-variable-importance-measures"><i class="fa fa-check"></i><b>8.1</b> Uncertainty in Variable Importance Measures</a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="extra-topics.html"><a href="extra-topics.html#subsampling-for-random-forest-vimp-scores"><i class="fa fa-check"></i><b>8.1.1</b> Subsampling for Random Forest VIMP scores</a></li>
+<li class="chapter" data-level="8.1.2" data-path="extra-topics.html"><a href="extra-topics.html#stability-selection-for-penalized-regression"><i class="fa fa-check"></i><b>8.1.2</b> Stability Selection for Penalized Regression</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notes for Case Studies in Health Big Data</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="risk-prediction2" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">Chapter 6</span> Risk Prediction and Validation (Part II)<a href="risk-prediction2.html#risk-prediction2" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<hr />
+<div id="the-brier-score" class="section level2 hasAnchor" number="6.1">
+<h2><span class="header-section-number">6.1</span> The Brier Score<a href="risk-prediction2.html#the-brier-score" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><p><strong>Binary outcomes</strong> - <span class="math inline">\(Y_{i}\)</span> for individual <span class="math inline">\(i\)</span>.</p></li>
+<li><p>Let <span class="math inline">\(g(\mathbf{x}_{i})\)</span> be a <strong>risk score</strong> for an individual with covariate vector <span class="math inline">\(\mathbf{x}_{i}\)</span>.</p></li>
+<li><p>If <span class="math inline">\(g(\mathbf{x}_{i})\)</span> is interpreted as an estimate of the probability that <span class="math inline">\(Y_{i} = 1\)</span>, the
+<strong>Brier score</strong> is a measure of the predictive accuracy of <span class="math inline">\(g(\mathbf{x}_{i})\)</span>.</p></li>
+<li><p>For binary outcomes <span class="math inline">\(Y_{i}\)</span> and risk scores <span class="math inline">\(g(\mathbf{x}_{i})\)</span>, the <strong>Brier score</strong> is defined as
+<span class="math display">\[\begin{equation}
+BS(Y, g) = \frac{1}{n}\sum_{i=1}^{n} \{ Y_{i} - g(\mathbf{x}_{i}) \}^{2}
+\end{equation}\]</span></p></li>
+<li><p>The Brier score is typically used to <strong>compare</strong> the accuracy of risk scores.</p>
+<ul>
+<li>It is hard to tell if a risk score is good just by looking at the Brier score itself without comparing it with other methods.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>Even if <span class="math inline">\(g(\mathbf{x}_{i})\)</span> is a class prediction rather than a probability (i.e., <span class="math inline">\(g(\mathbf{x}_{i}) = 0\)</span> or <span class="math inline">\(g(\mathbf{x}_{i}) = 1\)</span>), the Brier score can be interpreted as the proportion of <strong>“misclassified”</strong> outcomes
+<span class="math display">\[\begin{equation}
+BS(Y, g) = \frac{1}{n}\sum_{i=1}^{n} \{ Y_{i} - g(\mathbf{x}_{i}) \}^{2}
+= \frac{1}{n} \sum_{i=1}^{n} I\{Y_{i} \neq g(\mathbf{x}_{i})   \}
+\end{equation}\]</span></li>
+</ul>
+<hr />
+<ul>
+<li><p>The Brier score is a single measure that is affected by both the
+<strong>discrimination</strong> and <strong>calibration</strong> of the risk score.</p></li>
+<li><p>The usual justification for this is to look at the following approximation
+of the Brier score
+<span class="math display">\[\begin{equation}
+BS(Y, g) \approx \tilde{BS}(Y,g) = \frac{1}{n}\sum_{s=1}^{S} \sum_{i=1}^{n} a_{is}\{Y_{i} - \bar{g}_{s} \}^{2}  
+\end{equation}\]</span></p></li>
+<li><p>This approximation assumes <span class="math inline">\(S\)</span> strata: <span class="math inline">\([s_{0}, s_{1}), [s_{1}, s_{2}), \ldots, [s_{S-1}, s_{S})\)</span>.</p></li>
+<li><p><span class="math inline">\(a_{is}\)</span> is an indicator of whether or not the <span class="math inline">\(i^{th}\)</span> observation falls into the <span class="math inline">\(s^{th}\)</span> stratum:</p>
+<ul>
+<li>That is, <span class="math inline">\(a_{is} = 1\)</span> if <span class="math inline">\(s_{s-1} \leq g(\mathbf{x}_{i}) &lt; s_{s}\)</span></li>
+</ul></li>
+<li><p><span class="math inline">\(\bar{g}_{s}\)</span> is the average value of the risk score within stratum <span class="math inline">\(s\)</span>
+<span class="math display">\[\begin{equation}
+\bar{g}_{s} = \frac{1}{n_{s}} \sum_{i=1}^{n} a_{is} g(\mathbf{x}_{i})
+\end{equation}\]</span>
+and <span class="math inline">\(n_{s}\)</span> is the number of observation where the risk score is in stratum <span class="math inline">\(s\)</span>.</p></li>
+</ul>
+<hr />
+<ul>
+<li>If we let <span class="math inline">\(\bar{Y}_{s} = \frac{1}{n_{s}}\sum_{i=1}^{n} a_{is}Y_{i}\)</span> be the proportion of 1’s in stratum <span class="math inline">\(s\)</span>, we can simplify the expression for the approximate Brier score as follows:
+<span class="math display">\[\begin{eqnarray}
+\tilde{BS}(Y,g) &amp;=&amp; \frac{1}{n}\sum_{s=1}^{S} \sum_{i=1}^{n} a_{is}\{Y_{i} - \bar{Y}_{s} + \bar{Y}_{s} - \bar{g}_{s} \}^{2} \nonumber \\
+&amp;=&amp; \frac{1}{n}\sum_{s=1}^{S} \sum_{i=1}^{n} a_{is}\{Y_{i} - \bar{Y}_{s} \}^{2} + \frac{1}{n}\sum_{s=1}^{S} n_{s}\{\bar{Y}_{s} - \bar{g}_{s} \}^{2} \nonumber \\
+&amp;=&amp; \frac{1}{n}\sum_{s=1}^{S} n_{s}\bar{Y}_{s}(1 - \bar{Y}_{s}) + \frac{1}{n}\sum_{s=1}^{S} n_{s}\{\bar{Y}_{s} - \bar{g}_{s} \}^{2} \nonumber \\
+&amp;=&amp; B_{D} + B_{C}
+\end{eqnarray}\]</span></li>
+</ul>
+<hr />
+<ul>
+<li><p>The quantity <span class="math inline">\(B_{D} = \frac{1}{n}\sum_{s=1}^{S} n_{s}\bar{Y}_{s}(1 - \bar{Y}_{s})\)</span> is related to the <strong>discrimination</strong> of the risk score <span class="math inline">\(g\)</span>.</p></li>
+<li><p>To get a sense of why <span class="math inline">\(B_{D}\)</span> measures discrimination, suppose <span class="math inline">\(s\)</span> is a stratum where <span class="math inline">\(s_{s} \leq t\)</span>.</p></li>
+<li><p>If the risk score has <strong>good discrimination</strong>, this threshold should <strong>separate</strong> most of the “successes” from the “failures”.</p>
+<ul>
+<li>That is most with <span class="math inline">\(g(\mathbf{x}_{i}) \leq t\)</span> has <span class="math inline">\(Y_{i} = 0\)</span> and most with <span class="math inline">\(g(\mathbf{x}_{i}) &gt; t\)</span> has <span class="math inline">\(Y_{i}=1\)</span>.</li>
+<li>This <span class="math inline">\(\bar{Y}_{s}(1 - \bar{Y}_{s})\)</span> is close to <span class="math inline">\(0\)</span>.</li>
+<li>If this is close to <span class="math inline">\(0\)</span> for most threholds, <span class="math inline">\(B_{D}\)</span> will be small.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>The quantity <span class="math inline">\(B_{C} = \frac{1}{n}\sum_{s=1}^{S} n_{s}\{\bar{Y}_{s} - \bar{g}_{s} \}^{2}\)</span> is a measure of <strong>calibration</strong>.</p></li>
+<li><p>For a well-calibrated risk score, the proportion of successes <span class="math inline">\(\bar{Y}_{s}\)</span> in stratum <span class="math inline">\(s\)</span> should be close to the
+average value of the risk score <span class="math inline">\(g_{s}\)</span> in stratum <span class="math inline">\(s\)</span>.</p></li>
+</ul>
+<div id="brier-scores-for-biopsy-data" class="section level3 hasAnchor" number="6.1.1">
+<h3><span class="header-section-number">6.1.1</span> Brier scores for biopsy data<a href="risk-prediction2.html#brier-scores-for-biopsy-data" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>Let’s compute the <strong>Brier score</strong> using the <code>biopsy</code> data again from the <code>MASS</code> package.</li>
+</ul>
+<div class="sourceCode" id="cb21407"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21407-1"><a href="risk-prediction2.html#cb21407-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb21407-2"><a href="risk-prediction2.html#cb21407-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb21407-3"><a href="risk-prediction2.html#cb21407-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21407-4"><a href="risk-prediction2.html#cb21407-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(biopsy)</span>
+<span id="cb21407-5"><a href="risk-prediction2.html#cb21407-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create binary outcome for tumor class</span></span>
+<span id="cb21407-6"><a href="risk-prediction2.html#cb21407-6" aria-hidden="true" tabindex="-1"></a>biopsy<span class="sc">$</span>tumor.type <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(biopsy<span class="sc">$</span>class<span class="sc">==</span><span class="st">&quot;malignant&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb21407-7"><a href="risk-prediction2.html#cb21407-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(biopsy)</span></code></pre></div>
+<pre><code>##        ID V1 V2 V3 V4 V5 V6 V7 V8 V9     class tumor.type
+## 1 1000025  5  1  1  1  2  1  3  1  1    benign          0
+## 2 1002945  5  4  4  5  7 10  3  2  1    benign          0
+## 3 1015425  3  1  1  1  2  2  3  1  1    benign          0
+## 4 1016277  6  8  8  1  3  4  3  7  1    benign          0
+## 5 1017023  4  1  1  3  2  1  3  1  1    benign          0
+## 6 1017122  8 10 10  8  7 10  9  7  1 malignant          1</code></pre>
+<ul>
+<li>Let’s try constructing fitted probabilities using three approaches:
+<ul>
+<li><strong>logistic regression</strong></li>
+<li><strong>CART</strong></li>
+<li><strong>random forest</strong></li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb21409"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21409-1"><a href="risk-prediction2.html#cb21409-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb21409-2"><a href="risk-prediction2.html#cb21409-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span>
+<span id="cb21409-3"><a href="risk-prediction2.html#cb21409-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21409-4"><a href="risk-prediction2.html#cb21409-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit CART, logistic regression, and random forest</span></span>
+<span id="cb21409-5"><a href="risk-prediction2.html#cb21409-5" aria-hidden="true" tabindex="-1"></a>cart.model <span class="ot">&lt;-</span> <span class="fu">rpart</span>(class <span class="sc">~</span> V1 <span class="sc">+</span> V3 <span class="sc">+</span> V4 <span class="sc">+</span> V7 <span class="sc">+</span> V8, <span class="at">data=</span>biopsy)</span>
+<span id="cb21409-6"><a href="risk-prediction2.html#cb21409-6" aria-hidden="true" tabindex="-1"></a>logreg.model <span class="ot">&lt;-</span> <span class="fu">glm</span>(tumor.type <span class="sc">~</span> V1 <span class="sc">+</span> V3 <span class="sc">+</span> V4 <span class="sc">+</span> V7 <span class="sc">+</span> V8, <span class="at">family=</span><span class="st">&quot;binomial&quot;</span>, <span class="at">data=</span>biopsy)</span>
+<span id="cb21409-7"><a href="risk-prediction2.html#cb21409-7" aria-hidden="true" tabindex="-1"></a>RF.model <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(class <span class="sc">~</span> V1 <span class="sc">+</span> V3 <span class="sc">+</span> V4 <span class="sc">+</span> V7 <span class="sc">+</span> V8, <span class="at">data=</span>biopsy, <span class="at">ntree =</span> <span class="dv">500</span>)</span></code></pre></div>
+<ul>
+<li>Let’s then compute “risk scores” from each method.</li>
+</ul>
+<div class="sourceCode" id="cb21410"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21410-1"><a href="risk-prediction2.html#cb21410-1" aria-hidden="true" tabindex="-1"></a>probs.cart <span class="ot">&lt;-</span> <span class="fu">predict</span>(cart.model)</span>
+<span id="cb21410-2"><a href="risk-prediction2.html#cb21410-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(probs.cart)</span></code></pre></div>
+<pre><code>##      benign malignant
+## 1 0.9837587 0.0162413
+## 2 0.0952381 0.9047619
+## 3 0.9837587 0.0162413
+## 4 0.0952381 0.9047619
+## 5 0.9837587 0.0162413
+## 6 0.0952381 0.9047619</code></pre>
+<div class="sourceCode" id="cb21412"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21412-1"><a href="risk-prediction2.html#cb21412-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We want the second column of this matrix for the CART fitted probabilities</span></span>
+<span id="cb21412-2"><a href="risk-prediction2.html#cb21412-2" aria-hidden="true" tabindex="-1"></a>risk.cart <span class="ot">&lt;-</span> probs.cart[,<span class="dv">2</span>]</span>
+<span id="cb21412-3"><a href="risk-prediction2.html#cb21412-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21412-4"><a href="risk-prediction2.html#cb21412-4" aria-hidden="true" tabindex="-1"></a><span class="co"># logistic regression </span></span>
+<span id="cb21412-5"><a href="risk-prediction2.html#cb21412-5" aria-hidden="true" tabindex="-1"></a>risk.logreg <span class="ot">&lt;-</span> <span class="fu">predict</span>(logreg.model, <span class="at">newdata=</span>biopsy, <span class="at">type=</span><span class="st">&quot;response&quot;</span>)</span>
+<span id="cb21412-6"><a href="risk-prediction2.html#cb21412-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21412-7"><a href="risk-prediction2.html#cb21412-7" aria-hidden="true" tabindex="-1"></a><span class="co"># random forest risk scores</span></span>
+<span id="cb21412-8"><a href="risk-prediction2.html#cb21412-8" aria-hidden="true" tabindex="-1"></a>risk.RF <span class="ot">&lt;-</span> <span class="fu">predict</span>(RF.model, <span class="at">newdata=</span>biopsy, <span class="at">type =</span> <span class="st">&quot;prob&quot;</span>)[,<span class="dv">2</span>]</span></code></pre></div>
+<ul>
+<li>The <strong>in-sample</strong> Brier scores for each method are:
+<ul>
+<li>“In-sample” here meaning we are computing the Brier score using the same outcomes we used to construct the risk scores.</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb21413"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21413-1"><a href="risk-prediction2.html#cb21413-1" aria-hidden="true" tabindex="-1"></a>brier.cart <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.cart <span class="sc">-</span> biopsy<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb21413-2"><a href="risk-prediction2.html#cb21413-2" aria-hidden="true" tabindex="-1"></a>brier.logreg <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.logreg <span class="sc">-</span> biopsy<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb21413-3"><a href="risk-prediction2.html#cb21413-3" aria-hidden="true" tabindex="-1"></a>brier.RF <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.RF <span class="sc">-</span> biopsy<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb21413-4"><a href="risk-prediction2.html#cb21413-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21413-5"><a href="risk-prediction2.html#cb21413-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(brier.cart, brier.logreg, brier.RF), <span class="dv">4</span>)</span></code></pre></div>
+<pre><code>## [1] 0.0450 0.0280 0.0056</code></pre>
+<ul>
+<li>When comparing <strong>in-sample</strong> Brier scores, CART is the worst, logistic regression is in the middle, and random forest is the best.</li>
+</ul>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-5"></span>
+<img src="06-riskprediction2_files/figure-html/unnamed-chunk-5-1.png" alt="Fitted CART model for the biopsy data" width="672" />
+<p class="caption">
+Figure 6.1: Fitted CART model for the biopsy data
+</p>
+</div>
+</div>
+<div id="out-of-sample-comparisons" class="section level3 hasAnchor" number="6.1.2">
+<h3><span class="header-section-number">6.1.2</span> Out-of-sample comparisons<a href="risk-prediction2.html#out-of-sample-comparisons" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li><p>Looking at <strong>out-of-sample</strong> performance is a better way to <strong>validate</strong> our risk scores.</p></li>
+<li><p>Let’s try a validation exercise by <strong>“training”</strong> our models on the first <span class="math inline">\(400\)</span> observations
+of <code>biopsy</code> and then testing relative performance on the remaining observations.</p></li>
+</ul>
+<div class="sourceCode" id="cb21415"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21415-1"><a href="risk-prediction2.html#cb21415-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create train/test splits for biopsy data</span></span>
+<span id="cb21415-2"><a href="risk-prediction2.html#cb21415-2" aria-hidden="true" tabindex="-1"></a>biopsy.train <span class="ot">&lt;-</span> biopsy[<span class="dv">1</span><span class="sc">:</span><span class="dv">400</span>,]</span>
+<span id="cb21415-3"><a href="risk-prediction2.html#cb21415-3" aria-hidden="true" tabindex="-1"></a>biopsy.test <span class="ot">&lt;-</span> biopsy[<span class="dv">401</span><span class="sc">:</span><span class="dv">699</span>,]</span></code></pre></div>
+<div class="sourceCode" id="cb21416"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21416-1"><a href="risk-prediction2.html#cb21416-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, use each type of method on this training data</span></span>
+<span id="cb21416-2"><a href="risk-prediction2.html#cb21416-2" aria-hidden="true" tabindex="-1"></a>cart.model.train <span class="ot">&lt;-</span> <span class="fu">rpart</span>(class <span class="sc">~</span> V1 <span class="sc">+</span> V3 <span class="sc">+</span> V4 <span class="sc">+</span> V7 <span class="sc">+</span> V8, <span class="at">data=</span>biopsy.train)</span>
+<span id="cb21416-3"><a href="risk-prediction2.html#cb21416-3" aria-hidden="true" tabindex="-1"></a>logreg.model.train <span class="ot">&lt;-</span> <span class="fu">glm</span>(tumor.type <span class="sc">~</span> V1 <span class="sc">+</span> V3 <span class="sc">+</span> V4 <span class="sc">+</span> V7 <span class="sc">+</span> V8, <span class="at">family=</span><span class="st">&quot;binomial&quot;</span>, </span>
+<span id="cb21416-4"><a href="risk-prediction2.html#cb21416-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data=</span>biopsy.train)</span>
+<span id="cb21416-5"><a href="risk-prediction2.html#cb21416-5" aria-hidden="true" tabindex="-1"></a>RF.model.train <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(class <span class="sc">~</span> V1 <span class="sc">+</span> V3 <span class="sc">+</span> V4 <span class="sc">+</span> V7 <span class="sc">+</span> V8, <span class="at">data=</span>biopsy.train, </span>
+<span id="cb21416-6"><a href="risk-prediction2.html#cb21416-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">ntree =</span> <span class="dv">500</span>)</span></code></pre></div>
+<ul>
+<li>Using these models built on the training data, get the fitted probabilities for the <strong>test data</strong></li>
+</ul>
+<div class="sourceCode" id="cb21417"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21417-1"><a href="risk-prediction2.html#cb21417-1" aria-hidden="true" tabindex="-1"></a>risk.cart.test <span class="ot">&lt;-</span> <span class="fu">predict</span>(cart.model.train, <span class="at">newdata=</span>biopsy.test)[,<span class="dv">2</span>]</span>
+<span id="cb21417-2"><a href="risk-prediction2.html#cb21417-2" aria-hidden="true" tabindex="-1"></a>risk.logreg.test <span class="ot">&lt;-</span> <span class="fu">predict</span>(logreg.model.train, <span class="at">newdata=</span>biopsy.test, <span class="at">type=</span><span class="st">&quot;response&quot;</span>)</span>
+<span id="cb21417-3"><a href="risk-prediction2.html#cb21417-3" aria-hidden="true" tabindex="-1"></a>risk.RF.test <span class="ot">&lt;-</span> <span class="fu">predict</span>(RF.model.train, <span class="at">newdata=</span>biopsy.test, <span class="at">type =</span> <span class="st">&quot;prob&quot;</span>)[,<span class="dv">2</span>]</span></code></pre></div>
+<ul>
+<li>Now, using these fitted probabilities on the test data, compute the <strong>Brier scores</strong>:</li>
+</ul>
+<div class="sourceCode" id="cb21418"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21418-1"><a href="risk-prediction2.html#cb21418-1" aria-hidden="true" tabindex="-1"></a>brier.cart.test <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.cart.test <span class="sc">-</span> biopsy.test<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb21418-2"><a href="risk-prediction2.html#cb21418-2" aria-hidden="true" tabindex="-1"></a>brier.logreg.test <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.logreg.test <span class="sc">-</span> biopsy.test<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb21418-3"><a href="risk-prediction2.html#cb21418-3" aria-hidden="true" tabindex="-1"></a>brier.RF.test <span class="ot">&lt;-</span> <span class="fu">mean</span>((risk.RF.test <span class="sc">-</span> biopsy.test<span class="sc">$</span>tumor.type)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb21418-4"><a href="risk-prediction2.html#cb21418-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21418-5"><a href="risk-prediction2.html#cb21418-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(brier.cart.test, brier.logreg.test, brier.RF.test), <span class="dv">4</span>)</span></code></pre></div>
+<pre><code>## [1] 0.0359 0.0135 0.0185</code></pre>
+<ul>
+<li><p>For the out-of-sample Brier score, both logistic regression and random forest are notably
+better than CART.</p></li>
+<li><p>Logistic regression is actually slightly <strong>better</strong> than random forest in out of sample performance with random forest (at least for this particular train/test split).</p></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="brier-scores-with-longitudinal-data" class="section level2 hasAnchor" number="6.2">
+<h2><span class="header-section-number">6.2</span> Brier Scores with Longitudinal Data<a href="risk-prediction2.html#brier-scores-with-longitudinal-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li>Let’s revisit the <code>ohio</code> data again from the <code>geepack</code> package</li>
+</ul>
+<div class="sourceCode" id="cb21420"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21420-1"><a href="risk-prediction2.html#cb21420-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geepack)</span>
+<span id="cb21420-2"><a href="risk-prediction2.html#cb21420-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(ohio)</span>
+<span id="cb21420-3"><a href="risk-prediction2.html#cb21420-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ohio, <span class="dv">10</span>)</span></code></pre></div>
+<pre><code>##    resp id age smoke
+## 1     0  0  -2     0
+## 2     0  0  -1     0
+## 3     0  0   0     0
+## 4     0  0   1     0
+## 5     0  1  -2     0
+## 6     0  1  -1     0
+## 7     0  1   0     0
+## 8     0  1   1     0
+## 9     0  2  -2     0
+## 10    0  2  -1     0</code></pre>
+<ul>
+<li><p>Each individual has 4 follow-up visits.</p></li>
+<li><p>The variable <code>resp</code> is the wheezing status of the individual at each follow up.</p></li>
+<li><p>The variable <code>smoke</code> is a <strong>baseline</strong> variable that does not change over time. This
+is an indicator of maternal smoking.</p></li>
+<li><p><code>age</code> is a time-varying covariate.</p></li>
+</ul>
+<div id="option-1" class="section level3 hasAnchor" number="6.2.1">
+<h3><span class="header-section-number">6.2.1</span> Option 1<a href="risk-prediction2.html#option-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li><p>If we want to build a <strong>risk score</strong> for wheezing, evaluating the performance of this risk score
+will depend on exactly what we are trying to predict.</p></li>
+<li><p><strong>Option 1:</strong> We want to predict whether or not some someone is diagnosed with <strong>wheezing</strong> over some
+time window, and we do not want to predict wheezing status at each time point.</p></li>
+<li><p>As an example of this, let’s build a risk score which:</p>
+<ul>
+<li><p>Only uses <code>smoke</code> as a covariate.</p></li>
+<li><p>Builds the risk score from the first two follow-up times.</p></li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>Let’s first construct a dataset called <code>atleastone1</code> that records whether or not
+an individual had at least one positive wheezing status over the first two visits:
+<ul>
+<li><code>atleastone2</code> will record whether or not an individual has at least one positive wheezing status over the last two visits.</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb21422"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21422-1"><a href="risk-prediction2.html#cb21422-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(ohio)</span>
+<span id="cb21422-2"><a href="risk-prediction2.html#cb21422-2" aria-hidden="true" tabindex="-1"></a>baseline.ohio <span class="ot">&lt;-</span> <span class="fu">subset</span>(ohio, age<span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>) <span class="co"># data from baseline visit</span></span>
+<span id="cb21422-3"><a href="risk-prediction2.html#cb21422-3" aria-hidden="true" tabindex="-1"></a>firsttwo.ohio <span class="ot">&lt;-</span> <span class="fu">subset</span>(ohio, age<span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">|</span> age <span class="sc">==</span> <span class="dv">0</span>) <span class="co"># data from visits 1-2</span></span>
+<span id="cb21422-4"><a href="risk-prediction2.html#cb21422-4" aria-hidden="true" tabindex="-1"></a>lasttwo.ohio <span class="ot">&lt;-</span> <span class="fu">subset</span>(ohio, age<span class="sc">==</span><span class="dv">1</span> <span class="sc">|</span> age<span class="sc">==</span><span class="dv">2</span>) <span class="co"># data from visits 3-4</span></span>
+<span id="cb21422-5"><a href="risk-prediction2.html#cb21422-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21422-6"><a href="risk-prediction2.html#cb21422-6" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(firsttwo.ohio<span class="sc">$</span>resp, <span class="at">by=</span><span class="fu">list</span>(<span class="at">id=</span>firsttwo.ohio<span class="sc">$</span>id), <span class="at">FUN=</span>max)</span>
+<span id="cb21422-7"><a href="risk-prediction2.html#cb21422-7" aria-hidden="true" tabindex="-1"></a>tmp2 <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(lasttwo.ohio<span class="sc">$</span>resp, <span class="at">by=</span><span class="fu">list</span>(<span class="at">id=</span>lasttwo.ohio<span class="sc">$</span>id), <span class="at">FUN=</span>max)</span>
+<span id="cb21422-8"><a href="risk-prediction2.html#cb21422-8" aria-hidden="true" tabindex="-1"></a>atleastone1 <span class="ot">&lt;-</span> <span class="fu">merge</span>(tmp, baseline.ohio, <span class="at">by=</span><span class="st">&quot;id&quot;</span>)</span>
+<span id="cb21422-9"><a href="risk-prediction2.html#cb21422-9" aria-hidden="true" tabindex="-1"></a>atleastone2 <span class="ot">&lt;-</span> <span class="fu">merge</span>(tmp2, baseline.ohio, <span class="at">by=</span><span class="st">&quot;id&quot;</span>)</span>
+<span id="cb21422-10"><a href="risk-prediction2.html#cb21422-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(atleastone1)</span></code></pre></div>
+<pre><code>##   id x resp age smoke
+## 1  0 0    0  -1     0
+## 2  1 0    0  -1     0
+## 3  2 0    0  -1     0
+## 4  3 0    0  -1     0
+## 5  4 0    0  -1     0
+## 6  5 0    0  -1     0</code></pre>
+<div class="sourceCode" id="cb21424"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21424-1"><a href="risk-prediction2.html#cb21424-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(atleastone1<span class="sc">$</span>resp)</span></code></pre></div>
+<pre><code>## 
+##   0   1 
+## 446  91</code></pre>
+<hr />
+<ul>
+<li>Let’s now build a risk score using only variable <code>smoke</code> as a covariate and a random choice of <span class="math inline">\(300\)</span> observations</li>
+</ul>
+<div class="sourceCode" id="cb21426"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21426-1"><a href="risk-prediction2.html#cb21426-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb21426-2"><a href="risk-prediction2.html#cb21426-2" aria-hidden="true" tabindex="-1"></a>train.ind <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">537</span>, <span class="at">size=</span><span class="dv">300</span>)</span>
+<span id="cb21426-3"><a href="risk-prediction2.html#cb21426-3" aria-hidden="true" tabindex="-1"></a>atleastone1.train <span class="ot">&lt;-</span> atleastone1[train.ind,]</span>
+<span id="cb21426-4"><a href="risk-prediction2.html#cb21426-4" aria-hidden="true" tabindex="-1"></a>mod1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(resp <span class="sc">~</span> smoke, <span class="at">family=</span><span class="st">&quot;binomial&quot;</span>, <span class="at">data=</span>atleastone1.train)</span>
+<span id="cb21426-5"><a href="risk-prediction2.html#cb21426-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = resp ~ smoke, family = &quot;binomial&quot;, data = atleastone1.train)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -0.5978  -0.5978  -0.5537  -0.5537   1.9754  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -1.7979     0.2078  -8.653   &lt;2e-16 ***
+## smoke         0.1665     0.3311   0.503    0.615    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 253.63  on 299  degrees of freedom
+## Residual deviance: 253.37  on 298  degrees of freedom
+## AIC: 257.37
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<hr />
+<ul>
+<li>The risk scores for the hold-out individuals for the later follow-up times are given by</li>
+</ul>
+<div class="sourceCode" id="cb21428"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21428-1"><a href="risk-prediction2.html#cb21428-1" aria-hidden="true" tabindex="-1"></a>risk1 <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod1, <span class="at">newdata=</span>atleastone2[<span class="sc">-</span>train.ind,],</span>
+<span id="cb21428-2"><a href="risk-prediction2.html#cb21428-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">type=</span><span class="st">&quot;response&quot;</span>)</span></code></pre></div>
+<ul>
+<li>Now, let’s look at the Brier score on the remaining individuals in the <code>atleast2</code> data set.</li>
+</ul>
+<div class="sourceCode" id="cb21429"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21429-1"><a href="risk-prediction2.html#cb21429-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>((risk1 <span class="sc">-</span> atleastone2[<span class="sc">-</span>train.ind,]<span class="sc">$</span>resp)<span class="sc">^</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## [1] 0.1574466</code></pre>
+<ul>
+<li><p>An AUC probably does not make much sense here since there are only two possible values of the risk score.</p></li>
+<li><p>For calibration, we can just compare the predicted risk scores and the mean number of successes
+in each of the smoking categories in the hold-out sample:</p></li>
+</ul>
+<div class="sourceCode" id="cb21431"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21431-1"><a href="risk-prediction2.html#cb21431-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(risk1)</span></code></pre></div>
+<pre><code>## risk1
+## 0.142105263157904 0.163636363636364 
+##               160                77</code></pre>
+<div class="sourceCode" id="cb21433"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21433-1"><a href="risk-prediction2.html#cb21433-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(atleastone2[<span class="sc">-</span>train.ind,]<span class="sc">$</span>resp, atleastone2[<span class="sc">-</span>train.ind,]<span class="sc">$</span>smoke)</span></code></pre></div>
+<pre><code>##    
+##       0   1
+##   0 135  56
+##   1  25  21</code></pre>
+<div class="sourceCode" id="cb21435"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21435-1"><a href="risk-prediction2.html#cb21435-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare risk scores with </span></span>
+<span id="cb21435-2"><a href="risk-prediction2.html#cb21435-2" aria-hidden="true" tabindex="-1"></a><span class="dv">25</span><span class="sc">/</span>(<span class="dv">25</span> <span class="sc">+</span> <span class="dv">135</span>)</span></code></pre></div>
+<pre><code>## [1] 0.15625</code></pre>
+<div class="sourceCode" id="cb21437"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21437-1"><a href="risk-prediction2.html#cb21437-1" aria-hidden="true" tabindex="-1"></a><span class="dv">21</span><span class="sc">/</span>(<span class="dv">21</span> <span class="sc">+</span> <span class="dv">56</span>)</span></code></pre></div>
+<pre><code>## [1] 0.2727273</code></pre>
+<ul>
+<li>This risk score does not seem all that well-calibrated for later time points.
+<ul>
+<li>The overall prevalence of wheezing is a little bit higher in the hold-out sample.</li>
+<li>There is a larger difference between the smoking and non-smoking groups in the hold-out sample.</li>
+</ul></li>
+</ul>
+<hr />
+</div>
+<div id="option-2" class="section level3 hasAnchor" number="6.2.2">
+<h3><span class="header-section-number">6.2.2</span> Option 2<a href="risk-prediction2.html#option-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li><p>As another option, you may want to predict outcomes for each time point in the hold-out dataset.</p></li>
+<li><p>In this case, I would probably just compute a Brier score by just averaging over all time points.</p></li>
+<li><p>For example, with a <strong>GEE</strong>, you might do the following:</p></li>
+</ul>
+<div class="sourceCode" id="cb21439"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21439-1"><a href="risk-prediction2.html#cb21439-1" aria-hidden="true" tabindex="-1"></a>ind <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">400</span>, <span class="dv">801</span><span class="sc">:</span><span class="dv">1200</span>, <span class="dv">1601</span><span class="sc">:</span><span class="dv">2000</span>) <span class="do">## index of training set</span></span>
+<span id="cb21439-2"><a href="risk-prediction2.html#cb21439-2" aria-hidden="true" tabindex="-1"></a>ohio.train <span class="ot">&lt;-</span> <span class="fu">subset</span>(ohio[ind,], age<span class="sc">==-</span><span class="dv">1</span> <span class="sc">|</span> age <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb21439-3"><a href="risk-prediction2.html#cb21439-3" aria-hidden="true" tabindex="-1"></a>ohio.test <span class="ot">&lt;-</span> <span class="fu">subset</span>(ohio[<span class="sc">-</span>ind,], age<span class="sc">==</span><span class="dv">1</span> <span class="sc">|</span> age<span class="sc">==</span><span class="dv">2</span>)</span>
+<span id="cb21439-4"><a href="risk-prediction2.html#cb21439-4" aria-hidden="true" tabindex="-1"></a>fit.ex <span class="ot">&lt;-</span> <span class="fu">geeglm</span>(resp <span class="sc">~</span> age <span class="sc">+</span> smoke <span class="sc">+</span> age<span class="sc">:</span>smoke, <span class="at">id=</span>id, <span class="at">data=</span>ohio.train,</span>
+<span id="cb21439-5"><a href="risk-prediction2.html#cb21439-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">family=</span>binomial, <span class="at">corstr=</span><span class="st">&quot;exch&quot;</span>)</span>
+<span id="cb21439-6"><a href="risk-prediction2.html#cb21439-6" aria-hidden="true" tabindex="-1"></a>rs2 <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit.ex, <span class="at">newdata=</span>ohio.test, <span class="at">type=</span><span class="st">&quot;response&quot;</span>)</span>
+<span id="cb21439-7"><a href="risk-prediction2.html#cb21439-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21439-8"><a href="risk-prediction2.html#cb21439-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Now, find Brier score that the takes average across all individuals and time points</span></span>
+<span id="cb21439-9"><a href="risk-prediction2.html#cb21439-9" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>((rs2 <span class="sc">-</span> ohio.test<span class="sc">$</span>resp)<span class="sc">^</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## [1] 0.1270949</code></pre>
+<hr />
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="risk-prediction.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="ordinal-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 9 Conformal Prediction | Notes for Case Studies in Health Big Data</title>
+  <meta name="description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  <meta name="generator" content="bookdown 0.38 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 9 Conformal Prediction | Notes for Case Studies in Health Big Data" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  <meta name="github-repo" content="nchenderson/HDS629notes" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 9 Conformal Prediction | Notes for Case Studies in Health Big Data" />
+  
+  <meta name="twitter:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  
+
+<meta name="author" content="Nicholas Henderson" />
+
+
+<meta name="date" content="2024-04-17" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="extra-topics.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Biostat 629</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="mixed-models.html"><a href="mixed-models.html"><i class="fa fa-check"></i><b>1</b> Mixed Models for Longitudinal Data Analysis</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="mixed-models.html"><a href="mixed-models.html#sec:methods-overview"><i class="fa fa-check"></i><b>1.1</b> Methods for Analyzing Longitudinal Data</a></li>
+<li class="chapter" data-level="1.2" data-path="mixed-models.html"><a href="mixed-models.html#mixed-models-for-continuous-outcomes"><i class="fa fa-check"></i><b>1.2</b> Mixed Models for Continuous Outcomes</a></li>
+<li class="chapter" data-level="1.3" data-path="mixed-models.html"><a href="mixed-models.html#advantages-of-using-random-effects"><i class="fa fa-check"></i><b>1.3</b> Advantages of using random effects</a>
+<ul>
+<li class="chapter" data-level="1.3.1" data-path="mixed-models.html"><a href="mixed-models.html#within-subject-correlation"><i class="fa fa-check"></i><b>1.3.1</b> Within-subject correlation</a></li>
+<li class="chapter" data-level="1.3.2" data-path="mixed-models.html"><a href="mixed-models.html#inference-about-heterogeneity---variance-of-random-effects"><i class="fa fa-check"></i><b>1.3.2</b> Inference about Heterogeneity - Variance of Random Effects</a></li>
+<li class="chapter" data-level="1.3.3" data-path="mixed-models.html"><a href="mixed-models.html#best-linear-unbiased-prediction"><i class="fa fa-check"></i><b>1.3.3</b> Best Linear Unbiased Prediction</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="mixed-models.html"><a href="mixed-models.html#generalized-linear-mixed-models-glmms"><i class="fa fa-check"></i><b>1.4</b> Generalized linear mixed models (GLMMs)</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-binary-outcomes"><i class="fa fa-check"></i><b>1.4.1</b> GLMMs with Binary Outcomes</a></li>
+<li class="chapter" data-level="1.4.2" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-count-outcomes"><i class="fa fa-check"></i><b>1.4.2</b> GLMMs with Count Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="mixed-models.html"><a href="mixed-models.html#fitting-linear-mixed-models-lmms-and-generalized-linear-mixed-models-glmms-in-r"><i class="fa fa-check"></i><b>1.5</b> Fitting Linear Mixed Models (LMMs) and Generalized Linear Mixed models (GLMMs) in <strong>R</strong></a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="mixed-models.html"><a href="mixed-models.html#fitting-lmms-with-the-sleepstudy-data"><i class="fa fa-check"></i><b>1.5.1</b> Fitting LMMs with the sleepstudy data</a></li>
+<li class="chapter" data-level="1.5.2" data-path="mixed-models.html"><a href="mixed-models.html#model-comparison-of-lmms-using-anova"><i class="fa fa-check"></i><b>1.5.2</b> Model Comparison of LMMs using anova</a></li>
+<li class="chapter" data-level="1.5.3" data-path="mixed-models.html"><a href="mixed-models.html#extracting-blups-in-lme4"><i class="fa fa-check"></i><b>1.5.3</b> Extracting BLUPs in lme4</a></li>
+<li class="chapter" data-level="1.5.4" data-path="mixed-models.html"><a href="mixed-models.html#fitting-binary-glmms-using-the-ohio-data"><i class="fa fa-check"></i><b>1.5.4</b> Fitting Binary GLMMs using the Ohio data</a></li>
+</ul></li>
+<li class="chapter" data-level="1.6" data-path="mixed-models.html"><a href="mixed-models.html#exercises"><i class="fa fa-check"></i><b>1.6</b> Exercises</a>
+<ul>
+<li class="chapter" data-level="1.6.1" data-path="mixed-models.html"><a href="mixed-models.html#questions"><i class="fa fa-check"></i><b>1.6.1</b> Questions</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>2</b> Missing Data and Multiple Imputation</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="missing-data.html"><a href="missing-data.html#missing-data-in-r-and-direct-approaches-for-handling-missing-data"><i class="fa fa-check"></i><b>2.1</b> Missing Data in R and “Direct Approaches” for Handling Missing Data</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="missing-data.html"><a href="missing-data.html#complete-case-analysis-listwise-deletion"><i class="fa fa-check"></i><b>2.1.1</b> Complete Case Analysis (Listwise Deletion)</a></li>
+<li class="chapter" data-level="2.1.2" data-path="missing-data.html"><a href="missing-data.html#other-direct-methods"><i class="fa fa-check"></i><b>2.1.2</b> Other “Direct” Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation"><i class="fa fa-check"></i><b>2.2</b> Multiple Imputation</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="missing-data.html"><a href="missing-data.html#short-overview-of-multiple-imputation"><i class="fa fa-check"></i><b>2.2.1</b> Short Overview of Multiple Imputation</a></li>
+<li class="chapter" data-level="2.2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation-with-mice"><i class="fa fa-check"></i><b>2.2.2</b> Multiple imputation with mice</a></li>
+<li class="chapter" data-level="2.2.3" data-path="missing-data.html"><a href="missing-data.html#categorical-variables-in-mice"><i class="fa fa-check"></i><b>2.2.3</b> Categorical Variables in MICE</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#what-is-mice-doing"><i class="fa fa-check"></i><b>2.3</b> What is MICE doing?</a></li>
+<li class="chapter" data-level="2.4" data-path="missing-data.html"><a href="missing-data.html#longitudinal-data"><i class="fa fa-check"></i><b>2.4</b> Longitudinal Data</a></li>
+<li class="chapter" data-level="2.5" data-path="missing-data.html"><a href="missing-data.html#different-missing-data-mechanisms"><i class="fa fa-check"></i><b>2.5</b> Different Missing Data Mechanisms</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="missing-data.html"><a href="missing-data.html#missing-completely-at-random-mcar"><i class="fa fa-check"></i><b>2.5.1</b> Missing Completely at Random (MCAR)</a></li>
+<li class="chapter" data-level="2.5.2" data-path="missing-data.html"><a href="missing-data.html#missing-at-random-mar"><i class="fa fa-check"></i><b>2.5.2</b> Missing at Random (MAR)</a></li>
+<li class="chapter" data-level="2.5.3" data-path="missing-data.html"><a href="missing-data.html#missing-not-at-random-mnar"><i class="fa fa-check"></i><b>2.5.3</b> Missing not at Random (MNAR)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="nonpar-regression.html"><a href="nonpar-regression.html"><i class="fa fa-check"></i><b>3</b> Nonparametric Regression with Longitudinal Data</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#notation"><i class="fa fa-check"></i><b>3.1</b> Notation</a></li>
+<li class="chapter" data-level="3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-smoothing"><i class="fa fa-check"></i><b>3.2</b> Kernel Smoothing</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#description-of-kernel-regression"><i class="fa fa-check"></i><b>3.2.1</b> Description of Kernel Regression</a></li>
+<li class="chapter" data-level="3.2.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-regression-in-the-sleepstudy-data"><i class="fa fa-check"></i><b>3.2.2</b> Kernel Regression in the sleepstudy data</a></li>
+<li class="chapter" data-level="3.2.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#bandwidth-selection"><i class="fa fa-check"></i><b>3.2.3</b> Bandwidth Selection</a></li>
+<li class="chapter" data-level="3.2.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#another-example-the-bone-data"><i class="fa fa-check"></i><b>3.2.4</b> Another Example: The Bone Data</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines"><i class="fa fa-check"></i><b>3.3</b> Regression Splines</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#overview"><i class="fa fa-check"></i><b>3.3.1</b> Overview</a></li>
+<li class="chapter" data-level="3.3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines-with-longitudinal-data-in-r"><i class="fa fa-check"></i><b>3.3.2</b> Regression Splines with Longitudinal Data in R</a></li>
+<li class="chapter" data-level="3.3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#looking-at-a-continuous-and-a-binary-covariate"><i class="fa fa-check"></i><b>3.3.3</b> Looking at a Continuous and a Binary Covariate</a></li>
+<li class="chapter" data-level="3.3.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#model-comparison"><i class="fa fa-check"></i><b>3.3.4</b> Model Comparison</a></li>
+<li class="chapter" data-level="3.3.5" data-path="nonpar-regression.html"><a href="nonpar-regression.html#actg-trial-example"><i class="fa fa-check"></i><b>3.3.5</b> ACTG trial example</a></li>
+<li class="chapter" data-level="3.3.6" data-path="nonpar-regression.html"><a href="nonpar-regression.html#treatment-comparisons-for-the-actg-trial"><i class="fa fa-check"></i><b>3.3.6</b> Treatment Comparisons for the ACTG trial</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="glmm-lasso.html"><a href="glmm-lasso.html"><i class="fa fa-check"></i><b>4</b> Sparse Regression for Longitudinal Data</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#sparse-regression-methods"><i class="fa fa-check"></i><b>4.1</b> Sparse regression methods</a></li>
+<li class="chapter" data-level="4.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#the-lasso-with-longitudinal-data"><i class="fa fa-check"></i><b>4.2</b> The Lasso with longitudinal data</a></li>
+<li class="chapter" data-level="4.3" data-path="glmm-lasso.html"><a href="glmm-lasso.html#lasso-for-lmms-and-glmms-in-r"><i class="fa fa-check"></i><b>4.3</b> Lasso for LMMs and GLMMs in R</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#soccer-data"><i class="fa fa-check"></i><b>4.3.1</b> Soccer Data</a></li>
+<li class="chapter" data-level="4.3.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#choosing-the-tuning-parameter-for-the-soccer-data"><i class="fa fa-check"></i><b>4.3.2</b> Choosing the tuning parameter for the soccer data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="glmm-lasso.html"><a href="glmm-lasso.html#cross-validation-for-longitudinal-data"><i class="fa fa-check"></i><b>4.4</b> Cross-Validation for Longitudinal Data</a></li>
+<li class="chapter" data-level="4.5" data-path="glmm-lasso.html"><a href="glmm-lasso.html#penalized-generalized-estimating-equations"><i class="fa fa-check"></i><b>4.5</b> Penalized Generalized Estimating Equations</a>
+<ul>
+<li class="chapter" data-level="4.5.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#the-pgee-package"><i class="fa fa-check"></i><b>4.5.1</b> The PGEE package</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="glmm-lasso.html"><a href="glmm-lasso.html#glmm-lasso-with-binary-outcomes"><i class="fa fa-check"></i><b>4.6</b> GLMM-Lasso with Binary Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="risk-prediction.html"><a href="risk-prediction.html"><i class="fa fa-check"></i><b>5</b> Risk Prediction and Validation (Part I)</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="risk-prediction.html"><a href="risk-prediction.html#risk-predictionstratification"><i class="fa fa-check"></i><b>5.1</b> Risk Prediction/Stratification</a></li>
+<li class="chapter" data-level="5.2" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve-and-the-c-statistic"><i class="fa fa-check"></i><b>5.2</b> Area under the ROC curve and the C-statistic</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="risk-prediction.html"><a href="risk-prediction.html#sensitivity-and-specificity"><i class="fa fa-check"></i><b>5.2.1</b> Sensitivity and Specificity</a></li>
+<li class="chapter" data-level="5.2.2" data-path="risk-prediction.html"><a href="risk-prediction.html#the-roc-curve"><i class="fa fa-check"></i><b>5.2.2</b> The ROC curve</a></li>
+<li class="chapter" data-level="5.2.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-roc-curve"><i class="fa fa-check"></i><b>5.2.3</b> Computing the ROC curve</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve"><i class="fa fa-check"></i><b>5.3</b> Area under the ROC curve</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="risk-prediction.html"><a href="risk-prediction.html#rewriting-the-formula-for-the-auc"><i class="fa fa-check"></i><b>5.3.1</b> Rewriting the formula for the AUC</a></li>
+<li class="chapter" data-level="5.3.2" data-path="risk-prediction.html"><a href="risk-prediction.html#interpreting-the-auc"><i class="fa fa-check"></i><b>5.3.2</b> Interpreting the AUC</a></li>
+<li class="chapter" data-level="5.3.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-auc-in-r"><i class="fa fa-check"></i><b>5.3.3</b> Computing the AUC in R</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="risk-prediction.html"><a href="risk-prediction.html#calibration"><i class="fa fa-check"></i><b>5.4</b> Calibration</a></li>
+<li class="chapter" data-level="5.5" data-path="risk-prediction.html"><a href="risk-prediction.html#longitudinal-data-and-risk-score-validation"><i class="fa fa-check"></i><b>5.5</b> Longitudinal Data and Risk Score Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="risk-prediction2.html"><a href="risk-prediction2.html"><i class="fa fa-check"></i><b>6</b> Risk Prediction and Validation (Part II)</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#the-brier-score"><i class="fa fa-check"></i><b>6.1</b> The Brier Score</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-for-biopsy-data"><i class="fa fa-check"></i><b>6.1.1</b> Brier scores for biopsy data</a></li>
+<li class="chapter" data-level="6.1.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#out-of-sample-comparisons"><i class="fa fa-check"></i><b>6.1.2</b> Out-of-sample comparisons</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-with-longitudinal-data"><i class="fa fa-check"></i><b>6.2</b> Brier Scores with Longitudinal Data</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-1"><i class="fa fa-check"></i><b>6.2.1</b> Option 1</a></li>
+<li class="chapter" data-level="6.2.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-2"><i class="fa fa-check"></i><b>6.2.2</b> Option 2</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="ordinal-regression.html"><a href="ordinal-regression.html"><i class="fa fa-check"></i><b>7</b> Ordinal Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression"><i class="fa fa-check"></i><b>7.1</b> Ordinal Logistic Regression</a></li>
+<li class="chapter" data-level="7.2" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-regression-details"><i class="fa fa-check"></i><b>7.2</b> Ordinal Regression Details</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression-in-r"><i class="fa fa-check"></i><b>7.2.1</b> Ordinal Logistic Regression in R</a></li>
+<li class="chapter" data-level="7.2.2" data-path="ordinal-regression.html"><a href="ordinal-regression.html#the-respdis-data"><i class="fa fa-check"></i><b>7.2.2</b> The respdis data</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="ordinal-regression.html"><a href="ordinal-regression.html#generalized-estimating-equations"><i class="fa fa-check"></i><b>7.3</b> Generalized Estimating Equations</a>
+<ul>
+<li class="chapter" data-level="7.3.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#using-geepack-and-ordgee"><i class="fa fa-check"></i><b>7.3.1</b> Using geepack and ordgee</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="ordinal-regression.html"><a href="ordinal-regression.html#penalized-regression-with-ordinal-outcomes"><i class="fa fa-check"></i><b>7.4</b> Penalized Regression with Ordinal Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="extra-topics.html"><a href="extra-topics.html"><i class="fa fa-check"></i><b>8</b> Variable Importance Measures</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="extra-topics.html"><a href="extra-topics.html#partial-dependence-plots"><i class="fa fa-check"></i><b>8.1</b> Partial Dependence Plots</a></li>
+<li class="chapter" data-level="8.2" data-path="extra-topics.html"><a href="extra-topics.html#uncertainty-in-variable-importance-measures"><i class="fa fa-check"></i><b>8.2</b> Uncertainty in Variable Importance Measures</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="extra-topics.html"><a href="extra-topics.html#subsampling-for-random-forest-vimp-scores"><i class="fa fa-check"></i><b>8.2.1</b> Subsampling for Random Forest VIMP scores</a></li>
+<li class="chapter" data-level="8.2.2" data-path="extra-topics.html"><a href="extra-topics.html#stability-selection-for-penalized-regression"><i class="fa fa-check"></i><b>8.2.2</b> Stability Selection for Penalized Regression</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="conformal-prediction.html"><a href="conformal-prediction.html"><i class="fa fa-check"></i><b>9</b> Conformal Prediction</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="conformal-prediction.html"><a href="conformal-prediction.html#confidence-intervals-and-prediction-intervals"><i class="fa fa-check"></i><b>9.1</b> Confidence Intervals and Prediction Intervals</a></li>
+<li class="chapter" data-level="9.2" data-path="conformal-prediction.html"><a href="conformal-prediction.html#conformal-inference-procedure-for-prediction-intervals"><i class="fa fa-check"></i><b>9.2</b> Conformal Inference Procedure for Prediction Intervals</a></li>
+<li class="chapter" data-level="9.3" data-path="conformal-prediction.html"><a href="conformal-prediction.html#why-does-this-work"><i class="fa fa-check"></i><b>9.3</b> Why does this work?</a></li>
+<li class="chapter" data-level="9.4" data-path="conformal-prediction.html"><a href="conformal-prediction.html#an-example-with-boosting."><i class="fa fa-check"></i><b>9.4</b> An example with Boosting.</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notes for Case Studies in Health Big Data</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="conformal-prediction" class="section level1 hasAnchor" number="9">
+<h1><span class="header-section-number">Chapter 9</span> Conformal Prediction<a href="conformal-prediction.html#conformal-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<hr />
+<div id="confidence-intervals-and-prediction-intervals" class="section level2 hasAnchor" number="9.1">
+<h2><span class="header-section-number">9.1</span> Confidence Intervals and Prediction Intervals<a href="conformal-prediction.html#confidence-intervals-and-prediction-intervals" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><p><strong>Confidence Intervals</strong> are intervals constructed to “cover” the parameter of a statistical model.</p></li>
+<li><p>For example, consider a regression setting with data <span class="math inline">\((Y_{i}, x_{i})\)</span> for <span class="math inline">\(i = 1, \ldots, n\)</span> whose distribution is
+assumed to be determined by
+<span class="math display">\[\begin{equation}
+Y_{i} = \beta_{0} + \beta_{1}x_{i} + \varepsilon_{i},
+\end{equation}\]</span>
+where <span class="math inline">\(\varepsilon_{i} \sim \textrm{Normal}(0, \sigma^{2})\)</span>.</p></li>
+<li><p>The usual <span class="math inline">\(95\%\)</span> <strong>confidence interval</strong> for <span class="math inline">\(\beta_{1}\)</span> is:
+<span class="math display">\[\begin{equation}
+\hat{CI}(Y_{1}, \ldots, Y_{n}) = \Big[ \hat{\beta}_{1} - 1.96 \times \frac{\hat{\sigma}}{\sqrt{\sum_{i}x_{i}^{2} - n\bar{x}^{2}}}, \hat{\beta}_{1} + 1.96 \times \frac{\hat{\sigma}}{\sqrt{\sum_{i}x_{i}^{2} - n\bar{x}^{2}}} \Big]
+\end{equation}\]</span></p></li>
+<li><p>This has <span class="math inline">\(95\%\)</span> <strong>“coverage”</strong> of <span class="math inline">\(\beta_{1}\)</span> in the sense that
+<span class="math display">\[\begin{equation}
+P\Big\{ \beta_{1} \in \hat{CI}(Y_{1}, \ldots, Y_{n}) \Big\} = 0.95
+\end{equation}\]</span></p></li>
+<li><p>Practically, if you imagine that you had <strong>replicated</strong> outcomes <span class="math inline">\(Y_{1s}, \ldots, Y_{ns}\)</span> for <span class="math inline">\(s = 1, \ldots, S\)</span>
+generated from the same model, you should expect that your series
+of constructed confidence intervals <span class="math inline">\(\hat{CI}(Y_{1s}, \ldots, Y_{ns})\)</span> should satisfy:
+<span class="math display">\[\begin{equation}
+\frac{1}{S}\sum_{j=1}^{S} I\Big( \beta_{1} \in \hat{CI}(Y_{1s}, \ldots, Y_{ns}) \Big) \approx 1 - \alpha
+\end{equation}\]</span></p></li>
+</ul>
+<hr />
+<ul>
+<li>A quick simulation which confirms the coverage property of confidence intervals is:</li>
+</ul>
+<div class="sourceCode" id="cb391"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb391-1"><a href="conformal-prediction.html#cb391-1" tabindex="-1"></a>nsims <span class="ot">&lt;-</span> <span class="dv">1000</span> <span class="do">## number of simulated data sets</span></span>
+<span id="cb391-2"><a href="conformal-prediction.html#cb391-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb391-3"><a href="conformal-prediction.html#cb391-3" tabindex="-1"></a>xx <span class="ot">&lt;-</span> <span class="fu">runif</span>(n)</span>
+<span id="cb391-4"><a href="conformal-prediction.html#cb391-4" tabindex="-1"></a>beta0 <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb391-5"><a href="conformal-prediction.html#cb391-5" tabindex="-1"></a>beta1 <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb391-6"><a href="conformal-prediction.html#cb391-6" tabindex="-1"></a></span>
+<span id="cb391-7"><a href="conformal-prediction.html#cb391-7" tabindex="-1"></a>cover <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, nsims)</span>
+<span id="cb391-8"><a href="conformal-prediction.html#cb391-8" tabindex="-1"></a><span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nsims) {</span>
+<span id="cb391-9"><a href="conformal-prediction.html#cb391-9" tabindex="-1"></a>  Y <span class="ot">&lt;-</span> beta0 <span class="sc">+</span> beta1<span class="sc">*</span>xx <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb391-10"><a href="conformal-prediction.html#cb391-10" tabindex="-1"></a>  </span>
+<span id="cb391-11"><a href="conformal-prediction.html#cb391-11" tabindex="-1"></a>  mod_fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> xx)</span>
+<span id="cb391-12"><a href="conformal-prediction.html#cb391-12" tabindex="-1"></a>  <span class="do">## Use method confint to get 95% confidence intervals for regression coefficients:</span></span>
+<span id="cb391-13"><a href="conformal-prediction.html#cb391-13" tabindex="-1"></a>  lower_ci <span class="ot">&lt;-</span> <span class="fu">confint</span>(mod_fit)[<span class="dv">2</span>,<span class="dv">1</span>]</span>
+<span id="cb391-14"><a href="conformal-prediction.html#cb391-14" tabindex="-1"></a>  upper_ci <span class="ot">&lt;-</span> <span class="fu">confint</span>(mod_fit)[<span class="dv">2</span>,<span class="dv">2</span>]  </span>
+<span id="cb391-15"><a href="conformal-prediction.html#cb391-15" tabindex="-1"></a>    </span>
+<span id="cb391-16"><a href="conformal-prediction.html#cb391-16" tabindex="-1"></a>  cover[s] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(beta1 <span class="sc">&gt;=</span> lower_ci <span class="sc">&amp;</span> beta1 <span class="sc">&lt;=</span> upper_ci, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb391-17"><a href="conformal-prediction.html#cb391-17" tabindex="-1"></a>}</span>
+<span id="cb391-18"><a href="conformal-prediction.html#cb391-18" tabindex="-1"></a><span class="fu">mean</span>(cover) <span class="do">## Should be close to 0.95</span></span></code></pre></div>
+<pre><code>## [1] 0.948</code></pre>
+<hr />
+<ul>
+<li></li>
+</ul>
+<hr />
+</div>
+<div id="conformal-inference-procedure-for-prediction-intervals" class="section level2 hasAnchor" number="9.2">
+<h2><span class="header-section-number">9.2</span> Conformal Inference Procedure for Prediction Intervals<a href="conformal-prediction.html#conformal-inference-procedure-for-prediction-intervals" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><p>The standard <strong>conformal inference</strong> procedure works for the setting where you’re thinking of
+outcomes <span class="math inline">\(Y_{i}\)</span> coming from the following model:
+<span class="math display">\[\begin{equation}
+Y_{i} = f(\mathbf{x}_{i}) + \varepsilon_{i}
+\end{equation}\]</span></p></li>
+<li><p>You <strong>do not</strong> need to know the form of <span class="math inline">\(f\)</span>.</p></li>
+<li><p><span class="math inline">\(f\)</span> can just be the fitted values returned by a black box machine learning procedure.</p>
+<ul>
+<li>For example, <span class="math inline">\(f(\mathbf{x}_{i})\)</span> could be the fitted values returned by running boosting or random forest.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>Let <span class="math inline">\(\mathcal{D}\)</span> denote the <strong>training set</strong>.
+<ul>
+<li>This contains data of the form <span class="math inline">\((\mathbf{x}_{i}, Y_{i})\)</span></li>
+</ul></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><p>The first step is to <strong>split</strong> this training set further into <strong>non-overlapping</strong> sets:</p>
+<ul>
+<li><span class="math inline">\(\mathcal{D}_{1}\)</span> - the indeces of a <strong>“proper”</strong> training set with <span class="math inline">\(n_{1}\)</span> observations.</li>
+<li><span class="math inline">\(\mathcal{D}_{2}\)</span> - the indeces of a <strong>“calibration”</strong> set with <span class="math inline">\(n_{2}\)</span> observations.</li>
+</ul></li>
+<li><p>Using <strong>only data</strong> from <span class="math inline">\(\mathcal{D}_{1}\)</span> apply your machine learning procedure to build
+a function <span class="math inline">\(\hat{f}_{\mathcal{D}_{1}}(\mathbf{x}_{i})\)</span> that predicts <span class="math inline">\(Y_{i}\)</span> from <span class="math inline">\(\mathbf{x}_{i}\)</span>.</p></li>
+<li><p>For <span class="math inline">\(i \in \mathcal{D}_{2}\)</span>, define the calibration set <strong>absolute residuals</strong> <span class="math inline">\(R_{i}\)</span> as
+<span class="math display">\[\begin{equation}
+R_{i} = | Y_{i} - \hat{f}_{\mathcal{D}_{1}}(\mathbf{x}_{i})|
+\end{equation}\]</span></p></li>
+<li><p>Compute the <span class="math inline">\(100 \times (1 - \alpha)\)</span> quantile (usually <span class="math inline">\(\alpha = 0.05\)</span>) of these calibration residuals
+<span class="math display">\[\begin{equation}
+\hat{q}_{\mathcal{D}_{2}, \alpha} = \textrm{$1 - \alpha$ quantile from residuals} R_{i} \textrm{ such that } i \in \mathcal{D}_{2}.
+\end{equation}\]</span></p></li>
+<li><p>Then, use the quantile <span class="math inline">\(\hat{q}_{\mathcal{D}_{2}}\)</span> to form the conformal <span class="math inline">\((1 - \alpha)\)</span> prediction set
+<span class="math display">\[\begin{equation}
+\hat{C}_{n}( \mathbf{x} ) = \Big[\hat{f}_{\mathcal{D}_{1}}(\mathbf{x}) - \hat{q}_{\mathcal{D}_{2}, \alpha},\hat{f}_{\mathcal{D}_{1}}(\mathbf{x}) + \hat{q}_{\mathcal{D}_{2}, \alpha}\Big]
+\end{equation}\]</span></p></li>
+</ol>
+<hr />
+<ul>
+<li><p>Applying the <strong>above 5 steps</strong> results in <strong>conformal prediction intervals</strong> that satisfies the following property
+<span class="math display">\[\begin{equation}
+1 - \alpha \leq P\Big( Y_{n+1} \in \hat{C}_{n}(\mathbf{x}_{n+1}) \Big| \textrm{obs. in proper train set}) &lt; 1 - \alpha + \frac{1}{n_{2} + 1}
+\end{equation}\]</span></p></li>
+<li><p>Remarkably, this interval is “<strong>distribution free</strong>”.
+- It does not assume that one has correctly specified the model for the outcomes.</p></li>
+<li><p>The main assumption are that <span class="math inline">\((Y_{n+1}, \mathbf{x}_{n+1})\)</span> is independent from <span class="math inline">\(((Y_{1}, \mathbf{x}_{1}), \ldots, (Y_{n+1}, \mathbf{x}_{n}))\)</span>
+and that the joint distribution of <span class="math inline">\((Y_{n+1}, \mathbf{x}_{n+1})\)</span> is the same as <span class="math inline">\((Y_{i}, \mathbf{x}_{i})\)</span>.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>As an example, let’s try to generate a conformal prediction interval for a <strong>linear regression</strong> example:</p></li>
+<li><p>First generate the data</p></li>
+</ul>
+<div class="sourceCode" id="cb393"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb393-1"><a href="conformal-prediction.html#cb393-1" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb393-2"><a href="conformal-prediction.html#cb393-2" tabindex="-1"></a>xx <span class="ot">&lt;-</span> <span class="fu">runif</span>(n)</span>
+<span id="cb393-3"><a href="conformal-prediction.html#cb393-3" tabindex="-1"></a>beta0 <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb393-4"><a href="conformal-prediction.html#cb393-4" tabindex="-1"></a>beta1 <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb393-5"><a href="conformal-prediction.html#cb393-5" tabindex="-1"></a></span>
+<span id="cb393-6"><a href="conformal-prediction.html#cb393-6" tabindex="-1"></a>Y <span class="ot">&lt;-</span> beta0 <span class="sc">+</span> beta1<span class="sc">*</span><span class="fu">sqrt</span>(xx) <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span></code></pre></div>
+<pre><code>- Note that the data are generate from the model $Y_{i} = \beta_{0} + \beta_{1}\sqrt{x_{i}} + \varepsilon_{i}$.
+
+- We will fit the **&quot;misspecified&quot;** model $Y_{i} = \beta_{0} + \beta_{1}x_{i} + \varepsilon_{i}$, but the conformal inference procedure should still work. </code></pre>
+<ul>
+<li>Split this data set into a “proper” training set and calibration set</li>
+</ul>
+<div class="sourceCode" id="cb395"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb395-1"><a href="conformal-prediction.html#cb395-1" tabindex="-1"></a>D1 <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="at">size=</span><span class="dv">50</span>)</span>
+<span id="cb395-2"><a href="conformal-prediction.html#cb395-2" tabindex="-1"></a>D2 <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="dv">1</span><span class="sc">:</span>n, D1)</span>
+<span id="cb395-3"><a href="conformal-prediction.html#cb395-3" tabindex="-1"></a></span>
+<span id="cb395-4"><a href="conformal-prediction.html#cb395-4" tabindex="-1"></a>proper_dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y=</span>Y[D1], <span class="at">xx=</span>xx[D1])</span>
+<span id="cb395-5"><a href="conformal-prediction.html#cb395-5" tabindex="-1"></a>calibration_dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y=</span>Y[D2], <span class="at">xx=</span>xx[D2])</span></code></pre></div>
+<ul>
+<li>Using <code>D1</code>, fit a linear regression model</li>
+</ul>
+<div class="sourceCode" id="cb396"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb396-1"><a href="conformal-prediction.html#cb396-1" tabindex="-1"></a>proper_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> xx, <span class="at">data=</span>proper_dat)</span></code></pre></div>
+<ul>
+<li>Get absolute residuals on calibration dataset</li>
+</ul>
+<div class="sourceCode" id="cb397"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb397-1"><a href="conformal-prediction.html#cb397-1" tabindex="-1"></a>calibration_fitted <span class="ot">&lt;-</span> <span class="fu">predict</span>(proper_mod, <span class="at">newdat=</span>calibration_dat)</span>
+<span id="cb397-2"><a href="conformal-prediction.html#cb397-2" tabindex="-1"></a>calibration_resids <span class="ot">&lt;-</span> <span class="fu">abs</span>(calibration_dat<span class="sc">$</span>Y <span class="sc">-</span> calibration_fitted)</span></code></pre></div>
+<ul>
+<li>Get 95th quantile of these residuals</li>
+</ul>
+<div class="sourceCode" id="cb398"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb398-1"><a href="conformal-prediction.html#cb398-1" tabindex="-1"></a>qhat <span class="ot">&lt;-</span> <span class="fu">quantile</span>(calibration_resids, <span class="at">probs=</span><span class="fl">0.95</span>)</span></code></pre></div>
+<ul>
+<li>We can now use <code>qhat</code> to get prediction intervals for a “new dataset”</li>
+</ul>
+<div class="sourceCode" id="cb399"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb399-1"><a href="conformal-prediction.html#cb399-1" tabindex="-1"></a><span class="do">## Generate new dataset</span></span>
+<span id="cb399-2"><a href="conformal-prediction.html#cb399-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb399-3"><a href="conformal-prediction.html#cb399-3" tabindex="-1"></a>xx_new <span class="ot">&lt;-</span> <span class="fu">runif</span>(n)</span>
+<span id="cb399-4"><a href="conformal-prediction.html#cb399-4" tabindex="-1"></a>beta0 <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb399-5"><a href="conformal-prediction.html#cb399-5" tabindex="-1"></a>beta1 <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb399-6"><a href="conformal-prediction.html#cb399-6" tabindex="-1"></a></span>
+<span id="cb399-7"><a href="conformal-prediction.html#cb399-7" tabindex="-1"></a>Y_new <span class="ot">&lt;-</span> beta0 <span class="sc">+</span> beta1<span class="sc">*</span><span class="fu">sqrt</span>(xx) <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb399-8"><a href="conformal-prediction.html#cb399-8" tabindex="-1"></a>newdataset <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Y=</span>Y_new, <span class="at">xx=</span>xx_new)</span>
+<span id="cb399-9"><a href="conformal-prediction.html#cb399-9" tabindex="-1"></a></span>
+<span id="cb399-10"><a href="conformal-prediction.html#cb399-10" tabindex="-1"></a><span class="do">### Construct prediction intervals as a n x 2 matrix</span></span>
+<span id="cb399-11"><a href="conformal-prediction.html#cb399-11" tabindex="-1"></a>ConformalInterval <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow=</span>n, <span class="at">ncol=</span><span class="dv">2</span>)</span>
+<span id="cb399-12"><a href="conformal-prediction.html#cb399-12" tabindex="-1"></a>ConformalInterval[,<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">predict</span>(proper_mod, <span class="at">newdat=</span>newdataset) <span class="sc">-</span> qhat</span>
+<span id="cb399-13"><a href="conformal-prediction.html#cb399-13" tabindex="-1"></a>ConformalInterval[,<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">predict</span>(proper_mod, <span class="at">newdat=</span>newdataset) <span class="sc">+</span> qhat</span></code></pre></div>
+<ul>
+<li>You can check the <strong>prediction coverage</strong> of these intervals with the following code:</li>
+</ul>
+<div class="sourceCode" id="cb400"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb400-1"><a href="conformal-prediction.html#cb400-1" tabindex="-1"></a><span class="do">## This shouldn&#39;t be that far off 0.95, but there will be </span></span>
+<span id="cb400-2"><a href="conformal-prediction.html#cb400-2" tabindex="-1"></a><span class="do">## considerable variability since this is not a very large dataset</span></span>
+<span id="cb400-3"><a href="conformal-prediction.html#cb400-3" tabindex="-1"></a><span class="fu">mean</span>(Y_new <span class="sc">&gt;</span> ConformalInterval[,<span class="dv">1</span>] <span class="sc">&amp;</span> Y_new <span class="sc">&lt;</span> ConformalInterval[,<span class="dv">2</span>])</span></code></pre></div>
+<pre><code>## [1] 0.87</code></pre>
+</div>
+<div id="why-does-this-work" class="section level2 hasAnchor" number="9.3">
+<h2><span class="header-section-number">9.3</span> Why does this work?<a href="conformal-prediction.html#why-does-this-work" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><p>The main justification for the validity of this procedure comes from
+looking at the <strong>calibration residuals</strong> <span class="math inline">\(R_{i}\)</span>, for <span class="math inline">\(i \in \mathcal{D}_{2}\)</span>
+and the <strong>test residual</strong> <span class="math inline">\(R_{n + 1} = | Y_{n+1} - \hat{f}_{\mathcal{D}_{1}}(\mathbf{x}_{n+1})|\)</span>.</p></li>
+<li><p>Specifically, <span class="math inline">\(R_{n+1}, R_{i}, i \in \mathcal{D}_{2}\)</span> is a collection of <strong>i.i.d random variables</strong>.</p>
+<ul>
+<li><p>This is true because <span class="math inline">\(\hat{f}_{\mathcal{D}_{1}}(\mathbf{x})\)</span> was built from the <strong>proper training set</strong> and …</p></li>
+<li><p><span class="math inline">\(R_{i}, i \in \mathcal{D}_{2}\)</span> only uses outcomes from the <strong>calibration dataset</strong>.</p></li>
+</ul></li>
+</ul>
+</div>
+<div id="an-example-with-boosting." class="section level2 hasAnchor" number="9.4">
+<h2><span class="header-section-number">9.4</span> An example with Boosting.<a href="conformal-prediction.html#an-example-with-boosting." class="anchor-section" aria-label="Anchor link to header"></a></h2>
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div class="csl-entry">
+Buuren, S van, and Karin Groothuis-Oudshoorn. 2010. <span>“Mice: Multivariate Imputation by Chained Equations in r.”</span> <em>Journal of Statistical Software</em>, 1–68.
+</div>
+<div class="csl-entry">
+Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.
+</div>
+<div class="csl-entry">
+Heagerty, Patrick J, and Scott L Zeger. 1996. <span>“Marginal Regression Models for Clustered Ordinal Measurements.”</span> <em>Journal of the American Statistical Association</em> 91 (435): 1024–36.
+</div>
+<div class="csl-entry">
+Ishwaran, Hemant, and Min Lu. 2019. <span>“Standard Errors and Confidence Intervals for Variable Importance in Random Forest Regression, Classification, and Survival.”</span> <em>Statistics in Medicine</em> 38 (4): 558–82.
+</div>
+<div class="csl-entry">
+Meinshausen, Nicolai, and Peter Bühlmann. 2010. <span>“Stability Selection.”</span> <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 72 (4): 417–73.
+</div>
+<div class="csl-entry">
+Rice, John A, and Bernard W Silverman. 1991. <span>“Estimating the Mean and Covariance Structure Nonparametrically When the Data Are Curves.”</span> <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 53 (1): 233–43.
+</div>
+<div class="csl-entry">
+Schelldorfer, Jürg, Peter Bühlmann, and Sara Van De Geer. 2011. <span>“Estimation for High-Dimensional Linear Mixed-Effects Models Using <span class="math inline">\(\ell_{1}\)</span>-Penalization.”</span> <em>Scandinavian Journal of Statistics</em> 38 (2): 197–214.
+</div>
+<div class="csl-entry">
+Wang, Lan, Jianhui Zhou, and Annie Qu. 2012. <span>“Penalized Generalized Estimating Equations for High-Dimensional Longitudinal Data Analysis.”</span> <em>Biometrics</em> 68 (2): 353–60.
+</div>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="extra-topics.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

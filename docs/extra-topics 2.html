@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 8 Extra Topics | Notes for Case Studies in Health Big Data</title>
+  <meta name="description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 8 Extra Topics | Notes for Case Studies in Health Big Data" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  <meta name="github-repo" content="nchenderson/HDS629notes" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 8 Extra Topics | Notes for Case Studies in Health Big Data" />
+  
+  <meta name="twitter:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  
+
+<meta name="author" content="Nicholas Henderson" />
+
+
+<meta name="date" content="2023-01-10" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="ordinal-regression.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Biostat 629</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="mixed-models.html"><a href="mixed-models.html"><i class="fa fa-check"></i><b>1</b> Mixed Models for Longitudinal Data Analysis</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="mixed-models.html"><a href="mixed-models.html#sec:methods-overview"><i class="fa fa-check"></i><b>1.1</b> Methods for Analyzing Longitudinal Data</a></li>
+<li class="chapter" data-level="1.2" data-path="mixed-models.html"><a href="mixed-models.html#mixed-models-for-continuous-outcomes"><i class="fa fa-check"></i><b>1.2</b> Mixed Models for Continuous Outcomes</a></li>
+<li class="chapter" data-level="1.3" data-path="mixed-models.html"><a href="mixed-models.html#advantages-of-using-random-effects"><i class="fa fa-check"></i><b>1.3</b> Advantages of using random effects</a>
+<ul>
+<li class="chapter" data-level="1.3.1" data-path="mixed-models.html"><a href="mixed-models.html#within-subject-correlation"><i class="fa fa-check"></i><b>1.3.1</b> Within-subject correlation</a></li>
+<li class="chapter" data-level="1.3.2" data-path="mixed-models.html"><a href="mixed-models.html#inference-about-heterogeneity---variance-of-random-effects"><i class="fa fa-check"></i><b>1.3.2</b> Inference about Heterogeneity - Variance of Random Effects</a></li>
+<li class="chapter" data-level="1.3.3" data-path="mixed-models.html"><a href="mixed-models.html#best-linear-unbiased-prediction"><i class="fa fa-check"></i><b>1.3.3</b> Best Linear Unbiased Prediction</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="mixed-models.html"><a href="mixed-models.html#generalized-linear-mixed-models-glmms"><i class="fa fa-check"></i><b>1.4</b> Generalized linear mixed models (GLMMs)</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-binary-outcomes"><i class="fa fa-check"></i><b>1.4.1</b> GLMMs with Binary Outcomes</a></li>
+<li class="chapter" data-level="1.4.2" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-count-outcomes"><i class="fa fa-check"></i><b>1.4.2</b> GLMMs with Count Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="mixed-models.html"><a href="mixed-models.html#fitting-linear-mixed-models-lmms-and-generalized-linear-mixed-models-glmms-in-r"><i class="fa fa-check"></i><b>1.5</b> Fitting Linear Mixed Models (LMMs) and Generalized Linear Mixed models (GLMMs) in <strong>R</strong></a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="mixed-models.html"><a href="mixed-models.html#fitting-lmms-with-the-sleepstudy-data"><i class="fa fa-check"></i><b>1.5.1</b> Fitting LMMs with the sleepstudy data</a></li>
+<li class="chapter" data-level="1.5.2" data-path="mixed-models.html"><a href="mixed-models.html#model-comparison-of-lmms-using-anova"><i class="fa fa-check"></i><b>1.5.2</b> Model Comparison of LMMs using anova</a></li>
+<li class="chapter" data-level="1.5.3" data-path="mixed-models.html"><a href="mixed-models.html#extracting-blups-in-lme4"><i class="fa fa-check"></i><b>1.5.3</b> Extracting BLUPs in lme4</a></li>
+<li class="chapter" data-level="1.5.4" data-path="mixed-models.html"><a href="mixed-models.html#fitting-binary-glmms-using-the-ohio-data"><i class="fa fa-check"></i><b>1.5.4</b> Fitting Binary GLMMs using the Ohio data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>2</b> Missing Data and Multiple Imputation</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="missing-data.html"><a href="missing-data.html#missing-data-in-r-and-direct-approaches-for-handling-missing-data"><i class="fa fa-check"></i><b>2.1</b> Missing Data in R and “Direct Approaches” for Handling Missing Data</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="missing-data.html"><a href="missing-data.html#complete-case-analysis-listwise-deletion"><i class="fa fa-check"></i><b>2.1.1</b> Complete Case Analysis (Listwise Deletion)</a></li>
+<li class="chapter" data-level="2.1.2" data-path="missing-data.html"><a href="missing-data.html#other-direct-methods"><i class="fa fa-check"></i><b>2.1.2</b> Other “Direct” Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation"><i class="fa fa-check"></i><b>2.2</b> Multiple Imputation</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="missing-data.html"><a href="missing-data.html#short-overview-of-multiple-imputation"><i class="fa fa-check"></i><b>2.2.1</b> Short Overview of Multiple Imputation</a></li>
+<li class="chapter" data-level="2.2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation-with-mice"><i class="fa fa-check"></i><b>2.2.2</b> Multiple imputation with mice</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#what-is-mice-doing"><i class="fa fa-check"></i><b>2.3</b> What is MICE doing?</a></li>
+<li class="chapter" data-level="2.4" data-path="missing-data.html"><a href="missing-data.html#longitudinal-data"><i class="fa fa-check"></i><b>2.4</b> Longitudinal Data</a></li>
+<li class="chapter" data-level="2.5" data-path="missing-data.html"><a href="missing-data.html#different-missing-data-mechanisms"><i class="fa fa-check"></i><b>2.5</b> Different Missing Data Mechanisms</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="missing-data.html"><a href="missing-data.html#missing-completely-at-random-mcar"><i class="fa fa-check"></i><b>2.5.1</b> Missing Completely at Random (MCAR)</a></li>
+<li class="chapter" data-level="2.5.2" data-path="missing-data.html"><a href="missing-data.html#missing-at-random-mar"><i class="fa fa-check"></i><b>2.5.2</b> Missing at Random (MAR)</a></li>
+<li class="chapter" data-level="2.5.3" data-path="missing-data.html"><a href="missing-data.html#missing-not-at-random-mnar"><i class="fa fa-check"></i><b>2.5.3</b> Missing not at Random (MNAR)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="nonpar-regression.html"><a href="nonpar-regression.html"><i class="fa fa-check"></i><b>3</b> Nonparametric Regression with Longitudinal Data</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#notation"><i class="fa fa-check"></i><b>3.1</b> Notation</a></li>
+<li class="chapter" data-level="3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-smoothing"><i class="fa fa-check"></i><b>3.2</b> Kernel Smoothing</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#description-of-kernel-regression"><i class="fa fa-check"></i><b>3.2.1</b> Description of Kernel Regression</a></li>
+<li class="chapter" data-level="3.2.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-regression-in-the-sleepstudy-data"><i class="fa fa-check"></i><b>3.2.2</b> Kernel Regression in the sleepstudy data</a></li>
+<li class="chapter" data-level="3.2.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#bandwidth-selection"><i class="fa fa-check"></i><b>3.2.3</b> Bandwidth Selection</a></li>
+<li class="chapter" data-level="3.2.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#another-example-the-bone-data"><i class="fa fa-check"></i><b>3.2.4</b> Another Example: The Bone Data</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines"><i class="fa fa-check"></i><b>3.3</b> Regression Splines</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#overview"><i class="fa fa-check"></i><b>3.3.1</b> Overview</a></li>
+<li class="chapter" data-level="3.3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines-with-longitudinal-data-in-r"><i class="fa fa-check"></i><b>3.3.2</b> Regression Splines with Longitudinal Data in R</a></li>
+<li class="chapter" data-level="3.3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#looking-at-a-continuous-and-a-binary-covariate"><i class="fa fa-check"></i><b>3.3.3</b> Looking at a Continuous and a Binary Covariate</a></li>
+<li class="chapter" data-level="3.3.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#model-comparison"><i class="fa fa-check"></i><b>3.3.4</b> Model Comparison</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="glmm-lasso.html"><a href="glmm-lasso.html"><i class="fa fa-check"></i><b>4</b> Sparse Regression for Longitudinal Data</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#sparse-regression-methods"><i class="fa fa-check"></i><b>4.1</b> Sparse regression methods</a></li>
+<li class="chapter" data-level="4.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#the-lasso-with-longitudinal-data"><i class="fa fa-check"></i><b>4.2</b> The Lasso with longitudinal data</a></li>
+<li class="chapter" data-level="4.3" data-path="glmm-lasso.html"><a href="glmm-lasso.html#lasso-for-lmms-and-glmms-in-r"><i class="fa fa-check"></i><b>4.3</b> Lasso for LMMs and GLMMs in R</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#soccer-data"><i class="fa fa-check"></i><b>4.3.1</b> Soccer Data</a></li>
+<li class="chapter" data-level="4.3.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#choosing-the-tuning-parameter-for-the-soccer-data"><i class="fa fa-check"></i><b>4.3.2</b> Choosing the tuning parameter for the soccer data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="glmm-lasso.html"><a href="glmm-lasso.html#cross-validation-for-longitudinal-data"><i class="fa fa-check"></i><b>4.4</b> Cross-Validation for Longitudinal Data</a></li>
+<li class="chapter" data-level="4.5" data-path="glmm-lasso.html"><a href="glmm-lasso.html#penalized-generalized-estimating-equations"><i class="fa fa-check"></i><b>4.5</b> Penalized Generalized Estimating Equations</a>
+<ul>
+<li class="chapter" data-level="4.5.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#the-pgee-package"><i class="fa fa-check"></i><b>4.5.1</b> The PGEE package</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="glmm-lasso.html"><a href="glmm-lasso.html#glmm-lasso-with-binary-outcomes"><i class="fa fa-check"></i><b>4.6</b> GLMM-Lasso with Binary Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="risk-prediction.html"><a href="risk-prediction.html"><i class="fa fa-check"></i><b>5</b> Risk Prediction and Validation (Part I)</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="risk-prediction.html"><a href="risk-prediction.html#risk-predictionstratification"><i class="fa fa-check"></i><b>5.1</b> Risk Prediction/Stratification</a></li>
+<li class="chapter" data-level="5.2" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve-and-the-c-statistic"><i class="fa fa-check"></i><b>5.2</b> Area under the ROC curve and the C-statistic</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="risk-prediction.html"><a href="risk-prediction.html#sensitivity-and-specificity"><i class="fa fa-check"></i><b>5.2.1</b> Sensitivity and Specificity</a></li>
+<li class="chapter" data-level="5.2.2" data-path="risk-prediction.html"><a href="risk-prediction.html#the-roc-curve"><i class="fa fa-check"></i><b>5.2.2</b> The ROC curve</a></li>
+<li class="chapter" data-level="5.2.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-roc-curve"><i class="fa fa-check"></i><b>5.2.3</b> Computing the ROC curve</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve"><i class="fa fa-check"></i><b>5.3</b> Area under the ROC curve</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="risk-prediction.html"><a href="risk-prediction.html#rewriting-the-formula-for-the-auc"><i class="fa fa-check"></i><b>5.3.1</b> Rewriting the formula for the AUC</a></li>
+<li class="chapter" data-level="5.3.2" data-path="risk-prediction.html"><a href="risk-prediction.html#interpreting-the-auc"><i class="fa fa-check"></i><b>5.3.2</b> Interpreting the AUC</a></li>
+<li class="chapter" data-level="5.3.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-auc-in-r"><i class="fa fa-check"></i><b>5.3.3</b> Computing the AUC in R</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="risk-prediction.html"><a href="risk-prediction.html#calibration"><i class="fa fa-check"></i><b>5.4</b> Calibration</a></li>
+<li class="chapter" data-level="5.5" data-path="risk-prediction.html"><a href="risk-prediction.html#longitudinal-data-and-risk-score-validation"><i class="fa fa-check"></i><b>5.5</b> Longitudinal Data and Risk Score Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="risk-prediction2.html"><a href="risk-prediction2.html"><i class="fa fa-check"></i><b>6</b> Risk Prediction and Validation (Part II)</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#the-brier-score"><i class="fa fa-check"></i><b>6.1</b> The Brier Score</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-for-biopsy-data"><i class="fa fa-check"></i><b>6.1.1</b> Brier scores for biopsy data</a></li>
+<li class="chapter" data-level="6.1.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#out-of-sample-comparisons"><i class="fa fa-check"></i><b>6.1.2</b> Out-of-sample comparisons</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-with-longitudinal-data"><i class="fa fa-check"></i><b>6.2</b> Brier Scores with Longitudinal Data</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-1"><i class="fa fa-check"></i><b>6.2.1</b> Option 1</a></li>
+<li class="chapter" data-level="6.2.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-2"><i class="fa fa-check"></i><b>6.2.2</b> Option 2</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="ordinal-regression.html"><a href="ordinal-regression.html"><i class="fa fa-check"></i><b>7</b> Ordinal Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression"><i class="fa fa-check"></i><b>7.1</b> Ordinal Logistic Regression</a></li>
+<li class="chapter" data-level="7.2" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-regression-details"><i class="fa fa-check"></i><b>7.2</b> Ordinal Regression Details</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression-in-r"><i class="fa fa-check"></i><b>7.2.1</b> Ordinal Logistic Regression in R</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="ordinal-regression.html"><a href="ordinal-regression.html#generalized-estimating-equations"><i class="fa fa-check"></i><b>7.3</b> Generalized Estimating Equations</a>
+<ul>
+<li class="chapter" data-level="7.3.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#using-geepack-and-ordgee"><i class="fa fa-check"></i><b>7.3.1</b> Using geepack and ordgee</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="ordinal-regression.html"><a href="ordinal-regression.html#penalized-regression-with-ordinal-outcomes"><i class="fa fa-check"></i><b>7.4</b> Penalized Regression with Ordinal Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="extra-topics.html"><a href="extra-topics.html"><i class="fa fa-check"></i><b>8</b> Extra Topics</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="extra-topics.html"><a href="extra-topics.html#uncertainty-in-variable-importance-measures"><i class="fa fa-check"></i><b>8.1</b> Uncertainty in Variable Importance Measures</a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="extra-topics.html"><a href="extra-topics.html#subsampling-for-random-forest-vimp-scores"><i class="fa fa-check"></i><b>8.1.1</b> Subsampling for Random Forest VIMP scores</a></li>
+<li class="chapter" data-level="8.1.2" data-path="extra-topics.html"><a href="extra-topics.html#stability-selection-for-penalized-regression"><i class="fa fa-check"></i><b>8.1.2</b> Stability Selection for Penalized Regression</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notes for Case Studies in Health Big Data</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="extra-topics" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">Chapter 8</span> Extra Topics<a href="extra-topics.html#extra-topics" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<hr />
+<div id="uncertainty-in-variable-importance-measures" class="section level2 hasAnchor" number="8.1">
+<h2><span class="header-section-number">8.1</span> Uncertainty in Variable Importance Measures<a href="extra-topics.html#uncertainty-in-variable-importance-measures" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><p>Many machine learning/penalized regression methods generate
+measures of variable importance.</p>
+<ul>
+<li><p>Random forests generate variable importance scores.</p></li>
+<li><p>Partial dependence plots are useful for assessing the impact of a covariate for any learning method.</p></li>
+<li><p>Lasso has selection/magnitude of regression coefficients.</p></li>
+</ul></li>
+<li><p>These variable importance measures do not usually come
+with a measure of uncertainty for each variable importance score.</p></li>
+<li><p>For example, you may want to report a confidence interval
+for the VIMP scores.</p></li>
+</ul>
+<div id="subsampling-for-random-forest-vimp-scores" class="section level3 hasAnchor" number="8.1.1">
+<h3><span class="header-section-number">8.1.1</span> Subsampling for Random Forest VIMP scores<a href="extra-topics.html#subsampling-for-random-forest-vimp-scores" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li><p>A general approach to assessing the <strong>uncertainty</strong> of a variable importance measure
+is to use some form of repeated <strong>subsampling/sample splitting</strong>.</p></li>
+<li><p>The basic idea is to draw subsamples, and for each subsample
+compute variable importance scores. Then, estimate the variance
+of each variable importance score using their variation across different subsamples</p>
+<ul>
+<li>See <span class="citation">Ishwaran and Lu (<a href="#ref-ishwaran2019" role="doc-biblioref">2019</a>)</span> for more details of this approach.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>Steps in subsampling approach:
+<ol style="list-style-type: decimal">
+<li><p>Draw a subsample of <strong>size b</strong> from the <strong>original</strong> dataset. Call it <span class="math inline">\(D_{s}\)</span>.</p></li>
+<li><p>Using random forest on dataset <span class="math inline">\(D_{s}\)</span>, compute VIMP scores <span class="math inline">\(I_{s,j}\)</span> for variables <span class="math inline">\(j=1,\ldots,p\)</span>.</p></li>
+<li><p>Repeat steps 1-2 <span class="math inline">\(S\)</span> times. This will produce <span class="math inline">\(I_{s,j}\)</span> for all subsamples <span class="math inline">\(s = 1, \ldots, S\)</span> and all variables <span class="math inline">\(j = 1, \ldots, p\)</span>.</p></li>
+<li><p>Estimate the <strong>variance</strong> of <span class="math inline">\(I_{s,j}\)</span> with the quantity
+<span class="math display">\[\begin{equation}
+\hat{v}_{j} = \frac{b}{nK} \sum_{s=1}^{S}\Big( I_{s,j} - \bar{I}_{.,j}  \Big)^{2}
+  \end{equation}\]</span></p></li>
+</ol></li>
+<li>A <span class="math inline">\(95\%\)</span> <strong>confidence interval</strong> for the variable importance of variable <span class="math inline">\(j\)</span> will then be
+<span class="math display">\[\begin{equation}
+I_{j} \pm 1.96 \times \sqrt{\hat{v}_{j}}
+\end{equation}\]</span>
+<ul>
+<li>Here, <span class="math inline">\(I_{j}\)</span> is the variable importance score from the full dataset.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>To test this out, we will use the <strong>diabetes</strong> data.</p>
+<ul>
+<li>This can be obtained from <a href="https://hastie.su.domains/CASI/data.html" class="uri">https://hastie.su.domains/CASI/data.html</a></li>
+</ul></li>
+<li><p>This dataset has 442 <strong>observations</strong> and 10 <strong>covariates</strong></p></li>
+<li><p>The outcome variable of interest is <strong>prog</strong></p></li>
+</ul>
+<div class="sourceCode" id="cb21486"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21486-1"><a href="extra-topics.html#cb21486-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(diabetes)</span></code></pre></div>
+<pre><code>## [1] 442  11</code></pre>
+<div class="sourceCode" id="cb21488"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21488-1"><a href="extra-topics.html#cb21488-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(diabetes)</span></code></pre></div>
+<pre><code>##   age sex  bmi map  tc   ldl hdl tch      ltg glu prog
+## 1  59   1 32.1 101 157  93.2  38   4 2.110590  87  151
+## 2  48   0 21.6  87 183 103.2  70   3 1.690196  69   75
+## 3  72   1 30.5  93 156  93.6  41   4 2.029384  85  141
+## 4  24   0 25.3  84 198 131.4  40   5 2.123852  89  206
+## 5  50   0 23.0 101 192 125.4  52   4 1.863323  80  135
+## 6  23   0 22.6  89 139  64.8  61   2 1.819544  68   97</code></pre>
+<hr />
+<ul>
+<li>Let’s first fit a <strong>randomForest</strong> to the entire dataset and plot
+the variable importance measures</li>
+</ul>
+<div class="sourceCode" id="cb21490"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21490-1"><a href="extra-topics.html#cb21490-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span></code></pre></div>
+<pre><code>## randomForest 4.7-1</code></pre>
+<pre><code>## Type rfNews() to see new features/changes/bug fixes.</code></pre>
+<div class="sourceCode" id="cb21493"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21493-1"><a href="extra-topics.html#cb21493-1" aria-hidden="true" tabindex="-1"></a>rf.full <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(prog <span class="sc">~</span> ., <span class="at">data=</span>diabetes)</span>
+<span id="cb21493-2"><a href="extra-topics.html#cb21493-2" aria-hidden="true" tabindex="-1"></a><span class="fu">varImpPlot</span>(rf.full)</span></code></pre></div>
+<p><img src="08-ExtraTopics_files/figure-html/unnamed-chunk-3-1.png" width="528" /></p>
+<ul>
+<li>You can extract the actual values of the variable importance scores by
+using the <code>importance</code> function.</li>
+</ul>
+<div class="sourceCode" id="cb21494"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21494-1"><a href="extra-topics.html#cb21494-1" aria-hidden="true" tabindex="-1"></a>Imp.Full <span class="ot">&lt;-</span> <span class="fu">importance</span>(rf.full)</span>
+<span id="cb21494-2"><a href="extra-topics.html#cb21494-2" aria-hidden="true" tabindex="-1"></a>Imp.Full <span class="do">## This is a 10 x 1 matrix</span></span></code></pre></div>
+<pre><code>##     IncNodePurity
+## age      145678.5
+## sex       33398.7
+## bmi      583899.4
+## map      306143.6
+## tc       147268.7
+## ldl      151839.2
+## hdl      203224.2
+## tch      177880.5
+## ltg      556137.1
+## glu      200378.9</code></pre>
+<hr />
+<ul>
+<li>Now, let’s compute variable importance scores across <span class="math inline">\(S = 100\)</span> subsamples (each of size 50)
+and store it in a <span class="math inline">\(10 \times S\)</span> matrix called <code>Imp.Subs</code></li>
+</ul>
+<div class="sourceCode" id="cb21496"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21496-1"><a href="extra-topics.html#cb21496-1" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb21496-2"><a href="extra-topics.html#cb21496-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb21496-3"><a href="extra-topics.html#cb21496-3" aria-hidden="true" tabindex="-1"></a>Imp.Subs <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="fu">nrow</span>(Imp.Full), <span class="at">ncol=</span>S)</span>
+<span id="cb21496-4"><a href="extra-topics.html#cb21496-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(Imp.Subs) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(Imp.Full)</span>
+<span id="cb21496-5"><a href="extra-topics.html#cb21496-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>S) {</span>
+<span id="cb21496-6"><a href="extra-topics.html#cb21496-6" aria-hidden="true" tabindex="-1"></a>    <span class="do">## sample without replacement</span></span>
+<span id="cb21496-7"><a href="extra-topics.html#cb21496-7" aria-hidden="true" tabindex="-1"></a>    subs <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(diabetes), <span class="at">size=</span>b)</span>
+<span id="cb21496-8"><a href="extra-topics.html#cb21496-8" aria-hidden="true" tabindex="-1"></a>    diabetes.sub <span class="ot">&lt;-</span> diabetes[subs,]</span>
+<span id="cb21496-9"><a href="extra-topics.html#cb21496-9" aria-hidden="true" tabindex="-1"></a>    rf.sub <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(prog <span class="sc">~</span> ., <span class="at">data=</span>diabetes.sub)</span>
+<span id="cb21496-10"><a href="extra-topics.html#cb21496-10" aria-hidden="true" tabindex="-1"></a>    Imp.Subs[,k] <span class="ot">&lt;-</span> <span class="fu">importance</span>(rf.sub)</span>
+<span id="cb21496-11"><a href="extra-topics.html#cb21496-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ul>
+<li>From <code>Imp.Subs</code>, we can compute the <strong>variance estimates</strong> <span class="math inline">\(\hat{v}_{j}\)</span>.</li>
+</ul>
+<div class="sourceCode" id="cb21497"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21497-1"><a href="extra-topics.html#cb21497-1" aria-hidden="true" tabindex="-1"></a>imp.mean <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(Imp.Subs)</span>
+<span id="cb21497-2"><a href="extra-topics.html#cb21497-2" aria-hidden="true" tabindex="-1"></a>vhat <span class="ot">&lt;-</span> (b<span class="sc">/</span><span class="fu">nrow</span>(diabetes))<span class="sc">*</span><span class="fu">rowMeans</span>((Imp.Subs <span class="sc">-</span> imp.mean)<span class="sc">^</span><span class="dv">2</span>)  </span>
+<span id="cb21497-3"><a href="extra-topics.html#cb21497-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(vhat)</span></code></pre></div>
+<pre><code>##      age      sex      bmi      map       tc      ldl      hdl      tch 
+##  2483588 10913166 81663788 83859385  5614926  3762217 42294034 16069705 
+##      ltg      glu 
+## 15023390 67431604</code></pre>
+<hr />
+<ul>
+<li>We can now report <strong>confidence intervals</strong> for the variable importance scores:</li>
+</ul>
+<div class="sourceCode" id="cb21499"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21499-1"><a href="extra-topics.html#cb21499-1" aria-hidden="true" tabindex="-1"></a>vi.upper <span class="ot">&lt;-</span> Imp.Full[,<span class="dv">1</span>] <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span><span class="fu">sqrt</span>(vhat)</span>
+<span id="cb21499-2"><a href="extra-topics.html#cb21499-2" aria-hidden="true" tabindex="-1"></a>vi.lower <span class="ot">&lt;-</span> Imp.Full[,<span class="dv">1</span>] <span class="sc">-</span> <span class="fl">1.96</span><span class="sc">*</span><span class="fu">sqrt</span>(vhat)</span>
+<span id="cb21499-3"><a href="extra-topics.html#cb21499-3" aria-hidden="true" tabindex="-1"></a>VIMP_CI <span class="ot">&lt;-</span> <span class="fu">cbind</span>(Imp.Full[,<span class="dv">1</span>], vi.lower, vi.upper)</span>
+<span id="cb21499-4"><a href="extra-topics.html#cb21499-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(VIMP_CI) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;estimate&quot;</span>, <span class="st">&quot;lower&quot;</span>, <span class="st">&quot;upper&quot;</span>)</span>
+<span id="cb21499-5"><a href="extra-topics.html#cb21499-5" aria-hidden="true" tabindex="-1"></a>VIMP_CI[<span class="fu">order</span>(<span class="sc">-</span>VIMP_CI[,<span class="dv">1</span>]),]</span></code></pre></div>
+<pre><code>##     estimate     lower     upper
+## bmi 583899.4 566187.32 601611.58
+## ltg 556137.1 548540.10 563734.02
+## map 306143.6 288194.91 324092.22
+## hdl 203224.2 190477.54 215970.82
+## glu 200378.9 184284.00 216473.77
+## tch 177880.5 170023.40 185737.52
+## ldl 151839.2 148037.53 155640.94
+## tc  147268.7 142624.27 151913.04
+## age 145678.5 142589.68 148767.36
+## sex  33398.7  26923.83  39873.58</code></pre>
+</div>
+<div id="stability-selection-for-penalized-regression" class="section level3 hasAnchor" number="8.1.2">
+<h3><span class="header-section-number">8.1.2</span> Stability Selection for Penalized Regression<a href="extra-topics.html#stability-selection-for-penalized-regression" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>Let’s use the <strong>lasso</strong> with penalty <span class="math inline">\(\lambda = 10\)</span> on the <code>diabetes</code> data:</li>
+</ul>
+<div class="sourceCode" id="cb21501"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21501-1"><a href="extra-topics.html#cb21501-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code></pre></div>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## Loaded glmnet 4.1-3</code></pre>
+<div class="sourceCode" id="cb21504"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21504-1"><a href="extra-topics.html#cb21504-1" aria-hidden="true" tabindex="-1"></a>diabet.mod <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(<span class="at">x=</span>diabetes.sub[,<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="at">y=</span>diabetes.sub<span class="sc">$</span>prog, </span>
+<span id="cb21504-2"><a href="extra-topics.html#cb21504-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">lambda=</span><span class="dv">20</span>)</span></code></pre></div>
+<ul>
+<li>We can look at the estimated coefficients to see which variables were <strong>selected</strong></li>
+</ul>
+<div class="sourceCode" id="cb21505"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21505-1"><a href="extra-topics.html#cb21505-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(diabet.mod)</span></code></pre></div>
+<pre><code>## 11 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                      s0
+## (Intercept) -127.257058
+## age            .       
+## sex            .       
+## bmi            3.391778
+## map            .       
+## tc             .       
+## ldl            .       
+## hdl            .       
+## tch            .       
+## ltg           89.484506
+## glu            .</code></pre>
+<ul>
+<li>The <strong>selected</strong> variables are those with nonzero coefficients:</li>
+</ul>
+<div class="sourceCode" id="cb21507"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21507-1"><a href="extra-topics.html#cb21507-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at selected coefficients ignoring the intercept:</span></span>
+<span id="cb21507-2"><a href="extra-topics.html#cb21507-2" aria-hidden="true" tabindex="-1"></a>selected <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">coef</span>(diabet.mod)[<span class="sc">-</span><span class="dv">1</span>]) <span class="sc">&gt;</span> <span class="dv">0</span></span>
+<span id="cb21507-3"><a href="extra-topics.html#cb21507-3" aria-hidden="true" tabindex="-1"></a>selected</span></code></pre></div>
+<pre><code>##  [1] FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE</code></pre>
+<hr />
+<ul>
+<li><p>When thinking about how certain you might be about a given set of selected variables, one
+natural question is how would this set of selected variables change if
+you re-ran the lasso on a different subset.</p></li>
+<li><p>You might have more confidence in a variable that is consistently selected
+across random subsets of your data.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>For a given choice of <span class="math inline">\(\lambda\)</span>, the <strong>stability</strong> of variable <span class="math inline">\(j\)</span> is
+defined as
+<span class="math display">\[\begin{equation}
+\hat{\pi}_{j}(\lambda) = \frac{1}{S}\sum_{s=1}^{S} I( A_{j,s}(\lambda) = 1),
+\end{equation}\]</span>
+where …</p></li>
+<li><p><span class="math inline">\(A_{j,s}(\lambda) = 1\)</span> if variable <span class="math inline">\(j\)</span> in data subsample <span class="math inline">\(s\)</span> is <strong>selected</strong> and</p></li>
+<li><p><span class="math inline">\(A_{j,s}(\lambda) = 0\)</span> if variable <span class="math inline">\(j\)</span> in data subsample <span class="math inline">\(s\)</span> is <strong>not selected</strong></p></li>
+<li><p><span class="citation">Meinshausen and Bühlmann (<a href="#ref-meinshausen2010" role="doc-biblioref">2010</a>)</span> recommend drawing subsamples of size <span class="math inline">\(n/2\)</span>.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>The quantity <span class="math inline">\(\hat{\pi}_{j}(\lambda)\)</span> can be thought of as an
+estimate of the <strong>probability</strong> that variable <span class="math inline">\(j\)</span> is in the “selected set” of variables.</p></li>
+<li><p>Variables with a large value of <span class="math inline">\(\hat{\pi}_{j}(\lambda)\)</span> have a greater <strong>“selection stability”</strong>.</p></li>
+<li><p>You can plot <span class="math inline">\(\hat{\pi}_{j}(\lambda)\)</span> across different values of <span class="math inline">\(\lambda\)</span> to get
+a sense of the range of selection stability.</p></li>
+</ul>
+<hr />
+<ul>
+<li>For the <code>diabetes</code> data, let’s first compute an <span class="math inline">\(S \times m \times 10\)</span> array,
+where the <span class="math inline">\((k, h, j)\)</span> element of this array equals <span class="math inline">\(1\)</span> if variable <span class="math inline">\(j\)</span>
+was selected in subsample <span class="math inline">\(k\)</span> with penalty term <span class="math inline">\(\lambda_{h}\)</span>:</li>
+</ul>
+<div class="sourceCode" id="cb21509"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21509-1"><a href="extra-topics.html#cb21509-1" aria-hidden="true" tabindex="-1"></a>nsamps <span class="ot">&lt;-</span> <span class="dv">200</span></span>
+<span id="cb21509-2"><a href="extra-topics.html#cb21509-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fu">nrow</span>(diabetes)<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb21509-3"><a href="extra-topics.html#cb21509-3" aria-hidden="true" tabindex="-1"></a>nlambda <span class="ot">&lt;-</span> <span class="dv">40</span> <span class="do">## 40 different lambda values</span></span>
+<span id="cb21509-4"><a href="extra-topics.html#cb21509-4" aria-hidden="true" tabindex="-1"></a>lambda.seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">20.1</span>, <span class="at">length.out=</span>nlambda)</span>
+<span id="cb21509-5"><a href="extra-topics.html#cb21509-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Create an nsamps x nlambda x 10 array</span></span>
+<span id="cb21509-6"><a href="extra-topics.html#cb21509-6" aria-hidden="true" tabindex="-1"></a>SelectionArr <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim=</span><span class="fu">c</span>(nsamps, nlambda, <span class="dv">10</span>))</span>
+<span id="cb21509-7"><a href="extra-topics.html#cb21509-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nsamps) {</span>
+<span id="cb21509-8"><a href="extra-topics.html#cb21509-8" aria-hidden="true" tabindex="-1"></a>   subs <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(diabetes), <span class="at">size=</span>b)</span>
+<span id="cb21509-9"><a href="extra-topics.html#cb21509-9" aria-hidden="true" tabindex="-1"></a>   diabetes.sub <span class="ot">&lt;-</span> diabetes[subs,]</span>
+<span id="cb21509-10"><a href="extra-topics.html#cb21509-10" aria-hidden="true" tabindex="-1"></a>   <span class="cf">for</span>(h <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nlambda) {</span>
+<span id="cb21509-11"><a href="extra-topics.html#cb21509-11" aria-hidden="true" tabindex="-1"></a>      sub.fit <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(<span class="at">x=</span>diabetes.sub[,<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="at">y=</span>diabetes.sub<span class="sc">$</span>prog, </span>
+<span id="cb21509-12"><a href="extra-topics.html#cb21509-12" aria-hidden="true" tabindex="-1"></a>                        <span class="at">lambda=</span>lambda.seq[h])</span>
+<span id="cb21509-13"><a href="extra-topics.html#cb21509-13" aria-hidden="true" tabindex="-1"></a>      selected <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">coef</span>(sub.fit)[<span class="sc">-</span><span class="dv">1</span>]) <span class="sc">&gt;</span> <span class="dv">0</span></span>
+<span id="cb21509-14"><a href="extra-topics.html#cb21509-14" aria-hidden="true" tabindex="-1"></a>      SelectionArr[k,h,] <span class="ot">&lt;-</span> selected</span>
+<span id="cb21509-15"><a href="extra-topics.html#cb21509-15" aria-hidden="true" tabindex="-1"></a>   }</span>
+<span id="cb21509-16"><a href="extra-topics.html#cb21509-16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ul>
+<li>From this <strong>array</strong>, we can compute a matrix containing
+selection probability estimates <span class="math inline">\(\hat{\pi}_{j}(\lambda)\)</span>.
+<ul>
+<li>The <span class="math inline">\((j, h)\)</span> component of this matrix has the value <span class="math inline">\(\hat{\pi}_{j}(\lambda_{h})\)</span></li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb21510"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21510-1"><a href="extra-topics.html#cb21510-1" aria-hidden="true" tabindex="-1"></a>SelectionProb <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="dv">10</span>, <span class="at">ncol=</span>nlambda)</span>
+<span id="cb21510-2"><a href="extra-topics.html#cb21510-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(SelectionProb) <span class="ot">&lt;-</span> <span class="fu">names</span>(diabetes)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
+<span id="cb21510-3"><a href="extra-topics.html#cb21510-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(h <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nlambda) {</span>
+<span id="cb21510-4"><a href="extra-topics.html#cb21510-4" aria-hidden="true" tabindex="-1"></a>   SelectionProb[,h] <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(SelectionArr[,h,]) </span>
+<span id="cb21510-5"><a href="extra-topics.html#cb21510-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ul>
+<li>The first few columns of <code>SelectionProb</code> look like the following:</li>
+</ul>
+<div class="sourceCode" id="cb21511"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21511-1"><a href="extra-topics.html#cb21511-1" aria-hidden="true" tabindex="-1"></a>SelectionProb[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<pre><code>##      [,1]  [,2]  [,3]  [,4]  [,5]
+## age 0.945 0.815 0.660 0.515 0.375
+## sex 1.000 1.000 1.000 1.000 1.000
+## bmi 1.000 1.000 1.000 1.000 1.000
+## map 1.000 1.000 1.000 1.000 1.000
+## tc  0.985 0.930 0.870 0.735 0.580
+## ldl 0.880 0.190 0.215 0.260 0.305
+## hdl 0.865 0.935 0.965 0.995 1.000
+## tch 0.960 0.655 0.500 0.325 0.235
+## ltg 1.000 1.000 1.000 1.000 1.000
+## glu 0.985 0.885 0.820 0.760 0.675</code></pre>
+<hr />
+<ul>
+<li>We can now plot the stability measures as a function of <span class="math inline">\(\lambda\)</span></li>
+</ul>
+<div class="sourceCode" id="cb21513"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21513-1"><a href="extra-topics.html#cb21513-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Convert to long form:</span></span>
+<span id="cb21513-2"><a href="extra-topics.html#cb21513-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">varname=</span><span class="fu">rep</span>(<span class="fu">names</span>(diabetes)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>], <span class="at">each=</span>nlambda),</span>
+<span id="cb21513-3"><a href="extra-topics.html#cb21513-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">selection.prob=</span><span class="fu">c</span>(<span class="fu">t</span>(SelectionProb)), <span class="at">lambda=</span><span class="fu">rep</span>(lambda.seq, <span class="dv">10</span>))</span>
+<span id="cb21513-4"><a href="extra-topics.html#cb21513-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df)</span></code></pre></div>
+<pre><code>##   varname selection.prob    lambda
+## 1     age          0.945 0.1000000
+## 2     age          0.815 0.6128205
+## 3     age          0.660 1.1256410
+## 4     age          0.515 1.6384615
+## 5     age          0.375 2.1512821
+## 6     age          0.235 2.6641026</code></pre>
+<div class="sourceCode" id="cb21515"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21515-1"><a href="extra-topics.html#cb21515-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;ggplot2&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:randomForest&#39;:
+## 
+##     margin</code></pre>
+<div class="sourceCode" id="cb21518"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21518-1"><a href="extra-topics.html#cb21518-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df) <span class="sc">+</span> <span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y=</span>selection.prob, </span>
+<span id="cb21518-2"><a href="extra-topics.html#cb21518-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">group=</span>varname, <span class="at">color=</span>varname) <span class="sc">+</span> <span class="fu">geom_line</span>()</span></code></pre></div>
+<p><img src="08-ExtraTopics_files/figure-html/unnamed-chunk-15-1.png" width="480" /></p>
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div class="csl-entry">
+Buuren, S van, and Karin Groothuis-Oudshoorn. 2010. <span>“Mice: Multivariate Imputation by Chained Equations in r.”</span> <em>Journal of Statistical Software</em>, 1–68.
+</div>
+<div class="csl-entry">
+Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.
+</div>
+<div class="csl-entry">
+Heagerty, Patrick J, and Scott L Zeger. 1996. <span>“Marginal Regression Models for Clustered Ordinal Measurements.”</span> <em>Journal of the American Statistical Association</em> 91 (435): 1024–36.
+</div>
+<div class="csl-entry">
+Ishwaran, Hemant, and Min Lu. 2019. <span>“Standard Errors and Confidence Intervals for Variable Importance in Random Forest Regression, Classification, and Survival.”</span> <em>Statistics in Medicine</em> 38 (4): 558–82.
+</div>
+<div class="csl-entry">
+Meinshausen, Nicolai, and Peter Bühlmann. 2010. <span>“Stability Selection.”</span> <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 72 (4): 417–73.
+</div>
+<div class="csl-entry">
+Rice, John A, and Bernard W Silverman. 1991. <span>“Estimating the Mean and Covariance Structure Nonparametrically When the Data Are Curves.”</span> <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 53 (1): 233–43.
+</div>
+<div class="csl-entry">
+Schelldorfer, Jürg, Peter Bühlmann, and Sara Van De Geer. 2011. <span>“Estimation for High-Dimensional Linear Mixed-Effects Models Using <span class="math inline">\(\ell_{1}\)</span>-Penalization.”</span> <em>Scandinavian Journal of Statistics</em> 38 (2): 197–214.
+</div>
+<div class="csl-entry">
+Wang, Lan, Jianhui Zhou, and Annie Qu. 2012. <span>“Penalized Generalized Estimating Equations for High-Dimensional Longitudinal Data Analysis.”</span> <em>Biometrics</em> 68 (2): 353–60.
+</div>
+</div>
+</div>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-ishwaran2019" class="csl-entry">
+Ishwaran, Hemant, and Min Lu. 2019. <span>“Standard Errors and Confidence Intervals for Variable Importance in Random Forest Regression, Classification, and Survival.”</span> <em>Statistics in Medicine</em> 38 (4): 558–82.
+</div>
+<div id="ref-meinshausen2010" class="csl-entry">
+Meinshausen, Nicolai, and Peter Bühlmann. 2010. <span>“Stability Selection.”</span> <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 72 (4): 417–73.
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="ordinal-regression.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

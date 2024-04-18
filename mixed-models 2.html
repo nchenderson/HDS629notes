@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 1 Mixed Models for Longitudinal Data Analysis | Notes for Case Studies in Health Big Data</title>
+  <meta name="description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 1 Mixed Models for Longitudinal Data Analysis | Notes for Case Studies in Health Big Data" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  <meta name="github-repo" content="nchenderson/HDS629notes" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 1 Mixed Models for Longitudinal Data Analysis | Notes for Case Studies in Health Big Data" />
+  
+  <meta name="twitter:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
+  
+
+<meta name="author" content="Nicholas Henderson" />
+
+
+<meta name="date" content="2023-01-10" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="missing-data.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Biostat 629</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="mixed-models.html"><a href="mixed-models.html"><i class="fa fa-check"></i><b>1</b> Mixed Models for Longitudinal Data Analysis</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="mixed-models.html"><a href="mixed-models.html#sec:methods-overview"><i class="fa fa-check"></i><b>1.1</b> Methods for Analyzing Longitudinal Data</a></li>
+<li class="chapter" data-level="1.2" data-path="mixed-models.html"><a href="mixed-models.html#mixed-models-for-continuous-outcomes"><i class="fa fa-check"></i><b>1.2</b> Mixed Models for Continuous Outcomes</a></li>
+<li class="chapter" data-level="1.3" data-path="mixed-models.html"><a href="mixed-models.html#advantages-of-using-random-effects"><i class="fa fa-check"></i><b>1.3</b> Advantages of using random effects</a>
+<ul>
+<li class="chapter" data-level="1.3.1" data-path="mixed-models.html"><a href="mixed-models.html#within-subject-correlation"><i class="fa fa-check"></i><b>1.3.1</b> Within-subject correlation</a></li>
+<li class="chapter" data-level="1.3.2" data-path="mixed-models.html"><a href="mixed-models.html#inference-about-heterogeneity---variance-of-random-effects"><i class="fa fa-check"></i><b>1.3.2</b> Inference about Heterogeneity - Variance of Random Effects</a></li>
+<li class="chapter" data-level="1.3.3" data-path="mixed-models.html"><a href="mixed-models.html#best-linear-unbiased-prediction"><i class="fa fa-check"></i><b>1.3.3</b> Best Linear Unbiased Prediction</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="mixed-models.html"><a href="mixed-models.html#generalized-linear-mixed-models-glmms"><i class="fa fa-check"></i><b>1.4</b> Generalized linear mixed models (GLMMs)</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-binary-outcomes"><i class="fa fa-check"></i><b>1.4.1</b> GLMMs with Binary Outcomes</a></li>
+<li class="chapter" data-level="1.4.2" data-path="mixed-models.html"><a href="mixed-models.html#glmms-with-count-outcomes"><i class="fa fa-check"></i><b>1.4.2</b> GLMMs with Count Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="mixed-models.html"><a href="mixed-models.html#fitting-linear-mixed-models-lmms-and-generalized-linear-mixed-models-glmms-in-r"><i class="fa fa-check"></i><b>1.5</b> Fitting Linear Mixed Models (LMMs) and Generalized Linear Mixed models (GLMMs) in <strong>R</strong></a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="mixed-models.html"><a href="mixed-models.html#fitting-lmms-with-the-sleepstudy-data"><i class="fa fa-check"></i><b>1.5.1</b> Fitting LMMs with the sleepstudy data</a></li>
+<li class="chapter" data-level="1.5.2" data-path="mixed-models.html"><a href="mixed-models.html#fitting-binary-glmms-using-the-ohio-data"><i class="fa fa-check"></i><b>1.5.2</b> Fitting Binary GLMMs using the Ohio data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>2</b> Missing Data and Multiple Imputation</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="missing-data.html"><a href="missing-data.html#missing-data-in-r-and-direct-approaches-for-handling-missing-data"><i class="fa fa-check"></i><b>2.1</b> Missing Data in R and “Direct Approaches” for Handling Missing Data</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="missing-data.html"><a href="missing-data.html#complete-case-analysis-listwise-deletion"><i class="fa fa-check"></i><b>2.1.1</b> Complete Case Analysis (Listwise Deletion)</a></li>
+<li class="chapter" data-level="2.1.2" data-path="missing-data.html"><a href="missing-data.html#other-direct-methods"><i class="fa fa-check"></i><b>2.1.2</b> Other “Direct” Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation"><i class="fa fa-check"></i><b>2.2</b> Multiple Imputation</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="missing-data.html"><a href="missing-data.html#short-overview-of-multiple-imputation"><i class="fa fa-check"></i><b>2.2.1</b> Short Overview of Multiple Imputation</a></li>
+<li class="chapter" data-level="2.2.2" data-path="missing-data.html"><a href="missing-data.html#multiple-imputation-with-mice"><i class="fa fa-check"></i><b>2.2.2</b> Multiple imputation with mice</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="missing-data.html"><a href="missing-data.html#what-is-mice-doing"><i class="fa fa-check"></i><b>2.3</b> What is MICE doing?</a></li>
+<li class="chapter" data-level="2.4" data-path="missing-data.html"><a href="missing-data.html#longitudinal-data"><i class="fa fa-check"></i><b>2.4</b> Longitudinal Data</a></li>
+<li class="chapter" data-level="2.5" data-path="missing-data.html"><a href="missing-data.html#different-missing-data-mechanisms"><i class="fa fa-check"></i><b>2.5</b> Different Missing Data Mechanisms</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="missing-data.html"><a href="missing-data.html#missing-completely-at-random-mcar"><i class="fa fa-check"></i><b>2.5.1</b> Missing Completely at Random (MCAR)</a></li>
+<li class="chapter" data-level="2.5.2" data-path="missing-data.html"><a href="missing-data.html#missing-at-random-mar"><i class="fa fa-check"></i><b>2.5.2</b> Missing at Random (MAR)</a></li>
+<li class="chapter" data-level="2.5.3" data-path="missing-data.html"><a href="missing-data.html#missing-not-at-random-mnar"><i class="fa fa-check"></i><b>2.5.3</b> Missing not at Random (MNAR)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="nonpar-regression.html"><a href="nonpar-regression.html"><i class="fa fa-check"></i><b>3</b> Nonparametric Regression with Longitudinal Data</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#notation"><i class="fa fa-check"></i><b>3.1</b> Notation</a></li>
+<li class="chapter" data-level="3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-smoothing"><i class="fa fa-check"></i><b>3.2</b> Kernel Smoothing</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#description-of-kernel-regression"><i class="fa fa-check"></i><b>3.2.1</b> Description of Kernel Regression</a></li>
+<li class="chapter" data-level="3.2.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#kernel-regression-in-the-sleepstudy-data"><i class="fa fa-check"></i><b>3.2.2</b> Kernel Regression in the sleepstudy data</a></li>
+<li class="chapter" data-level="3.2.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#bandwidth-selection"><i class="fa fa-check"></i><b>3.2.3</b> Bandwidth Selection</a></li>
+<li class="chapter" data-level="3.2.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#another-example-the-bone-data"><i class="fa fa-check"></i><b>3.2.4</b> Another Example: The Bone Data</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines"><i class="fa fa-check"></i><b>3.3</b> Regression Splines</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="nonpar-regression.html"><a href="nonpar-regression.html#overview"><i class="fa fa-check"></i><b>3.3.1</b> Overview</a></li>
+<li class="chapter" data-level="3.3.2" data-path="nonpar-regression.html"><a href="nonpar-regression.html#regression-splines-with-longitudinal-data-in-r"><i class="fa fa-check"></i><b>3.3.2</b> Regression Splines with Longitudinal Data in R</a></li>
+<li class="chapter" data-level="3.3.3" data-path="nonpar-regression.html"><a href="nonpar-regression.html#looking-at-a-continuous-and-a-binary-covariate"><i class="fa fa-check"></i><b>3.3.3</b> Looking at a Continuous and a Binary Covariate</a></li>
+<li class="chapter" data-level="3.3.4" data-path="nonpar-regression.html"><a href="nonpar-regression.html#model-comparison"><i class="fa fa-check"></i><b>3.3.4</b> Model Comparison</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="glmm-lasso.html"><a href="glmm-lasso.html"><i class="fa fa-check"></i><b>4</b> Sparse Regression for Longitudinal Data</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#sparse-regression-methods"><i class="fa fa-check"></i><b>4.1</b> Sparse regression methods</a></li>
+<li class="chapter" data-level="4.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#the-lasso-with-longitudinal-data"><i class="fa fa-check"></i><b>4.2</b> The Lasso with longitudinal data</a></li>
+<li class="chapter" data-level="4.3" data-path="glmm-lasso.html"><a href="glmm-lasso.html#lasso-for-lmms-and-glmms-in-r"><i class="fa fa-check"></i><b>4.3</b> Lasso for LMMs and GLMMs in R</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#soccer-data"><i class="fa fa-check"></i><b>4.3.1</b> Soccer Data</a></li>
+<li class="chapter" data-level="4.3.2" data-path="glmm-lasso.html"><a href="glmm-lasso.html#choosing-the-tuning-parameter-for-the-soccer-data"><i class="fa fa-check"></i><b>4.3.2</b> Choosing the tuning parameter for the soccer data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="glmm-lasso.html"><a href="glmm-lasso.html#cross-validation-for-longitudinal-data"><i class="fa fa-check"></i><b>4.4</b> Cross-Validation for Longitudinal Data</a></li>
+<li class="chapter" data-level="4.5" data-path="glmm-lasso.html"><a href="glmm-lasso.html#penalized-generalized-estimating-equations"><i class="fa fa-check"></i><b>4.5</b> Penalized Generalized Estimating Equations</a>
+<ul>
+<li class="chapter" data-level="4.5.1" data-path="glmm-lasso.html"><a href="glmm-lasso.html#the-pgee-package"><i class="fa fa-check"></i><b>4.5.1</b> The PGEE package</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="glmm-lasso.html"><a href="glmm-lasso.html#glmm-lasso-with-binary-outcomes"><i class="fa fa-check"></i><b>4.6</b> GLMM-Lasso with Binary Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="risk-prediction.html"><a href="risk-prediction.html"><i class="fa fa-check"></i><b>5</b> Risk Prediction and Validation (Part I)</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="risk-prediction.html"><a href="risk-prediction.html#risk-predictionstratification"><i class="fa fa-check"></i><b>5.1</b> Risk Prediction/Stratification</a></li>
+<li class="chapter" data-level="5.2" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve-and-the-c-statistic"><i class="fa fa-check"></i><b>5.2</b> Area under the ROC curve and the C-statistic</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="risk-prediction.html"><a href="risk-prediction.html#sensitivity-and-specificity"><i class="fa fa-check"></i><b>5.2.1</b> Sensitivity and Specificity</a></li>
+<li class="chapter" data-level="5.2.2" data-path="risk-prediction.html"><a href="risk-prediction.html#the-roc-curve"><i class="fa fa-check"></i><b>5.2.2</b> The ROC curve</a></li>
+<li class="chapter" data-level="5.2.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-roc-curve"><i class="fa fa-check"></i><b>5.2.3</b> Computing the ROC curve</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve"><i class="fa fa-check"></i><b>5.3</b> Area under the ROC curve</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="risk-prediction.html"><a href="risk-prediction.html#rewriting-the-formula-for-the-auc"><i class="fa fa-check"></i><b>5.3.1</b> Rewriting the formula for the AUC</a></li>
+<li class="chapter" data-level="5.3.2" data-path="risk-prediction.html"><a href="risk-prediction.html#interpreting-the-auc"><i class="fa fa-check"></i><b>5.3.2</b> Interpreting the AUC</a></li>
+<li class="chapter" data-level="5.3.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-auc-in-r"><i class="fa fa-check"></i><b>5.3.3</b> Computing the AUC in R</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="risk-prediction.html"><a href="risk-prediction.html#calibration"><i class="fa fa-check"></i><b>5.4</b> Calibration</a></li>
+<li class="chapter" data-level="5.5" data-path="risk-prediction.html"><a href="risk-prediction.html#longitudinal-data-and-risk-score-validation"><i class="fa fa-check"></i><b>5.5</b> Longitudinal Data and Risk Score Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="risk-prediction2.html"><a href="risk-prediction2.html"><i class="fa fa-check"></i><b>6</b> Risk Prediction and Validation (Part II)</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#the-brier-score"><i class="fa fa-check"></i><b>6.1</b> The Brier Score</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-for-biopsy-data"><i class="fa fa-check"></i><b>6.1.1</b> Brier scores for biopsy data</a></li>
+<li class="chapter" data-level="6.1.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#out-of-sample-comparisons"><i class="fa fa-check"></i><b>6.1.2</b> Out-of-sample comparisons</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-with-longitudinal-data"><i class="fa fa-check"></i><b>6.2</b> Brier Scores with Longitudinal Data</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-1"><i class="fa fa-check"></i><b>6.2.1</b> Option 1</a></li>
+<li class="chapter" data-level="6.2.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-2"><i class="fa fa-check"></i><b>6.2.2</b> Option 2</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="ordinal-regression.html"><a href="ordinal-regression.html"><i class="fa fa-check"></i><b>7</b> Ordinal Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression"><i class="fa fa-check"></i><b>7.1</b> Ordinal Logistic Regression</a></li>
+<li class="chapter" data-level="7.2" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-regression-details"><i class="fa fa-check"></i><b>7.2</b> Ordinal Regression Details</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression-in-r"><i class="fa fa-check"></i><b>7.2.1</b> Ordinal Logistic Regression in R</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="ordinal-regression.html"><a href="ordinal-regression.html#generalized-estimating-equations"><i class="fa fa-check"></i><b>7.3</b> Generalized Estimating Equations</a>
+<ul>
+<li class="chapter" data-level="7.3.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#using-geepack-and-ordgee"><i class="fa fa-check"></i><b>7.3.1</b> Using geepack and ordgee</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="ordinal-regression.html"><a href="ordinal-regression.html#penalized-regression-with-ordinal-outcomes"><i class="fa fa-check"></i><b>7.4</b> Penalized Regression with Ordinal Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="extra-topics.html"><a href="extra-topics.html"><i class="fa fa-check"></i><b>8</b> Extra Topics</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="extra-topics.html"><a href="extra-topics.html#uncertainty-in-variable-importance-measures"><i class="fa fa-check"></i><b>8.1</b> Uncertainty in Variable Importance Measures</a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="extra-topics.html"><a href="extra-topics.html#subsampling-for-random-forest-vimp-scores"><i class="fa fa-check"></i><b>8.1.1</b> Subsampling for Random Forest VIMP scores</a></li>
+<li class="chapter" data-level="8.1.2" data-path="extra-topics.html"><a href="extra-topics.html#stability-selection-for-penalized-regression"><i class="fa fa-check"></i><b>8.1.2</b> Stability Selection for Penalized Regression</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notes for Case Studies in Health Big Data</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="mixed-models" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Chapter 1</span> Mixed Models for Longitudinal Data Analysis<a href="mixed-models.html#mixed-models" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<hr />
+<div id="sec:methods-overview" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> Methods for Analyzing Longitudinal Data<a href="mixed-models.html#sec:methods-overview" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><p><strong>Longitudinal data</strong> refers to data that:</p>
+<ul>
+<li><p>Has <strong>multiple</strong> individuals.</p></li>
+<li><p>Each individual has <strong>multiple observations</strong> over time.</p></li>
+</ul></li>
+<li><p>We will denote the outcomes of interest with <span class="math inline">\(Y_{ij}\)</span>.</p>
+<ul>
+<li><p><span class="math inline">\(Y_{ij}\)</span> - outcome for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
+<li><p>The <span class="math inline">\(i^{th}\)</span> individual has <span class="math inline">\(n_{i}\)</span> observations: <span class="math inline">\(Y_{i1}, \ldots, Y_{in_{i}}\)</span>.</p></li>
+<li><p>There will be <span class="math inline">\(m\)</span> individuals in the study (so <span class="math inline">\(1 \leq i \leq m\)</span>).</p></li>
+<li><p><span class="math inline">\(\mathbf{x}_{ij} = (x_{ij1}, \ldots, x_{ijp})\)</span> is the vector of covariates for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
+</ul></li>
+<li><p><strong>Note:</strong> For your project, you may have to do some pre-processing of the data to get it into the form <span class="math inline">\((Y_{ij}, \mathbf{x}_{ij})\)</span>, for <span class="math inline">\(j = 1,\ldots,n_{i}\)</span>.</p>
+<ul>
+<li><p>For example, although the data that you analyze for the project look at certain variables over time, they could be “asynchronous” in some way.</p></li>
+<li><p>This means meaning that the outcomes <span class="math inline">\(Y_{ij}\)</span> and the covariates are not exactly matched in time.</p></li>
+<li><p>For example, on a given day, you may observe <span class="math inline">\(Y_{ij}\)</span> at 9:00, 10:00, and 11:00, but observe the covariate of interest at 9:17, 9:53, and 11:08.</p></li>
+<li><p>Or, your outcome <span class="math inline">\(Y_{ij}\)</span> may only be observed once per week, while the covariates of interest are measured multiple times per week.</p></li>
+<li><p>We will discuss some ways of organizing asynchronous longitudinal data later in the class.</p></li>
+</ul></li>
+</ul>
+<hr />
+<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<ul>
+<li><p>The above figure shows an example of outcomes from a longitudinal study (the <strong>sleepstudy</strong> data in the <strong>lme4</strong> package).</p></li>
+<li><p>In the <strong>sleepstudy</strong> data:</p>
+<ul>
+<li><p>The time points of observation <span class="math inline">\(t_{ij}\)</span> are the same for each individual <span class="math inline">\(i\)</span>. So, we can say <span class="math inline">\(t_{ij} = t_{j}\)</span> for all <span class="math inline">\(i\)</span>.</p></li>
+<li><p>The outcome <span class="math inline">\(Y_{ij}\)</span> is the <strong>reaction time</strong> for the <span class="math inline">\(i^{th}\)</span> individual at time point <span class="math inline">\(t_{j}\)</span>.</p></li>
+<li><p>The 10 time points are <span class="math inline">\((t_{1}, \ldots, t_{10}) = (0, 1, \ldots, 9)\)</span>.</p></li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>Most of the well-known regression-based methods for analyzing longitudinal
+data can be classified (see <span class="citation">Diggle et al. (<a href="#ref-diggle2013" role="doc-biblioref">2013</a>)</span>) into one of the three following
+categories:
+<ul>
+<li><strong>Random effects/mixed models</strong>,</li>
+<li><strong>Marginal models</strong>,</li>
+<li><strong>Transition models</strong></li>
+</ul></li>
+<li><strong>Random effects/Mixed Models</strong>
+<ul>
+<li><p><strong>“Random effects”</strong> are added to the regression model describing
+the outcomes for each individual.</p></li>
+<li><p>These “random regression coefficients” are viewed as a sample from some distribution.</p></li>
+</ul></li>
+<li><strong>Marginal models</strong>
+<ul>
+<li><p>Regression coefficients have a “population average” interpretation.</p></li>
+<li><p>Only mean of <span class="math inline">\(Y_{ij}\)</span> and correlation structure of <span class="math inline">\((Y_{i1}, \ldots, Y_{in_{i}})\)</span> are modeled.</p></li>
+<li><p>Generalized estimating equations (GEEs) are often used for estimating model parameters.</p></li>
+</ul></li>
+<li><strong>Transition models</strong>
+<ul>
+<li>Uses a probability model for the distribution of <span class="math inline">\(Y_{ij}\)</span> given the value of the outcome
+at the previous time point <span class="math inline">\(Y_{ij-1}\)</span>.</li>
+</ul></li>
+</ul>
+</div>
+<div id="mixed-models-for-continuous-outcomes" class="section level2 hasAnchor" number="1.2">
+<h2><span class="header-section-number">1.2</span> Mixed Models for Continuous Outcomes<a href="mixed-models.html#mixed-models-for-continuous-outcomes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><p>If each <span class="math inline">\(Y_{ij}\)</span> is a <strong>continuous outcome</strong> and we were to
+build a regression model without any random effects, we might assume something like:
+<span class="math display" id="eq:fixed-reg-model">\[\begin{equation}
+Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + e_{ij}
+\tag{1.1}
+\end{equation}\]</span></p></li>
+<li><p><span class="math inline">\(\mathbf{x}_{ij} = (x_{ij1}, \ldots, x_{ijp})\)</span> is the vector
+of covariates for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t_{ij}\)</span>.</p></li>
+<li><p>The vector <span class="math inline">\(\mathbf{x}_{ij}\)</span> could contain individual information such as smoking status or age.</p>
+<ul>
+<li><span class="math inline">\(\mathbf{x}_{ij}\)</span> could also contain some of the actual time points: <span class="math inline">\(t_{ij}, t_{ij-1}, ...\)</span> or transformations of these time points.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>The regression model <a href="mixed-models.html#eq:fixed-reg-model">(1.1)</a> assumes the same
+mean function <span class="math inline">\(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta}\)</span> holds for all individuals that have the same value of <span class="math inline">\(\mathbf{x}_{ij}\)</span>.</p></li>
+<li><p>It is often reasonable to assume that the regression coefficients <strong>vary</strong> across individuals.</p>
+<ul>
+<li>This can often better account for <strong>heterogeneity</strong> across individuals.</li>
+</ul></li>
+<li><p>The figure below shows <strong>3 different regression lines</strong> from the <code>sleepstudy</code> data.</p>
+<ul>
+<li>Each regression line was estimated using only data from one individual.</li>
+</ul></li>
+</ul>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-2"></span>
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-2-1.png" alt="Separately estimated regression lines for 3 subjects in the sleepstudy data." width="672" />
+<p class="caption">
+Figure 1.1: Separately estimated regression lines for 3 subjects in the sleepstudy data.
+</p>
+</div>
+<hr />
+<ul>
+<li><p>Figure 1.1 suggests there is some heterogeneity in the <strong>relationship</strong>
+between <strong>study day</strong> and <strong>response time</strong> across individuals.</p></li>
+<li><p>The response time of <strong>Subject 309</strong> changes very little over time.</p></li>
+<li><p>For <strong>Subject 308</strong>, there is a more clear positive association between
+response time and day of study.</p></li>
+</ul>
+<hr />
+<ul>
+<li>For the <strong>sleepstudy</strong> data, a linear regression for <strong>reaction time</strong> vs. <strong>study day</strong>
+which assumes that
+<ol style="list-style-type: decimal">
+<li>Expected response time is a linear function of study day,</li>
+<li>All individuals have the same regression coefficients,</li>
+</ol></li>
+</ul>
+<p>would have the form:
+<span class="math display">\[\begin{equation}
+Y_{ij} = \beta_{0} + \beta_{1} t_{j} + e_{ij}
+\end{equation}\]</span></p>
+<ul>
+<li><p>If we allowed each individual to have his/her <strong>own intercept and slope</strong>, we
+could instead consider the following model
+<span class="math display" id="eq:mixed-sleep">\[\begin{equation}
+Y_{ij} = \beta_{0} + \beta_{1} t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
+\tag{1.2}
+\end{equation}\]</span></p></li>
+<li><p><span class="math inline">\(\beta_{0} + u_{i0}\)</span> - intercept for individual <span class="math inline">\(i\)</span>.</p></li>
+<li><p><span class="math inline">\(\beta_{1} + u_{i1}\)</span> - slope for individual <span class="math inline">\(i\)</span>.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>If we assume <span class="math inline">\((u_{i0}, u_{i1})\)</span> are sampled from some distribution, <span class="math inline">\(u_{i0}\)</span> and
+<span class="math inline">\(u_{i1}\)</span> are referred to as <strong>random effects</strong>.</p></li>
+<li><p>Typically, it is assumed that <span class="math inline">\((u_{i0}, u_{i1})\)</span> are sampled from a multivariate normal distribution
+with mean zero:
+<span class="math display">\[\begin{equation}
+(u_{i0}, u_{i1}) \sim \textrm{Normal}( \mathbf{0}, \boldsymbol{\Sigma}_{\tau} )
+\end{equation}\]</span></p></li>
+<li><p>Model <a href="mixed-models.html#eq:mixed-sleep">(1.2)</a> is called a <strong>mixed model</strong> because
+it contains both <strong>fixed effects</strong> <span class="math inline">\((\beta_{0}, \beta_{1})\)</span>
+and <strong>random effects</strong> <span class="math inline">\((u_{i0}, u_{i1})\)</span>.</p></li>
+</ul>
+<hr />
+<ul>
+<li>More generally, a <strong>linear mixed model</strong> (LMM) for longitudinal data will have the form:
+<span class="math display" id="eq:lmm-generalform">\[\begin{equation}
+Y_{ij} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i} + e_{ij}
+\tag{1.3}
+\end{equation}\]</span>
+<ul>
+<li><span class="math inline">\(\boldsymbol{\beta}\)</span> - vector of fixed effects</li>
+<li><span class="math inline">\(\mathbf{u}_{i}\)</span> - vector of random effects</li>
+</ul></li>
+<li>If we stack the responses into a long vector <span class="math inline">\(\mathbf{Y}\)</span> and random effects into a long vector <span class="math inline">\(\mathbf{u}\)</span>
+<ul>
+<li><span class="math inline">\(\mathbf{Y} = (Y_{11}, Y_{12}, ...., Y_{mn_{m}})\)</span> - this vector has length <span class="math inline">\(\sum_{k=1}^{m} n_{k}\)</span></li>
+<li><span class="math inline">\(\mathbf{u} = (u_{10}, u_{11}, ...., u_{mq})\)</span> - this vector has length <span class="math inline">\(m \times (q + 1)\)</span>.</li>
+</ul></li>
+<li>Then, we can write the general form <a href="mixed-models.html#eq:lmm-generalform">(1.3)</a> of the LMM as
+<span class="math display">\[\begin{equation}
+\mathbf{Y} = \mathbf{X}\tilde{\boldsymbol{\beta}} + \mathbf{Z}\mathbf{u} + \mathbf{e}
+\end{equation}\]</span>
+<ul>
+<li><span class="math inline">\(i^{th}\)</span> row of <span class="math inline">\(\mathbf{X}\)</span> is <span class="math inline">\((1, \mathbf{x}_{ij}^{T})\)</span>.</li>
+<li><span class="math inline">\(i^{th}\)</span> row of <span class="math inline">\(\mathbf{Z}\)</span> is <span class="math inline">\(\mathbf{z}_{ij}^{T}\)</span>.</li>
+<li><span class="math inline">\(\tilde{\boldsymbol{\beta}} = (1, \boldsymbol{\beta})\)</span>.</li>
+</ul></li>
+<li>Constructing an LMM can be thought of as choosing the desired “<span class="math inline">\(\mathbf{X}\)</span>” and “<span class="math inline">\(\mathbf{Z}\)</span>” matrices.</li>
+</ul>
+</div>
+<div id="advantages-of-using-random-effects" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> Advantages of using random effects<a href="mixed-models.html#advantages-of-using-random-effects" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="within-subject-correlation" class="section level3 hasAnchor" number="1.3.1">
+<h3><span class="header-section-number">1.3.1</span> Within-subject correlation<a href="mixed-models.html#within-subject-correlation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li><p>Using an LMM automatically accounts for the “<strong>within-subject</strong>” correlation.</p>
+<ul>
+<li>That is, the correlation between two observations from the same individual.</li>
+</ul></li>
+<li><p>This correlation arises because observations on the same individual “share” <strong>common</strong> random effects.</p></li>
+<li><p>The correlation between the <span class="math inline">\(j^{th}\)</span> and <span class="math inline">\(k^{th}\)</span> observation from individual <span class="math inline">\(i\)</span> is
+<span class="math display">\[\begin{equation}
+\textrm{Corr}(Y_{ij}, Y_{ik}) = \frac{ \mathbf{z}_{ij}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ik}  }{ \sqrt{\sigma^{2} + \mathbf{z}_{ij}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ij}}\sqrt{\sigma^{2} + \mathbf{z}_{ik}^{T}\boldsymbol{\Sigma}_{\tau}\mathbf{z}_{ik}}}
+\end{equation}\]</span></p></li>
+</ul>
+<hr />
+<ul>
+<li>When using <strong>only a random intercept</strong>, the correlation between <span class="math inline">\(Y_{ij}\)</span> and <span class="math inline">\(Y_{ik}\)</span> is
+<span class="math display">\[\begin{equation}
+\textrm{Corr}(Y_{ij}, Y_{ik}) = \frac{ \sigma_{u}^{2}  }{ \sigma^{2} + \sigma_{u}^{2} }
+\end{equation}\]</span>
+<ul>
+<li>In this case, <span class="math inline">\(\mathbf{z}_{ij} = 1\)</span> and <span class="math inline">\(u_{i} \sim \textrm{Normal}(0, \sigma_{u}^{2})\)</span></li>
+<li><span class="math inline">\(\sigma^{2}\)</span> is the variance of the residual term <span class="math inline">\(e_{ij}\)</span></li>
+</ul></li>
+<li>For longitudinal data, one criticism of the random intercept model is that the within-subject correlation <strong>does not vary</strong> across time.</li>
+</ul>
+</div>
+<div id="inference-about-heterogeneity---variance-of-random-effects" class="section level3 hasAnchor" number="1.3.2">
+<h3><span class="header-section-number">1.3.2</span> Inference about Heterogeneity - Variance of Random Effects<a href="mixed-models.html#inference-about-heterogeneity---variance-of-random-effects" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li><p>One of the goals of the data analysis may be to characterize
+the <strong>heterogeneity</strong> in the relationship between the outcome
+and some of the covariates across individuals.</p></li>
+<li><p>Looking at the <strong>estimates of the variance</strong> of the random effects
+is one way of addressing this goal.</p></li>
+<li><p>An estimate of <span class="math inline">\(\textrm{Var}( u_{ih} )\)</span> “substantially greater than zero”
+is an indication that there is variability in the regression coefficient corresponding to <span class="math inline">\(u_{ih}\)</span>
+across individuals.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>For example, with the random intercept and slope model for the <strong>sleepstudy</strong> data
+<span class="math display">\[\begin{equation}
+Y_{ij} = \beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
+\end{equation}\]</span></p></li>
+<li><p>If <span class="math inline">\(\textrm{Var}( u_{i1} )\)</span> is “large”, this implies that the response
+to additional days of sleep deprivation <strong>varies considerably</strong> across individuals.</p>
+<ul>
+<li><p>The response time of some individuals is not impacted much by additional days of little sleep.</p></li>
+<li><p>Some individuals respond strongly to additional days of little sleep.</p></li>
+</ul></li>
+</ul>
+<!--* When interpreting the estimated values of the random-effects variances, 
+one thing you could report is the variation explained -->
+</div>
+<div id="best-linear-unbiased-prediction" class="section level3 hasAnchor" number="1.3.3">
+<h3><span class="header-section-number">1.3.3</span> Best Linear Unbiased Prediction<a href="mixed-models.html#best-linear-unbiased-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li><p>You may want to estimate or <strong>“predict”</strong> the mean function/trajectory
+of a given individual.</p></li>
+<li><p>This means you want to estimate/predict the following quantity:
+<span class="math display">\[\begin{equation}
+\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}
+\end{equation}\]</span></p></li>
+<li><p>The “Best Linear Unbiased Predictor” (BLUP) of this is
+<span class="math display">\[\begin{equation}
+\textrm{BLUP}(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}) = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})
+\end{equation}\]</span></p></li>
+</ul>
+<hr />
+<ul>
+<li><p>I would think of the values of <span class="math inline">\(\textrm{BLUP}(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i})\)</span> (for different values of <span class="math inline">\(j\)</span>) as an estimate of the “true trajectory” (i.e., the true mean) of the <span class="math inline">\(i^{th}\)</span> individual.</p></li>
+<li><p>The observed longitudinal outcomes from individual <span class="math inline">\(i\)</span> are a “noisy estimate” of that individual’s true trajectory.</p></li>
+<li><p>The BLUPs are more stable <strong>“shrinkage” estimates</strong> of the trajectory of individual <span class="math inline">\(i\)</span>.</p>
+<ul>
+<li>These are called shrinkage estimates because often shrinks the estimate that would be obtained using only data from individual <span class="math inline">\(i\)</span> towards the “overall” estimate <span class="math inline">\(\mathbf{x}_{ij}^{T}\boldsymbol{\beta}\)</span>.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>For example, if we had the intercept-only model <span class="math inline">\(Y_{ij} = \beta_{0} + u_{i} + e_{ij}\)</span>,
+the value of the BLUPs is
+<span class="math display">\[\begin{equation}
+\textrm{BLUP}(\beta_{0} + u_{i}) = \frac{n_{i}\sigma_{u}^{2}}{\sigma^{2} + n_{i}\sigma_{u}^{2} }\bar{Y}_{i.} + \Big(1 -  \frac{n_{i}\sigma_{u}^{2}}{\sigma^{2} + n_{i}\sigma_{u}^{2} }\Big)\bar{Y}_{..}
+\end{equation}\]</span></p></li>
+<li><p><span class="math inline">\(\bar{Y}_{i.}\)</span> is the sample mean from individual-<span class="math inline">\(i\)</span> data</p>
+<ul>
+<li><span class="math inline">\(\bar{Y}_{i.}\)</span> would be the estimate of the intercept if we only looked at data from the <span class="math inline">\(i^{th}\)</span> individual.</li>
+</ul></li>
+<li><p><span class="math inline">\(\bar{Y}_{..}\)</span> - overall mean</p>
+<ul>
+<li><span class="math inline">\(\bar{Y}_{..}\)</span> would be the estimate of the intercept if we ignored variation in intercepts across individuals.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>You can also think of <span class="math inline">\(\textrm{BLUP}(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i})\)</span> as a prediction of what the observed
+trajectory for individual <span class="math inline">\(i\)</span> would be if that individual
+were in a future study under the same conditions.</p></li>
+<li><p>Say <span class="math inline">\(Y_{i1}&#39;, \ldots, Y_{in_{i}}&#39;\)</span> are the observations for individual <span class="math inline">\(i\)</span> in a future study.</p></li>
+<li><p>The outcomes in the future study are determined by
+<span class="math display">\[\begin{equation}
+Y_{ij}&#39; = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i} + e_{ij}&#39;
+\end{equation}\]</span></p></li>
+<li><p>The expectation of <span class="math inline">\(Y_{ij}&#39;\)</span> given the observed data in our longitudinal study is
+<span class="math display">\[\begin{eqnarray}
+E(Y_{ij}&#39;|Y_{i1}, \ldots, Y_{in_{i}}) &amp;=&amp; \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}E(\mathbf{u}_{i}|Y_{i1}, \ldots, Y_{in_{i}})  \nonumber \\
+&amp;=&amp; \textrm{BLUP}(\beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}) \nonumber
+\end{eqnarray}\]</span></p></li>
+</ul>
+</div>
+</div>
+<div id="generalized-linear-mixed-models-glmms" class="section level2 hasAnchor" number="1.4">
+<h2><span class="header-section-number">1.4</span> Generalized linear mixed models (GLMMs)<a href="mixed-models.html#generalized-linear-mixed-models-glmms" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><p>Generalized linear models (GLMs) are used to handle “non-continuous” data
+that can’t be reasonably modeled with a Gaussian distribution.</p></li>
+<li><p>The most common scenarios where you would use GLMs in practice
+are <strong>binary</strong>, <strong>count</strong>, and <strong>multinomial</strong> outcomes.</p></li>
+<li><p>With a generalized linear mixed model (GLMM), you assume that
+a GLM holds <strong>conditional</strong> on the value of the random effects.</p></li>
+</ul>
+<div id="glmms-with-binary-outcomes" class="section level3 hasAnchor" number="1.4.1">
+<h3><span class="header-section-number">1.4.1</span> GLMMs with Binary Outcomes<a href="mixed-models.html#glmms-with-binary-outcomes" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li><p>Under the GLM framework, the usual approach for handling binary outcomes is <strong>logistic regression</strong>.</p></li>
+<li><p>The assumptions underying logistic regression are:</p>
+<ul>
+<li><p>The outcomes are <strong>independent</strong></p></li>
+<li><p>Each outcome follows a <strong>Bernoulli</strong> distribution.</p></li>
+<li><p>The <strong>log-odds parameter</strong> is assumed to be a linear combination of the covariates.</p></li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>With the GLMM version of logistic regression, we will make almost the same assumptions as the regular GLM
+version of logistic regression.
+<ul>
+<li>The main difference is that each assumption in the GLMM will be <strong>conditional</strong> on the values of the random effects.</li>
+</ul></li>
+<li>To be specific, for longitudinal binary outcomes <span class="math inline">\(Y_{ij}\)</span>,
+the GLMM version of logistic regression assumes the following:
+<ol style="list-style-type: decimal">
+<li><p><strong>Conditional</strong> on the vector of random effects <span class="math inline">\(\mathbf{u}_{i}\)</span>
+<span class="math display">\[\begin{equation}
+Y_{i1}, \ldots, Y_{in_{i}}|\mathbf{u}_{i}  \textrm{ are independent }
+\end{equation}\]</span></p></li>
+<li><p><strong>Conditional</strong> on <span class="math inline">\(\mathbf{u}_{i}\)</span>, each <span class="math inline">\(Y_{ij}\)</span> has a Bernoulli distribution
+<span class="math display">\[\begin{equation}
+Y_{ij}|\mathbf{u}_{i} \sim \textrm{Bernoulli}\big\{ p_{ij}(\mathbf{u}_{i}) \big\}
+\end{equation}\]</span>
+so that <span class="math inline">\(p_{ij}( \mathbf{u}_{i} ) = P(Y_{ij} = 1| \mathbf{u}_{i})\)</span>.</p></li>
+<li><p>The “<strong>conditional</strong>” log-odds term <span class="math inline">\(\log\{ p_{ij}(\mathbf{u}_{i})/[1 - p_{ij}(\mathbf{u}_{i})] \}\)</span>
+is a linear combination of the covariates and the random effects vector <span class="math inline">\(\mathbf{u}_{i}\)</span>:
+<span class="math display">\[\begin{equation}
+\textrm{logit}\{ p_{ij}(\mathbf{u}_{i}) \} = \log\Big( \frac{ p_{ij}(\mathbf{u}_{i})}{ 1 - p_{ij}(\mathbf{u}_{i}) } \Big)
+= \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}
+\end{equation}\]</span></p></li>
+<li><p>As with a linear mixed model, we assume that the random-effects vector <span class="math inline">\(\mathbf{u}_{i}\)</span> has a <strong>multivariate normal distribution</strong> with mean zero and covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}_{\tau}\)</span>
+<span class="math display">\[\begin{equation}
+\mathbf{u}_{i} \sim \textrm{Normal}( \mathbf{0}, \boldsymbol{\Sigma}_{\tau})
+  \end{equation}\]</span></p></li>
+</ol></li>
+</ul>
+</div>
+<div id="glmms-with-count-outcomes" class="section level3 hasAnchor" number="1.4.2">
+<h3><span class="header-section-number">1.4.2</span> GLMMs with Count Outcomes<a href="mixed-models.html#glmms-with-count-outcomes" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li><p>For <strong>count</strong> outcomes, responses are typically assumed to follow a <strong>Poisson</strong> distribution and sometimes a <strong>negative binomial</strong> distribution - conditional on the values of the random effects.</p></li>
+<li><p>For the Poisson model, we assume <span class="math inline">\(Y_{ij}|\mathbf{u}_{i} \sim \textrm{Poisson}\{ \mu_{ij}( \mathbf{u}_{i} ) \}\)</span>,
+<span class="math display">\[\begin{equation}
+E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad
+\textrm{Var}( Y_{ij}| \mathbf{u}_{i} ) = \mu_{ij}(\mathbf{u}_{i})
+\end{equation}\]</span></p></li>
+<li><p>One common problem with the Poisson distribution is <strong>overdispersion</strong> (i.e., variance is greater than the mean).</p>
+<ul>
+<li><p>The variance of the Poisson equals the mean.</p></li>
+<li><p>While the <strong>marginal</strong> variance will not equal the mean in a GLMM, requiring the
+conditional means and variances to be equal could lead to a poor fit.</p></li>
+</ul></li>
+<li><p>For the <strong>negative binomial</strong> model, we assume<br />
+<span class="math inline">\(Y_{ij}|\mathbf{u}_{i} \sim \textrm{NB}\{ \mu_{ij}( \mathbf{u}_{i}) , \phi \}\)</span>,
+<span class="math display">\[\begin{equation}
+E(Y_{ij}| \mathbf{u}_{i}) = \mu_{ij}(\mathbf{u}_{i})  \qquad
+\textrm{Var}( Y_{ij}| \mathbf{u}_{i} ) = \mu_{ij}(\mathbf{u}_{i}) + \phi\mu_{ij}^{2}(\mathbf{u}_{i})
+\end{equation}\]</span></p>
+<ul>
+<li><span class="math inline">\(\phi\)</span> is often referred to as the overdispersion parameter.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>With a GLMM model for <strong>count data</strong>, it is typical to model the <strong>log</strong> of the conditional mean <span class="math inline">\(\mu_{ij}(\mathbf{u}_{i})\)</span> with a linear regression:
+<span class="math display">\[\begin{equation}
+\log\{ \mu_{ij}(\mathbf{u}_{i}) \} = \beta_{0} + \mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}^{T}\mathbf{u}_{i}
+\end{equation}\]</span></p></li>
+<li><p>Again, for the Poisson GLMM, the usual assumption for the random effects is that
+<span class="math display">\[\begin{equation}
+      \mathbf{u}_{i} \sim \textrm{Normal}( \mathbf{0}, \boldsymbol{\Sigma}_{\tau})
+\end{equation}\]</span></p></li>
+</ul>
+</div>
+</div>
+<div id="fitting-linear-mixed-models-lmms-and-generalized-linear-mixed-models-glmms-in-r" class="section level2 hasAnchor" number="1.5">
+<h2><span class="header-section-number">1.5</span> Fitting Linear Mixed Models (LMMs) and Generalized Linear Mixed models (GLMMs) in <strong>R</strong><a href="mixed-models.html#fitting-linear-mixed-models-lmms-and-generalized-linear-mixed-models-glmms-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li>The <strong>lme4</strong> package is probably the most general package
+for fitting LMMs and GLMMs.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="mixed-models.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code></pre></div>
+<ul>
+<li>With <strong>Python</strong>, you can use the <code>mixedlm</code> function from the <code>statmodels</code> module to
+fit linear mixed models.</li>
+</ul>
+<div id="fitting-lmms-with-the-sleepstudy-data" class="section level3 hasAnchor" number="1.5.1">
+<h3><span class="header-section-number">1.5.1</span> Fitting LMMs with the sleepstudy data<a href="mixed-models.html#fitting-lmms-with-the-sleepstudy-data" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>To start off, let’s use the <code>sleepstudy</code> longitudinal data in <code>lme4</code>
+and look at the data from the first two individuals in this data.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="mixed-models.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(sleepstudy) </span>
+<span id="cb2-2"><a href="mixed-models.html#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(sleepstudy) <span class="co"># 18 individuals, each with 10 observations</span></span></code></pre></div>
+<pre><code>## [1] 180   3</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="mixed-models.html#cb4-1" aria-hidden="true" tabindex="-1"></a>sleepstudy[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,] <span class="co"># Data from the subjects with ids: 308 and 309</span></span></code></pre></div>
+<pre><code>##    Reaction Days Subject
+## 1  249.5600    0     308
+## 2  258.7047    1     308
+## 3  250.8006    2     308
+## 4  321.4398    3     308
+## 5  356.8519    4     308
+## 6  414.6901    5     308
+## 7  382.2038    6     308
+## 8  290.1486    7     308
+## 9  430.5853    8     308
+## 10 466.3535    9     308
+## 11 222.7339    0     309
+## 12 205.2658    1     309
+## 13 202.9778    2     309
+## 14 204.7070    3     309
+## 15 207.7161    4     309
+## 16 215.9618    5     309
+## 17 213.6303    6     309
+## 18 217.7272    7     309
+## 19 224.2957    8     309
+## 20 237.3142    9     309</code></pre>
+<ul>
+<li>The <strong>sleepstudy</strong> data is an example of longitudinal data stored in <strong>long format</strong>
+(as opposed to “wide” format).
+<ul>
+<li>In <strong>long format</strong>, each row of the dataset corresponds to an observation from one individual at one time point.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>The <code>lmer</code> function in <code>lme4</code> fits linear mixed models.</p>
+<ul>
+<li>This has many of the same features as the <strong>lm</strong> function in <strong>R</strong>.</li>
+</ul></li>
+<li><p>To fit an LMM with <code>lmer</code>, the main thing to do is to specify
+the <strong>“X” part</strong> of the model (i.e., the fixed effects) and the <strong>“Z” part</strong> of the
+model (i.e., the random effects).</p></li>
+<li><p>The “X” part of the model is done using
+the exact same <strong>“formula notation”</strong> used in the <code>lm</code> function.</p></li>
+<li><p>The “Z” part of the model is done using the following type of syntax:</p></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="mixed-models.html#cb6-1" aria-hidden="true" tabindex="-1"></a>(formula <span class="sc">|</span> group_var)</span></code></pre></div>
+<ul>
+<li><code>group_var</code> is the “grouping variable” used for the random effects
+<ul>
+<li><p>For longitudinal data, this would be the variable which identifies <strong>each individual</strong>.</p></li>
+<li><p>For example, this might be an identifier variable which stores a separate id for each person.</p></li>
+</ul></li>
+</ul>
+<div id="lmm-with-a-single-random-intercept-for-each-subject" class="section level4 hasAnchor" number="1.5.1.1">
+<h4><span class="header-section-number">1.5.1.1</span> LMM with a single, random intercept for each subject<a href="mixed-models.html#lmm-with-a-single-random-intercept-for-each-subject" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<ul>
+<li><p>Let’s fit an LMM where there is a fixed slope for time
+and only a random intercept for each <code>Subject</code>
+<span class="math display" id="eq:lmm-intercept-sleep">\[\begin{equation}
+Y_{ij} = \beta_{0} + \beta_{1}t_{j} + u_{i} + e_{ij}
+\tag{1.4}
+\end{equation}\]</span></p></li>
+<li><p>For the “X” part of this model, we use <code>Reaction ~ Days</code>.</p>
+<ul>
+<li>This gives us a fixed intercept and a fixed slope for the <code>Days</code> variable.</li>
+</ul></li>
+<li><p>For the “Z” part of this model, we just add <code>(1|Subject)</code>.</p>
+<ul>
+<li>This says that there is <strong>only a random intercept</strong> within the grouping variable <code>Subject</code>.</li>
+</ul></li>
+<li><p>Putting these two together, we can fit the LMM <a href="mixed-models.html#eq:lmm-intercept-sleep">(1.4)</a> using the following code:</p></li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="mixed-models.html#cb7-1" aria-hidden="true" tabindex="-1"></a>lmm.sleep.intercept <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Subject), <span class="at">data =</span> sleepstudy)</span></code></pre></div>
+<hr />
+<ul>
+<li><p>You can always use the <code>model.matrix</code> method on
+the fitted <code>lmer</code> object to check that the “X” and “Z” matrices
+correspond to the model you want.</p></li>
+<li><p>Let’s look at the first 5 rows of the “X” matrix from <code>lmm.sleep.intercept</code></p></li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="mixed-models.html#cb8-1" aria-hidden="true" tabindex="-1"></a>x.mat <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(lmm.sleep.intercept)</span>
+<span id="cb8-2"><a href="mixed-models.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="do">## This design matrix should have an intercept column</span></span>
+<span id="cb8-3"><a href="mixed-models.html#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="do">## and a column which stores the &quot;Days&quot; variable</span></span>
+<span id="cb8-4"><a href="mixed-models.html#cb8-4" aria-hidden="true" tabindex="-1"></a>x.mat[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,]</span></code></pre></div>
+<pre><code>##   (Intercept) Days
+## 1           1    0
+## 2           1    1
+## 3           1    2
+## 4           1    3
+## 5           1    4</code></pre>
+<ul>
+<li>Let’s look at the first 20 rows of the “Z” matrix from <code>lmm.intercept</code></li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="mixed-models.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Use argument type = &quot;random&quot; to get random-effects design matrix</span></span>
+<span id="cb10-2"><a href="mixed-models.html#cb10-2" aria-hidden="true" tabindex="-1"></a>z.mat <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(lmm.sleep.intercept, <span class="at">type=</span><span class="st">&quot;random&quot;</span>)</span>
+<span id="cb10-3"><a href="mixed-models.html#cb10-3" aria-hidden="true" tabindex="-1"></a>z.mat[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,] <span class="co"># The . values in zmat correspond to zeros</span></span></code></pre></div>
+<pre><code>## 20 x 18 sparse Matrix of class &quot;dgCMatrix&quot;</code></pre>
+<pre><code>##    [[ suppressing 18 column names &#39;308&#39;, &#39;309&#39;, &#39;310&#39; ... ]]</code></pre>
+<pre><code>##                                       
+## 1  1 . . . . . . . . . . . . . . . . .
+## 2  1 . . . . . . . . . . . . . . . . .
+## 3  1 . . . . . . . . . . . . . . . . .
+## 4  1 . . . . . . . . . . . . . . . . .
+## 5  1 . . . . . . . . . . . . . . . . .
+## 6  1 . . . . . . . . . . . . . . . . .
+## 7  1 . . . . . . . . . . . . . . . . .
+## 8  1 . . . . . . . . . . . . . . . . .
+## 9  1 . . . . . . . . . . . . . . . . .
+## 10 1 . . . . . . . . . . . . . . . . .
+## 11 . 1 . . . . . . . . . . . . . . . .
+## 12 . 1 . . . . . . . . . . . . . . . .
+## 13 . 1 . . . . . . . . . . . . . . . .
+## 14 . 1 . . . . . . . . . . . . . . . .
+## 15 . 1 . . . . . . . . . . . . . . . .
+## 16 . 1 . . . . . . . . . . . . . . . .
+## 17 . 1 . . . . . . . . . . . . . . . .
+## 18 . 1 . . . . . . . . . . . . . . . .
+## 19 . 1 . . . . . . . . . . . . . . . .
+## 20 . 1 . . . . . . . . . . . . . . . .</code></pre>
+<ul>
+<li><p>The <code>.</code> values in <code>z.mat</code> are just zeros.</p></li>
+<li><p>Notice that each <code>Subject</code> has its own “intercept” column.</p>
+<ul>
+<li>This what we want - each <code>Subject</code> has its own intercept.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>Let’s look at the <strong>estimated parameters</strong> from the LMM
+with random intercepts using <code>summary</code></li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="mixed-models.html#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lmm.sleep.intercept)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: Reaction ~ Days + (1 | Subject)
+##    Data: sleepstudy
+## 
+## REML criterion at convergence: 1786.5
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.2257 -0.5529  0.0109  0.5188  4.2506 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  Subject  (Intercept) 1378.2   37.12   
+##  Residual              960.5   30.99   
+## Number of obs: 180, groups:  Subject, 18
+## 
+## Fixed effects:
+##             Estimate Std. Error t value
+## (Intercept) 251.4051     9.7467   25.79
+## Days         10.4673     0.8042   13.02
+## 
+## Correlation of Fixed Effects:
+##      (Intr)
+## Days -0.371</code></pre>
+<ul>
+<li><p>The estimated fixed-effects intercept is <span class="math inline">\(\hat{\beta}_{0} = 251.4\)</span>,
+and the estimated fixed-effects slope is <span class="math inline">\(\hat{\beta}_{1} = 10.5\)</span>.</p></li>
+<li><p>The estimated variance of the random intercept is <span class="math inline">\(\hat{\tau}^{2} = 1378.2\)</span>
+(standard deviation is <span class="math inline">\(\hat{\tau} = 37.1\)</span>).</p>
+<ul>
+<li>i.e., it is estimated that <span class="math inline">\(u_{i} \sim \textrm{Normal}(0, 1378.2)\)</span>.</li>
+</ul></li>
+</ul>
+</div>
+<div id="lmm-with-both-a-random-intercept-and-slope-for-each-subject" class="section level4 hasAnchor" number="1.5.1.2">
+<h4><span class="header-section-number">1.5.1.2</span> LMM with both a random intercept and slope for each subject<a href="mixed-models.html#lmm-with-both-a-random-intercept-and-slope-for-each-subject" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<ul>
+<li><p>Now, let’s fit an LMM where there is a fixed slope for time
+and both a random intercept and slope for each <code>Subject</code>
+<span class="math display" id="eq:lmm-slope-sleep">\[\begin{equation}
+Y_{ij} = \beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j} + e_{ij}
+\tag{1.5}
+\end{equation}\]</span></p></li>
+<li><p>This is done with <code>lmer</code> using the following code:</p></li>
+</ul>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="mixed-models.html#cb16-1" aria-hidden="true" tabindex="-1"></a>lmm.sleep.slope <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (Days<span class="sc">|</span>Subject), <span class="at">data =</span> sleepstudy)</span></code></pre></div>
+<ul>
+<li>Again, let’s check the “X” and “Z” matrices from
+<code>lmm.sleep.slope</code> to double-check that everything makes sense</li>
+</ul>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="mixed-models.html#cb17-1" aria-hidden="true" tabindex="-1"></a>x.mat2 <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(lmm.sleep.slope)</span>
+<span id="cb17-2"><a href="mixed-models.html#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="do">## This design matrix should be the same as that from lmm.sleep.intercept</span></span>
+<span id="cb17-3"><a href="mixed-models.html#cb17-3" aria-hidden="true" tabindex="-1"></a>x.mat2[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,]</span></code></pre></div>
+<pre><code>##   (Intercept) Days
+## 1           1    0
+## 2           1    1
+## 3           1    2
+## 4           1    3
+## 5           1    4</code></pre>
+<ul>
+<li>First 20 rows of the “Z” matrix from <code>lmm.sleep.slope</code>:</li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="mixed-models.html#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Use argument type = &quot;random&quot; to get random-effects design matrix</span></span>
+<span id="cb19-2"><a href="mixed-models.html#cb19-2" aria-hidden="true" tabindex="-1"></a>z.mat2 <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(lmm.sleep.slope, <span class="at">type=</span><span class="st">&quot;random&quot;</span>)</span>
+<span id="cb19-3"><a href="mixed-models.html#cb19-3" aria-hidden="true" tabindex="-1"></a>z.mat2[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,] <span class="co"># The . values in zmat2 correspond to zeros</span></span></code></pre></div>
+<pre><code>## 20 x 36 sparse Matrix of class &quot;dgCMatrix&quot;</code></pre>
+<pre><code>##    [[ suppressing 36 column names &#39;308&#39;, &#39;308&#39;, &#39;309&#39; ... ]]</code></pre>
+<pre><code>##                                                                           
+## 1  1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 2  1 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 3  1 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 4  1 3 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 5  1 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 6  1 5 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 7  1 6 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 8  1 7 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 9  1 8 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 10 1 9 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 11 . . 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 12 . . 1 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 13 . . 1 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 14 . . 1 3 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 15 . . 1 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 16 . . 1 5 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 17 . . 1 6 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 18 . . 1 7 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 19 . . 1 8 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+## 20 . . 1 9 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</code></pre>
+<ul>
+<li>Note that the two columns for each <code>Subject</code> in <code>z.mat2</code>
+are of the form <span class="math inline">\((1, t_{j})\)</span>, which is what we want.</li>
+</ul>
+<hr />
+<ul>
+<li>Let’s look at the <strong>estimated parameters</strong> from <code>lmm.sleep.slope</code></li>
+</ul>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="mixed-models.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lmm.sleep.slope)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: Reaction ~ Days + (Days | Subject)
+##    Data: sleepstudy
+## 
+## REML criterion at convergence: 1743.6
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.9536 -0.4634  0.0231  0.4634  5.1793 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev. Corr
+##  Subject  (Intercept) 612.10   24.741       
+##           Days         35.07    5.922   0.07
+##  Residual             654.94   25.592       
+## Number of obs: 180, groups:  Subject, 18
+## 
+## Fixed effects:
+##             Estimate Std. Error t value
+## (Intercept)  251.405      6.825  36.838
+## Days          10.467      1.546   6.771
+## 
+## Correlation of Fixed Effects:
+##      (Intr)
+## Days -0.138</code></pre>
+<ul>
+<li><p>The estimated fixed-effects coefficients are <span class="math inline">\(\hat{\beta}_{0} = 251.4\)</span>,
+and <span class="math inline">\(\hat{\beta}_{1} = 10.5\)</span> respectively.</p></li>
+<li><p>The estimated standard deviation and correlation of the random effects are</p>
+<ul>
+<li><p>Estimated standard deviation of <span class="math inline">\(u_{i0}\)</span> is <span class="math inline">\(24.7\)</span>.</p></li>
+<li><p>Estimated standard deviation of <span class="math inline">\(u_{i1}\)</span> is <span class="math inline">\(5.9\)</span>.</p></li>
+<li><p>Estimated correlation between <span class="math inline">\(u_{i0}\)</span> and <span class="math inline">\(u_{i1}\)</span> is <span class="math inline">\(0.07\)</span>.</p></li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>Rather than always printing out the entire summary, you can directly extract the estimates of the fixed effects with</li>
+</ul>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="mixed-models.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>( <span class="fu">summary</span>(lmm.sleep.slope) )</span></code></pre></div>
+<pre><code>##              Estimate Std. Error   t value
+## (Intercept) 251.40510   6.824597 36.838090
+## Days         10.46729   1.545790  6.771481</code></pre>
+<ul>
+<li>To directly extract the estimates of the variance (or standard deviation) of the
+random effects, you can use:</li>
+</ul>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="mixed-models.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VarCorr</span>( lmm.sleep.slope )</span></code></pre></div>
+<pre><code>##  Groups   Name        Std.Dev. Corr 
+##  Subject  (Intercept) 24.7407       
+##           Days         5.9221  0.066
+##  Residual             25.5918</code></pre>
+<hr />
+<p><strong>Interpreting the estimated variance of the random effects</strong></p>
+<ul>
+<li>One way I like to think about the magnitude of the variance components is to look
+at the 5th and 95th percentiles of the random effects distribution.
+<ul>
+<li><p>For example, if you only have a random intercept term, then roughly <span class="math inline">\(90\%\)</span> of individuals will have an intercept that falls in the interval <span class="math inline">\([\hat{\beta}_{0} - 1.64\hat{\sigma}_{u0}, \hat{\beta}_{0} + 1.64\hat{\sigma}_{u0}]\)</span>.</p></li>
+<li><p>If you have a random slope term, then roughly <span class="math inline">\(90\%\)</span> of individuals will have an intercept that falls in the interval <span class="math inline">\([\hat{\beta}_{1} - 1.64\hat{\sigma}_{u1}, \hat{\beta}_{1} + 1.64\hat{\sigma}_{u1}]\)</span>.</p></li>
+</ul></li>
+<li>Another idea for helping to interpret the magnitude of the random effects is to plot many random trajectories
+for specific choices of the covariate vector <span class="math inline">\(\mathbf{x}_{i}\)</span> (if the <span class="math inline">\(\mathbf{x}_{i}\)</span> vary across individuals).
+<ul>
+<li>For example, in the <strong>sleepstudy</strong> data, you could plot <span class="math inline">\(\hat{\beta}_{0} + u_{i0} + \hat{\beta}_{1}t_{j} + u_{i1}t_{j}\)</span>
+where the pairs <span class="math inline">\((u_{i0}, u_{i1})\)</span> are generated from the estimated joint Normal distribution.</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="mixed-models.html#cb29-1" aria-hidden="true" tabindex="-1"></a>Sigma.hat <span class="ot">&lt;-</span> <span class="fu">VarCorr</span>( lmm.sleep.slope )<span class="sc">$</span>Subject <span class="co"># This is the random-effects </span></span>
+<span id="cb29-2"><a href="mixed-models.html#cb29-2" aria-hidden="true" tabindex="-1"></a>                                                <span class="co"># covariance matrix</span></span>
+<span id="cb29-3"><a href="mixed-models.html#cb29-3" aria-hidden="true" tabindex="-1"></a>ndraws <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb29-4"><a href="mixed-models.html#cb29-4" aria-hidden="true" tabindex="-1"></a>Sigma.hat.sqrt <span class="ot">&lt;-</span> <span class="fu">chol</span>(Sigma.hat)</span>
+<span id="cb29-5"><a href="mixed-models.html#cb29-5" aria-hidden="true" tabindex="-1"></a>beta.hat <span class="ot">&lt;-</span> <span class="fu">coef</span>( <span class="fu">summary</span>(lmm.sleep.slope) )[,<span class="dv">1</span>]  <span class="co"># estimated fixed effects</span></span>
+<span id="cb29-6"><a href="mixed-models.html#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(beta.hat)</span></code></pre></div>
+<pre><code>## (Intercept)        Days 
+##   251.40510    10.46729</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="mixed-models.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sleepstudy<span class="sc">$</span>Days, sleepstudy<span class="sc">$</span>Reaction, <span class="at">type=</span><span class="st">&quot;n&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Days&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Response&quot;</span>, </span>
+<span id="cb31-2"><a href="mixed-models.html#cb31-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">las=</span><span class="dv">1</span>, <span class="at">main=</span><span class="st">&quot;sleepstudy: Variation in subject-specific trajectories&quot;</span>)</span>
+<span id="cb31-3"><a href="mixed-models.html#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>ndraws) {</span>
+<span id="cb31-4"><a href="mixed-models.html#cb31-4" aria-hidden="true" tabindex="-1"></a>   uvec.draw <span class="ot">&lt;-</span> Sigma.hat.sqrt<span class="sc">%*%</span><span class="fu">rnorm</span>(<span class="dv">2</span>)  <span class="co"># draw random (ui0, ui1) pair</span></span>
+<span id="cb31-5"><a href="mixed-models.html#cb31-5" aria-hidden="true" tabindex="-1"></a>   trajectory <span class="ot">&lt;-</span> beta.hat[<span class="dv">1</span>] <span class="sc">+</span> uvec.draw[<span class="dv">1</span>] <span class="sc">+</span> (<span class="dv">0</span><span class="sc">:</span><span class="dv">9</span>)<span class="sc">*</span>(beta.hat[<span class="dv">2</span>] <span class="sc">+</span> uvec.draw[<span class="dv">2</span>])</span>
+<span id="cb31-6"><a href="mixed-models.html#cb31-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">lines</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">9</span>, trajectory)</span>
+<span id="cb31-7"><a href="mixed-models.html#cb31-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-16"></span>
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-16-1.png" alt="Random trajectories for sleepstudy data using the estimated intercept and slope random-effects variances." width="672" />
+<p class="caption">
+Figure 1.2: Random trajectories for sleepstudy data using the estimated intercept and slope random-effects variances.
+</p>
+</div>
+<!-- * You may also find it useful to report it in terms of "variance explained" by thinking of the vari -->
+</div>
+<div id="model-comparison-with-lmms" class="section level4 hasAnchor" number="1.5.1.3">
+<h4><span class="header-section-number">1.5.1.3</span> Model Comparison with LMMs<a href="mixed-models.html#model-comparison-with-lmms" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<ul>
+<li>The <code>anova</code> function can directly compare <strong>nested</strong> linear mixed models
+that are fit by <code>lmer</code>.
+<ul>
+<li>That is, where one larger model contains all of the components of the smaller model.</li>
+</ul></li>
+<li>To use <code>anova</code>, you should include the argument <code>REML = FALSE</code> so <code>lmer</code>
+uses maximum likelihood estimation.</li>
+</ul>
+<hr />
+<ul>
+<li>As an example, let’s compare the following two models on the <code>sleelpstudy</code> data
+<ul>
+<li><strong>Model M0:</strong> Only has an intercept as a fixed effect and a random intercept for each person.</li>
+<li><strong>Model M1:</strong> Has an intercept and slope as the fixed effects and a random intercept for each person.</li>
+</ul></li>
+<li>Let’s first fit these models using <code>REML = FALSE</code>:</li>
+</ul>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="mixed-models.html#cb32-1" aria-hidden="true" tabindex="-1"></a>M0 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Reaction <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Subject), <span class="at">data =</span> sleepstudy, <span class="at">REML=</span><span class="cn">FALSE</span>)</span>
+<span id="cb32-2"><a href="mixed-models.html#cb32-2" aria-hidden="true" tabindex="-1"></a>M1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Subject), <span class="at">data =</span> sleepstudy, <span class="at">REML=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<ul>
+<li>Running <code>anova(M0, M1)</code> will perform a chi-square test comparing
+these two models.
+<ul>
+<li><code>anova(M0, M1)</code> also reports an <strong>AIC</strong> and <strong>BIC</strong> measure.</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="mixed-models.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(M0, M1)</span></code></pre></div>
+<pre><code>## Data: sleepstudy
+## Models:
+## M0: Reaction ~ 1 + (1 | Subject)
+## M1: Reaction ~ Days + (1 | Subject)
+##    npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)    
+## M0    3 1916.5 1926.1 -955.27   1910.5                         
+## M1    4 1802.1 1814.8 -897.04   1794.1 116.46  1  &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<ul>
+<li>We can see that the chi-square statistic is very large.
+<ul>
+<li>There is strong evidence in favor of model <strong>M1</strong> over <strong>M0</strong>.</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>Now, suppose we want to compare the following two models
+<ul>
+<li><strong>Model M1:</strong> Has an intercept and slope as the fixed effects and a random intercept for each person.</li>
+<li><strong>Model M2:</strong> Has an intercept and slope as the fixed effects and a random intercept <strong>and slope</strong> for each person.</li>
+</ul></li>
+<li>To compare <strong>M1</strong> with <strong>M2</strong>, let’s fit <strong>M2</strong> with <code>REML = FALSE</code>:</li>
+</ul>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="mixed-models.html#cb35-1" aria-hidden="true" tabindex="-1"></a>M2 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (Days<span class="sc">|</span>Subject), <span class="at">data =</span> sleepstudy, <span class="at">REML=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<ul>
+<li>Now, use <code>anova(M1, M2)</code> to compare these models directly</li>
+</ul>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="mixed-models.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(M1, M2)</span></code></pre></div>
+<pre><code>## Data: sleepstudy
+## Models:
+## M1: Reaction ~ Days + (1 | Subject)
+## M2: Reaction ~ Days + (Days | Subject)
+##    npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)    
+## M1    4 1802.1 1814.8 -897.04   1794.1                         
+## M2    6 1763.9 1783.1 -875.97   1751.9 42.139  2  7.072e-10 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<ul>
+<li>Based on the chi-square statistic and associated p-value,
+there is strong evidence favoring <strong>M2</strong> over <strong>M1</strong>.</li>
+</ul>
+</div>
+<div id="extracting-blups-in-lme4" class="section level4 hasAnchor" number="1.5.1.4">
+<h4><span class="header-section-number">1.5.1.4</span> Extracting BLUPs in lme4<a href="mixed-models.html#extracting-blups-in-lme4" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<ul>
+<li>To get the “BLUPs” the intercepts and slopes <span class="math inline">\(\textrm{BLUP}(u_{i0})\)</span> and <span class="math inline">\(\textrm{BLUP}(u_{i1})\)</span>,
+use <code>ranef</code></li>
+</ul>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="mixed-models.html#cb38-1" aria-hidden="true" tabindex="-1"></a>blups.slope <span class="ot">&lt;-</span> <span class="fu">ranef</span>( lmm.sleep.slope )</span></code></pre></div>
+<ul>
+<li>To plot these, use <code>dotplot</code> (you will need to load the <code>lattice</code> package first)</li>
+</ul>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="mixed-models.html#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lattice)</span>
+<span id="cb39-2"><a href="mixed-models.html#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dotplot</span>(blups.slope)</span></code></pre></div>
+<pre><code>## $Subject</code></pre>
+<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="mixed-models.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="do">## This plots subjects sorted by individual-specific estimates of intercepts</span></span></code></pre></div>
+<hr />
+<ul>
+<li>To extract the “predicted” random effects into a <code>DataFrame</code> use</li>
+</ul>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="mixed-models.html#cb42-1" aria-hidden="true" tabindex="-1"></a>ranef.df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>( blups.slope)</span>
+<span id="cb42-2"><a href="mixed-models.html#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ranef.df)</span></code></pre></div>
+<pre><code>##    grpvar        term grp    condval   condsd
+## 1 Subject (Intercept) 308   2.258551 12.07086
+## 2 Subject (Intercept) 309 -40.398738 12.07086
+## 3 Subject (Intercept) 310 -38.960409 12.07086
+## 4 Subject (Intercept) 330  23.690620 12.07086
+## 5 Subject (Intercept) 331  22.260313 12.07086
+## 6 Subject (Intercept) 332   9.039568 12.07086</code></pre>
+<ul>
+<li>This returns a data frame of the BLUPs for each random effect
+along with a “standard error” for each BLUP.</li>
+</ul>
+<hr />
+<ul>
+<li><p>What we discussed earlier in Section 1.3, were the BLUPs
+for <span class="math inline">\(\mathbf{x}_{ij}^{T}\boldsymbol{\beta} + \mathbf{z}_{ij}\mathbf{u}_{i}\)</span> not
+just the individual components of <span class="math inline">\(\mathbf{u}_{i}\)</span>.</p></li>
+<li><p>For this random intercept and slope model, this is
+<span class="math inline">\(\textrm{BLUP}(\beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j})\)</span></p></li>
+<li><p>These are obtained by using the <code>fitted</code> method</p></li>
+</ul>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="mixed-models.html#cb44-1" aria-hidden="true" tabindex="-1"></a>blup.full <span class="ot">&lt;-</span> <span class="fu">fitted</span>( lmm.sleep.slope )  <span class="co"># Should be a vector of length 180</span></span></code></pre></div>
+<ul>
+<li>If we plot <span class="math inline">\(\textrm{BLUP}(\beta_{0} + \beta_{1}t_{j} + u_{i0} + u_{i1}t_{j})\)</span> as a function of time for all individuals, it will look like the following:</li>
+</ul>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="mixed-models.html#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb45-2"><a href="mixed-models.html#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="co"># First add the BLUPs to the sleepstudy data as a separate variable</span></span>
+<span id="cb45-3"><a href="mixed-models.html#cb45-3" aria-hidden="true" tabindex="-1"></a>sleepstudy<span class="sc">$</span>blups <span class="ot">&lt;-</span> blup.full</span>
+<span id="cb45-4"><a href="mixed-models.html#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-5"><a href="mixed-models.html#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Now plot BLUPs vs. study data for each subject</span></span>
+<span id="cb45-6"><a href="mixed-models.html#cb45-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sleepstudy, <span class="fu">aes</span>(<span class="at">x=</span>Days, <span class="at">y=</span>blups, <span class="at">group=</span>Subject)) <span class="sc">+</span></span>
+<span id="cb45-7"><a href="mixed-models.html#cb45-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">color=</span>Subject)) <span class="sc">+</span> </span>
+<span id="cb45-8"><a href="mixed-models.html#cb45-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;BLUPs in Random Intercept + Random Slope Model&quot;</span>,</span>
+<span id="cb45-9"><a href="mixed-models.html#cb45-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Reaction Time&quot;</span>)</span></code></pre></div>
+<p><img src="01-MixedModels_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<hr />
+</div>
+</div>
+<div id="fitting-binary-glmms-using-the-ohio-data" class="section level3 hasAnchor" number="1.5.2">
+<h3><span class="header-section-number">1.5.2</span> Fitting Binary GLMMs using the Ohio data<a href="mixed-models.html#fitting-binary-glmms-using-the-ohio-data" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>To use the <strong>ohio</strong> data, we will first load the <strong>geepack</strong> R package:</li>
+</ul>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="mixed-models.html#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geepack)</span></code></pre></div>
+<ul>
+<li>This dataset has 2148 observations from 537 individuals</li>
+</ul>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="mixed-models.html#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(ohio)</span>
+<span id="cb47-2"><a href="mixed-models.html#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ohio, <span class="dv">12</span>) <span class="co"># look at first 12 rows of ohio</span></span></code></pre></div>
+<pre><code>##    resp id age smoke
+## 1     0  0  -2     0
+## 2     0  0  -1     0
+## 3     0  0   0     0
+## 4     0  0   1     0
+## 5     0  1  -2     0
+## 6     0  1  -1     0
+## 7     0  1   0     0
+## 8     0  1   1     0
+## 9     0  2  -2     0
+## 10    0  2  -1     0
+## 11    0  2   0     0
+## 12    0  2   1     0</code></pre>
+<ul>
+<li><p>The outcome of interest in <strong>ohio</strong> is “wheezing status”: 1 - yes, 0 - no.</p>
+<ul>
+<li>The <strong>resp</strong> variable contains wheezing status.</li>
+</ul></li>
+<li><p>The <strong>id</strong> variable contains the unique identifier for each individual.</p></li>
+<li><p>The <strong>age</strong> in the <strong>ohio</strong> dataset is the time variable.</p>
+<ul>
+<li><p>The age variable is recorded as: (<strong>age in years</strong> - 9).</p></li>
+<li><p>Each individual starts the study at 7 years of age.</p></li>
+</ul></li>
+<li><p>The <strong>smoke</strong> variable is an indicator of maternal smoking at the starting year of the study.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>In <strong>lme4</strong>, fitting a GLMM with binary responses can be done with the <strong>glmer</strong> function.</p></li>
+<li><p>The <strong>glmer</strong> function has the following syntax:</p></li>
+</ul>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="mixed-models.html#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glmer</span>(formula, data, family)</span></code></pre></div>
+<ul>
+<li><p>The <code>formula</code> argument uses the same syntax as <code>lmer</code></p></li>
+<li><p>When handling binary outcomes, you need to specify the family argument as: <code>family = binomial</code>.</p></li>
+</ul>
+<hr />
+<ul>
+<li>Just exploring this data by looking at the raw proportions, it appears that
+<ul>
+<li>probability of wheezing <strong>decreases</strong> as age increases (within each level of smoking)</li>
+<li>maternal smoking <strong>increases</strong> the probability of wheezing at each age</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="mixed-models.html#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb50-2"><a href="mixed-models.html#cb50-2" aria-hidden="true" tabindex="-1"></a>prop_summary_ohio <span class="ot">&lt;-</span> ohio <span class="sc">%&gt;%</span> </span>
+<span id="cb50-3"><a href="mixed-models.html#cb50-3" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">group_by</span>(smoke, age) <span class="sc">%&gt;%</span> </span>
+<span id="cb50-4"><a href="mixed-models.html#cb50-4" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">summarize</span>( <span class="at">prop_wheeze =</span> <span class="fu">mean</span>(resp) )</span>
+<span id="cb50-5"><a href="mixed-models.html#cb50-5" aria-hidden="true" tabindex="-1"></a>prop_summary_ohio</span></code></pre></div>
+<pre><code>## # A tibble: 8 × 3
+## # Groups:   smoke [2]
+##   smoke   age prop_wheeze
+##   &lt;int&gt; &lt;int&gt;       &lt;dbl&gt;
+## 1     0    -2       0.16 
+## 2     0    -1       0.149
+## 3     0     0       0.143
+## 4     0     1       0.106
+## 5     1    -2       0.166
+## 6     1    -1       0.209
+## 7     1     0       0.187
+## 8     1     1       0.139</code></pre>
+<ul>
+<li>So, we are probably going to want to include both <strong>age</strong> and <strong>smoke</strong> in our model.</li>
+</ul>
+<div id="a-random-intercept-model" class="section level4 hasAnchor" number="1.5.2.1">
+<h4><span class="header-section-number">1.5.2.1</span> A Random Intercept Model<a href="mixed-models.html#a-random-intercept-model" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<ul>
+<li>Let’s use a GLMM to explore the relationship between wheezing status and the:
+<ul>
+<li><strong>age</strong> of the child</li>
+<li>maternal <strong>smoking status</strong></li>
+</ul></li>
+<li>A GLMM for wheezing status which has age and smoking status as fixed effects and
+random individual-specific intercepts can be expressed as</li>
+</ul>
+<p><span class="math display" id="eq:ohio-intercept">\[\begin{equation}
+\textrm{logit}\{ p_{ij}(u_{i}) \}  = \beta_{0} + \beta_{age}\textrm{age}_{ij}
++ \beta_{smk}\textrm{smoke}_{i} + u_{i}
+\tag{1.6}
+\end{equation}\]</span></p>
+<ul>
+<li>Model <a href="mixed-models.html#eq:ohio-intercept">(1.6)</a> can be fit with the following code</li>
+</ul>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="mixed-models.html#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># id is the grouping variable</span></span>
+<span id="cb52-2"><a href="mixed-models.html#cb52-2" aria-hidden="true" tabindex="-1"></a>ohio.intercept <span class="ot">&lt;-</span> <span class="fu">glmer</span>(resp <span class="sc">~</span> age <span class="sc">+</span> smoke <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> id), <span class="at">data =</span> ohio, <span class="at">family =</span> binomial)</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="mixed-models.html#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">summary</span>(ohio.intercept))</span></code></pre></div>
+<pre><code>##               Estimate Std. Error    z value     Pr(&gt;|z|)
+## (Intercept) -3.3739539 0.27497502 -12.270038 1.311914e-34
+## age         -0.1767645 0.06796698  -2.600741 9.302258e-03
+## smoke        0.4147806 0.28704052   1.445024 1.484510e-01</code></pre>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="mixed-models.html#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VarCorr</span>(ohio.intercept)</span></code></pre></div>
+<pre><code>##  Groups Name        Std.Dev.
+##  id     (Intercept) 2.3432</code></pre>
+<hr />
+<ul>
+<li><p>For a binary GLMM, the <strong>estimated standard deviation</strong> for the random intercept can be a little hard to interpret,
+though this value seems rather large to me.</p></li>
+<li><p>One way to report this is to look at the <strong>variation</strong> in <span class="math inline">\(p_{ij}(u_{i})\)</span> for different values of <strong>age</strong> and <strong>smoking status</strong>.</p>
+<ul>
+<li>For this purpose, you could report the interval <span class="math inline">\(\textrm{expit}\big(\hat{\beta}_{0} + \hat{\beta}_{age}\times \textrm{age} + \hat{\beta}_{smk}\times \textrm{smoke} \pm 1.64\hat{\sigma}_{u0} \big)\)</span>,
+where <span class="math inline">\(\textrm{expit}(x) = 1/(1 + e^{-x})\)</span></li>
+</ul></li>
+<li><p>One way to interpret the variation <strong>visually</strong> is to randomly generate
+many values of <span class="math inline">\(p_{ij}( u_{i} )\)</span> using the estimated distribution of <span class="math inline">\(u_{i}\)</span> to simulate the values of <span class="math inline">\(u_{i}\)</span>.</p>
+<ul>
+<li>This can help us to get a sense of how much <strong>variability</strong> there is in wheezing probability <strong>across individuals</strong>.</li>
+</ul></li>
+<li><p>To do this, I simulated values of <span class="math inline">\(p_{ij}( u_{i} )\)</span> for each combination of age/smoking status and
+plotted the results in 8 densities in 4 panels.</p>
+<ul>
+<li>It would probably be better to use some sort of bounded density estimator for these plots.</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="mixed-models.html#cb57-1" aria-hidden="true" tabindex="-1"></a>beta.hat <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(ohio.intercept))[,<span class="dv">1</span>]</span>
+<span id="cb57-2"><a href="mixed-models.html#cb57-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb57-3"><a href="mixed-models.html#cb57-3" aria-hidden="true" tabindex="-1"></a>pneg2.smoke <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">rnorm</span>(n,<span class="at">sd=</span><span class="fl">2.34</span>) <span class="sc">+</span> beta.hat[<span class="dv">1</span>] <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>beta.hat[<span class="dv">2</span>] <span class="sc">+</span> beta.hat[<span class="dv">3</span>]) <span class="co">#age -2 with smoke</span></span>
+<span id="cb57-4"><a href="mixed-models.html#cb57-4" aria-hidden="true" tabindex="-1"></a>pneg2 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">rnorm</span>(n, <span class="at">sd=</span><span class="fl">2.34</span>) <span class="sc">+</span> beta.hat[<span class="dv">1</span>] <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>beta.hat[<span class="dv">2</span>]) <span class="co">#age -2 w/o smoke</span></span>
+<span id="cb57-5"><a href="mixed-models.html#cb57-5" aria-hidden="true" tabindex="-1"></a>pneg1.smoke <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">rnorm</span>(n,<span class="at">sd=</span><span class="fl">2.34</span>) <span class="sc">+</span> beta.hat[<span class="dv">1</span>] <span class="sc">-</span> <span class="dv">1</span><span class="sc">*</span>beta.hat[<span class="dv">2</span>] <span class="sc">+</span> beta.hat[<span class="dv">3</span>]) <span class="co">#age -1 with smoke</span></span>
+<span id="cb57-6"><a href="mixed-models.html#cb57-6" aria-hidden="true" tabindex="-1"></a>pneg1 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">rnorm</span>(n, <span class="at">sd=</span><span class="fl">2.34</span>) <span class="sc">+</span> beta.hat[<span class="dv">1</span>] <span class="sc">-</span> <span class="dv">1</span><span class="sc">*</span>beta.hat[<span class="dv">2</span>]) <span class="co"># age -1 w/o smoke</span></span>
+<span id="cb57-7"><a href="mixed-models.html#cb57-7" aria-hidden="true" tabindex="-1"></a>p0.smoke <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">rnorm</span>(n, <span class="at">sd=</span><span class="fl">2.34</span>) <span class="sc">+</span> beta.hat[<span class="dv">1</span>] <span class="sc">+</span> beta.hat[<span class="dv">3</span>]) <span class="co"># age 0 with smoke</span></span>
+<span id="cb57-8"><a href="mixed-models.html#cb57-8" aria-hidden="true" tabindex="-1"></a>p0 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">rnorm</span>(n, <span class="at">sd=</span><span class="fl">2.34</span>) <span class="sc">+</span> beta.hat[<span class="dv">1</span>]) <span class="co"># age 0 w/o smoke</span></span>
+<span id="cb57-9"><a href="mixed-models.html#cb57-9" aria-hidden="true" tabindex="-1"></a>p1.smoke <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">rnorm</span>(n,<span class="at">sd=</span><span class="fl">2.34</span>) <span class="sc">+</span> beta.hat[<span class="dv">1</span>] <span class="sc">+</span> beta.hat[<span class="dv">2</span>] <span class="sc">+</span> beta.hat[<span class="dv">3</span>]) <span class="co"># age 1 with smoke</span></span>
+<span id="cb57-10"><a href="mixed-models.html#cb57-10" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">rnorm</span>(n, <span class="at">sd=</span><span class="fl">2.34</span>) <span class="sc">+</span> beta.hat[<span class="dv">1</span>] <span class="sc">+</span> beta.hat[<span class="dv">2</span>]) <span class="co"># age 1 w/o smoke</span></span>
+<span id="cb57-11"><a href="mixed-models.html#cb57-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-12"><a href="mixed-models.html#cb57-12" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>), <span class="at">mar=</span><span class="fu">c</span>(<span class="fl">4.1</span>, <span class="fl">4.1</span>, .<span class="dv">5</span>, .<span class="dv">5</span>))</span>
+<span id="cb57-13"><a href="mixed-models.html#cb57-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(pneg2), <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 7&quot;</span>, <span class="at">main=</span><span class="st">&quot;&quot;</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span>
+<span id="cb57-14"><a href="mixed-models.html#cb57-14" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">density</span>(pneg2.smoke)</span>
+<span id="cb57-15"><a href="mixed-models.html#cb57-15" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(d<span class="sc">$</span>x, d<span class="sc">$</span>y, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb57-16"><a href="mixed-models.html#cb57-16" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="at">bty=</span><span class="st">&#39;n&#39;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb57-17"><a href="mixed-models.html#cb57-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(pneg1), <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 8&quot;</span>, <span class="at">main=</span><span class="st">&quot;&quot;</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span>
+<span id="cb57-18"><a href="mixed-models.html#cb57-18" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">density</span>(pneg1.smoke)</span>
+<span id="cb57-19"><a href="mixed-models.html#cb57-19" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(d<span class="sc">$</span>x, d<span class="sc">$</span>y, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb57-20"><a href="mixed-models.html#cb57-20" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="at">bty=</span><span class="st">&#39;n&#39;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb57-21"><a href="mixed-models.html#cb57-21" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(p0), <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 9&quot;</span>, <span class="at">main=</span><span class="st">&quot;&quot;</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span>
+<span id="cb57-22"><a href="mixed-models.html#cb57-22" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">density</span>(p0.smoke)</span>
+<span id="cb57-23"><a href="mixed-models.html#cb57-23" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(d<span class="sc">$</span>x, d<span class="sc">$</span>y, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb57-24"><a href="mixed-models.html#cb57-24" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="at">bty=</span><span class="st">&#39;n&#39;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb57-25"><a href="mixed-models.html#cb57-25" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(p1), <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">xlab =</span> <span class="st">&quot;Probability of Wheezing at Age 10&quot;</span>, <span class="at">main=</span><span class="st">&quot;&quot;</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span>
+<span id="cb57-26"><a href="mixed-models.html#cb57-26" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">density</span>(p1.smoke)</span>
+<span id="cb57-27"><a href="mixed-models.html#cb57-27" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(d<span class="sc">$</span>x, d<span class="sc">$</span>y, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb57-28"><a href="mixed-models.html#cb57-28" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Smoke&quot;</span>, <span class="st">&quot;No Smoke&quot;</span>), <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="at">bty=</span><span class="st">&#39;n&#39;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-33"></span>
+<img src="01-MixedModels_files/figure-html/unnamed-chunk-33-1.png" alt="Distribution of Wheezing probability across individuals for different values of age and smoking status" width="672" />
+<p class="caption">
+Figure 1.3: Distribution of Wheezing probability across individuals for different values of age and smoking status
+</p>
+</div>
+<hr />
+
+</div>
+</div>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-diggle2013" class="csl-entry">
+Diggle, Peter, Patrick Heagerty, Kung-Yee Liang, and Scott Zeger. 2013. <em>Analysis of Longitudinal Data</em>. Vol. 25.
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="missing-data.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

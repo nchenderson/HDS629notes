@@ -136,7 +136,7 @@ to be roughly equal to $P(g(\mathbf{x}_{i}) \geq t)$.
 which is available in the `biopsy` dataset from the `MASS` package.
 
 
-```r
+``` r
 library(MASS)
 data(biopsy)
 head(biopsy)
@@ -152,7 +152,7 @@ head(biopsy)
 ## 6 1017122  8 10 10  8  7 10  9  7  1 malignant
 ```
 
-```r
+``` r
 ## Look at number of "benign" and "malignant" tumors
 table(biopsy$class)
 ```
@@ -163,7 +163,7 @@ table(biopsy$class)
 ##       458       241
 ```
 
-```r
+``` r
 biopsy$tumor.type <- ifelse(biopsy$class=="malignant", 1, 0)
 table(biopsy$tumor.type)
 ```
@@ -181,14 +181,14 @@ with `class` as the **outcome** and variables `V1, V3, V4, V7, V8` as the **cova
 will be the predicted probability of having a malignant tumor given the covariate information 
 
 
-```r
+``` r
 logreg.model <- glm(tumor.type ~ V1 + V3 + V4 + V7 + V8, family="binomial", data=biopsy)
 risk.score <- logreg.model$fitted.values
 ```
 
 * Let's now compute the **sensitivity** and **specificity** for a threshold of $t = 0.5$
 
-```r
+``` r
 Sensitivity <- function(thresh, Y, risk.score) {
     sum((risk.score >= thresh)*Y)/sum(Y)
 }
@@ -202,7 +202,7 @@ Sensitivity(0.5, Y=biopsy$tumor.type, risk.score)
 ## [1] 0.9502075
 ```
 
-```r
+``` r
 Specificity(0.5, Y=biopsy$tumor.type, risk.score)
 ```
 
@@ -219,7 +219,7 @@ about $0.975$.
 for each risk score (plus the values of 0 and 1).
 
 
-```r
+``` r
 sorted.riskscores <- c(1, sort(risk.score, decreasing=TRUE), 0) 
 mm <- length(sorted.riskscores)
 roc.y <- roc.x <- rep(0, mm)
@@ -242,7 +242,7 @@ abline(0, 1)
 we generate risk scores randomly from a **uniform distribution**.
 
 
-```r
+``` r
 rr <- runif(nrow(biopsy))
 sorted.rr <- c(1, sort(rr, decreasing=TRUE), 0) 
 mm <- length(sorted.rr)
@@ -363,7 +363,7 @@ a risk score generated at random.
 
 * Let's compute the AUC for our logistic regression-based **risk score** for the `biopsy` data:
 
-```r
+``` r
 AUC.biopsy <- sum(roc.y[-length(roc.y)]*diff(roc.x))
 round(AUC.biopsy, 4)
 ```
@@ -384,14 +384,14 @@ the `pROC` package.
 outcomes and risk scores into the `roc` function in order to get an "roc object".
 
 
-```r
+``` r
 library(pROC)
 roc.biopsy <- roc(biopsy$tumor.type, risk.score)
 ```
 
 * To find the AUC, you can then use `auc(roc.biopsy)`
 
-```r
+``` r
 auc( roc.biopsy )
 ```
 
@@ -403,7 +403,7 @@ auc( roc.biopsy )
 
 * You can **plot** the ROC curve by just plugging in the roc object into the `plot` function.
 
-```r
+``` r
 plot(roc.biopsy)
 ```
 
@@ -411,7 +411,7 @@ plot(roc.biopsy)
 
 * To also print the **AUC** value, you can just add `print.auc=TRUE`
 
-```r
+``` r
 plot(roc.biopsy, print.auc=TRUE)
 ```
 
@@ -460,7 +460,7 @@ for each $k$.
 * First, let's make **10 risk strata** using the quantiles of our logistic regression-based risk score.
 
 
-```r
+``` r
 rr <- c(0, quantile(risk.score, prob=seq(0.1, 0.9, by=0.1)), 1)
 rr
 ```
@@ -475,7 +475,7 @@ rr
 
 * Now, compute **observed and expected frequencies** for each of the risk strata and plot the result:
 
-```r
+``` r
 observed.freq <- pred.freq <- rep(0, 10)
 for(k in 2:11) {
    ind <- risk.score <= rr[k] & risk.score > rr[k-1] # stratum indicators
@@ -501,7 +501,7 @@ good calibration.
 a regression of expected vs. observed frequencies is reported.
    + We should expect that the intercept should be close to $0$ and the slope should be close to $1$ for a well-calibrated risk score.
 
-```r
+``` r
 lm(pred.freq ~ observed.freq)
 ```
 

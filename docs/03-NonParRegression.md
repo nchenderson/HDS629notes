@@ -100,7 +100,7 @@ by a larger number of observations.
 measured across 10 days.
 
 
-```r
+``` r
 library(lme4)
 ```
 
@@ -108,7 +108,7 @@ library(lme4)
 ## Loading required package: Matrix
 ```
 
-```r
+``` r
 data(sleepstudy)
 head(sleepstudy)
 ```
@@ -132,8 +132,15 @@ head(sleepstudy)
 * We will assume that reaction time is a **linear function** of time on study: 
     + That is, we will assume that $\mu(t) = \beta_{0} + \beta_{1} t$.
 
-```r
+``` r
 library(geepack)
+```
+
+```
+## Warning: package 'geepack' was built under R version 4.4.1
+```
+
+``` r
 ## Use AR(1) correlation structure
 sleep.gee <- geeglm(Reaction ~ Days, data=sleepstudy, id=Subject, corstr="ar1") 
 ```
@@ -141,7 +148,7 @@ sleep.gee <- geeglm(Reaction ~ Days, data=sleepstudy, id=Subject, corstr="ar1")
 * To get the value of the estimated **regression function**, we can use the first
 $10$ fitted values (because the fitted values for each subject are the same as the overall mean function)
 
-```r
+``` r
 ## Estimated mean function at each time point
 gee.regfn <- sleep.gee$fitted.values[1:10,1] 
 
@@ -163,7 +170,7 @@ lines(0:9, gee.regfn, lwd=2, col="red")
 * Using a **bandwidth** of $0.5$ and a **Gaussian kernel**, we can find the kernel regression estimate of the mean function 
 with the following **R** code:
 
-```r
+``` r
 sleep.kernel <- ksmooth(sleepstudy$Days, sleepstudy$Reaction, kernel="normal",
                         bandwidth = 0.5)
 ```
@@ -177,7 +184,7 @@ is estimated. The `y` vector will be a vector containing the estimated values of
 
 * Let's **plot** the estimated mean function to see what it looks like:
 
-```r
+``` r
 plot(sleepstudy$Days, sleepstudy$Reaction, las=1, ylab="Reaction Time", xlab="Days",
      main="Sleepstudy: Kernel Regression with Bandwidth = 0.5", type="n")
 points(sleepstudy$Days, sleepstudy$Reaction, pch=16, cex=0.8)
@@ -191,7 +198,7 @@ some of the days.
 
 * We can try a **bandwidth** of $1$ to see if we can smooth this out a bit.
 
-```r
+``` r
 sleep.kernel.bw1 <- ksmooth(sleepstudy$Days, sleepstudy$Reaction, kernel="normal",
                         bandwidth = 1)
 
@@ -249,7 +256,7 @@ defined as
 by the average mineral density on those visits.
 
 
-```r
+``` r
 bonedat <- read.table("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/bone.data", 
                       header=TRUE)
 head(bonedat)
@@ -275,7 +282,7 @@ density (the variable `spnbmd`) as a function of `age`
 * We can compute the leave-one-out cross-validation score for the **bone** data 
 for **different** values of $h_{n}$ (here $0.1 \leq h_{n} \leq 1$) with the following code:
 
-```r
+``` r
 nh <- 200
 hh <- seq(.1, 1, length.out=nh)
 LOOCV <- rep(0, nh)
@@ -309,7 +316,7 @@ subject-level leave-one-out cross-validation criterion.
 * The kernel regression estimate of the mean function with the bandwidth of $0.1$ is plotted below:
 
 
-```r
+``` r
 bone.kernel <- ksmooth(bonedat$age, bonedat$spnbmd, kernel="normal",
                         bandwidth = 0.1, x.points=seq(9.4, 25, length.out=100))
 
@@ -376,13 +383,13 @@ in the **same way** as in a "typical" regression setting.
 
 * Regression splines can be fitted in R by using the `splines` package
 
-```r
+``` r
 library(splines)
 ```
 
 * The `bs` function in `splines` generates the B-spline "design" matrix 
 
-```r
+``` r
 bs(x, df, knots, degree)
 ```
 * `x` - vector of covariates values. This can also just be the name of a variable when `bs` is used inside a function such as `geeglm`.
@@ -404,7 +411,7 @@ bs(x, df, knots, degree)
 
 * To fit this with an **AR1 correlation structure**, you would use the following code: 
 
-```r
+``` r
 gee.bone0 <- geeglm(spnbmd ~ bs(age, df=6), id=idnum, data=bonedat,
                     corstr = "ar1")
 ```
@@ -416,7 +423,7 @@ gee.bone0 <- geeglm(spnbmd ~ bs(age, df=6), id=idnum, data=bonedat,
 
 * We can look at the estimates of the regression coefficients by using `summary`.
 
-```r
+``` r
 summary( gee.bone0 )
 ```
 
@@ -461,7 +468,7 @@ summary( gee.bone0 )
 of $\hat{f}_{0}(t_{ij})$ for each $t_{ij}$.
 
 
-```r
+``` r
 ## First 5 observations and corresponding fitted values
 bonedat$age[1:5]
 ```
@@ -470,7 +477,7 @@ bonedat$age[1:5]
 ## [1] 11.70 12.70 13.75 13.25 14.30
 ```
 
-```r
+``` r
 gee.bone0$fitted.values[1:5]
 ```
 
@@ -482,7 +489,7 @@ gee.bone0$fitted.values[1:5]
 
 * To **plot** the estimated mean function, we can just draw lines through the fitted values:
 
-```r
+``` r
 plot(bonedat$age, bonedat$spnbmd, xlab="age", ylab="spnbmd", 
      main="Regression Spline Estimate for Bone Data", las=1)
 lines(bonedat$age[order(bonedat$age)], 
@@ -491,7 +498,7 @@ lines(bonedat$age[order(bonedat$age)],
 
 <img src="03-NonParRegression_files/figure-html/unnamed-chunk-19-1.png" width="672" />
 
-```r
+``` r
 ## Use order(bonedat$age) so that the observations are
 ## sorted by age.
 ```
@@ -518,7 +525,7 @@ and $A_{ij} = 0$ if the $(i,j)$ observation corresponds to a female individual.
 
 * To fit model \@ref(eq:gee-bone) using the `geepack` package, you can use the following code
 
-```r
+``` r
 library(splines)
 gee.bone01 <- geeglm(spnbmd ~ bs(age, df=6) + gender*bs(age,df=6), id=idnum, data=bonedat,
                    corstr="ar1")
@@ -526,7 +533,7 @@ gee.bone01 <- geeglm(spnbmd ~ bs(age, df=6) + gender*bs(age,df=6), id=idnum, dat
 
 * We can plot the estimated mean functions by first extracting the **fitted values** for both the male and female groups:
 
-```r
+``` r
 male.fitted <- gee.bone01$fitted.values[bonedat$gender=="male"]
 male.age <- bonedat$age[bonedat$gender=="male"]
 female.fitted <- gee.bone01$fitted.values[bonedat$gender=="female"]
@@ -535,7 +542,7 @@ female.age <- bonedat$age[bonedat$gender=="female"]
 
 * Now, plot the fitted curves for both groups
 
-```r
+``` r
 plot(bonedat$age, bonedat$spnbmd, lwd=1, xlab="age", ylab="spnbmd", 
      main="Regression Splines for the Bone Data", las=1)
 points(bonedat$age[bonedat$gender=="male"], bonedat$spnbmd[bonedat$gender=="male"], 
@@ -563,7 +570,7 @@ legend("topright", legend=c("Male", "Female"), col=c("red", "blue"), lwd=3, bty=
 
 * This could be fit with the following code:
 
-```r
+``` r
 gee.bone1 <- geeglm(spnbmd ~ bs(age, df=6) + gender, id=idnum, data=bonedat,
                     corstr="ar1")
 ```
@@ -595,7 +602,7 @@ gee.bone1 <- geeglm(spnbmd ~ bs(age, df=6) + gender, id=idnum, data=bonedat,
 
 * To compare, $\mu(t_{ij}) = f_{0}(t_{ij})$ vs. $\mu(t_{ij}) = f_{0}(t_{ij}) + \beta_{1}A_{ij}$ do the following:
 
-```r
+``` r
 anova( gee.bone0, gee.bone1)
 ```
 
@@ -617,7 +624,7 @@ $\mu(t_{ij}) = f_{0}(t_{ij})$.
 
 * Now, let's compare the models $\mu(t_{ij}) = f_{0}(t_{ij})$ vs. $\mu(t_{ij}) = f_{0}(t_{ij}) + A_{ij}f_{1}(t_{ij})$
 
-```r
+``` r
 anova( gee.bone0, gee.bone01)
 ```
 
@@ -640,13 +647,13 @@ over the model $\mu(t_{ij}) = f_{0}(t_{ij})$.
 ### ACTG trial example
 
 
-```r
+``` r
 actg_trial <- read.csv("~/Documents/HDS629/actg_trial.csv")
 ```
 
 * When you load the dataset into R, it should look like the following
 
-```r
+``` r
 head( actg_trial, 10)
 ```
 
@@ -674,7 +681,7 @@ head( actg_trial, 10)
 
 * Note that Treatment should be a factor variable
 
-```r
+``` r
 actg_trial$Treatment <- factor(actg_trial$Treatment)
 ```
 
@@ -684,7 +691,7 @@ actg_trial$Treatment <- factor(actg_trial$Treatment)
 
 * Not any clear evidence that change in CD4 over time is not linear in the treatment 1 group.
 
-```r
+``` r
 Trt1Dat <- subset(actg_trial, Treatment==1)
 ```
 
@@ -698,7 +705,7 @@ where $f_{0}$ will be modeled with a spline function.
 
 * We can fit these two models with `geeglm` using the following code:
 
-```r
+``` r
 actg_trt1_linear <- geeglm(CD4 ~ Week, id=SubjectID, data=Trt1Dat,
                            corstr="ar1")
 
@@ -708,7 +715,7 @@ actg_trt1_spline <- geeglm(CD4 ~ bs(Week, df=4), id=SubjectID, data=Trt1Dat,
 
 * Now, do a formal comparison:
 
-```r
+``` r
 anova(actg_trt1_linear, actg_trt1_spline)
 ```
 
@@ -745,7 +752,7 @@ differences in response to treatments in some way.
 really make sense since this is a randomized trial? 
 
 
-```r
+``` r
 actg_mod1 <- geeglm(CD4 ~ Week, id=SubjectID, data=actg_trial,
                            corstr="ar1")
 
@@ -759,7 +766,7 @@ actg_mod3 <- geeglm(CD4 ~ Week*Treatment, id=SubjectID, data=actg_trial,
 * Compare model 3 vs model 2
 
 
-```r
+``` r
 anova(actg_mod2, actg_mod3)
 ```
 
@@ -776,7 +783,7 @@ anova(actg_mod2, actg_mod3)
 
 * Compare model 2 vs model 1
 
-```r
+``` r
 anova(actg_mod2, actg_mod1)
 ```
 
@@ -798,7 +805,7 @@ anova(actg_mod2, actg_mod1)
 
 * Use:
 
-```r
+``` r
 actg_mod4 <- geeglm(CD4 ~ Week + Week:Treatment, id=SubjectID, data=actg_trial,
                     corstr="ar1")
 ```

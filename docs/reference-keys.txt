@@ -103,6 +103,7 @@ using-geepack-and-ordgee
 penalized-regression-with-ordinal-outcomes
 extra-topics
 partial-dependence-plots
+variable-importance-measures-in-gradient-tree-boosting
 uncertainty-in-variable-importance-measures
 subsampling-for-random-forest-vimp-scores
 stability-selection-for-penalized-regression

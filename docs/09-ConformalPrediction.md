@@ -35,7 +35,7 @@ of constructed confidence intervals $\hat{CI}(Y_{1s}, \ldots, Y_{ns})$ should sa
 
 - A quick simulation which confirms the coverage property of confidence intervals is:
 
-```r
+``` r
 nsims <- 1000 ## number of simulated data sets
 n <- 100
 xx <- runif(n)
@@ -57,7 +57,7 @@ mean(cover) ## Should be close to 0.95
 ```
 
 ```
-## [1] 0.95
+## [1] 0.938
 ```
 
 ---
@@ -148,7 +148,7 @@ and that the joint distribution of $(Y_{n+1}, \mathbf{x}_{n+1})$ is the same as 
 
 * First generate the data
 
-```r
+``` r
 n <- 100
 xx <- runif(n)
 beta0 <- 0.5
@@ -163,7 +163,7 @@ Y <- beta0 + beta1*sqrt(xx) + rnorm(n)
     
 * Split this data set into a "proper" training set and calibration set
 
-```r
+``` r
 D1 <- sample(1:n, size=50)
 D2 <- setdiff(1:n, D1)
 
@@ -173,26 +173,26 @@ calibration_dat <- data.frame(Y=Y[D2], xx=xx[D2])
 
 * Using `D1`, fit a linear regression model
 
-```r
+``` r
 proper_mod <- lm(Y ~ xx, data=proper_dat)
 ```
 
 * Get absolute residuals on calibration dataset
 
-```r
+``` r
 calibration_fitted <- predict(proper_mod, newdat=calibration_dat)
 calibration_resids <- abs(calibration_dat$Y - calibration_fitted)
 ```
 
 * Get 95th quantile of these residuals
 
-```r
+``` r
 qhat <- quantile(calibration_resids, probs=0.95)
 ```
 
 * We can now use `qhat` to get prediction intervals for a "new dataset"
 
-```r
+``` r
 ## Generate new dataset
 n <- 100
 xx_new <- runif(n)
@@ -212,12 +212,12 @@ print(head(ConformalInterval))
 
 ```
 ##            [,1]     [,2]
-## [1,] -0.5975258 2.894972
-## [2,] -0.6498182 2.842679
-## [3,] -0.4983627 2.994135
-## [4,] -0.1504342 3.342063
-## [5,] -0.5103764 2.982121
-## [6,] -0.3879992 3.104498
+## [1,] -0.4378230 3.195687
+## [2,] -0.4786504 3.154860
+## [3,] -0.5165186 3.116992
+## [4,] -0.4579842 3.175526
+## [5,] -0.4598403 3.173670
+## [6,] -0.4814452 3.152065
 ```
 
 * Plot fitted values and prediction intervals:
@@ -225,14 +225,14 @@ print(head(ConformalInterval))
 
 * You can check the **prediction coverage** of these intervals with the following code:
 
-```r
+``` r
 ## This shouldn't be that far off 0.95, but there will be 
 ## considerable variability since this is not a very large dataset
 mean(Y_new > ConformalInterval[,1] & Y_new < ConformalInterval[,2])
 ```
 
 ```
-## [1] 0.94
+## [1] 0.92
 ```
 
 ## Why does this work?
@@ -264,7 +264,7 @@ P\Big( Y_{n+1} \in \hat{C}_{n}(\mathbf{x}_{n+1}) \Big| \mathcal{D}_{1} \Big)
 
 * First, generate example data:
 
-```r
+``` r
 n <- 2000
 p <- 20
 
@@ -288,7 +288,7 @@ X <- cbind(Y0, X0)
 
 * Split this data set into a "proper" training set and calibration set
 
-```r
+``` r
 D1 <- sample(1:n, size=1000)
 D2 <- setdiff(1:n, D1)
 
@@ -298,19 +298,19 @@ calibration_dat <- data.frame(Y=Y[D2], X[D2,])
 
 * Using `D1`, use boosting to 
 
-```r
+``` r
 library(gbm)
 ```
 
 ```
-## Loaded gbm 2.1.9
+## Loaded gbm 2.2.2
 ```
 
 ```
 ## This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3
 ```
 
-```r
+``` r
 gbm_mod <- gbm(Y ~ ., data = proper_dat, 
            distribution = "gaussian", n.trees = 200, cv.folds=5)
 
@@ -320,15 +320,15 @@ best.iter <- gbm.perf(gbm_mod, method = "cv")
 
 <img src="09-ConformalPrediction_files/figure-html/unnamed-chunk-12-1.png" width="672" />
 
-```r
+``` r
 print(best.iter)
 ```
 
 ```
-## [1] 186
+## [1] 200
 ```
 
-```r
+``` r
 ## Use boosting with best number of trees
 gbm_mod_final <- gbm(Y ~ ., data = proper_dat, 
                      distribution = "gaussian", n.trees = best.iter)
@@ -336,27 +336,27 @@ gbm_mod_final <- gbm(Y ~ ., data = proper_dat,
 
 * Get absolute residuals on calibration dataset
 
-```r
+``` r
 calibration_fitted <- predict(gbm_mod_final, newdat=calibration_dat)
 ```
 
 ```
-## Using 186 trees...
+## Using 200 trees...
 ```
 
-```r
+``` r
 calibration_resids <- abs(calibration_dat$Y - calibration_fitted)
 ```
 
 * Get 95th quantile of these residuals
 
-```r
+``` r
 qhat <- quantile(calibration_resids, probs=0.95)
 ```
 
 * We can now use `qhat` to get prediction intervals for a "new dataset"
 
-```r
+``` r
 X0 <- matrix(rnorm(n*p), nrow=n, ncol=p)
 
 ## Baseline outcomes
@@ -376,29 +376,29 @@ ConformalInterval[,1] <- predict(gbm_mod_final, newdat=newdataset) - qhat
 ```
 
 ```
-## Using 186 trees...
+## Using 200 trees...
 ```
 
-```r
+``` r
 ConformalInterval[,2] <- predict(gbm_mod_final, newdat=newdataset) + qhat
 ```
 
 ```
-## Using 186 trees...
+## Using 200 trees...
 ```
 
 
 
 * Check the **prediction coverage**:
 
-```r
+``` r
 ## This shouldn't be that far off 0.95, but there will be 
 ## considerable variability since this is not a very large dataset
 mean(Y_new > ConformalInterval[,1] & Y_new < ConformalInterval[,2])
 ```
 
 ```
-## [1] 0.958
+## [1] 0.957
 ```
 
 

@@ -112,7 +112,7 @@ editor_options:
     data
 
 
-```r
+``` r
 library(MASS)  # load MASS package
 head(housing)  # look at first 6 rows
 ```
@@ -127,7 +127,7 @@ head(housing)  # look at first 6 rows
 ## 6   High Medium Tower  Low   36
 ```
 
-```r
+``` r
 dim(housing)  # 72 rows and 5 variables
 ```
 
@@ -143,7 +143,7 @@ dim(housing)  # 72 rows and 5 variables
     variable should be an **ordered factor**.
 
 
-```r
+``` r
 str(housing)
 ```
 
@@ -165,7 +165,7 @@ str(housing)
     -   This is a categorical variable with a natural ordering ("Low" is worse than "Medium" which is worse than "High").
 
     
-    ```r
+    ``` r
     table(housing$Sat)
     ```
     
@@ -195,7 +195,7 @@ str(housing)
     **response** and `Infl` as a **covariate**, we can use the following code:
 
 
-```r
+``` r
 infl.plr <- polr(Sat ~ Infl, weight=Freq, data = housing)
 ```
 
@@ -212,7 +212,7 @@ infl.plr <- polr(Sat ~ Infl, weight=Freq, data = housing)
     function:
 
 
-```r
+``` r
 summary(infl.plr)
 ```
 
@@ -294,7 +294,7 @@ summary(infl.plr)
 -   This can be computed with the **R** code
 
 
-```r
+``` r
 N_ll <- sum(housing$Freq[housing$Sat=="Low" & housing$Infl=="Low"])
 N_l <- sum(housing$Freq[housing$Infl=="Low"])
 N_ll/N_l
@@ -308,7 +308,7 @@ N_ll/N_l
     computed with the following **R** code
 
 
-```r
+``` r
 N_lm <- sum(housing$Freq[housing$Sat=="Low" & housing$Infl=="Medium"])
 N_m <- sum(housing$Freq[housing$Infl=="Medium"])
 N_lm/N_m
@@ -323,8 +323,15 @@ N_lm/N_m
 * As another example, let's look at the `respdis` data from the 
 `geepack` package
 
-```r
+``` r
 library(geepack)
+```
+
+```
+## Warning: package 'geepack' was built under R version 4.4.1
+```
+
+``` r
 head(respdis)
 ```
 
@@ -341,7 +348,7 @@ head(respdis)
 * This is a **longitudinal dataset**. For this analysis,
 we will only look at the outcome at the **first visit**
 
-```r
+``` r
 respdis_first <- respdis[,c(1,5)]
 head(respdis_first)
 ```
@@ -360,7 +367,7 @@ head(respdis_first)
 
 * The outcomes are coded as 1,2,3 in the `respdis_first` dataset
 
-```r
+``` r
 table(respdis$y1)
 ```
 
@@ -375,7 +382,7 @@ table(respdis$y1)
 * Let's fit an **ordered regression model** using `trt` as the only covariate.
     + We need to put `ordered(y1)` in the model formula since y1 is not stored as a **factor** in `respdis_first`
 
-```r
+``` r
 respmod_first <- polr(ordered(y1) ~ trt, data=respdis_first)
 ```
 
@@ -390,7 +397,7 @@ respmod_first <- polr(ordered(y1) ~ trt, data=respdis_first)
 
 * Let's look at the **summary output** from `respmod_first`:
 
-```r
+``` r
 summary(respmod_first)
 ```
 
@@ -502,7 +509,7 @@ you can get estimates of $Y_{i} \leq c$ for the **treatment and placebo** groups
     from the `geepack` package
 
 
-```r
+``` r
 library(geepack)
 data(respdis)
 resp.l <- reshape(respdis, varying =list(c("y1", "y2", "y3", "y4")),
@@ -525,7 +532,7 @@ head(resp.l)
     possible values:
 
 
-```r
+``` r
 table(resp.l$resp)
 ```
 
@@ -544,7 +551,7 @@ table(resp.l$resp)
         and **"exchangeable"**.
 
 
-```r
+``` r
 ## Fit GEE with just trt as a covariate
 fit.indep <- ordgee(ordered(resp) ~ trt, id=id, corstr="independence",
                     data=resp.l)
@@ -591,7 +598,7 @@ summary(fit.indep)
     structure, just use the `corstr = exchangeable` argument:
 
 
-```r
+``` r
 ## Fit GEE with just trt as a covariate
 fit.ex <- ordgee(ordered(resp) ~ trt, id=id, corstr="exchangeable",
                     data=resp.l)
@@ -638,7 +645,7 @@ summary(fit.ex)
     package.
 
 
-```r
+``` r
 library(ordinalgmifs)
 ```
 
@@ -646,7 +653,11 @@ library(ordinalgmifs)
 ## Loading required package: survival
 ```
 
-```r
+```
+## Warning: package 'survival' was built under R version 4.4.1
+```
+
+``` r
 data(eyedisease)
 names(eyedisease)
 ```
@@ -663,7 +674,7 @@ names(eyedisease)
         "Moderate", and "Proliferative".
 
 
-```r
+``` r
 table( eyedisease$rerl )
 ```
 
@@ -679,7 +690,7 @@ table( eyedisease$rerl )
     variables, use the following code:
 
 
-```r
+``` r
 ## Fit ordinal logistic regression with covariates 
 ## dose, prot, sex, bmi, dbp, sbp, pr, age
 eye.fit <- ordinalgmifs(rerl ~ 1, x=c("dose", "prot", "sex", 
@@ -690,7 +701,7 @@ eye.fit <- ordinalgmifs(rerl ~ 1, x=c("dose", "prot", "sex",
     regression coefficient estimates according to an **AIC** criterion:
 
 
-```r
+``` r
 summary(eye.fit)
 ```
 
@@ -727,7 +738,7 @@ summary(eye.fit)
         coefficient at step $k$
 
 
-```r
+``` r
 dim(eye.fit$beta)
 ```
 
@@ -735,7 +746,7 @@ dim(eye.fit$beta)
 ## [1] 1453    8
 ```
 
-```r
+``` r
 ## Look at an "early" row of eye.fit$beta
 ## Most of the coefficients here should be zero
 eye.fit$beta[10,]
@@ -749,7 +760,7 @@ eye.fit$beta[10,]
 -   If we look at a later row, we should have more non-zero coefficients
 
 
-```r
+``` r
 eye.fit$beta[800,]
 ```
 
@@ -762,7 +773,7 @@ eye.fit$beta[800,]
     model**
 
 
-```r
+``` r
 eye.fit$model.select 
 ```
 
@@ -770,7 +781,7 @@ eye.fit$model.select
 ## [1] 1339
 ```
 
-```r
+``` r
 eye.fit$beta[eye.fit$model.select,]
 ```
 
@@ -785,7 +796,7 @@ eye.fit$beta[eye.fit$model.select,]
     estimates:
 
 
-```r
+``` r
 plot( eye.fit )
 ```
 

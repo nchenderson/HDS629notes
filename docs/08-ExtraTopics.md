@@ -32,12 +32,69 @@ for the average effect of all the other variables.
 - Note that partial dependence plots are mostly useful for **continuous covariates**. 
 
 
+## Variable Importance Measures in Gradient Tree Boosting
+
+
+- Gradient tree boosting builds an ensemble of decision trees sequentially to minimize a loss function.
+
+- Variable importance measures help quantify the contribution of features to the model's predictive performance.
+
+
+
+- With boosting, the fitted values $\hat{y}_{i}$ are given by:
+$$
+\hat{y}_i = \sum_{m=1}^M f_m(\mathbf{x}_i),
+$$
+
+where:
+  - $f_m(\mathbf{x}_i)$: Prediction from the \(m\)-th decision tree,
+  - \(M\): Total number of trees.
+
+- Variable importance measures assess the impact of the $j^{th}$ covariate \(x_{ij} \) on the splits in 
+the decision tree \(f_m(x_i)\).
+
+---
+
+- There are a number of different ways to assess this impact.
+
+- **Predictive Gain** (Split Importance)
+
+This measures the **improvement** in the loss function due to splits involving a particular covariate
+$$
+\text{Gain}(x_j) = \sum_{m=1}^M \sum_{s \in S_{jm}} \Delta L_{sm},
+$$
+
+where:
+  - \(S_{jm}\): Set of splits in tree $m$ involving the $j^{th}$ covariate \(x_j\),
+  - \(\Delta L_{sm}\): Reduction in loss at split \(s\) in tree $m$.
+
+- The reduction in loss is found by comparing, for example, squared error loss from
+splitting on $x_{j}$ versus squared error loss over a constant region.
+
+- **Split Counting**
+
+- This simply **counts** how often a particular covariate is used for splitting:
+
+$$
+\text{Frequency}(x_j) = \sum_{m=1}^M |S_{jm}|,
+$$
+
+where:
+  - \(|S_{jm}|\): Number of splits involving covariate \(x_j\) in tree $m$.
+
+
+| Measure     | Formula                                   | Pros                             | Cons                         |
+|-------------|-------------------------------------------|----------------------------------|-----------------------------|
+| **Gain**    | $$ \text{Gain}(x_j) = \sum_{s} \Delta L_s $$ | Focuses on predictive power     | May favor high-cardinality covariates |
+| **Frequency** | $$ |S_j| = \text{Count of Splits} $$       | Easy to compute                 | Ignores impact on loss      |
+
+
 
 ## Uncertainty in Variable Importance Measures
 
 * Many machine learning/penalized regression methods generate
 measures of variable importance.
-    + Random forests generate variable importance scores.
+    + Random forests and boosting with trees both generate variable importance scores.
     
     + Partial dependence plots are useful for assessing the impact of a covariate for any learning method.
     
@@ -91,7 +148,7 @@ I_{j} \pm 1.96 \times \sqrt{\hat{v}_{j}}
 * The outcome variable of interest is **prog**
 
 
-```r
+``` r
 dim(diabetes)
 ```
 
@@ -99,7 +156,7 @@ dim(diabetes)
 ## [1] 442  11
 ```
 
-```r
+``` r
 head(diabetes)
 ```
 
@@ -118,7 +175,7 @@ head(diabetes)
 * Let's first fit a **randomForest** to the entire dataset and plot
 the variable importance measures
 
-```r
+``` r
 library(randomForest)
 ```
 
@@ -130,7 +187,7 @@ library(randomForest)
 ## Type rfNews() to see new features/changes/bug fixes.
 ```
 
-```r
+``` r
 rf.full <- randomForest(prog ~ ., data=diabetes)
 varImpPlot(rf.full)
 ```
@@ -140,23 +197,23 @@ varImpPlot(rf.full)
 * You can extract the actual values of the variable importance scores by
 using the `importance` function.
 
-```r
+``` r
 Imp.Full <- importance(rf.full)
 Imp.Full ## This is a 10 x 1 matrix
 ```
 
 ```
 ##     IncNodePurity
-## age     142384.26
-## sex      32265.63
-## bmi     595349.82
-## map     295325.63
-## tc      146983.44
-## ldl     149014.08
-## hdl     201732.42
-## tch     164443.58
-## ltg     545383.65
-## glu     230024.81
+## age      143943.0
+## sex       31654.7
+## bmi      574228.1
+## map      288950.4
+## tc       146352.8
+## ldl      152408.9
+## hdl      208391.7
+## tch      157569.1
+## ltg      592435.9
+## glu      201524.8
 ```
 
 
@@ -165,7 +222,7 @@ Imp.Full ## This is a 10 x 1 matrix
 * Now, let's compute variable importance scores across $S = 100$ subsamples (each of size 50)
 and store it in a $10 \times S$ matrix called `Imp.Subs`
 
-```r
+``` r
 S <- 5
 b <- 100
 Imp.Subs <- matrix(0, nrow=nrow(Imp.Full), ncol=S)
@@ -181,7 +238,7 @@ for(k in 1:S) {
 
 * From `Imp.Subs`, we can compute the **variance estimates** $\hat{v}_{j}$.
 
-```r
+``` r
 imp.mean <- rowMeans(Imp.Subs)
 vhat <- (b/nrow(diabetes))*rowMeans((Imp.Subs - imp.mean)^2)  
 print(vhat)
@@ -189,16 +246,16 @@ print(vhat)
 
 ```
 ##         age         sex         bmi         map          tc         ldl 
-##  15586019.5    539851.9 250660310.7 137517689.8   1305928.4    377357.7 
+##   8838881.4    352561.9 197961857.1  15476826.3   9652161.7   3822989.7 
 ##         hdl         tch         ltg         glu 
-##  41431341.1  10972266.1  69701261.0  45808711.6
+##  45305257.4  39936628.7 131379509.1  28973053.0
 ```
 
 ---
 
 * We can now report **confidence intervals** for the variable importance scores:
 
-```r
+``` r
 vi.upper <- Imp.Full[,1] + 1.96*sqrt(vhat)
 vi.lower <- Imp.Full[,1] - 1.96*sqrt(vhat)
 VIMP_CI <- cbind(Imp.Full[,1], vi.lower, vi.upper)
@@ -207,24 +264,24 @@ VIMP_CI[order(-VIMP_CI[,1]),]
 ```
 
 ```
-##      estimate     lower     upper
-## bmi 595349.82 564318.60 626381.04
-## ltg 545383.65 529020.14 561747.15
-## map 295325.63 272341.11 318310.14
-## glu 230024.81 216759.12 243290.51
-## hdl 201732.42 189116.45 214348.39
-## tch 164443.58 157951.20 170935.97
-## ldl 149014.08 147810.06 150218.10
-## tc  146983.44 144743.61 149223.28
-## age 142384.26 134646.35 150122.17
-## sex  32265.63  30825.52  33705.73
+##     estimate     lower     upper
+## ltg 592435.9 569970.22 614901.62
+## bmi 574228.1 546651.09 601805.06
+## map 288950.4 281239.59 296661.11
+## hdl 208391.7 195199.12 221584.31
+## glu 201524.8 190974.82 212074.85
+## tch 157569.1 145182.82 169955.43
+## ldl 152408.9 148576.61 156241.18
+## tc  146352.8 140263.44 152442.07
+## age 143943.0 138115.82 149770.09
+## sex  31654.7  30490.91  32818.49
 ```
 
 ### Stability Selection for Penalized Regression
 
 * Let's use the **lasso** with penalty $\lambda = 10$ on the `diabetes` data:
 
-```r
+``` r
 library(glmnet)
 ```
 
@@ -236,43 +293,43 @@ library(glmnet)
 ## Loaded glmnet 4.1-8
 ```
 
-```r
+``` r
 diabet.mod <- glmnet(x=diabetes.sub[,1:10],y=diabetes.sub$prog, 
                      lambda=20)
 ```
 
 * We can look at the estimated coefficients to see which variables were **selected**
 
-```r
+``` r
 coef(diabet.mod)
 ```
 
 ```
 ## 11 x 1 sparse Matrix of class "dgCMatrix"
-##                       s0
-## (Intercept) -159.4129428
-## age            .        
-## sex            .        
-## bmi            1.2690867
-## map            0.7852953
-## tc             .        
-## ldl            .        
-## hdl            .        
-## tch            .        
-## ltg          100.9574403
-## glu            .
+##                     s0
+## (Intercept) -54.742650
+## age           .       
+## sex           .       
+## bmi           4.068945
+## map           .       
+## tc            .       
+## ldl           .       
+## hdl           .       
+## tch           2.643364
+## ltg          41.207590
+## glu           .
 ```
 
 * The **selected** variables are those with nonzero coefficients:
 
-```r
+``` r
 # Look at selected coefficients ignoring the intercept:
 selected <- abs(coef(diabet.mod)[-1]) > 0
 selected
 ```
 
 ```
-##  [1] FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE
+##  [1] FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE  TRUE FALSE
 ```
 
 ---
@@ -315,7 +372,7 @@ a sense of the range of selection stability.
 where the $(k, h, j)$ element of this array equals $1$ if variable $j$ 
 was selected in subsample $k$ with penalty term $\lambda_{h}$:
 
-```r
+``` r
 nsamps <- 200
 b <- floor(nrow(diabetes)/2)
 nlambda <- 40 ## 40 different lambda values
@@ -339,7 +396,7 @@ selection probability estimates $\hat{\pi}_{j}(\lambda)$.
    + The $(j, h)$ component of this matrix has the value $\hat{\pi}_{j}(\lambda_{h})$
 
 
-```r
+``` r
 SelectionProb <- matrix(0, nrow=10, ncol=nlambda)
 rownames(SelectionProb) <- names(diabetes)[1:10]
 for(h in 1:nlambda) {
@@ -349,29 +406,29 @@ for(h in 1:nlambda) {
 
 * The first few columns of `SelectionProb` look like the following:
 
-```r
+``` r
 SelectionProb[,1:5]
 ```
 
 ```
 ##      [,1]  [,2]  [,3]  [,4]  [,5]
-## age 0.930 0.750 0.580 0.475 0.315
-## sex 1.000 1.000 1.000 1.000 1.000
+## age 0.960 0.745 0.570 0.425 0.325
+## sex 1.000 1.000 1.000 1.000 0.995
 ## bmi 1.000 1.000 1.000 1.000 1.000
 ## map 1.000 1.000 1.000 1.000 1.000
-## tc  0.980 0.920 0.840 0.705 0.565
-## ldl 0.890 0.220 0.225 0.255 0.270
-## hdl 0.930 0.915 0.980 0.995 1.000
-## tch 0.945 0.625 0.405 0.285 0.175
+## tc  0.975 0.930 0.850 0.735 0.565
+## ldl 0.870 0.165 0.235 0.300 0.340
+## hdl 0.855 0.940 0.980 0.990 1.000
+## tch 0.930 0.685 0.445 0.300 0.185
 ## ltg 1.000 1.000 1.000 1.000 1.000
-## glu 0.990 0.890 0.805 0.730 0.660
+## glu 0.975 0.900 0.855 0.820 0.760
 ```
 
 ---
 
 * We can now plot the stability measures as a function of $\lambda$
 
-```r
+``` r
 ## Convert to long form:
 df <- data.frame(varname=rep(names(diabetes)[1:10], each=nlambda),
                  selection.prob=c(t(SelectionProb)), lambda=rep(lambda.seq, 10))
@@ -380,16 +437,16 @@ head(df)
 
 ```
 ##   varname selection.prob    lambda
-## 1     age          0.930 0.1000000
-## 2     age          0.750 0.6128205
-## 3     age          0.580 1.1256410
-## 4     age          0.475 1.6384615
-## 5     age          0.315 2.1512821
-## 6     age          0.250 2.6641026
+## 1     age          0.960 0.1000000
+## 2     age          0.745 0.6128205
+## 3     age          0.570 1.1256410
+## 4     age          0.425 1.6384615
+## 5     age          0.325 2.1512821
+## 6     age          0.240 2.6641026
 ```
 
 
-```r
+``` r
 library(ggplot2)
 ```
 
@@ -404,7 +461,7 @@ library(ggplot2)
 ##     margin
 ```
 
-```r
+``` r
 ggplot(df) + aes(x=lambda, y=selection.prob, 
                  group=varname, color=varname) + geom_line()
 ```

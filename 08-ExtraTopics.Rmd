@@ -32,12 +32,69 @@ for the average effect of all the other variables.
 - Note that partial dependence plots are mostly useful for **continuous covariates**. 
 
 
+## Variable Importance Measures in Gradient Tree Boosting
+
+
+- Gradient tree boosting builds an ensemble of decision trees sequentially to minimize a loss function.
+
+- Variable importance measures help quantify the contribution of features to the model's predictive performance.
+
+
+
+- With boosting, the fitted values $\hat{y}_{i}$ are given by:
+$$
+\hat{y}_i = \sum_{m=1}^M f_m(\mathbf{x}_i),
+$$
+
+where:
+  - $f_m(\mathbf{x}_i)$: Prediction from the \(m\)-th decision tree,
+  - \(M\): Total number of trees.
+
+- Variable importance measures assess the impact of the $j^{th}$ covariate \(x_{ij} \) on the splits in 
+the decision tree \(f_m(x_i)\).
+
+---
+
+- There are a number of different ways to assess this impact.
+
+- **Predictive Gain** (Split Importance)
+
+This measures the **improvement** in the loss function due to splits involving a particular covariate
+$$
+\text{Gain}(x_j) = \sum_{m=1}^M \sum_{s \in S_{jm}} \Delta L_{sm},
+$$
+
+where:
+  - \(S_{jm}\): Set of splits in tree $m$ involving the $j^{th}$ covariate \(x_j\),
+  - \(\Delta L_{sm}\): Reduction in loss at split \(s\) in tree $m$.
+
+- The reduction in loss is found by comparing, for example, squared error loss from
+splitting on $x_{j}$ versus squared error loss over a constant region.
+
+- **Split Counting**
+
+- This simply **counts** how often a particular covariate is used for splitting:
+
+$$
+\text{Frequency}(x_j) = \sum_{m=1}^M |S_{jm}|,
+$$
+
+where:
+  - \(|S_{jm}|\): Number of splits involving covariate \(x_j\) in tree $m$.
+
+
+| Measure     | Formula                                   | Pros                             | Cons                         |
+|-------------|-------------------------------------------|----------------------------------|-----------------------------|
+| **Gain**    | $$ \text{Gain}(x_j) = \sum_{s} \Delta L_s $$ | Focuses on predictive power     | May favor high-cardinality covariates |
+| **Frequency** | $$ |S_j| = \text{Count of Splits} $$       | Easy to compute                 | Ignores impact on loss      |
+
+
 
 ## Uncertainty in Variable Importance Measures
 
 * Many machine learning/penalized regression methods generate
 measures of variable importance.
-    + Random forests generate variable importance scores.
+    + Random forests and boosting with trees both generate variable importance scores.
     
     + Partial dependence plots are useful for assessing the impact of a covariate for any learning method.
     

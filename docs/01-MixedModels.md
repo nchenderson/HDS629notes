@@ -540,7 +540,7 @@ sleepstudy[1:20,] # Data from the subjects with ids: 308 and 309
     syntax:
 
 
-```r
+``` r
 (formula | group_var)
 ```
 
@@ -1148,7 +1148,7 @@ head(ohio, 12) # look at first 12 rows of ohio
 -   The **glmer** function has the following syntax:
 
 
-```r
+``` r
 glmer(formula, data, family)
 ```
 

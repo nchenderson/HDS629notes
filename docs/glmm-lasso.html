@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 4 Sparse Regression for Longitudinal Data | Notes for Case Studies in Health Big Data</title>
   <meta name="description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
-  <meta name="generator" content="bookdown 0.38 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.40 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 4 Sparse Regression for Longitudinal Data | Notes for Case Studies in Health Big Data" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2024-04-18" />
+<meta name="date" content="2025-04-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -56,7 +56,7 @@
 
 <style type="text/css">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -66,7 +66,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -128,6 +128,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging div.csl-entry {
   margin-left:2em;
@@ -296,10 +297,11 @@ div.csl-indent {
 <li class="chapter" data-level="8" data-path="extra-topics.html"><a href="extra-topics.html"><i class="fa fa-check"></i><b>8</b> Variable Importance Measures</a>
 <ul>
 <li class="chapter" data-level="8.1" data-path="extra-topics.html"><a href="extra-topics.html#partial-dependence-plots"><i class="fa fa-check"></i><b>8.1</b> Partial Dependence Plots</a></li>
-<li class="chapter" data-level="8.2" data-path="extra-topics.html"><a href="extra-topics.html#uncertainty-in-variable-importance-measures"><i class="fa fa-check"></i><b>8.2</b> Uncertainty in Variable Importance Measures</a>
+<li class="chapter" data-level="8.2" data-path="extra-topics.html"><a href="extra-topics.html#variable-importance-measures-in-gradient-tree-boosting"><i class="fa fa-check"></i><b>8.2</b> Variable Importance Measures in Gradient Tree Boosting</a></li>
+<li class="chapter" data-level="8.3" data-path="extra-topics.html"><a href="extra-topics.html#uncertainty-in-variable-importance-measures"><i class="fa fa-check"></i><b>8.3</b> Uncertainty in Variable Importance Measures</a>
 <ul>
-<li class="chapter" data-level="8.2.1" data-path="extra-topics.html"><a href="extra-topics.html#subsampling-for-random-forest-vimp-scores"><i class="fa fa-check"></i><b>8.2.1</b> Subsampling for Random Forest VIMP scores</a></li>
-<li class="chapter" data-level="8.2.2" data-path="extra-topics.html"><a href="extra-topics.html#stability-selection-for-penalized-regression"><i class="fa fa-check"></i><b>8.2.2</b> Stability Selection for Penalized Regression</a></li>
+<li class="chapter" data-level="8.3.1" data-path="extra-topics.html"><a href="extra-topics.html#subsampling-for-random-forest-vimp-scores"><i class="fa fa-check"></i><b>8.3.1</b> Subsampling for Random Forest VIMP scores</a></li>
+<li class="chapter" data-level="8.3.2" data-path="extra-topics.html"><a href="extra-topics.html#stability-selection-for-penalized-regression"><i class="fa fa-check"></i><b>8.3.2</b> Stability Selection for Penalized Regression</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="9" data-path="conformal-prediction.html"><a href="conformal-prediction.html"><i class="fa fa-check"></i><b>9</b> Conformal Prediction</a>
@@ -496,11 +498,11 @@ for example, the paper: <span class="citation">Wang, Zhou, and Qu (<a href="#ref
 <li><p>This dataset has <strong>54 observations</strong> with <strong>23 unique teams</strong>.</p></li>
 <li><p>Each row in this dataset corresponds to data taken from a single team in a single season.</p></li>
 </ul>
-<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb186-1"><a href="glmm-lasso.html#cb186-1" tabindex="-1"></a><span class="fu">library</span>(glmmLasso)</span>
-<span id="cb186-2"><a href="glmm-lasso.html#cb186-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;soccer&quot;</span>)</span>
-<span id="cb186-3"><a href="glmm-lasso.html#cb186-3" tabindex="-1"></a><span class="fu">dim</span>(soccer)  <span class="do">## 54 observations and 16 variables</span></span></code></pre></div>
+<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="glmm-lasso.html#cb190-1" tabindex="-1"></a><span class="fu">library</span>(glmmLasso)</span>
+<span id="cb190-2"><a href="glmm-lasso.html#cb190-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;soccer&quot;</span>)</span>
+<span id="cb190-3"><a href="glmm-lasso.html#cb190-3" tabindex="-1"></a><span class="fu">dim</span>(soccer)  <span class="do">## 54 observations and 16 variables</span></span></code></pre></div>
 <pre><code>## [1] 54 16</code></pre>
-<div class="sourceCode" id="cb188"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb188-1"><a href="glmm-lasso.html#cb188-1" tabindex="-1"></a><span class="fu">head</span>(soccer)</span></code></pre></div>
+<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="glmm-lasso.html#cb192-1" tabindex="-1"></a><span class="fu">head</span>(soccer)</span></code></pre></div>
 <pre><code>##     pos            team points transfer.spendings transfer.receits yellow.card
 ## 338  12     1. FC Koeln     39            5150000           750000          70
 ## 357  13     1. FC Koeln     38           11500000           900000          70
@@ -522,7 +524,7 @@ for example, the paper: <span class="citation">Wang, Zhou, and Qu (<a href="#ref
 ## 360   49.61    48548       719705      42336        5
 ## 353   49.44    20300       342350      20138       11
 ## 333   50.38    30164       477414      28083       17</code></pre>
-<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="glmm-lasso.html#cb190-1" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(soccer<span class="sc">$</span>team)) <span class="do">## 23 unique teams</span></span></code></pre></div>
+<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="glmm-lasso.html#cb194-1" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(soccer<span class="sc">$</span>team)) <span class="do">## 23 unique teams</span></span></code></pre></div>
 <pre><code>## [1] 23</code></pre>
 <hr />
 <ul>
@@ -539,16 +541,16 @@ points scored: <code>ball.possession</code>, <code>tackles</code>, etc.</p></li>
 <li><p>We will use <code>points</code> and 10 of the other variables as the fixed-effects covariates.</p></li>
 <li><p>It is common in practice to <strong>center and scale</strong> the covariates before running the lasso:</p></li>
 </ul>
-<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="glmm-lasso.html#cb192-1" tabindex="-1"></a>soccer[,<span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">9</span><span class="sc">:</span><span class="dv">16</span>)] <span class="ot">&lt;-</span> <span class="fu">scale</span>(soccer[,<span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">9</span><span class="sc">:</span><span class="dv">16</span>)], <span class="at">center=</span><span class="cn">TRUE</span>, <span class="at">scale=</span><span class="cn">TRUE</span>)</span>
-<span id="cb192-2"><a href="glmm-lasso.html#cb192-2" tabindex="-1"></a>soccer <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(soccer)</span></code></pre></div>
+<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb196-1"><a href="glmm-lasso.html#cb196-1" tabindex="-1"></a>soccer[,<span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">9</span><span class="sc">:</span><span class="dv">16</span>)] <span class="ot">&lt;-</span> <span class="fu">scale</span>(soccer[,<span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">9</span><span class="sc">:</span><span class="dv">16</span>)], <span class="at">center=</span><span class="cn">TRUE</span>, <span class="at">scale=</span><span class="cn">TRUE</span>)</span>
+<span id="cb196-2"><a href="glmm-lasso.html#cb196-2" tabindex="-1"></a>soccer <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(soccer)</span></code></pre></div>
 <hr />
 <ul>
 <li>To fit an lmm-lasso with <span class="math inline">\(\lambda = 100\)</span> and a random intercept for each team, we can use the following code</li>
 </ul>
-<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb193-1"><a href="glmm-lasso.html#cb193-1" tabindex="-1"></a>lm.lambda100 <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(points <span class="sc">~</span> transfer.spendings <span class="sc">+</span> ave.unfair.score </span>
-<span id="cb193-2"><a href="glmm-lasso.html#cb193-2" tabindex="-1"></a>                                   <span class="sc">+</span> ball.possession <span class="sc">+</span> tackles </span>
-<span id="cb193-3"><a href="glmm-lasso.html#cb193-3" tabindex="-1"></a>                                   <span class="sc">+</span> ave.attend <span class="sc">+</span> sold.out, <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">team=</span><span class="sc">~</span><span class="dv">1</span>), </span>
-<span id="cb193-4"><a href="glmm-lasso.html#cb193-4" tabindex="-1"></a>                                  <span class="at">lambda=</span><span class="dv">100</span>, <span class="at">data =</span> soccer)</span></code></pre></div>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="glmm-lasso.html#cb197-1" tabindex="-1"></a>lm.lambda100 <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(points <span class="sc">~</span> transfer.spendings <span class="sc">+</span> ave.unfair.score </span>
+<span id="cb197-2"><a href="glmm-lasso.html#cb197-2" tabindex="-1"></a>                                   <span class="sc">+</span> ball.possession <span class="sc">+</span> tackles </span>
+<span id="cb197-3"><a href="glmm-lasso.html#cb197-3" tabindex="-1"></a>                                   <span class="sc">+</span> ave.attend <span class="sc">+</span> sold.out, <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">team=</span><span class="sc">~</span><span class="dv">1</span>), </span>
+<span id="cb197-4"><a href="glmm-lasso.html#cb197-4" tabindex="-1"></a>                                  <span class="at">lambda=</span><span class="dv">100</span>, <span class="at">data =</span> soccer)</span></code></pre></div>
 <ul>
 <li>Note that the random effects model (i.e., the model for <span class="math inline">\(b_{ij}\)</span>) is specified through the <code>rnd</code> argument.
 <ul>
@@ -556,7 +558,7 @@ points scored: <code>ball.possession</code>, <code>tackles</code>, etc.</p></li>
 </ul></li>
 <li>To look at the summary of the parameter estimates, use <code>summary</code></li>
 </ul>
-<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="glmm-lasso.html#cb194-1" tabindex="-1"></a><span class="fu">summary</span>(lm.lambda100)</span></code></pre></div>
+<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="glmm-lasso.html#cb198-1" tabindex="-1"></a><span class="fu">summary</span>(lm.lambda100)</span></code></pre></div>
 <pre><code>## Call:
 ## glmmLasso(fix = points ~ transfer.spendings + ave.unfair.score + 
 ##     ball.possession + tackles + ave.attend + sold.out, rnd = list(team = ~1), 
@@ -587,12 +589,12 @@ points scored: <code>ball.possession</code>, <code>tackles</code>, etc.</p></li>
 <ul>
 <li>If we set <span class="math inline">\(\lambda = 500\)</span>, all of the coefficient estimates will be zero:</li>
 </ul>
-<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb196-1"><a href="glmm-lasso.html#cb196-1" tabindex="-1"></a>lm.lambda500 <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(points <span class="sc">~</span> transfer.spendings <span class="sc">+</span> ave.unfair.score </span>
-<span id="cb196-2"><a href="glmm-lasso.html#cb196-2" tabindex="-1"></a>                                   <span class="sc">+</span> ball.possession <span class="sc">+</span> tackles </span>
-<span id="cb196-3"><a href="glmm-lasso.html#cb196-3" tabindex="-1"></a>                                   <span class="sc">+</span> ave.attend <span class="sc">+</span> sold.out, <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">team=</span><span class="sc">~</span><span class="dv">1</span>), </span>
-<span id="cb196-4"><a href="glmm-lasso.html#cb196-4" tabindex="-1"></a>                                   <span class="at">lambda=</span><span class="dv">500</span>, <span class="at">data =</span> soccer)</span>
-<span id="cb196-5"><a href="glmm-lasso.html#cb196-5" tabindex="-1"></a></span>
-<span id="cb196-6"><a href="glmm-lasso.html#cb196-6" tabindex="-1"></a><span class="fu">summary</span>(lm.lambda500)</span></code></pre></div>
+<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="glmm-lasso.html#cb200-1" tabindex="-1"></a>lm.lambda500 <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(points <span class="sc">~</span> transfer.spendings <span class="sc">+</span> ave.unfair.score </span>
+<span id="cb200-2"><a href="glmm-lasso.html#cb200-2" tabindex="-1"></a>                                   <span class="sc">+</span> ball.possession <span class="sc">+</span> tackles </span>
+<span id="cb200-3"><a href="glmm-lasso.html#cb200-3" tabindex="-1"></a>                                   <span class="sc">+</span> ave.attend <span class="sc">+</span> sold.out, <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">team=</span><span class="sc">~</span><span class="dv">1</span>), </span>
+<span id="cb200-4"><a href="glmm-lasso.html#cb200-4" tabindex="-1"></a>                                   <span class="at">lambda=</span><span class="dv">500</span>, <span class="at">data =</span> soccer)</span>
+<span id="cb200-5"><a href="glmm-lasso.html#cb200-5" tabindex="-1"></a></span>
+<span id="cb200-6"><a href="glmm-lasso.html#cb200-6" tabindex="-1"></a><span class="fu">summary</span>(lm.lambda500)</span></code></pre></div>
 <pre><code>## Call:
 ## glmmLasso(fix = points ~ transfer.spendings + ave.unfair.score + 
 ##     ball.possession + tackles + ave.attend + sold.out, rnd = list(team = ~1), 
@@ -620,7 +622,7 @@ points scored: <code>ball.possession</code>, <code>tackles</code>, etc.</p></li>
 <ul>
 <li>We can find the value of BIC by looking at the <code>$bic</code> component of lm.lambda100</li>
 </ul>
-<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="glmm-lasso.html#cb198-1" tabindex="-1"></a>lm.lambda100<span class="sc">$</span>bic</span></code></pre></div>
+<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="glmm-lasso.html#cb202-1" tabindex="-1"></a>lm.lambda100<span class="sc">$</span>bic</span></code></pre></div>
 <pre><code>##          [,1]
 ## [1,] 449.7875</code></pre>
 </div>
@@ -632,16 +634,16 @@ that the “best” value of <span class="math inline">\(\lambda\)</span> should
 <li><p>Let’s compute the <strong>BIC</strong> across a grid of <span class="math inline">\(\lambda\)</span> values from <span class="math inline">\(0\)</span> to <span class="math inline">\(500\)</span> and plot the
 result</p></li>
 </ul>
-<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="glmm-lasso.html#cb200-1" tabindex="-1"></a>lam.seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">500</span>, <span class="at">by=</span><span class="dv">5</span>)</span>
-<span id="cb200-2"><a href="glmm-lasso.html#cb200-2" tabindex="-1"></a>BIC.values <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(lam.seq))</span>
-<span id="cb200-3"><a href="glmm-lasso.html#cb200-3" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lam.seq)) {</span>
-<span id="cb200-4"><a href="glmm-lasso.html#cb200-4" tabindex="-1"></a>lm.tmp <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(points <span class="sc">~</span> transfer.spendings <span class="sc">+</span> ave.unfair.score </span>
-<span id="cb200-5"><a href="glmm-lasso.html#cb200-5" tabindex="-1"></a>                          <span class="sc">+</span> ball.possession <span class="sc">+</span> tackles </span>
-<span id="cb200-6"><a href="glmm-lasso.html#cb200-6" tabindex="-1"></a>                          <span class="sc">+</span> ave.attend <span class="sc">+</span> sold.out, <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">team=</span><span class="sc">~</span><span class="dv">1</span>), </span>
-<span id="cb200-7"><a href="glmm-lasso.html#cb200-7" tabindex="-1"></a>                          <span class="at">lambda=</span>lam.seq[k], <span class="at">data =</span> soccer)</span>
-<span id="cb200-8"><a href="glmm-lasso.html#cb200-8" tabindex="-1"></a>BIC.values[k] <span class="ot">&lt;-</span> lm.tmp<span class="sc">$</span>bic</span>
-<span id="cb200-9"><a href="glmm-lasso.html#cb200-9" tabindex="-1"></a>}</span>
-<span id="cb200-10"><a href="glmm-lasso.html#cb200-10" tabindex="-1"></a><span class="fu">plot</span>(lam.seq, BIC.values, <span class="at">xlab=</span><span class="fu">expression</span>(lambda), <span class="at">ylab=</span><span class="st">&quot;BIC&quot;</span>, <span class="at">main=</span><span class="st">&quot;BIC for soccer data&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="glmm-lasso.html#cb204-1" tabindex="-1"></a>lam.seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">500</span>, <span class="at">by=</span><span class="dv">5</span>)</span>
+<span id="cb204-2"><a href="glmm-lasso.html#cb204-2" tabindex="-1"></a>BIC.values <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(lam.seq))</span>
+<span id="cb204-3"><a href="glmm-lasso.html#cb204-3" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lam.seq)) {</span>
+<span id="cb204-4"><a href="glmm-lasso.html#cb204-4" tabindex="-1"></a>lm.tmp <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(points <span class="sc">~</span> transfer.spendings <span class="sc">+</span> ave.unfair.score </span>
+<span id="cb204-5"><a href="glmm-lasso.html#cb204-5" tabindex="-1"></a>                          <span class="sc">+</span> ball.possession <span class="sc">+</span> tackles </span>
+<span id="cb204-6"><a href="glmm-lasso.html#cb204-6" tabindex="-1"></a>                          <span class="sc">+</span> ave.attend <span class="sc">+</span> sold.out, <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">team=</span><span class="sc">~</span><span class="dv">1</span>), </span>
+<span id="cb204-7"><a href="glmm-lasso.html#cb204-7" tabindex="-1"></a>                          <span class="at">lambda=</span>lam.seq[k], <span class="at">data =</span> soccer)</span>
+<span id="cb204-8"><a href="glmm-lasso.html#cb204-8" tabindex="-1"></a>BIC.values[k] <span class="ot">&lt;-</span> lm.tmp<span class="sc">$</span>bic</span>
+<span id="cb204-9"><a href="glmm-lasso.html#cb204-9" tabindex="-1"></a>}</span>
+<span id="cb204-10"><a href="glmm-lasso.html#cb204-10" tabindex="-1"></a><span class="fu">plot</span>(lam.seq, BIC.values, <span class="at">xlab=</span><span class="fu">expression</span>(lambda), <span class="at">ylab=</span><span class="st">&quot;BIC&quot;</span>, <span class="at">main=</span><span class="st">&quot;BIC for soccer data&quot;</span>)</span></code></pre></div>
 <p><img src="04-glmmlasso_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <ul>
 <li>It looks like the lowest <strong>BIC</strong> value is in between 90 and 130.
@@ -649,33 +651,33 @@ result</p></li>
 <li>Let’s plot the BIC values for a denser grid of <span class="math inline">\(\lambda\)</span> values between 90 and 130</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb201-1"><a href="glmm-lasso.html#cb201-1" tabindex="-1"></a>lam.seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">90</span>, <span class="dv">130</span>, <span class="at">by=</span><span class="dv">1</span>)</span>
-<span id="cb201-2"><a href="glmm-lasso.html#cb201-2" tabindex="-1"></a>BIC.values <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(lam.seq))</span>
-<span id="cb201-3"><a href="glmm-lasso.html#cb201-3" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lam.seq)) {</span>
-<span id="cb201-4"><a href="glmm-lasso.html#cb201-4" tabindex="-1"></a>  lm.tmp <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(points <span class="sc">~</span> transfer.spendings <span class="sc">+</span> ave.unfair.score </span>
-<span id="cb201-5"><a href="glmm-lasso.html#cb201-5" tabindex="-1"></a>                      <span class="sc">+</span> ball.possession <span class="sc">+</span> tackles </span>
-<span id="cb201-6"><a href="glmm-lasso.html#cb201-6" tabindex="-1"></a>                      <span class="sc">+</span> ave.attend <span class="sc">+</span> sold.out, <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">team=</span><span class="sc">~</span><span class="dv">1</span>), </span>
-<span id="cb201-7"><a href="glmm-lasso.html#cb201-7" tabindex="-1"></a>                      <span class="at">lambda=</span>lam.seq[k], <span class="at">data =</span> soccer)</span>
-<span id="cb201-8"><a href="glmm-lasso.html#cb201-8" tabindex="-1"></a>  BIC.values[k] <span class="ot">&lt;-</span> lm.tmp<span class="sc">$</span>bic</span>
-<span id="cb201-9"><a href="glmm-lasso.html#cb201-9" tabindex="-1"></a>}</span>
-<span id="cb201-10"><a href="glmm-lasso.html#cb201-10" tabindex="-1"></a><span class="fu">plot</span>(lam.seq, BIC.values, <span class="at">xlab=</span><span class="fu">expression</span>(lambda), <span class="at">ylab=</span><span class="st">&quot;BIC&quot;</span>, <span class="at">main=</span><span class="st">&quot;BIC for soccer data&quot;</span>)</span>
-<span id="cb201-11"><a href="glmm-lasso.html#cb201-11" tabindex="-1"></a><span class="fu">lines</span>(lam.seq, BIC.values)</span></code></pre></div>
+<div class="sourceCode" id="cb205"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb205-1"><a href="glmm-lasso.html#cb205-1" tabindex="-1"></a>lam.seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">90</span>, <span class="dv">130</span>, <span class="at">by=</span><span class="dv">1</span>)</span>
+<span id="cb205-2"><a href="glmm-lasso.html#cb205-2" tabindex="-1"></a>BIC.values <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(lam.seq))</span>
+<span id="cb205-3"><a href="glmm-lasso.html#cb205-3" tabindex="-1"></a><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lam.seq)) {</span>
+<span id="cb205-4"><a href="glmm-lasso.html#cb205-4" tabindex="-1"></a>  lm.tmp <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(points <span class="sc">~</span> transfer.spendings <span class="sc">+</span> ave.unfair.score </span>
+<span id="cb205-5"><a href="glmm-lasso.html#cb205-5" tabindex="-1"></a>                      <span class="sc">+</span> ball.possession <span class="sc">+</span> tackles </span>
+<span id="cb205-6"><a href="glmm-lasso.html#cb205-6" tabindex="-1"></a>                      <span class="sc">+</span> ave.attend <span class="sc">+</span> sold.out, <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">team=</span><span class="sc">~</span><span class="dv">1</span>), </span>
+<span id="cb205-7"><a href="glmm-lasso.html#cb205-7" tabindex="-1"></a>                      <span class="at">lambda=</span>lam.seq[k], <span class="at">data =</span> soccer)</span>
+<span id="cb205-8"><a href="glmm-lasso.html#cb205-8" tabindex="-1"></a>  BIC.values[k] <span class="ot">&lt;-</span> lm.tmp<span class="sc">$</span>bic</span>
+<span id="cb205-9"><a href="glmm-lasso.html#cb205-9" tabindex="-1"></a>}</span>
+<span id="cb205-10"><a href="glmm-lasso.html#cb205-10" tabindex="-1"></a><span class="fu">plot</span>(lam.seq, BIC.values, <span class="at">xlab=</span><span class="fu">expression</span>(lambda), <span class="at">ylab=</span><span class="st">&quot;BIC&quot;</span>, <span class="at">main=</span><span class="st">&quot;BIC for soccer data&quot;</span>)</span>
+<span id="cb205-11"><a href="glmm-lasso.html#cb205-11" tabindex="-1"></a><span class="fu">lines</span>(lam.seq, BIC.values)</span></code></pre></div>
 <p><img src="04-glmmlasso_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <ul>
 <li>The best value of <span class="math inline">\(\lambda\)</span> according to the BIC criterion is <span class="math inline">\(119\)</span>:</li>
 </ul>
-<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="glmm-lasso.html#cb202-1" tabindex="-1"></a>lam.seq[<span class="fu">which.min</span>(BIC.values)]</span></code></pre></div>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="glmm-lasso.html#cb206-1" tabindex="-1"></a>lam.seq[<span class="fu">which.min</span>(BIC.values)]</span></code></pre></div>
 <pre><code>## [1] 119</code></pre>
 <hr />
 <ul>
 <li>Let’s look at the regression coefficient estimates using <span class="math inline">\(\lambda = 119\)</span></li>
 </ul>
-<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="glmm-lasso.html#cb204-1" tabindex="-1"></a>lm.lambda19 <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(points <span class="sc">~</span> transfer.spendings <span class="sc">+</span> ave.unfair.score </span>
-<span id="cb204-2"><a href="glmm-lasso.html#cb204-2" tabindex="-1"></a>                                   <span class="sc">+</span> ball.possession <span class="sc">+</span> tackles </span>
-<span id="cb204-3"><a href="glmm-lasso.html#cb204-3" tabindex="-1"></a>                                   <span class="sc">+</span> ave.attend <span class="sc">+</span> sold.out, <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">team=</span><span class="sc">~</span><span class="dv">1</span>), </span>
-<span id="cb204-4"><a href="glmm-lasso.html#cb204-4" tabindex="-1"></a>                                   <span class="at">lambda=</span><span class="dv">119</span>, <span class="at">data =</span> soccer)</span>
-<span id="cb204-5"><a href="glmm-lasso.html#cb204-5" tabindex="-1"></a></span>
-<span id="cb204-6"><a href="glmm-lasso.html#cb204-6" tabindex="-1"></a><span class="fu">summary</span>(lm.lambda19)</span></code></pre></div>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="glmm-lasso.html#cb208-1" tabindex="-1"></a>lm.lambda19 <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(points <span class="sc">~</span> transfer.spendings <span class="sc">+</span> ave.unfair.score </span>
+<span id="cb208-2"><a href="glmm-lasso.html#cb208-2" tabindex="-1"></a>                                   <span class="sc">+</span> ball.possession <span class="sc">+</span> tackles </span>
+<span id="cb208-3"><a href="glmm-lasso.html#cb208-3" tabindex="-1"></a>                                   <span class="sc">+</span> ave.attend <span class="sc">+</span> sold.out, <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">team=</span><span class="sc">~</span><span class="dv">1</span>), </span>
+<span id="cb208-4"><a href="glmm-lasso.html#cb208-4" tabindex="-1"></a>                                   <span class="at">lambda=</span><span class="dv">119</span>, <span class="at">data =</span> soccer)</span>
+<span id="cb208-5"><a href="glmm-lasso.html#cb208-5" tabindex="-1"></a></span>
+<span id="cb208-6"><a href="glmm-lasso.html#cb208-6" tabindex="-1"></a><span class="fu">summary</span>(lm.lambda19)</span></code></pre></div>
 <pre><code>## Call:
 ## glmmLasso(fix = points ~ transfer.spendings + ave.unfair.score + 
 ##     ball.possession + tackles + ave.attend + sold.out, rnd = list(team = ~1), 
@@ -725,9 +727,9 @@ at <strong>“future” time points</strong> when compared with the training set
 <li><p>Let’s try doing <strong>5-fold</strong> cross-validation with the <code>soccer</code> data.</p></li>
 <li><p>To do this, it’s easier to just create a <strong>team id</strong> variable first</p></li>
 </ul>
-<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="glmm-lasso.html#cb206-1" tabindex="-1"></a>team.labels<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">team=</span><span class="fu">unique</span>(soccer<span class="sc">$</span>team),<span class="at">team.id=</span><span class="fu">as.numeric</span>(<span class="fu">unique</span>(soccer<span class="sc">$</span>team)))</span>
-<span id="cb206-2"><a href="glmm-lasso.html#cb206-2" tabindex="-1"></a>soccer <span class="ot">&lt;-</span> <span class="fu">merge</span>(soccer, team.labels, <span class="at">by=</span><span class="st">&quot;team&quot;</span>)</span>
-<span id="cb206-3"><a href="glmm-lasso.html#cb206-3" tabindex="-1"></a><span class="fu">head</span>(soccer)</span></code></pre></div>
+<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="glmm-lasso.html#cb210-1" tabindex="-1"></a>team.labels<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">team=</span><span class="fu">unique</span>(soccer<span class="sc">$</span>team),<span class="at">team.id=</span><span class="fu">as.numeric</span>(<span class="fu">unique</span>(soccer<span class="sc">$</span>team)))</span>
+<span id="cb210-2"><a href="glmm-lasso.html#cb210-2" tabindex="-1"></a>soccer <span class="ot">&lt;-</span> <span class="fu">merge</span>(soccer, team.labels, <span class="at">by=</span><span class="st">&quot;team&quot;</span>)</span>
+<span id="cb210-3"><a href="glmm-lasso.html#cb210-3" tabindex="-1"></a><span class="fu">head</span>(soccer)</span></code></pre></div>
 <pre><code>##              team pos points transfer.spendings transfer.receits yellow.card
 ## 1     1. FC Koeln  12     39        -0.47350170       -0.6774385          70
 ## 2     1. FC Koeln  13     38        -0.08019776       -0.6624274          70
@@ -752,39 +754,39 @@ at <strong>“future” time points</strong> when compared with the training set
 <ul>
 <li>Now create each of the 5 <strong>test sets</strong>.</li>
 </ul>
-<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="glmm-lasso.html#cb208-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2352</span>)</span>
-<span id="cb208-2"><a href="glmm-lasso.html#cb208-2" tabindex="-1"></a><span class="do">## first create the indices for the test sets</span></span>
-<span id="cb208-3"><a href="glmm-lasso.html#cb208-3" tabindex="-1"></a>nfolds <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb208-4"><a href="glmm-lasso.html#cb208-4" tabindex="-1"></a>test.groups <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>nfolds, <span class="at">size=</span><span class="dv">23</span>, <span class="at">replace=</span><span class="cn">TRUE</span>)</span>
-<span id="cb208-5"><a href="glmm-lasso.html#cb208-5" tabindex="-1"></a>test.groups</span></code></pre></div>
+<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb212-1"><a href="glmm-lasso.html#cb212-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2352</span>)</span>
+<span id="cb212-2"><a href="glmm-lasso.html#cb212-2" tabindex="-1"></a><span class="do">## first create the indices for the test sets</span></span>
+<span id="cb212-3"><a href="glmm-lasso.html#cb212-3" tabindex="-1"></a>nfolds <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb212-4"><a href="glmm-lasso.html#cb212-4" tabindex="-1"></a>test.groups <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>nfolds, <span class="at">size=</span><span class="dv">23</span>, <span class="at">replace=</span><span class="cn">TRUE</span>)</span>
+<span id="cb212-5"><a href="glmm-lasso.html#cb212-5" tabindex="-1"></a>test.groups</span></code></pre></div>
 <pre><code>##  [1] 2 5 2 5 4 3 1 4 1 2 3 5 3 1 5 2 1 4 3 2 4 5 4</code></pre>
-<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="glmm-lasso.html#cb210-1" tabindex="-1"></a><span class="do">## test.groups == k means that the observation will be in the kth test set</span></span>
-<span id="cb210-2"><a href="glmm-lasso.html#cb210-2" tabindex="-1"></a><span class="do">## For such a small dataset, you may want to randomly generate the</span></span>
-<span id="cb210-3"><a href="glmm-lasso.html#cb210-3" tabindex="-1"></a><span class="do">## test sets so that they all have the same size.</span></span></code></pre></div>
+<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb214-1"><a href="glmm-lasso.html#cb214-1" tabindex="-1"></a><span class="do">## test.groups == k means that the observation will be in the kth test set</span></span>
+<span id="cb214-2"><a href="glmm-lasso.html#cb214-2" tabindex="-1"></a><span class="do">## For such a small dataset, you may want to randomly generate the</span></span>
+<span id="cb214-3"><a href="glmm-lasso.html#cb214-3" tabindex="-1"></a><span class="do">## test sets so that they all have the same size.</span></span></code></pre></div>
 <hr />
 <ul>
 <li>Now, compute cross-validation estimates of the <strong>mean-squared error</strong> over a grid of <span class="math inline">\(\lambda\)</span> values</li>
 </ul>
-<div class="sourceCode" id="cb211"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb211-1"><a href="glmm-lasso.html#cb211-1" tabindex="-1"></a>lam.seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">80</span>, <span class="dv">200</span>, <span class="at">by=</span><span class="dv">10</span>)</span>
-<span id="cb211-2"><a href="glmm-lasso.html#cb211-2" tabindex="-1"></a>MSE <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, nfolds, <span class="fu">length</span>(lam.seq))</span>
-<span id="cb211-3"><a href="glmm-lasso.html#cb211-3" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lam.seq)) {</span>
-<span id="cb211-4"><a href="glmm-lasso.html#cb211-4" tabindex="-1"></a>    </span>
-<span id="cb211-5"><a href="glmm-lasso.html#cb211-5" tabindex="-1"></a>    <span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nfolds) {</span>
-<span id="cb211-6"><a href="glmm-lasso.html#cb211-6" tabindex="-1"></a>       soccer.test <span class="ot">&lt;-</span> soccer[test.groups<span class="sc">==</span>k,]</span>
-<span id="cb211-7"><a href="glmm-lasso.html#cb211-7" tabindex="-1"></a>       soccer.train <span class="ot">&lt;-</span> soccer[test.groups<span class="sc">!=</span>k,]</span>
-<span id="cb211-8"><a href="glmm-lasso.html#cb211-8" tabindex="-1"></a>       </span>
-<span id="cb211-9"><a href="glmm-lasso.html#cb211-9" tabindex="-1"></a>       tmp.lm <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(points <span class="sc">~</span> transfer.spendings <span class="sc">+</span> ave.unfair.score </span>
-<span id="cb211-10"><a href="glmm-lasso.html#cb211-10" tabindex="-1"></a>                 <span class="sc">+</span> ball.possession <span class="sc">+</span> tackles </span>
-<span id="cb211-11"><a href="glmm-lasso.html#cb211-11" tabindex="-1"></a>                 <span class="sc">+</span> ave.attend <span class="sc">+</span> sold.out, <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">team=</span><span class="sc">~</span><span class="dv">1</span>),</span>
-<span id="cb211-12"><a href="glmm-lasso.html#cb211-12" tabindex="-1"></a>                 <span class="at">lambda=</span>lam.seq[j], <span class="at">data =</span> soccer.train)</span>
-<span id="cb211-13"><a href="glmm-lasso.html#cb211-13" tabindex="-1"></a>       </span>
-<span id="cb211-14"><a href="glmm-lasso.html#cb211-14" tabindex="-1"></a>       predicted.values <span class="ot">&lt;-</span> <span class="fu">predict</span>(tmp.lm, <span class="at">newdata=</span>soccer.test)</span>
-<span id="cb211-15"><a href="glmm-lasso.html#cb211-15" tabindex="-1"></a>       MSE[k,j] <span class="ot">&lt;-</span> <span class="fu">mean</span>((predicted.values <span class="sc">-</span> soccer.test<span class="sc">$</span>points)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb211-16"><a href="glmm-lasso.html#cb211-16" tabindex="-1"></a>    }</span>
-<span id="cb211-17"><a href="glmm-lasso.html#cb211-17" tabindex="-1"></a>}</span>
-<span id="cb211-18"><a href="glmm-lasso.html#cb211-18" tabindex="-1"></a><span class="fu">plot</span>(lam.seq, <span class="fu">colMeans</span>(MSE), <span class="at">xlab=</span><span class="fu">expression</span>(lambda), <span class="at">ylab=</span><span class="st">&quot;MSE&quot;</span>, <span class="at">main=</span><span class="st">&quot;5-fold</span></span>
-<span id="cb211-19"><a href="glmm-lasso.html#cb211-19" tabindex="-1"></a><span class="st">     cross-validation for the soccer data&quot;</span>)</span>
-<span id="cb211-20"><a href="glmm-lasso.html#cb211-20" tabindex="-1"></a><span class="fu">lines</span>(lam.seq, <span class="fu">colMeans</span>(MSE))</span></code></pre></div>
+<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb215-1"><a href="glmm-lasso.html#cb215-1" tabindex="-1"></a>lam.seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">80</span>, <span class="dv">200</span>, <span class="at">by=</span><span class="dv">10</span>)</span>
+<span id="cb215-2"><a href="glmm-lasso.html#cb215-2" tabindex="-1"></a>MSE <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, nfolds, <span class="fu">length</span>(lam.seq))</span>
+<span id="cb215-3"><a href="glmm-lasso.html#cb215-3" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lam.seq)) {</span>
+<span id="cb215-4"><a href="glmm-lasso.html#cb215-4" tabindex="-1"></a>    </span>
+<span id="cb215-5"><a href="glmm-lasso.html#cb215-5" tabindex="-1"></a>    <span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nfolds) {</span>
+<span id="cb215-6"><a href="glmm-lasso.html#cb215-6" tabindex="-1"></a>       soccer.test <span class="ot">&lt;-</span> soccer[test.groups<span class="sc">==</span>k,]</span>
+<span id="cb215-7"><a href="glmm-lasso.html#cb215-7" tabindex="-1"></a>       soccer.train <span class="ot">&lt;-</span> soccer[test.groups<span class="sc">!=</span>k,]</span>
+<span id="cb215-8"><a href="glmm-lasso.html#cb215-8" tabindex="-1"></a>       </span>
+<span id="cb215-9"><a href="glmm-lasso.html#cb215-9" tabindex="-1"></a>       tmp.lm <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(points <span class="sc">~</span> transfer.spendings <span class="sc">+</span> ave.unfair.score </span>
+<span id="cb215-10"><a href="glmm-lasso.html#cb215-10" tabindex="-1"></a>                 <span class="sc">+</span> ball.possession <span class="sc">+</span> tackles </span>
+<span id="cb215-11"><a href="glmm-lasso.html#cb215-11" tabindex="-1"></a>                 <span class="sc">+</span> ave.attend <span class="sc">+</span> sold.out, <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">team=</span><span class="sc">~</span><span class="dv">1</span>),</span>
+<span id="cb215-12"><a href="glmm-lasso.html#cb215-12" tabindex="-1"></a>                 <span class="at">lambda=</span>lam.seq[j], <span class="at">data =</span> soccer.train)</span>
+<span id="cb215-13"><a href="glmm-lasso.html#cb215-13" tabindex="-1"></a>       </span>
+<span id="cb215-14"><a href="glmm-lasso.html#cb215-14" tabindex="-1"></a>       predicted.values <span class="ot">&lt;-</span> <span class="fu">predict</span>(tmp.lm, <span class="at">newdata=</span>soccer.test)</span>
+<span id="cb215-15"><a href="glmm-lasso.html#cb215-15" tabindex="-1"></a>       MSE[k,j] <span class="ot">&lt;-</span> <span class="fu">mean</span>((predicted.values <span class="sc">-</span> soccer.test<span class="sc">$</span>points)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb215-16"><a href="glmm-lasso.html#cb215-16" tabindex="-1"></a>    }</span>
+<span id="cb215-17"><a href="glmm-lasso.html#cb215-17" tabindex="-1"></a>}</span>
+<span id="cb215-18"><a href="glmm-lasso.html#cb215-18" tabindex="-1"></a><span class="fu">plot</span>(lam.seq, <span class="fu">colMeans</span>(MSE), <span class="at">xlab=</span><span class="fu">expression</span>(lambda), <span class="at">ylab=</span><span class="st">&quot;MSE&quot;</span>, <span class="at">main=</span><span class="st">&quot;5-fold</span></span>
+<span id="cb215-19"><a href="glmm-lasso.html#cb215-19" tabindex="-1"></a><span class="st">     cross-validation for the soccer data&quot;</span>)</span>
+<span id="cb215-20"><a href="glmm-lasso.html#cb215-20" tabindex="-1"></a><span class="fu">lines</span>(lam.seq, <span class="fu">colMeans</span>(MSE))</span></code></pre></div>
 <p><img src="04-glmmlasso_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <ul>
 <li>According to the cross-validation estimates of prediction error, the
@@ -798,13 +800,13 @@ the <code>LongituRF</code> package.</p></li>
 <li><p>To generate a longitudinal dataset with 30 individuals and 6 covariates,
 use the following code:</p></li>
 </ul>
-<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb212-1"><a href="glmm-lasso.html#cb212-1" tabindex="-1"></a><span class="fu">library</span>(LongituRF)</span>
-<span id="cb212-2"><a href="glmm-lasso.html#cb212-2" tabindex="-1"></a>DF <span class="ot">&lt;-</span> <span class="fu">DataLongGenerator</span>(<span class="at">n=</span><span class="dv">30</span>, <span class="at">p=</span><span class="dv">6</span>)</span>
-<span id="cb212-3"><a href="glmm-lasso.html#cb212-3" tabindex="-1"></a>sim_long <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y=</span>DF<span class="sc">$</span>Y, <span class="at">time=</span>DF<span class="sc">$</span>time, DF<span class="sc">$</span>X, <span class="at">id=</span>DF<span class="sc">$</span>id)</span>
-<span id="cb212-4"><a href="glmm-lasso.html#cb212-4" tabindex="-1"></a>sim_long<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="fu">factor</span>(sim_long<span class="sc">$</span>id) <span class="co"># id variables should be factors </span></span>
-<span id="cb212-5"><a href="glmm-lasso.html#cb212-5" tabindex="-1"></a>                                   <span class="co"># for glmmLasso</span></span>
-<span id="cb212-6"><a href="glmm-lasso.html#cb212-6" tabindex="-1"></a></span>
-<span id="cb212-7"><a href="glmm-lasso.html#cb212-7" tabindex="-1"></a><span class="fu">head</span>(sim_long)</span></code></pre></div>
+<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="glmm-lasso.html#cb216-1" tabindex="-1"></a><span class="fu">library</span>(LongituRF)</span>
+<span id="cb216-2"><a href="glmm-lasso.html#cb216-2" tabindex="-1"></a>DF <span class="ot">&lt;-</span> <span class="fu">DataLongGenerator</span>(<span class="at">n=</span><span class="dv">30</span>, <span class="at">p=</span><span class="dv">6</span>)</span>
+<span id="cb216-3"><a href="glmm-lasso.html#cb216-3" tabindex="-1"></a>sim_long <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y=</span>DF<span class="sc">$</span>Y, <span class="at">time=</span>DF<span class="sc">$</span>time, DF<span class="sc">$</span>X, <span class="at">id=</span>DF<span class="sc">$</span>id)</span>
+<span id="cb216-4"><a href="glmm-lasso.html#cb216-4" tabindex="-1"></a>sim_long<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="fu">factor</span>(sim_long<span class="sc">$</span>id) <span class="co"># id variables should be factors </span></span>
+<span id="cb216-5"><a href="glmm-lasso.html#cb216-5" tabindex="-1"></a>                                   <span class="co"># for glmmLasso</span></span>
+<span id="cb216-6"><a href="glmm-lasso.html#cb216-6" tabindex="-1"></a></span>
+<span id="cb216-7"><a href="glmm-lasso.html#cb216-7" tabindex="-1"></a><span class="fu">head</span>(sim_long)</span></code></pre></div>
 <pre><code>##           y time          X1          X2         X3         X4          X5
 ## 1  1.799842    1 -0.05305192 -1.17862404 -0.6402514 1.08949573  1.78153877
 ## 2  4.889512    2  1.51164592  0.07041142 -0.1110482 0.68765869  0.99507885
@@ -819,22 +821,22 @@ use the following code:</p></li>
 ## 4  0.9380251  1
 ## 5  0.9206991  1
 ## 6  1.5710471  1</code></pre>
-<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb214-1"><a href="glmm-lasso.html#cb214-1" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(sim_long<span class="sc">$</span>id)) <span class="co"># 30 unique individuals</span></span></code></pre></div>
+<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb218-1"><a href="glmm-lasso.html#cb218-1" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(sim_long<span class="sc">$</span>id)) <span class="co"># 30 unique individuals</span></span></code></pre></div>
 <pre><code>## [1] 30</code></pre>
 <ul>
 <li>Then, to fit a mixed effects model using <code>glmmLasso</code> with
 a <strong>random intercept</strong> and a <strong>random slope</strong> for the time variable,
 you can use the following code.</li>
 </ul>
-<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="glmm-lasso.html#cb216-1" tabindex="-1"></a>glmm_fit_sim <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(y <span class="sc">~</span> time <span class="sc">+</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3 <span class="sc">+</span> X4 <span class="sc">+</span> X5 <span class="sc">+</span> X6, </span>
-<span id="cb216-2"><a href="glmm-lasso.html#cb216-2" tabindex="-1"></a>                          <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">id=</span><span class="sc">~</span><span class="dv">1</span><span class="sc">+</span>time), <span class="at">lambda=</span><span class="dv">10</span>, <span class="at">data =</span> sim_long)</span></code></pre></div>
+<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="glmm-lasso.html#cb220-1" tabindex="-1"></a>glmm_fit_sim <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(y <span class="sc">~</span> time <span class="sc">+</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3 <span class="sc">+</span> X4 <span class="sc">+</span> X5 <span class="sc">+</span> X6, </span>
+<span id="cb220-2"><a href="glmm-lasso.html#cb220-2" tabindex="-1"></a>                          <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">id=</span><span class="sc">~</span><span class="dv">1</span><span class="sc">+</span>time), <span class="at">lambda=</span><span class="dv">10</span>, <span class="at">data =</span> sim_long)</span></code></pre></div>
 <pre><code>## Warning in est.glmmLasso.RE(fix = fix, rnd = rnd, data = data, lambda = lambda,
 ## : Random slopes are not standardized back!</code></pre>
 <ul>
 <li>The summary output should have estimates of both the random intercept
 standard deviation and the random slope standard deviation:</li>
 </ul>
-<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb218-1"><a href="glmm-lasso.html#cb218-1" tabindex="-1"></a><span class="fu">summary</span>(glmm_fit_sim)</span></code></pre></div>
+<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb222-1"><a href="glmm-lasso.html#cb222-1" tabindex="-1"></a><span class="fu">summary</span>(glmm_fit_sim)</span></code></pre></div>
 <pre><code>## Call:
 ## glmmLasso(fix = y ~ time + X1 + X2 + X3 + X4 + X5 + X6, rnd = list(id = ~1 + 
 ##     time), data = sim_long, lambda = 10)
@@ -906,11 +908,11 @@ t &amp; \text{ for } t &lt; \lambda \\
 <ul>
 <li>Just to show the basics of how the PGEE package works, we can look at the <strong>yeastG1</strong> dataset from the PGEE package</li>
 </ul>
-<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="glmm-lasso.html#cb220-1" tabindex="-1"></a><span class="fu">library</span>(PGEE)</span>
-<span id="cb220-2"><a href="glmm-lasso.html#cb220-2" tabindex="-1"></a><span class="fu">data</span>(yeastG1)</span>
-<span id="cb220-3"><a href="glmm-lasso.html#cb220-3" tabindex="-1"></a></span>
-<span id="cb220-4"><a href="glmm-lasso.html#cb220-4" tabindex="-1"></a><span class="do">## look at first 6 rows and first 5 columns</span></span>
-<span id="cb220-5"><a href="glmm-lasso.html#cb220-5" tabindex="-1"></a>yeastG1[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb224-1"><a href="glmm-lasso.html#cb224-1" tabindex="-1"></a><span class="fu">library</span>(PGEE)</span>
+<span id="cb224-2"><a href="glmm-lasso.html#cb224-2" tabindex="-1"></a><span class="fu">data</span>(yeastG1)</span>
+<span id="cb224-3"><a href="glmm-lasso.html#cb224-3" tabindex="-1"></a></span>
+<span id="cb224-4"><a href="glmm-lasso.html#cb224-4" tabindex="-1"></a><span class="do">## look at first 6 rows and first 5 columns</span></span>
+<span id="cb224-5"><a href="glmm-lasso.html#cb224-5" tabindex="-1"></a>yeastG1[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
 <pre><code>##   id     y time        ABF1       ACE2
 ## 1  1  0.88    3 -0.09702788  8.3839614
 ## 2  1  0.32    4 -0.09702788  8.3839614
@@ -934,21 +936,21 @@ E(Y_{ij}|\mathbf{x}_{ijk}) = \gamma_{0} + \gamma_{1}t_{ij} + \sum_{k=1}^{96}\bet
 </ul></li>
 <li>To fit the above model with an <strong>AR(1)</strong> correlation structure and <span class="math inline">\(\lambda = 0.1\)</span>, you can use the following <strong>R</strong> code</li>
 </ul>
-<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb222-1"><a href="glmm-lasso.html#cb222-1" tabindex="-1"></a>m0 <span class="ot">&lt;-</span> <span class="fu">PGEE</span>(y <span class="sc">~</span>. <span class="sc">-</span>id, <span class="at">id=</span>id, <span class="at">corstr=</span><span class="st">&quot;AR-1&quot;</span>, <span class="at">lambda=</span><span class="fl">0.1</span>, <span class="at">data=</span>yeastG1)</span></code></pre></div>
+<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="glmm-lasso.html#cb226-1" tabindex="-1"></a>m0 <span class="ot">&lt;-</span> <span class="fu">PGEE</span>(y <span class="sc">~</span>. <span class="sc">-</span>id, <span class="at">id=</span>id, <span class="at">corstr=</span><span class="st">&quot;AR-1&quot;</span>, <span class="at">lambda=</span><span class="fl">0.1</span>, <span class="at">data=</span>yeastG1)</span></code></pre></div>
 <ul>
 <li>Let’s look at the values of the first 5 estimated regression coefficients:</li>
 </ul>
-<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="glmm-lasso.html#cb223-1" tabindex="-1"></a>m0<span class="sc">$</span>coefficients[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="glmm-lasso.html#cb227-1" tabindex="-1"></a>m0<span class="sc">$</span>coefficients[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
 <pre><code>##   (Intercept)          time          ABF1          ACE2          ADR1 
 ##  1.879532e-03  1.795182e-02 -1.366213e-02  4.360565e-06  2.988796e-07</code></pre>
 <ul>
 <li>The <code>PGEE</code> function does not automatically return <strong>exactly zero</strong> regression coefficients,
 but you can set those coefficients whose absolute value is less than some small threshold equal to zero.</li>
 </ul>
-<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="glmm-lasso.html#cb225-1" tabindex="-1"></a><span class="fu">length</span>(m0<span class="sc">$</span>coefficients)</span></code></pre></div>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="glmm-lasso.html#cb229-1" tabindex="-1"></a><span class="fu">length</span>(m0<span class="sc">$</span>coefficients)</span></code></pre></div>
 <pre><code>## [1] 98</code></pre>
-<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="glmm-lasso.html#cb227-1" tabindex="-1"></a><span class="do">## 71 out of 98 coefficients are &quot;zero&quot;</span></span>
-<span id="cb227-2"><a href="glmm-lasso.html#cb227-2" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">abs</span>(m0<span class="sc">$</span>coefficients) <span class="sc">&lt;</span> <span class="fl">1e-4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="glmm-lasso.html#cb231-1" tabindex="-1"></a><span class="do">## 71 out of 98 coefficients are &quot;zero&quot;</span></span>
+<span id="cb231-2"><a href="glmm-lasso.html#cb231-2" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">abs</span>(m0<span class="sc">$</span>coefficients) <span class="sc">&lt;</span> <span class="fl">1e-4</span>)</span></code></pre></div>
 <pre><code>## [1] 71</code></pre>
 <hr />
 <ul>
@@ -967,11 +969,11 @@ but you can set those coefficients whose absolute value is less than some small 
 <li>This gives a range of 12-92 for the number of zero coefficients</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="glmm-lasso.html#cb229-1" tabindex="-1"></a>mlow <span class="ot">&lt;-</span> <span class="fu">PGEE</span>(y <span class="sc">~</span>. <span class="sc">-</span>id, <span class="at">id=</span>id, <span class="at">corstr=</span><span class="st">&quot;AR-1&quot;</span>, <span class="at">lambda=</span><span class="fl">0.01</span>, <span class="at">data=</span>yeastG1)</span>
-<span id="cb229-2"><a href="glmm-lasso.html#cb229-2" tabindex="-1"></a>mhigh <span class="ot">&lt;-</span> <span class="fu">PGEE</span>(y <span class="sc">~</span>. <span class="sc">-</span>id, <span class="at">id=</span>id, <span class="at">corstr=</span><span class="st">&quot;AR-1&quot;</span>, <span class="at">lambda=</span><span class="fl">0.3</span>, <span class="at">data=</span>yeastG1)</span>
-<span id="cb229-3"><a href="glmm-lasso.html#cb229-3" tabindex="-1"></a></span>
-<span id="cb229-4"><a href="glmm-lasso.html#cb229-4" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">abs</span>(mlow<span class="sc">$</span>coefficients) <span class="sc">&lt;</span> <span class="fl">1e-4</span>) <span class="do">## only 12 out of 98 are zero</span></span>
-<span id="cb229-5"><a href="glmm-lasso.html#cb229-5" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">abs</span>(mhigh<span class="sc">$</span>coefficients) <span class="sc">&lt;</span> <span class="fl">1e-4</span>) <span class="do">## now, 92 out of 98 are zero</span></span></code></pre></div>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="glmm-lasso.html#cb233-1" tabindex="-1"></a>mlow <span class="ot">&lt;-</span> <span class="fu">PGEE</span>(y <span class="sc">~</span>. <span class="sc">-</span>id, <span class="at">id=</span>id, <span class="at">corstr=</span><span class="st">&quot;AR-1&quot;</span>, <span class="at">lambda=</span><span class="fl">0.01</span>, <span class="at">data=</span>yeastG1)</span>
+<span id="cb233-2"><a href="glmm-lasso.html#cb233-2" tabindex="-1"></a>mhigh <span class="ot">&lt;-</span> <span class="fu">PGEE</span>(y <span class="sc">~</span>. <span class="sc">-</span>id, <span class="at">id=</span>id, <span class="at">corstr=</span><span class="st">&quot;AR-1&quot;</span>, <span class="at">lambda=</span><span class="fl">0.3</span>, <span class="at">data=</span>yeastG1)</span>
+<span id="cb233-3"><a href="glmm-lasso.html#cb233-3" tabindex="-1"></a></span>
+<span id="cb233-4"><a href="glmm-lasso.html#cb233-4" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">abs</span>(mlow<span class="sc">$</span>coefficients) <span class="sc">&lt;</span> <span class="fl">1e-4</span>) <span class="do">## only 12 out of 98 are zero</span></span>
+<span id="cb233-5"><a href="glmm-lasso.html#cb233-5" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">abs</span>(mhigh<span class="sc">$</span>coefficients) <span class="sc">&lt;</span> <span class="fl">1e-4</span>) <span class="do">## now, 92 out of 98 are zero</span></span></code></pre></div>
 <hr />
 <ul>
 <li>The “Quasi Information Criterion” (QIC) is a model selection tool for GEEs.
@@ -991,22 +993,22 @@ the range <span class="math inline">\((\lambda_{min}, \lambda_{max})\)</span>.
 <li>Use a lambda sequence of length 10 from 0.01 to 0.3</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="glmm-lasso.html#cb230-1" tabindex="-1"></a>cv.yeast <span class="ot">&lt;-</span> <span class="fu">CVfit</span>(y <span class="sc">~</span>. <span class="sc">-</span>id, <span class="at">id=</span>id, <span class="at">lambda=</span><span class="fu">seq</span>(<span class="fl">0.01</span>, <span class="fl">0.3</span>, <span class="at">length.out=</span><span class="dv">10</span>), </span>
-<span id="cb230-2"><a href="glmm-lasso.html#cb230-2" tabindex="-1"></a>                  <span class="at">fold =</span> <span class="dv">5</span>, <span class="at">data=</span>yeastG1)</span></code></pre></div>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="glmm-lasso.html#cb234-1" tabindex="-1"></a>cv.yeast <span class="ot">&lt;-</span> <span class="fu">CVfit</span>(y <span class="sc">~</span>. <span class="sc">-</span>id, <span class="at">id=</span>id, <span class="at">lambda=</span><span class="fu">seq</span>(<span class="fl">0.01</span>, <span class="fl">0.3</span>, <span class="at">length.out=</span><span class="dv">10</span>), </span>
+<span id="cb234-2"><a href="glmm-lasso.html#cb234-2" tabindex="-1"></a>                  <span class="at">fold =</span> <span class="dv">5</span>, <span class="at">data=</span>yeastG1)</span></code></pre></div>
 <ul>
 <li><p>The cross-validation done by <code>CVfit</code> does automatically assume an <strong>“independent”</strong> working correlation structure.</p></li>
 <li><p>The <code>lam.opt</code> component of <code>cv.yeast</code> gives the optimal value of lambda.</p></li>
 </ul>
-<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="glmm-lasso.html#cb231-1" tabindex="-1"></a>cv.yeast<span class="sc">$</span>lam.opt</span></code></pre></div>
+<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="glmm-lasso.html#cb235-1" tabindex="-1"></a>cv.yeast<span class="sc">$</span>lam.opt</span></code></pre></div>
 <pre><code>## [1] 0.04222222</code></pre>
 <ul>
 <li>Now, we can just use <code>PGEE</code> with the optimal value of lambda.</li>
 </ul>
-<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="glmm-lasso.html#cb233-1" tabindex="-1"></a>mfinal <span class="ot">&lt;-</span> <span class="fu">PGEE</span>(y <span class="sc">~</span>. <span class="sc">-</span>id, <span class="at">id=</span>id, <span class="at">corstr=</span><span class="st">&quot;AR-1&quot;</span>, <span class="at">lambda=</span>cv.yeast<span class="sc">$</span>lam.opt, <span class="at">data=</span>yeastG1)</span></code></pre></div>
+<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="glmm-lasso.html#cb237-1" tabindex="-1"></a>mfinal <span class="ot">&lt;-</span> <span class="fu">PGEE</span>(y <span class="sc">~</span>. <span class="sc">-</span>id, <span class="at">id=</span>id, <span class="at">corstr=</span><span class="st">&quot;AR-1&quot;</span>, <span class="at">lambda=</span>cv.yeast<span class="sc">$</span>lam.opt, <span class="at">data=</span>yeastG1)</span></code></pre></div>
 <ul>
 <li>From the <code>mfinal</code> object returned by <code>PGEE</code>, we can look at the selected <strong>nonzero</strong> coefficients</li>
 </ul>
-<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="glmm-lasso.html#cb234-1" tabindex="-1"></a>mfinal<span class="sc">$</span>coefficients[<span class="fu">abs</span>(mfinal<span class="sc">$</span>coefficients) <span class="sc">&gt;</span> <span class="fl">1e-4</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="glmm-lasso.html#cb238-1" tabindex="-1"></a>mfinal<span class="sc">$</span>coefficients[<span class="fu">abs</span>(mfinal<span class="sc">$</span>coefficients) <span class="sc">&gt;</span> <span class="fl">1e-4</span>]</span></code></pre></div>
 <pre><code>##   (Intercept)          time          ABF1          ACE2         ARG81 
 ##  0.0654041421  0.0124562882 -0.0325838863  0.0127874415  0.0169445034 
 ##          ASH1          CAD1          CIN5         DAL82          DIG1 
@@ -1032,7 +1034,7 @@ the range <span class="math inline">\((\lambda_{min}, \lambda_{max})\)</span>.
 <ul>
 <li>We can also look at the estimated working correlation matrix</li>
 </ul>
-<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="glmm-lasso.html#cb236-1" tabindex="-1"></a><span class="fu">round</span>(mfinal<span class="sc">$</span>working.correlation, <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="glmm-lasso.html#cb240-1" tabindex="-1"></a><span class="fu">round</span>(mfinal<span class="sc">$</span>working.correlation, <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>##       [,1]  [,2]  [,3]  [,4]
 ## [1,] 1.000 0.115 0.013 0.002
 ## [2,] 0.115 1.000 0.115 0.013
@@ -1050,9 +1052,9 @@ like <code>lm</code>, <code>glm</code>, <code>geeglm</code> return: e.g., <code>
 <li><p>You can use <code>glmmLasso</code> with <strong>binary outcomes</strong> by adding the <code>family=binomial()</code> argument.</p></li>
 <li><p>As a quick example, let’s look at the <code>ohio</code> data from the <code>geepack</code> package.</p></li>
 </ul>
-<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="glmm-lasso.html#cb238-1" tabindex="-1"></a><span class="fu">library</span>(geepack)</span>
-<span id="cb238-2"><a href="glmm-lasso.html#cb238-2" tabindex="-1"></a><span class="fu">data</span>(ohio)</span>
-<span id="cb238-3"><a href="glmm-lasso.html#cb238-3" tabindex="-1"></a><span class="fu">head</span>(ohio)</span></code></pre></div>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="glmm-lasso.html#cb242-1" tabindex="-1"></a><span class="fu">library</span>(geepack)</span>
+<span id="cb242-2"><a href="glmm-lasso.html#cb242-2" tabindex="-1"></a><span class="fu">data</span>(ohio)</span>
+<span id="cb242-3"><a href="glmm-lasso.html#cb242-3" tabindex="-1"></a><span class="fu">head</span>(ohio)</span></code></pre></div>
 <pre><code>##   resp id age smoke
 ## 1    0  0  -2     0
 ## 2    0  0  -1     0
@@ -1063,16 +1065,16 @@ like <code>lm</code>, <code>glm</code>, <code>geeglm</code> return: e.g., <code>
 <ul>
 <li>For the <code>glmmLasso</code> function, you do need to make sure the “id variable” is a factor.</li>
 </ul>
-<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="glmm-lasso.html#cb240-1" tabindex="-1"></a>ohio<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="fu">factor</span>(ohio<span class="sc">$</span>id) </span></code></pre></div>
+<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="glmm-lasso.html#cb244-1" tabindex="-1"></a>ohio<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="fu">factor</span>(ohio<span class="sc">$</span>id) </span></code></pre></div>
 <ul>
 <li>Let’s now fit a penalized generalized linear mixed model with <span class="math inline">\(\lambda = 10\)</span>:</li>
 </ul>
-<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="glmm-lasso.html#cb241-1" tabindex="-1"></a>ohio.fit10 <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(smoke <span class="sc">~</span> resp <span class="sc">+</span> age, <span class="at">family=</span><span class="fu">binomial</span>(), <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">id=</span><span class="sc">~</span><span class="dv">1</span>),</span>
-<span id="cb241-2"><a href="glmm-lasso.html#cb241-2" tabindex="-1"></a>                      <span class="at">lambda=</span><span class="dv">10</span>, <span class="at">data =</span> ohio)</span></code></pre></div>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="glmm-lasso.html#cb245-1" tabindex="-1"></a>ohio.fit10 <span class="ot">&lt;-</span> <span class="fu">glmmLasso</span>(smoke <span class="sc">~</span> resp <span class="sc">+</span> age, <span class="at">family=</span><span class="fu">binomial</span>(), <span class="at">rnd =</span> <span class="fu">list</span>(<span class="at">id=</span><span class="sc">~</span><span class="dv">1</span>),</span>
+<span id="cb245-2"><a href="glmm-lasso.html#cb245-2" tabindex="-1"></a>                      <span class="at">lambda=</span><span class="dv">10</span>, <span class="at">data =</span> ohio)</span></code></pre></div>
 <ul>
 <li>It looks like the <strong>wheeze status</strong> variable was selected while the <strong>age</strong> variable was not.</li>
 </ul>
-<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="glmm-lasso.html#cb242-1" tabindex="-1"></a><span class="fu">summary</span>(ohio.fit10)</span></code></pre></div>
+<div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="glmm-lasso.html#cb246-1" tabindex="-1"></a><span class="fu">summary</span>(ohio.fit10)</span></code></pre></div>
 <pre><code>## Call:
 ## glmmLasso(fix = smoke ~ resp + age, rnd = list(id = ~1), data = ohio, 
 ##     lambda = 10, family = binomial())
@@ -1096,7 +1098,7 @@ like <code>lm</code>, <code>glm</code>, <code>geeglm</code> return: e.g., <code>
 </div>
 </div>
 <h3>References</h3>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-schelldorfer2011" class="csl-entry">
 Schelldorfer, Jürg, Peter Bühlmann, and Sara Van De Geer. 2011. <span>“Estimation for High-Dimensional Linear Mixed-Effects Models Using <span class="math inline">\(\ell_{1}\)</span>-Penalization.”</span> <em>Scandinavian Journal of Statistics</em> 38 (2): 197–214.
 </div>

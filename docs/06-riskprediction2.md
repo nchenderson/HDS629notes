@@ -86,7 +86,7 @@ average value of the risk score $g_{s}$ in stratum $s$.
 
 
 
-```r
+``` r
 library(rpart)
 library(MASS)
 
@@ -113,7 +113,7 @@ head(biopsy)
     + **random forest**
 
 
-```r
+``` r
 library(rpart)
 library(randomForest)
 
@@ -125,7 +125,7 @@ RF.model <- randomForest(class ~ V1 + V3 + V4 + V7 + V8, data=biopsy, ntree = 50
 
 * Let's then compute "risk scores" from each method.
 
-```r
+``` r
 probs.cart <- predict(cart.model)
 head(probs.cart)
 ```
@@ -140,7 +140,7 @@ head(probs.cart)
 ## 6 0.0952381 0.9047619
 ```
 
-```r
+``` r
 # We want the second column of this matrix for the CART fitted probabilities
 risk.cart <- probs.cart[,2]
 
@@ -154,7 +154,7 @@ risk.RF <- predict(RF.model, newdata=biopsy, type = "prob")[,2]
 * The **in-sample** Brier scores for each method are:
     + "In-sample" here meaning we are computing the Brier score using the same outcomes we used to construct the risk scores.
 
-```r
+``` r
 brier.cart <- mean((risk.cart - biopsy$tumor.type)^2)
 brier.logreg <- mean((risk.logreg - biopsy$tumor.type)^2)
 brier.RF <- mean((risk.RF - biopsy$tumor.type)^2)
@@ -163,7 +163,7 @@ round(c(brier.cart, brier.logreg, brier.RF), 4)
 ```
 
 ```
-## [1] 0.0450 0.0280 0.0056
+## [1] 0.0450 0.0280 0.0055
 ```
 
 * When comparing **in-sample** Brier scores, CART is the worst, logistic regression is in the middle, and random forest is the best.
@@ -181,14 +181,14 @@ round(c(brier.cart, brier.logreg, brier.RF), 4)
 * Let's try a validation exercise by **"training"** our models on the first $400$ observations 
 of `biopsy` and then testing relative performance on the remaining observations.
 
-```r
+``` r
 # Create train/test splits for biopsy data
 biopsy.train <- biopsy[1:400,]
 biopsy.test <- biopsy[401:699,]
 ```
 
 
-```r
+``` r
 # Now, use each type of method on this training data
 cart.model.train <- rpart(class ~ V1 + V3 + V4 + V7 + V8, data=biopsy.train)
 logreg.model.train <- glm(tumor.type ~ V1 + V3 + V4 + V7 + V8, family="binomial", 
@@ -199,7 +199,7 @@ RF.model.train <- randomForest(class ~ V1 + V3 + V4 + V7 + V8, data=biopsy.train
 
 * Using these models built on the training data, get the fitted probabilities for the **test data**
 
-```r
+``` r
 risk.cart.test <- predict(cart.model.train, newdata=biopsy.test)[,2]
 risk.logreg.test <- predict(logreg.model.train, newdata=biopsy.test, type="response")
 risk.RF.test <- predict(RF.model.train, newdata=biopsy.test, type = "prob")[,2]
@@ -207,7 +207,7 @@ risk.RF.test <- predict(RF.model.train, newdata=biopsy.test, type = "prob")[,2]
 
 * Now, using these fitted probabilities on the test data, compute the **Brier scores**:
 
-```r
+``` r
 brier.cart.test <- mean((risk.cart.test - biopsy.test$tumor.type)^2)
 brier.logreg.test <- mean((risk.logreg.test - biopsy.test$tumor.type)^2)
 brier.RF.test <- mean((risk.RF.test - biopsy.test$tumor.type)^2)
@@ -216,7 +216,7 @@ round(c(brier.cart.test, brier.logreg.test, brier.RF.test), 4)
 ```
 
 ```
-## [1] 0.0359 0.0135 0.0190
+## [1] 0.0359 0.0135 0.0184
 ```
 
 * For the out-of-sample Brier score, both logistic regression and random forest are notably
@@ -230,8 +230,15 @@ better than CART.
 
 * Let's revisit the `ohio` data again from the `geepack` package
 
-```r
+``` r
 library(geepack)
+```
+
+```
+## Warning: package 'geepack' was built under R version 4.4.1
+```
+
+``` r
 data(ohio)
 head(ohio, 10)
 ```
@@ -279,7 +286,7 @@ an individual had at least one positive wheezing status over the first two visit
    + `atleastone2` will record whether or not an individual has at least one positive wheezing status over the last two visits.
  
 
-```r
+``` r
 data(ohio)
 baseline.ohio <- subset(ohio, age== -1) # data from baseline visit
 firsttwo.ohio <- subset(ohio, age== -1 | age == 0) # data from visits 1-2
@@ -302,7 +309,7 @@ head(atleastone1)
 ## 6  5 0    0  -1     0
 ```
 
-```r
+``` r
 table(atleastone1$resp)
 ```
 
@@ -316,7 +323,7 @@ table(atleastone1$resp)
 
 * Let's now build a risk score using only variable `smoke` as a covariate and a random choice of $300$ observations
 
-```r
+``` r
 set.seed(1234)
 train.ind <- sample(1:537, size=300)
 atleastone1.train <- atleastone1[train.ind,]
@@ -328,10 +335,6 @@ summary(mod1)
 ## 
 ## Call:
 ## glm(formula = resp ~ smoke, family = "binomial", data = atleastone1.train)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -0.5978  -0.5978  -0.5537  -0.5537   1.9754  
 ## 
 ## Coefficients:
 ##             Estimate Std. Error z value Pr(>|z|)    
@@ -354,7 +357,7 @@ summary(mod1)
 * The risk scores for the hold-out individuals for the later follow-up times are given by
 
 
-```r
+``` r
 risk1 <- predict(mod1, newdata=atleastone2[-train.ind,],
                  type="response")
 ```
@@ -362,7 +365,7 @@ risk1 <- predict(mod1, newdata=atleastone2[-train.ind,],
 
 * Now, let's look at the Brier score on the remaining individuals in the `atleast2` data set. 
 
-```r
+``` r
 mean((risk1 - atleastone2[-train.ind,]$resp)^2)
 ```
 
@@ -376,17 +379,17 @@ mean((risk1 - atleastone2[-train.ind,]$resp)^2)
 in each of the smoking categories in the hold-out sample:
 
 
-```r
+``` r
 table(risk1)
 ```
 
 ```
 ## risk1
-## 0.142105263157904 0.163636363636364 
+## 0.142105263157905 0.163636363636364 
 ##               160                77
 ```
 
-```r
+``` r
 table(atleastone2[-train.ind,]$resp, atleastone2[-train.ind,]$smoke)
 ```
 
@@ -397,7 +400,7 @@ table(atleastone2[-train.ind,]$resp, atleastone2[-train.ind,]$smoke)
 ##   1  25  21
 ```
 
-```r
+``` r
 # Compare risk scores with 
 25/(25 + 135)
 ```
@@ -406,7 +409,7 @@ table(atleastone2[-train.ind,]$resp, atleastone2[-train.ind,]$smoke)
 ## [1] 0.15625
 ```
 
-```r
+``` r
 21/(21 + 56)
 ```
 
@@ -428,7 +431,7 @@ table(atleastone2[-train.ind,]$resp, atleastone2[-train.ind,]$smoke)
 
 * For example, with a **GEE**, you might do the following:
 
-```r
+``` r
 ind <- c(1:400, 801:1200, 1601:2000) ## index of training set
 ohio.train <- subset(ohio[ind,], age==-1 | age == 0)
 ohio.test <- subset(ohio[-ind,], age==1 | age==2)

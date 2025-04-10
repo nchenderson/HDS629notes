@@ -12,7 +12,7 @@
 
 * As an example, let's look at the `airquality` dataframe available in base **R**
 
-```r
+``` r
 data(airquality)
 head(airquality)
 ```
@@ -35,7 +35,7 @@ and the **5th and 6th observations** for the `Solar.R` variable are missing.
     + If `is.na` returns `FALSE`, the entry is not missing
     
 
-```r
+``` r
 head( is.na(airquality) )
 ```
 
@@ -51,7 +51,7 @@ head( is.na(airquality) )
 
 * Computing the sum of `is.na(airquality)` tells us how many missing values there are in this dataset.
 
-```r
+``` r
 sum( is.na(airquality) )  ## 44 missing entries in total
 ```
 
@@ -59,7 +59,7 @@ sum( is.na(airquality) )  ## 44 missing entries in total
 ## [1] 44
 ```
 
-```r
+``` r
 dim( airquality )  ## Dataset has a total of 153 x 6 = 918 entries
 ```
 
@@ -69,7 +69,7 @@ dim( airquality )  ## Dataset has a total of 153 x 6 = 918 entries
 
 * Doing `apply(is.na(airquality), 2, sum)` gives us the number of missing values for each variable.
 
-```r
+``` r
 apply( is.na(airquality), 2, sum)
 ```
 
@@ -85,7 +85,7 @@ apply( is.na(airquality), 2, sum)
 
 * If we do this in **R**, we will get the following result:
 
-```r
+``` r
 air.lm1 <- lm( Ozone ~ Solar.R + Wind + Temp, data = airquality )
 summary( air.lm1 )
 ```
@@ -133,7 +133,7 @@ summary( air.lm1 )
 * To remove **all rows** where there is at least one missing value, you can use
 `na.omit`:
 
-```r
+``` r
 complete.air <- na.omit( airquality )
 ## Check that there are no missing values
 sum( is.na(complete.air) )  # This should be zero
@@ -151,13 +151,13 @@ we -->
 
 * Let's now fit a linear regression using the complete dataset `complete.air`
 
-```r
+``` r
 air.lm2 <- lm( Ozone ~ Solar.R + Wind + Temp, data = complete.air )
 ```
 
 * Because **R** does a complete-case analysis as default, the estimated regression coefficients **should be the same** when using the "incomplete dataset" `airquality` as when using the "complete dataset" `complete.air`
 
-```r
+``` r
 ## The estimated regression coefficients should be the same
 round(air.lm1$coefficients, 3)
 ```
@@ -167,7 +167,7 @@ round(air.lm1$coefficients, 3)
 ##     -64.342       0.060      -3.334       1.652
 ```
 
-```r
+``` r
 round(air.lm2$coefficients, 3)
 ```
 
@@ -240,7 +240,7 @@ for performing **multiple imputation**.
 * Let's try running the `mice` function with the `airquality` dataset.
 
 
-```r
+``` r
 library(mice)
 imputed.airs <- mice(airquality, print=FALSE, seed=101)
 ```
@@ -255,7 +255,7 @@ imputed.airs <- mice(airquality, print=FALSE, seed=101)
 * For example, `imputed.airs$imp` will be a **list** with each component of the list being
 one of the variables from `airquality`
 
-```r
+``` r
 names( imputed.airs$imp )
 ```
 
@@ -269,7 +269,7 @@ names( imputed.airs$imp )
     + This is because the `Ozone` variable had **37 missing values**, and there are **5 multiple imputations** (the default number in **mice**) 
 
 
-```r
+``` r
 dim(imputed.airs$imp$Ozone)
 ```
 
@@ -277,7 +277,7 @@ dim(imputed.airs$imp$Ozone)
 ## [1] 37  5
 ```
 
-```r
+``` r
 ## Imputed missing ozone values across the five multiple imputations
 head(imputed.airs$imp$Ozone)
 ```
@@ -304,7 +304,7 @@ the 2nd imputation, 18 in the 3rd imputation, etc. ....
    + This is because the `Solar.R` variable had **7 missing values**, and there are **5 multiple imputations**.
 
 
-```r
+``` r
 dim(imputed.airs$imp$Solar.R)
 ```
 
@@ -312,7 +312,7 @@ dim(imputed.airs$imp$Solar.R)
 ## [1] 7 5
 ```
 
-```r
+``` r
 ## Imputed missing ozone values across the five multiple imputations
 head(imputed.airs$imp$Solar.R)
 ```
@@ -336,13 +336,13 @@ the 2nd imputation, 274 in the 3rd imputation, etc. ....
 
 * However, this is much easier if you just use the **with** function from **mice**
 
-```r
+``` r
 air.multi.imputelm <- with(imputed.airs, lm( Ozone ~ Solar.R + Wind + Temp))
 ```
 
 * This will produce **5 different sets** of estimates of the regression coefficients:
 
-```r
+``` r
 summary(air.multi.imputelm)
 ```
 
@@ -375,7 +375,7 @@ summary(air.multi.imputelm)
 * To get the "pooled estimates and standard errors" from these 5 different sets of regression coefficients
 use the **pool** function from **mice**:
 
-```r
+``` r
 summary( pool(air.multi.imputelm) )
 ```
 
@@ -406,7 +406,7 @@ and $\hat{\beta}_{jk}$ is the estimate of $\beta_{j}$ from the $k^{th}$ complete
 
 * The following code will return the **5 complete datasets** from `imputed.airs`
 
-```r
+``` r
 completed.airs <- mice::complete(imputed.airs, action="long")
 ```
 
@@ -416,7 +416,7 @@ the individual datasets "**stacked** on top of each other."
 * `completed.airs` will be a dataframe that has **5 times** as many rows as the `airquality` data frame
     + The variable `.imp` is an indicator of which of the 5 imputations that row corresponds to.
 
-```r
+``` r
 head(completed.airs)
 ```
 
@@ -430,7 +430,7 @@ head(completed.airs)
 ## 6    1   6    28     127 14.9   66     5   6
 ```
 
-```r
+``` r
 dim(completed.airs)
 ```
 
@@ -438,7 +438,7 @@ dim(completed.airs)
 ## [1] 765   8
 ```
 
-```r
+``` r
 dim(airquality)
 ```
 
@@ -452,7 +452,7 @@ dim(airquality)
    + This should give us the same results as when using `with`
 
 
-```r
+``` r
 BetaMat <- matrix(NA, nrow=5, ncol=4)
 for(k in 1:5) {
     ## Find beta.hat from kth imputed dataset
@@ -475,7 +475,7 @@ in your data frame as a **factor**.
 
 * As an example, let's define the data frame `testdf` as
 
-```r
+``` r
 testdf <- data.frame(wt=c(103.2, 57.6, 33.4, 87.2, NA, NA, 98.5, 77.3),
                      age=c(NA, "old", "middle_age", "young", NA,
                            "old", "young", "middle_age"))
@@ -483,7 +483,7 @@ testdf <- data.frame(wt=c(103.2, 57.6, 33.4, 87.2, NA, NA, 98.5, 77.3),
 
 * This data frame **does not** store `age` as a factor
 
-```r
+``` r
 str(testdf)
 ```
 
@@ -499,7 +499,7 @@ str(testdf)
 
 * So, if we define the data frame `testdf_fac` as
 
-```r
+``` r
 testdf_fac <- testdf
 testdf_fac$age <- as.factor(testdf_fac$age)
 str(testdf_fac)
@@ -513,7 +513,7 @@ str(testdf_fac)
 
 * Then, we should be able to use `mice` with `testdf_fac`
 
-```r
+``` r
 imptest <- mice(testdf_fac)
 ```
 
@@ -549,7 +549,7 @@ imptest <- mice(testdf_fac)
 
 * Look at imputed values of `age`:
 
-```r
+``` r
 imptest$imp$age
 ```
 
@@ -663,8 +663,15 @@ observations across individuals will be **correlated**.
 
 * Let's look at the **ohio** data from the **geepack** package again
 
-```r
+``` r
 library(geepack)
+```
+
+```
+## Warning: package 'geepack' was built under R version 4.4.1
+```
+
+``` r
 data(ohio)
 head(ohio)
 ```
@@ -686,7 +693,7 @@ head(ohio)
 * With the **tidyr** package, you can convert from **long to wide** using **spread**:
     + (Use **gather** to go from **wide to long**)
 
-```r
+``` r
 library( tidyr )
 ohio.wide <- spread(ohio, key=age, value=resp)
 
@@ -713,7 +720,7 @@ head(ohio.wide)
 
 * **reshape** from base **R** can also be used to go from **long to wide**
 
-```r
+``` r
 # Example of using reshape
 #ohio.wide2 <- reshape(ohio, v.names="resp", idvar="id", timevar="age", direction="wide")
 ```
@@ -747,7 +754,7 @@ P( R_{ij} = 1| \textrm{smoke}_{i})
 * To generate missing values according to assumption \@ref(eq:missingdat-ohio), we can use the following R code:
     + We will call the new data frame `ohio.wide.miss`
 
-```r
+``` r
 ohio.wide.miss <- ohio.wide
 m <- nrow(ohio.wide.miss) ## number of individuals in study
 for(k in 1:m) {
@@ -765,7 +772,7 @@ for(k in 1:m) {
 
 
 
-```r
+``` r
 head(ohio.wide.miss, 10)
 ```
 
@@ -785,7 +792,7 @@ head(ohio.wide.miss, 10)
 
 * `ohio.wide.miss` now has 257 missing entries
 
-```r
+``` r
 sum( is.na(ohio.wide.miss))
 ```
 
@@ -800,7 +807,7 @@ estimates that would be obtained with a **complete case analysis**.
 
 * To use `glmer` on the **missing-data version** of `ohio`, we need to first convert `ohio.wide.miss` back into **long form**:
 
-```r
+``` r
 ohio.miss <- gather(ohio.wide.miss, age, resp, age7:age10)
 ohio.miss$age[ohio.miss$age == "age7"] <- -2
 ohio.miss$age[ohio.miss$age == "age8"] <- -1
@@ -823,7 +830,7 @@ head(ohio.miss)
 
 * Let's use a **random intercept** model as we did in our earlier discussion of generalized linear mixed models:
 
-```r
+``` r
 ## Complete case analysis
 
 library(lme4)
@@ -835,16 +842,16 @@ round(coef(summary(ohio.cca)), 4)
 
 ```
 ##             Estimate Std. Error z value Pr(>|z|)
-## (Intercept)  -3.8009     0.4346 -8.7459   0.0000
+## (Intercept)  -3.8009     0.4346 -8.7462   0.0000
 ## age          -0.1580     0.0783 -2.0165   0.0437
-## smoke         0.2333     0.3402  0.6857   0.4929
+## smoke         0.2333     0.3402  0.6858   0.4929
 ```
 
 ---
 
 * Now, let's use **mice** to create 10 **"completed versions"** of `ohio.wide.miss`
 
-```r
+``` r
 imputed.ohio <- mice(ohio.wide.miss, m=10, print=FALSE, seed=101)
 ```
 
@@ -854,7 +861,7 @@ complete dataset.
 
 * This can be done with the following code:
 
-```r
+``` r
 completed.ohio <- mice::complete(imputed.ohio, "long")
 head(completed.ohio)
 ```
@@ -871,7 +878,7 @@ head(completed.ohio)
 
 * `completed.ohio` will be a **dataframe** that has **10 times** as many rows as the original `ohio.wide` data frame
 
-```r
+``` r
 dim(ohio.wide)
 ```
 
@@ -879,7 +886,7 @@ dim(ohio.wide)
 ## [1] 537   6
 ```
 
-```r
+``` r
 dim(completed.ohio)
 ```
 
@@ -889,7 +896,7 @@ dim(completed.ohio)
 
 * The variable `.imp` in `completed.ohio` is an indicator of which of the 10 "imputed datasets" this is from:
 
-```r
+``` r
 table( completed.ohio$.imp ) # Tabulate impute indicators
 ```
 
@@ -905,7 +912,7 @@ table( completed.ohio$.imp ) # Tabulate impute indicators
 into long form before using `glmer`:
 
 
-```r
+``` r
 ## Multiple imputation-based estimates of regression coefficients 
 ## for the missing version of the ohio data.
 BetaMat <- matrix(NA, nrow=10, ncol=3)
@@ -928,7 +935,7 @@ for(k in 1:10) {
 * The **multiple imputation-based** estimates of the regression coefficients for 
 the missing version of **ohio** are:
 
-```r
+``` r
 round(colMeans(BetaMat), 4)
 ```
 

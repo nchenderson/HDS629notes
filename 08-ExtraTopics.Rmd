@@ -142,7 +142,7 @@ I_{j} \pm 1.96 \times \sqrt{\hat{v}_{j}}
      + This can be obtained from https://hastie.su.domains/CASI/data.html
      
 ```{r, echo=FALSE}
-diabetes <- read.csv("~/Documents/HDS629/diabetes.csv")
+diabetes <- read.csv("~/Library/Mobile Documents/com~apple~CloudDocs/Documents/HDS629/diabetes.csv")
 diabetes <- diabetes[,-1]
 ```
 

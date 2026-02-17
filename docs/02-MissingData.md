@@ -347,29 +347,29 @@ summary(air.multi.imputelm)
 ```
 
 ```
-## # A tibble: 20 × 6
-##    term        estimate std.error statistic  p.value  nobs
-##    <chr>          <dbl>     <dbl>     <dbl>    <dbl> <int>
-##  1 (Intercept) -90.3      19.1        -4.72 5.44e- 6   153
-##  2 Solar.R       0.0642    0.0199      3.22 1.56e- 3   153
-##  3 Wind         -2.31      0.550      -4.20 4.61e- 5   153
-##  4 Temp          1.83      0.212       8.64 8.13e-15   153
-##  5 (Intercept) -49.4      19.0        -2.60 1.02e- 2   153
-##  6 Solar.R       0.0548    0.0196      2.79 5.92e- 3   153
-##  7 Wind         -3.43      0.545      -6.28 3.44e- 9   153
-##  8 Temp          1.46      0.211       6.92 1.27e-10   153
-##  9 (Intercept) -56.7      19.0        -2.98 3.36e- 3   153
-## 10 Solar.R       0.0646    0.0199      3.25 1.42e- 3   153
-## 11 Wind         -3.22      0.546      -5.90 2.38e- 8   153
-## 12 Temp          1.50      0.211       7.09 4.97e-11   153
-## 13 (Intercept) -58.4      18.9        -3.09 2.41e- 3   153
-## 14 Solar.R       0.0687    0.0199      3.46 7.08e- 4   153
-## 15 Wind         -3.27      0.544      -6.01 1.35e- 8   153
-## 16 Temp          1.57      0.210       7.50 5.33e-12   153
-## 17 (Intercept) -58.9      22.2        -2.66 8.69e- 3   153
-## 18 Solar.R       0.0404    0.0231      1.75 8.27e- 2   153
-## 19 Wind         -3.31      0.636      -5.21 6.11e- 7   153
-## 20 Temp          1.64      0.245       6.68 4.37e-10   153
+## # A tibble: 20 × 7
+##    term        estimate std.error statistic  p.value  nobs df.residual
+##    <chr>          <dbl>     <dbl>     <dbl>    <dbl> <int>       <dbl>
+##  1 (Intercept) -90.3      19.1        -4.72 5.44e- 6   153         149
+##  2 Solar.R       0.0642    0.0199      3.22 1.56e- 3   153         149
+##  3 Wind         -2.31      0.550      -4.20 4.61e- 5   153         149
+##  4 Temp          1.83      0.212       8.64 8.13e-15   153         149
+##  5 (Intercept) -49.4      19.0        -2.60 1.02e- 2   153         149
+##  6 Solar.R       0.0548    0.0196      2.79 5.92e- 3   153         149
+##  7 Wind         -3.43      0.545      -6.28 3.44e- 9   153         149
+##  8 Temp          1.46      0.211       6.92 1.27e-10   153         149
+##  9 (Intercept) -56.7      19.0        -2.98 3.36e- 3   153         149
+## 10 Solar.R       0.0646    0.0199      3.25 1.42e- 3   153         149
+## 11 Wind         -3.22      0.546      -5.90 2.38e- 8   153         149
+## 12 Temp          1.50      0.211       7.09 4.97e-11   153         149
+## 13 (Intercept) -58.4      18.9        -3.09 2.41e- 3   153         149
+## 14 Solar.R       0.0687    0.0199      3.46 7.08e- 4   153         149
+## 15 Wind         -3.27      0.544      -6.01 1.35e- 8   153         149
+## 16 Temp          1.57      0.210       7.50 5.33e-12   153         149
+## 17 (Intercept) -58.9      22.2        -2.66 8.69e- 3   153         149
+## 18 Solar.R       0.0404    0.0231      1.75 8.27e- 2   153         149
+## 19 Wind         -3.31      0.636      -5.21 6.11e- 7   153         149
+## 20 Temp          1.64      0.245       6.68 4.37e-10   153         149
 ```
 
 * To get the "pooled estimates and standard errors" from these 5 different sets of regression coefficients
@@ -421,13 +421,13 @@ head(completed.airs)
 ```
 
 ```
-##   .imp .id Ozone Solar.R Wind Temp Month Day
-## 1    1   1    41     190  7.4   67     5   1
-## 2    1   2    36     118  8.0   72     5   2
-## 3    1   3    12     149 12.6   74     5   3
-## 4    1   4    18     313 11.5   62     5   4
-## 5    1   5     6     131 14.3   56     5   5
-## 6    1   6    28     127 14.9   66     5   6
+##   Ozone Solar.R Wind Temp Month Day .imp .id
+## 1    41     190  7.4   67     5   1    1   1
+## 2    36     118  8.0   72     5   2    1   2
+## 3    12     149 12.6   74     5   3    1   3
+## 4    18     313 11.5   62     5   4    1   4
+## 5     6     131 14.3   56     5   5    1   5
+## 6    28     127 14.9   66     5   6    1   6
 ```
 
 ``` r
@@ -665,13 +665,6 @@ observations across individuals will be **correlated**.
 
 ``` r
 library(geepack)
-```
-
-```
-## Warning: package 'geepack' was built under R version 4.4.1
-```
-
-``` r
 data(ohio)
 head(ohio)
 ```
@@ -842,7 +835,7 @@ round(coef(summary(ohio.cca)), 4)
 
 ```
 ##             Estimate Std. Error z value Pr(>|z|)
-## (Intercept)  -3.8009     0.4346 -8.7462   0.0000
+## (Intercept)  -3.8009     0.4346 -8.7464   0.0000
 ## age          -0.1580     0.0783 -2.0165   0.0437
 ## smoke         0.2333     0.3402  0.6858   0.4929
 ```
@@ -867,13 +860,13 @@ head(completed.ohio)
 ```
 
 ```
-##   .imp .id id smoke age7 age8 age9 age10
-## 1    1   1  0     0    0    0    0     0
-## 2    1   2  1     0    0    0    0     0
-## 3    1   3  2     0    0    0    0     0
-## 4    1   4  3     0    0    0    0     0
-## 5    1   5  4     0    0    0    0     0
-## 6    1   6  5     0    0    0    0     0
+##   id smoke age7 age8 age9 age10 .imp .id
+## 1  0     0    0    0    0     0    1   1
+## 2  1     0    0    0    0     0    1   2
+## 3  2     0    0    0    0     0    1   3
+## 4  3     0    0    0    0     0    1   4
+## 5  4     0    0    0    0     0    1   5
+## 6  5     0    0    0    0     0    1   6
 ```
 
 * `completed.ohio` will be a **dataframe** that has **10 times** as many rows as the original `ohio.wide` data frame
@@ -940,7 +933,7 @@ round(colMeans(BetaMat), 4)
 ```
 
 ```
-## [1] -3.5711 -0.1066  0.2865
+## [1] -62.7314   0.0586  -3.1076   1.6003
 ```
 
 * Compare the above regression coefficients with those from the **complete-case** analysis.

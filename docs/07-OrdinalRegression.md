@@ -325,13 +325,6 @@ N_lm/N_m
 
 ``` r
 library(geepack)
-```
-
-```
-## Warning: package 'geepack' was built under R version 4.4.1
-```
-
-``` r
 head(respdis)
 ```
 
@@ -653,10 +646,6 @@ library(ordinalgmifs)
 ## Loading required package: survival
 ```
 
-```
-## Warning: package 'survival' was built under R version 4.4.1
-```
-
 ``` r
 data(eyedisease)
 names(eyedisease)
@@ -715,7 +704,7 @@ summary(eye.fit)
 
 ```
 ## (Intercept):1 (Intercept):2 (Intercept):3          dose          prot 
-##    -0.5779889     1.2531085     2.9824752     0.1080000    -0.2960000 
+##    -0.5779888     1.2531085     2.9824752     0.1080000    -0.2960000 
 ##           sex           bmi           dbp           sbp            pr 
 ##     0.0000000    -0.1410000    -0.2350000    -0.4370000    -0.0720000 
 ##           age 

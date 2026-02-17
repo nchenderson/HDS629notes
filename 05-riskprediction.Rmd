@@ -216,7 +216,7 @@ abline(0, 1)
 ```
 
 
-## Area under the ROC curve
+## Area under the ROC curve and the C-statistic
 
 * The **Area Under the ROC curve** AUC is the area under the graph of the points
 $(x_{i}, y_{i})$, $i = 0, \ldots, n+1$.
@@ -353,7 +353,7 @@ plot(roc.biopsy, print.auc=TRUE)
 ```
 
 
-## Calibration
+## Model Calibration
  
 * The AUC, or c-index is a measure of the **statistical discrimination** of the risk score.
 
@@ -431,6 +431,140 @@ lm(pred.freq ~ observed.freq)
 * The **Hosmer–Lemeshow test** is a more formal test that compares these types of 
 observed vs. expected frequencies.
 
+
+## AUC and C-statistic for Survival Outcomes
+
+* In survival analysis, we have random variables $T_{1}, \ldots, T_{n}$ which represent times
+until 
+
+* Due to right-censoring, we only observe pairs: $(U_i, \delta_i)$, where 
+    + $U_i = \min(T_{i}, C_{i})$ is the last follow-up time
+    + $\delta_i = I(T_{i} \leq C_{i})$ is the event indicator
+    + $C_{i}$ - censoring time
+  
+---
+
+* The AUC for binary outcomes **cannot directly be applied** to survival outcomes.
+    
+* With survival outcomes, we cannot directly separate outcomes into "events" vs. "no events".
+
+* This is true even if we try to create a binary outcome: (survival past 5 years vs. not)
+    + For example, if Patient A is censored at $t=4$ and Patient B has an event at $t=10$, we cannot determine if Patient A survived past 5 years.
+
+---
+
+* The standard C-statistic for survival data is an overall measure that quantifies how well a model predicts the **ordering of survival times**.
+
+* The C-statistics need to account for censoring.
+
+### What is the C-statistic for survival measuring?
+
+* Suppose we have a risk model $g(\mathbf{x}_{i})$, that takes input covariate vectors $\mathbf{x}_{i}$
+and outpute a risk score.
+    + Higher values of the risk score should imply **worse survival**.
+
+* The underlying parameter that the C-statistic is trying to estimate is:
+\begin{equation}
+\theta_{C} = P\Big\{ g(\mathbf{x}_{i}) > g(\mathbf{x}_{j}) \Big| T_{j} > T_{i} \Big\}
+\end{equation}
+
+* A truncated version of $\theta_{C}$ is often estimated:
+\begin{equation}
+\theta_{C, \tau} = P\Big\{ g(\mathbf{x}_{i}) > g(\mathbf{x}_{j}) \Big| T_{j} > T_{i}, T_{i} \leq \tau \Big\}
+\end{equation}
+
+* A truncated version is often used, because estimating $\theta_{C}$ is often unstable if 
+one considers values of $T_{i}$ near the tail of the distribution.
+
+### Harrell's C-Index 
+
+* Harrell's C is a well-known estimate of the C-statistic parameter $\theta_{C}$.
+    + This is the default in the `glmnet` package
+
+* Harrell's C only looks at pairs of "**evaluable**" subjects.
+   + A pair of subjects $(i, j)$ is **evaluable** if we can definitively say who survived longer.
+   
+* The pair $(i, j)$ is evaluable if:  
+    + Both $i$ and $j$ have events (i.e., both $i$ and $j$ were not censored) OR
+    + One subject is censored **after** the other had an event (i.e., $T_i < C_j$ or $T_{j} < C_{i}$).
+
+* The formula for **Harrell's C** is then
+\begin{align}
+C_{\textrm{Harrell}} &= \frac{\sum_{i \ne j} I(\text{Pair is Evaluable}) \times I(\text{Concordant})}{\sum_{i \ne j} I(\text{Pair is Evaluable})} \nonumber \\
+&= \frac{\sum_{i \ne j} \delta_{i} I(U_{i} < U_{j}) I\big(g(\mathbf{x}_{i}) > g(\mathbf{x}_{j}) \big)}{\sum_{i \ne j} \delta_{i} I(U_{i} < U_{j})}. \nonumber
+\end{align}
+
+* **Concordant:** The subject with shorter survival time had higher predicted risk.
+
+* **Discordant:** The subject with shorter survival time had lower predicted risk.
+
+
+---
+
+* While widely used, Harrell's C has a number of limitations
+
+1.  **Censoring Distribution Dependence:**
+    Harrell's C depends on the study-specific censoring distribution. If two studies have the same underlying survival distributions for the outcome of interest but different censoring patterns, they will report different C-statistics.
+
+2.  **Bias with Heavy Censoring:**
+    It systematically overestimates performance as censoring increases. This is because it discards pairs where the shorter time is censored.
+
+
+
+### Uno's C-Statistic (Inverse Probability Weighting)
+
+* Uno's C-statistic is an adjustment of Harrell's C that uses **Inverse Probability of Censoring Weights (IPCW)**.
+
+* Instead of treating all evaluable pairs equally, Uno's C **weights pairs** by 
+the probability that they were observed (not censored).
+
+* Uno's C-statistic still considers only evaluable pairs, but weights them:
+\begin{equation}
+C_{Uno} = \frac{\sum_{i,j} \{ \hat{G}(U_{i})\}^{-2} \delta_i I(U_{i} < U_{j}, U_{i} < \tau) I( g(\mathbf{x}_{i} ) > g(\mathbf{x}_{j})) }{\sum_{i,j} \{ \hat{G}(U_{i})\}^{-2} \Delta_i I(U_i < U_j) }
+\end{equation}
+
+* $\hat{G}(t)$ estimate of the censoring survival distribution $G(t) = P(C_{i} > t)$.
+
+
+* Uno's C is **consistent** for the true concordance probability regardless of the censoring distribution (assuming independent censoring).
+
+
+
+### Survival C-statistics in R
+
+* The `concordance` method from the `survival` package can compute Harrell's C-statistic
+from a Cox model.
+
+* The risk score from a Cox model is:
+\begin{equation}
+g(\mathbf{x}_{i}) = \sum_{j=1}^{p} \hat{\beta}_{j}x_{ij} \nonumber
+\end{equation}
+
+* Let's look at Harrell's C-statistic for a Cox model with covariates `age` and `sex`
+from the `lung` data
+
+```{r, echo=TRUE}
+library(survival)
+library(survC1) # For Uno's C
+
+fit1 <- coxph(Surv(time, status) ~ age + sex, data = lung)
+concordance(fit1)
+```
+
+* With just `age` and `sex`, we have a C-statistic of 0.602
+
+* Let's look at the C-statistic when we add `ph.ecog` and `ph.karno`
+```{r, echo=TRUE}
+fit2 <- coxph(Surv(time, status) ~ age + sex + ph.ecog + ph.karno, data = lung)
+concordance(fit2)
+```
+
+
+* Compare with Uno's C-statistic
+    + This can be done by including the `timewt = "n/G2"` argument
+```{r, echo=TRUE}
+concordance(fit2, timewt="n/G2") 
+```
 
 ## Longitudinal Data and Risk Score Validation
 

@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Page not found | Notes for Case Studies in Health Big Data</title>
   <meta name="description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
-  <meta name="generator" content="bookdown 0.40 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Page not found | Notes for Case Studies in Health Big Data" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2025-04-10" />
+<meta name="date" content="2026-02-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -55,8 +55,9 @@
 
 
 <style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -66,7 +67,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -258,14 +259,21 @@ div.csl-indent {
 <li class="chapter" data-level="5.2.2" data-path="risk-prediction.html"><a href="risk-prediction.html#the-roc-curve"><i class="fa fa-check"></i><b>5.2.2</b> The ROC curve</a></li>
 <li class="chapter" data-level="5.2.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-roc-curve"><i class="fa fa-check"></i><b>5.2.3</b> Computing the ROC curve</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve"><i class="fa fa-check"></i><b>5.3</b> Area under the ROC curve</a>
+<li class="chapter" data-level="5.3" data-path="risk-prediction.html"><a href="risk-prediction.html#area-under-the-roc-curve-and-the-c-statistic-1"><i class="fa fa-check"></i><b>5.3</b> Area under the ROC curve and the C-statistic</a>
 <ul>
 <li class="chapter" data-level="5.3.1" data-path="risk-prediction.html"><a href="risk-prediction.html#rewriting-the-formula-for-the-auc"><i class="fa fa-check"></i><b>5.3.1</b> Rewriting the formula for the AUC</a></li>
 <li class="chapter" data-level="5.3.2" data-path="risk-prediction.html"><a href="risk-prediction.html#interpreting-the-auc"><i class="fa fa-check"></i><b>5.3.2</b> Interpreting the AUC</a></li>
 <li class="chapter" data-level="5.3.3" data-path="risk-prediction.html"><a href="risk-prediction.html#computing-the-auc-in-r"><i class="fa fa-check"></i><b>5.3.3</b> Computing the AUC in R</a></li>
 </ul></li>
-<li class="chapter" data-level="5.4" data-path="risk-prediction.html"><a href="risk-prediction.html#calibration"><i class="fa fa-check"></i><b>5.4</b> Calibration</a></li>
-<li class="chapter" data-level="5.5" data-path="risk-prediction.html"><a href="risk-prediction.html#longitudinal-data-and-risk-score-validation"><i class="fa fa-check"></i><b>5.5</b> Longitudinal Data and Risk Score Validation</a></li>
+<li class="chapter" data-level="5.4" data-path="risk-prediction.html"><a href="risk-prediction.html#model-calibration"><i class="fa fa-check"></i><b>5.4</b> Model Calibration</a></li>
+<li class="chapter" data-level="5.5" data-path="risk-prediction.html"><a href="risk-prediction.html#auc-and-c-statistic-for-survival-outcomes"><i class="fa fa-check"></i><b>5.5</b> AUC and C-statistic for Survival Outcomes</a>
+<ul>
+<li class="chapter" data-level="5.5.1" data-path="risk-prediction.html"><a href="risk-prediction.html#what-is-the-c-statistic-for-survival-measuring"><i class="fa fa-check"></i><b>5.5.1</b> What is the C-statistic for survival measuring?</a></li>
+<li class="chapter" data-level="5.5.2" data-path="risk-prediction.html"><a href="risk-prediction.html#harrells-c-index"><i class="fa fa-check"></i><b>5.5.2</b> Harrell’s C-Index</a></li>
+<li class="chapter" data-level="5.5.3" data-path="risk-prediction.html"><a href="risk-prediction.html#unos-c-statistic-inverse-probability-weighting"><i class="fa fa-check"></i><b>5.5.3</b> Uno’s C-Statistic (Inverse Probability Weighting)</a></li>
+<li class="chapter" data-level="5.5.4" data-path="risk-prediction.html"><a href="risk-prediction.html#survival-c-statistics-in-r"><i class="fa fa-check"></i><b>5.5.4</b> Survival C-statistics in R</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="risk-prediction.html"><a href="risk-prediction.html#longitudinal-data-and-risk-score-validation"><i class="fa fa-check"></i><b>5.6</b> Longitudinal Data and Risk Score Validation</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="risk-prediction2.html"><a href="risk-prediction2.html"><i class="fa fa-check"></i><b>6</b> Risk Prediction and Validation (Part II)</a>
 <ul>
@@ -357,42 +365,42 @@ the table of contents to find the page you are looking for.</p>
 <script>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
-"sharing": {
-"github": false,
-"facebook": true,
-"twitter": true,
-"linkedin": false,
-"weibo": false,
-"instapaper": false,
-"vk": false,
-"whatsapp": false,
-"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
-},
-"fontsettings": {
-"theme": "white",
-"family": "sans",
-"size": 2
-},
-"edit": {
-"link": null,
-"text": null
-},
-"history": {
-"link": null,
-"text": null
-},
-"view": {
-"link": null,
-"text": null
-},
-"download": null,
-"search": {
-"engine": "fuse",
-"options": null
-},
-"toc": {
-"collapse": "section"
-}
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section"
+  }
 });
 });
 </script>

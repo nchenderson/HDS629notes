@@ -134,13 +134,6 @@ head(sleepstudy)
 
 ``` r
 library(geepack)
-```
-
-```
-## Warning: package 'geepack' was built under R version 4.4.1
-```
-
-``` r
 ## Use AR(1) correlation structure
 sleep.gee <- geeglm(Reaction ~ Days, data=sleepstudy, id=Subject, corstr="ar1") 
 ```
@@ -648,7 +641,7 @@ over the model $\mu(t_{ij}) = f_{0}(t_{ij})$.
 
 
 ``` r
-actg_trial <- read.csv("~/Documents/HDS629/actg_trial.csv")
+actg_trial <- read.csv("~/Library/Mobile Documents/com~apple~CloudDocs/Documents/HDS629/actg_trial.csv")
 ```
 
 * When you load the dataset into R, it should look like the following

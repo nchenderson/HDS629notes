@@ -548,7 +548,7 @@ over the model $\mu(t_{ij}) = f_{0}(t_{ij})$.
 ### ACTG trial example
 
 ```{r}
-actg_trial <- read.csv("~/Documents/HDS629/actg_trial.csv")
+actg_trial <- read.csv("~/Library/Mobile Documents/com~apple~CloudDocs/Documents/HDS629/actg_trial.csv")
 ```
 
 * When you load the dataset into R, it should look like the following

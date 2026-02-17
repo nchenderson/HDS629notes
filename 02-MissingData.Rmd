@@ -564,7 +564,7 @@ table( completed.ohio$.imp ) # Tabulate impute indicators
 * For **each** of the 10 complete datasets, we need to **convert** the wide dataset 
 into long form before using `glmer`:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, eval=FALSE}
 ## Multiple imputation-based estimates of regression coefficients 
 ## for the missing version of the ohio data.
 BetaMat <- matrix(NA, nrow=10, ncol=3)

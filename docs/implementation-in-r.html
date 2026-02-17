@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Notes for Case Studies in Health Big Data</title>
+  <title>Chapter 6 8. Implementation in R | Notes for Case Studies in Health Big Data</title>
   <meta name="description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Notes for Case Studies in Health Big Data" />
+  <meta property="og:title" content="Chapter 6 8. Implementation in R | Notes for Case Studies in Health Big Data" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
   <meta name="github-repo" content="nchenderson/HDS629notes" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Notes for Case Studies in Health Big Data" />
+  <meta name="twitter:title" content="Chapter 6 8. Implementation in R | Notes for Case Studies in Health Big Data" />
   
   <meta name="twitter:description" content="Course notes for Biostatistics 629: Case Studies in Health Big Data" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="mixed-models.html"/>
+<link rel="prev" href="risk-prediction.html"/>
+<link rel="next" href="risk-prediction2.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -270,54 +270,59 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="5.5.1" data-path="risk-prediction.html"><a href="risk-prediction.html#what-is-the-c-statistic-for-survival-measuring"><i class="fa fa-check"></i><b>5.5.1</b> What is the C-statistic for survival measuring?</a></li>
 <li class="chapter" data-level="5.5.2" data-path="risk-prediction.html"><a href="risk-prediction.html#harrells-c-index"><i class="fa fa-check"></i><b>5.5.2</b> Harrell’s C-Index</a></li>
-<li class="chapter" data-level="5.5.3" data-path="risk-prediction.html"><a href="risk-prediction.html#unos-c-statistic-inverse-probability-weighting"><i class="fa fa-check"></i><b>5.5.3</b> Uno’s C-Statistic (Inverse Probability Weighting)</a></li>
-<li class="chapter" data-level="5.5.4" data-path="risk-prediction.html"><a href="risk-prediction.html#survival-c-statistics-in-r"><i class="fa fa-check"></i><b>5.5.4</b> Survival C-statistics in R</a></li>
 </ul></li>
-<li class="chapter" data-level="5.6" data-path="risk-prediction.html"><a href="risk-prediction.html#longitudinal-data-and-risk-score-validation"><i class="fa fa-check"></i><b>5.6</b> Longitudinal Data and Risk Score Validation</a></li>
-</ul></li>
-<li class="chapter" data-level="6" data-path="risk-prediction2.html"><a href="risk-prediction2.html"><i class="fa fa-check"></i><b>6</b> Risk Prediction and Validation (Part II)</a>
+<li class="chapter" data-level="5.6" data-path="risk-prediction.html"><a href="risk-prediction.html#unos-c-statistic-inverse-probability-weighting"><i class="fa fa-check"></i><b>5.6</b> Uno’s C-Statistic (Inverse Probability Weighting)</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#the-brier-score"><i class="fa fa-check"></i><b>6.1</b> The Brier Score</a>
-<ul>
-<li class="chapter" data-level="6.1.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-for-biopsy-data"><i class="fa fa-check"></i><b>6.1.1</b> Brier scores for biopsy data</a></li>
-<li class="chapter" data-level="6.1.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#out-of-sample-comparisons"><i class="fa fa-check"></i><b>6.1.2</b> Out-of-sample comparisons</a></li>
-</ul></li>
-<li class="chapter" data-level="6.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-with-longitudinal-data"><i class="fa fa-check"></i><b>6.2</b> Brier Scores with Longitudinal Data</a>
-<ul>
-<li class="chapter" data-level="6.2.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-1"><i class="fa fa-check"></i><b>6.2.1</b> Option 1</a></li>
-<li class="chapter" data-level="6.2.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-2"><i class="fa fa-check"></i><b>6.2.2</b> Option 2</a></li>
+<li class="chapter" data-level="5.6.1" data-path="risk-prediction.html"><a href="risk-prediction.html#time-dependent-auc-cumulativedynamic"><i class="fa fa-check"></i><b>5.6.1</b> Time-Dependent AUC (Cumulative/Dynamic)</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="ordinal-regression.html"><a href="ordinal-regression.html"><i class="fa fa-check"></i><b>7</b> Ordinal Regression</a>
+<li class="chapter" data-level="6" data-path="implementation-in-r.html"><a href="implementation-in-r.html"><i class="fa fa-check"></i><b>6</b> 8. Implementation in R</a>
 <ul>
-<li class="chapter" data-level="7.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression"><i class="fa fa-check"></i><b>7.1</b> Ordinal Logistic Regression</a></li>
-<li class="chapter" data-level="7.2" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-regression-details"><i class="fa fa-check"></i><b>7.2</b> Ordinal Regression Details</a>
-<ul>
-<li class="chapter" data-level="7.2.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression-in-r"><i class="fa fa-check"></i><b>7.2.1</b> Ordinal Logistic Regression in R</a></li>
-<li class="chapter" data-level="7.2.2" data-path="ordinal-regression.html"><a href="ordinal-regression.html#the-respdis-data"><i class="fa fa-check"></i><b>7.2.2</b> The respdis data</a></li>
+<li class="chapter" data-level="6.1" data-path="implementation-in-r.html"><a href="implementation-in-r.html#longitudinal-data-and-risk-score-validation"><i class="fa fa-check"></i><b>6.1</b> Longitudinal Data and Risk Score Validation</a></li>
 </ul></li>
-<li class="chapter" data-level="7.3" data-path="ordinal-regression.html"><a href="ordinal-regression.html#generalized-estimating-equations"><i class="fa fa-check"></i><b>7.3</b> Generalized Estimating Equations</a>
+<li class="chapter" data-level="7" data-path="risk-prediction2.html"><a href="risk-prediction2.html"><i class="fa fa-check"></i><b>7</b> Risk Prediction and Validation (Part II)</a>
 <ul>
-<li class="chapter" data-level="7.3.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#using-geepack-and-ordgee"><i class="fa fa-check"></i><b>7.3.1</b> Using geepack and ordgee</a></li>
+<li class="chapter" data-level="7.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#the-brier-score"><i class="fa fa-check"></i><b>7.1</b> The Brier Score</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-for-biopsy-data"><i class="fa fa-check"></i><b>7.1.1</b> Brier scores for biopsy data</a></li>
+<li class="chapter" data-level="7.1.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#out-of-sample-comparisons"><i class="fa fa-check"></i><b>7.1.2</b> Out-of-sample comparisons</a></li>
 </ul></li>
-<li class="chapter" data-level="7.4" data-path="ordinal-regression.html"><a href="ordinal-regression.html#penalized-regression-with-ordinal-outcomes"><i class="fa fa-check"></i><b>7.4</b> Penalized Regression with Ordinal Outcomes</a></li>
-</ul></li>
-<li class="chapter" data-level="8" data-path="extra-topics.html"><a href="extra-topics.html"><i class="fa fa-check"></i><b>8</b> Variable Importance Measures</a>
+<li class="chapter" data-level="7.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-with-longitudinal-data"><i class="fa fa-check"></i><b>7.2</b> Brier Scores with Longitudinal Data</a>
 <ul>
-<li class="chapter" data-level="8.1" data-path="extra-topics.html"><a href="extra-topics.html#partial-dependence-plots"><i class="fa fa-check"></i><b>8.1</b> Partial Dependence Plots</a></li>
-<li class="chapter" data-level="8.2" data-path="extra-topics.html"><a href="extra-topics.html#variable-importance-measures-in-gradient-tree-boosting"><i class="fa fa-check"></i><b>8.2</b> Variable Importance Measures in Gradient Tree Boosting</a></li>
-<li class="chapter" data-level="8.3" data-path="extra-topics.html"><a href="extra-topics.html#uncertainty-in-variable-importance-measures"><i class="fa fa-check"></i><b>8.3</b> Uncertainty in Variable Importance Measures</a>
-<ul>
-<li class="chapter" data-level="8.3.1" data-path="extra-topics.html"><a href="extra-topics.html#subsampling-for-random-forest-vimp-scores"><i class="fa fa-check"></i><b>8.3.1</b> Subsampling for Random Forest VIMP scores</a></li>
-<li class="chapter" data-level="8.3.2" data-path="extra-topics.html"><a href="extra-topics.html#stability-selection-for-penalized-regression"><i class="fa fa-check"></i><b>8.3.2</b> Stability Selection for Penalized Regression</a></li>
+<li class="chapter" data-level="7.2.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-1"><i class="fa fa-check"></i><b>7.2.1</b> Option 1</a></li>
+<li class="chapter" data-level="7.2.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-2"><i class="fa fa-check"></i><b>7.2.2</b> Option 2</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="conformal-prediction.html"><a href="conformal-prediction.html"><i class="fa fa-check"></i><b>9</b> Conformal Prediction</a>
+<li class="chapter" data-level="8" data-path="ordinal-regression.html"><a href="ordinal-regression.html"><i class="fa fa-check"></i><b>8</b> Ordinal Regression</a>
 <ul>
-<li class="chapter" data-level="9.1" data-path="conformal-prediction.html"><a href="conformal-prediction.html#confidence-intervals-and-prediction-intervals"><i class="fa fa-check"></i><b>9.1</b> Confidence Intervals and Prediction Intervals</a></li>
-<li class="chapter" data-level="9.2" data-path="conformal-prediction.html"><a href="conformal-prediction.html#conformal-inference-procedure-for-prediction-intervals"><i class="fa fa-check"></i><b>9.2</b> Conformal Inference Procedure for Prediction Intervals</a></li>
-<li class="chapter" data-level="9.3" data-path="conformal-prediction.html"><a href="conformal-prediction.html#why-does-this-work"><i class="fa fa-check"></i><b>9.3</b> Why does this work?</a></li>
-<li class="chapter" data-level="9.4" data-path="conformal-prediction.html"><a href="conformal-prediction.html#an-example-with-boosting."><i class="fa fa-check"></i><b>9.4</b> An example with Boosting.</a></li>
+<li class="chapter" data-level="8.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression"><i class="fa fa-check"></i><b>8.1</b> Ordinal Logistic Regression</a></li>
+<li class="chapter" data-level="8.2" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-regression-details"><i class="fa fa-check"></i><b>8.2</b> Ordinal Regression Details</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#ordinal-logistic-regression-in-r"><i class="fa fa-check"></i><b>8.2.1</b> Ordinal Logistic Regression in R</a></li>
+<li class="chapter" data-level="8.2.2" data-path="ordinal-regression.html"><a href="ordinal-regression.html#the-respdis-data"><i class="fa fa-check"></i><b>8.2.2</b> The respdis data</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="ordinal-regression.html"><a href="ordinal-regression.html#generalized-estimating-equations"><i class="fa fa-check"></i><b>8.3</b> Generalized Estimating Equations</a>
+<ul>
+<li class="chapter" data-level="8.3.1" data-path="ordinal-regression.html"><a href="ordinal-regression.html#using-geepack-and-ordgee"><i class="fa fa-check"></i><b>8.3.1</b> Using geepack and ordgee</a></li>
+</ul></li>
+<li class="chapter" data-level="8.4" data-path="ordinal-regression.html"><a href="ordinal-regression.html#penalized-regression-with-ordinal-outcomes"><i class="fa fa-check"></i><b>8.4</b> Penalized Regression with Ordinal Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="extra-topics.html"><a href="extra-topics.html"><i class="fa fa-check"></i><b>9</b> Variable Importance Measures</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="extra-topics.html"><a href="extra-topics.html#partial-dependence-plots"><i class="fa fa-check"></i><b>9.1</b> Partial Dependence Plots</a></li>
+<li class="chapter" data-level="9.2" data-path="extra-topics.html"><a href="extra-topics.html#variable-importance-measures-in-gradient-tree-boosting"><i class="fa fa-check"></i><b>9.2</b> Variable Importance Measures in Gradient Tree Boosting</a></li>
+<li class="chapter" data-level="9.3" data-path="extra-topics.html"><a href="extra-topics.html#uncertainty-in-variable-importance-measures"><i class="fa fa-check"></i><b>9.3</b> Uncertainty in Variable Importance Measures</a>
+<ul>
+<li class="chapter" data-level="9.3.1" data-path="extra-topics.html"><a href="extra-topics.html#subsampling-for-random-forest-vimp-scores"><i class="fa fa-check"></i><b>9.3.1</b> Subsampling for Random Forest VIMP scores</a></li>
+<li class="chapter" data-level="9.3.2" data-path="extra-topics.html"><a href="extra-topics.html#stability-selection-for-penalized-regression"><i class="fa fa-check"></i><b>9.3.2</b> Stability Selection for Penalized Regression</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="conformal-prediction.html"><a href="conformal-prediction.html"><i class="fa fa-check"></i><b>10</b> Conformal Prediction</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="conformal-prediction.html"><a href="conformal-prediction.html#confidence-intervals-and-prediction-intervals"><i class="fa fa-check"></i><b>10.1</b> Confidence Intervals and Prediction Intervals</a></li>
+<li class="chapter" data-level="10.2" data-path="conformal-prediction.html"><a href="conformal-prediction.html#conformal-inference-procedure-for-prediction-intervals"><i class="fa fa-check"></i><b>10.2</b> Conformal Inference Procedure for Prediction Intervals</a></li>
+<li class="chapter" data-level="10.3" data-path="conformal-prediction.html"><a href="conformal-prediction.html#why-does-this-work"><i class="fa fa-check"></i><b>10.3</b> Why does this work?</a></li>
+<li class="chapter" data-level="10.4" data-path="conformal-prediction.html"><a href="conformal-prediction.html#an-example-with-boosting."><i class="fa fa-check"></i><b>10.4</b> An example with Boosting.</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -339,23 +344,58 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Notes for Case Studies in Health Big Data</h1>
-<p class="author"><em>Nicholas Henderson</em></p>
-<p class="date"><em>2026-02-16</em></p>
-</div>
-<div id="preface" class="section level1 unnumbered hasAnchor">
-<h1>Preface<a href="index.html#preface" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>This contains some of the course notes for Biostatistics 629.</p>
+<div id="implementation-in-r" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">Chapter 6</span> 8. Implementation in R<a href="implementation-in-r.html#implementation-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Different packages are required for the different estimators.</p>
+<div id="longitudinal-data-and-risk-score-validation" class="section level2 hasAnchor" number="6.1">
+<h2><span class="header-section-number">6.1</span> Longitudinal Data and Risk Score Validation<a href="implementation-in-r.html#longitudinal-data-and-risk-score-validation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><p>When you have <strong>longitudinal responses</strong> <span class="math inline">\(Y_{ij}\)</span>, sensitivity, specificity, and the AUC/c-index
+will depend on what exactly you are trying to predict.</p></li>
+<li><p>If you are trying to predict <span class="math inline">\(Y_{ij} = 1\)</span> vs. <span class="math inline">\(Y_{ij} = 0\)</span> for
+each <span class="math inline">\(j\)</span>, sensitivity and specificity will be defined by
+<span class="math display">\[\begin{equation}
+P\{ g(\mathbf{x}_{ij}) \geq t|Y_{ij} = 1\} \qquad \textrm{ and } \qquad P\{ g(\mathbf{x}_{ij}) &lt; t|Y_{ij} = 0\}
+\end{equation}\]</span></p></li>
+<li><p>Here, <span class="math inline">\(g(\mathbf{x}_{ij})\)</span> would be a risk score based on covariate information
+up to and including time <span class="math inline">\(t_{ij}\)</span> and could include responses before time <span class="math inline">\(t_{ij}\)</span>.</p></li>
+<li><p>In this case, the AUC would be calculated in the same way as the non-longitudinal case -
+you would just sum over all responses and risk scores across all individuals and time points.</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>In other cases, you may want to predict a single outcome <span class="math inline">\(\tilde{Y}_{i}\)</span> even though
+the covariates are collected longitudinally over additional time points.</p></li>
+<li><p>For example, <span class="math inline">\(\tilde{Y}_{i}\)</span> might be an indicator of whether or not a patient
+is hypertensive over a particular time window.</p></li>
+<li><p>In this case, you might compute a single risk score <span class="math inline">\(\hat{g}_{i}\)</span> for each individual.</p>
+<ul>
+<li><p>For example, <span class="math inline">\(\hat{g}_{i} = \frac{1}{n_{i}}\sum_{j=1}^{n_{i}} g(\mathbf{x}_{ij})\)</span>.</p></li>
+<li><p>For example, <span class="math inline">\(\hat{g}_{i} = \textrm{median} \{ g(\mathbf{x}_{i1}), \ldots, g(\mathbf{x}_{in_{i}}) \}\)</span>.</p></li>
+<li><p>For example, <span class="math inline">\(\hat{g}_{i} = \max\{ g(\mathbf{x}_{i1}), \ldots, g(\mathbf{x}_{in_{i}}) \}\)</span>.</p></li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li><p>To <strong>“validate”</strong> a risk score, you generally want to look at <strong>out-of-sample</strong> performance of
+the risk score.</p></li>
+<li><p>For example, you might build your risk model using data from individuals enrolled within a <strong>specific six-month time window</strong>
+and look at the AUC statistic for outcomes for individuals who enrolled in a different <strong>time window</strong>.</p></li>
+<li><p>Looking at the out-of-sample performance over a different time window or
+using data from a different source is often a good way of justifying
+the robustness/generalizability of a particular risk model.</p></li>
+</ul>
+<hr />
 
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="mixed-models.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="risk-prediction.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="risk-prediction2.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

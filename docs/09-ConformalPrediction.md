@@ -57,7 +57,7 @@ mean(cover) ## Should be close to 0.95
 ```
 
 ```
-## [1] 0.938
+## [1] 0.95
 ```
 
 ---
@@ -212,12 +212,12 @@ print(head(ConformalInterval))
 
 ```
 ##            [,1]     [,2]
-## [1,] -0.4378230 3.195687
-## [2,] -0.4786504 3.154860
-## [3,] -0.5165186 3.116992
-## [4,] -0.4579842 3.175526
-## [5,] -0.4598403 3.173670
-## [6,] -0.4814452 3.152065
+## [1,] -0.8097037 3.286799
+## [2,] -0.8181746 3.278328
+## [3,] -0.8158600 3.280643
+## [4,] -0.8076366 3.288866
+## [5,] -0.8077104 3.288792
+## [6,] -0.7978219 3.298681
 ```
 
 * Plot fitted values and prediction intervals:
@@ -232,7 +232,7 @@ mean(Y_new > ConformalInterval[,1] & Y_new < ConformalInterval[,2])
 ```
 
 ```
-## [1] 0.92
+## [1] 0.95
 ```
 
 ## Why does this work?
@@ -303,7 +303,7 @@ library(gbm)
 ```
 
 ```
-## Loaded gbm 2.2.2
+## Loaded gbm 2.2.3
 ```
 
 ```
@@ -325,7 +325,7 @@ print(best.iter)
 ```
 
 ```
-## [1] 200
+## [1] 199
 ```
 
 ``` r
@@ -341,7 +341,7 @@ calibration_fitted <- predict(gbm_mod_final, newdat=calibration_dat)
 ```
 
 ```
-## Using 200 trees...
+## Using 199 trees...
 ```
 
 ``` r
@@ -376,7 +376,7 @@ ConformalInterval[,1] <- predict(gbm_mod_final, newdat=newdataset) - qhat
 ```
 
 ```
-## Using 200 trees...
+## Using 199 trees...
 ```
 
 ``` r
@@ -384,7 +384,7 @@ ConformalInterval[,2] <- predict(gbm_mod_final, newdat=newdataset) + qhat
 ```
 
 ```
-## Using 200 trees...
+## Using 199 trees...
 ```
 
 
@@ -398,7 +398,7 @@ mean(Y_new > ConformalInterval[,1] & Y_new < ConformalInterval[,2])
 ```
 
 ```
-## [1] 0.957
+## [1] 0.9465
 ```
 
 

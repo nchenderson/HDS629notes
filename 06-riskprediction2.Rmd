@@ -189,6 +189,126 @@ better than CART.
 
 ---
 
+## Brier Scores with Survival Data
+
+* In survival analysis, we have random variables $T_{1}, \ldots, T_{n}$ which represent times
+until 
+
+* Due to right-censoring, we only observe pairs: $(U_i, \delta_i)$, where 
+    + $U_i = \min(T_{i}, C_{i})$ is the last follow-up time
+    + $\delta_i = I(T_{i} \leq C_{i})$ is the event indicator
+    + $C_{i}$ - censoring time
+
+---
+
+* Suppose we could observe the survival times $T_{i}$.
+
+* If we could observe $T_{i}$, we could define the following binary variables
+(for a pre-specified value of $t$). 
+\begin{equation}
+Y_i(t) = \mathbb{I}(T_i > t)
+\end{equation}
+
+* $Y_i(t) = 1$: Subject is alive at time $t$.
+* $Y_i(t) = 0$: Subject has experienced the event by time $t$.
+
+---
+
+* If we could observe $T_{i}$, we could use the same form of the Brier score
+as for binary outcomes:
+\begin{align}
+BS_{\textrm{naive}}(t; S) &= \frac{1}{n} \sum_{i=1}^{N} \left( Y_{i}(t) - P\{Y_{i}(t)=1 | \mathbf{x}_{i} \}  \right)^2 \nonumber \\
+&= \frac{1}{n} \sum_{i=1}^{n} \left( I(T_{i} > t) - S(t|\mathbf{x}_{i}) \right)^2
+\end{equation}
+
+* $\hat{S}(t|\mathbf{x}_{i}) = P(T_{i} > t| \mathbf{x}_{i})$: survival probability given covariates.
+
+
+* The main problem with using the above "naive" Brier score is that we cannot usually
+create this binary outcomes in the presence of right censoring. 
+    + For example, if subject $i$ is censored at time $C_i < t$, we do not know if they are alive or dead at time $t$. 
+
+---
+
+* **Solution** use a weighted version of the naive Brier score with weights based on **Inverse Probability of Censoring Weighting (IPCW)**.
+
+* Weights are derived from the censoring distribution $G(t) = P(C > t)$ (usually estimated via Kaplan-Meier on the censoring times).
+
+* With IPCW, the Brier score is
+\begin{equation}
+BS(t; S) = \frac{1}{n} \sum_{i=1}^{n} W_{i}(t)\Big( I(U_{i} > t) - S(t|\mathbf{x}_{i})  \Big)^2
+\end{equation}
+where the weights are
+\begin{equation}
+W_{i}(t) = \frac{I(U_{i} \leq t)\delta_{i}}{ G(T_{i})} + \frac{I(U_{i} > t)}{G(t)}
+\end{equation}
+
+
+---
+
+* Unlike with binary outcomes, the survival Brier score depends on a particular choice of $t$.
+
+* You can plot the Brier score as a function of $t$ to get a sense of how it changes over time:
+
+* Plotting $BS(t, S)$ as a function of $t$ is useful for comparing models and to see *when* the
+model has worse performance
+    + Does it fail to predict early mortality?
+    + Does it lose calibration at long-term follow-up?
+
+---
+
+* The **Integrated Brier Score (IBS)** gives you a **single summary measures for the entire study period, we integrate the area under the Brier Score curve.
+
+$$IBS = \frac{1}{\tau} \int_0^\tau BS(t) dt$$
+
+* $\tau$: The time horizon of interest (e.g., 5 years).
+    + Often $\tau$ is near the last censoring time.
+   
+---
+
+
+* **Benchmark**: As a rough benchmark, you can compare your Brier score with 
+the Brier score from a single Kaplan-Meier estimator.
+    + You want your covariate-dependent survival model to perform at least noticeably better than the single Kaplan-Meier estimator.
+
+\begin{equation}
+BS(t; S_{KM}) = \frac{1}{n} \sum_{i=1}^{n} W_{i}(t)\Big( Y_{i}(t) - S_{KM}(t) \Big)^2
+\end{equation}
+
+---
+
+## The integrated Brier score in R
+
+The `SurvMetrics` package directly computes the integrated Brier score.
+
+```{r, echo=TRUE}
+library(survival)
+library(SurvMetrics)
+
+df <- na.omit(lung)
+
+# 1. Fit the Model
+fit_cox <- coxph(Surv(time, status) ~ age + sex, data = df)
+
+# 2. Define Time Points
+time_points <- seq(100, 800, by = 100)
+
+# 3. Manually extract the predicted survival probability matrix
+# summary() with survfit returns a matrix of dimensions [times, patients]
+surv_data <- summary(survfit(fit_cox, newdata = df), times = time_points)
+
+# Transpose it so Rows = Patients and Cols = Times (Required by SurvMetrics)
+sp_matrix <- t(surv_data$surv)
+
+# 4. Calculate IBS
+# Pass the true Surv object, the probability matrix, and the time vector
+ibs_value <- IBS(object = Surv(df$time, df$status), 
+                 sp_matrix = sp_matrix, 
+                 IBSrange = time_points)
+
+print(ibs_value)
+```
+
 ## Brier Scores with Longitudinal Data
 
 * Let's revisit the `ohio` data again from the `geepack` package

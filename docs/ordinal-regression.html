@@ -23,7 +23,7 @@
 <meta name="author" content="Nicholas Henderson" />
 
 
-<meta name="date" content="2026-02-16" />
+<meta name="date" content="2026-02-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -282,10 +282,12 @@ div.csl-indent {
 <li class="chapter" data-level="6.1.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-for-biopsy-data"><i class="fa fa-check"></i><b>6.1.1</b> Brier scores for biopsy data</a></li>
 <li class="chapter" data-level="6.1.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#out-of-sample-comparisons"><i class="fa fa-check"></i><b>6.1.2</b> Out-of-sample comparisons</a></li>
 </ul></li>
-<li class="chapter" data-level="6.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-with-longitudinal-data"><i class="fa fa-check"></i><b>6.2</b> Brier Scores with Longitudinal Data</a>
+<li class="chapter" data-level="6.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-with-survival-data"><i class="fa fa-check"></i><b>6.2</b> Brier Scores with Survival Data</a></li>
+<li class="chapter" data-level="6.3" data-path="risk-prediction2.html"><a href="risk-prediction2.html#the-integrated-brier-score-in-r"><i class="fa fa-check"></i><b>6.3</b> The integrated Brier score in R</a></li>
+<li class="chapter" data-level="6.4" data-path="risk-prediction2.html"><a href="risk-prediction2.html#brier-scores-with-longitudinal-data"><i class="fa fa-check"></i><b>6.4</b> Brier Scores with Longitudinal Data</a>
 <ul>
-<li class="chapter" data-level="6.2.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-1"><i class="fa fa-check"></i><b>6.2.1</b> Option 1</a></li>
-<li class="chapter" data-level="6.2.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-2"><i class="fa fa-check"></i><b>6.2.2</b> Option 2</a></li>
+<li class="chapter" data-level="6.4.1" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-1"><i class="fa fa-check"></i><b>6.4.1</b> Option 1</a></li>
+<li class="chapter" data-level="6.4.2" data-path="risk-prediction2.html"><a href="risk-prediction2.html#option-2"><i class="fa fa-check"></i><b>6.4.2</b> Option 2</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="ordinal-regression.html"><a href="ordinal-regression.html"><i class="fa fa-check"></i><b>7</b> Ordinal Regression</a>
@@ -443,8 +445,8 @@ but it’s possible to choose any other link function.
 <li><p>The example dataset in the <strong>polr</strong> documentation is the <code>housing</code>
 data</p></li>
 </ul>
-<div class="sourceCode" id="cb309"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb309-1"><a href="ordinal-regression.html#cb309-1" tabindex="-1"></a><span class="fu">library</span>(MASS)  <span class="co"># load MASS package</span></span>
-<span id="cb309-2"><a href="ordinal-regression.html#cb309-2" tabindex="-1"></a><span class="fu">head</span>(housing)  <span class="co"># look at first 6 rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb311"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb311-1"><a href="ordinal-regression.html#cb311-1" tabindex="-1"></a><span class="fu">library</span>(MASS)  <span class="co"># load MASS package</span></span>
+<span id="cb311-2"><a href="ordinal-regression.html#cb311-2" tabindex="-1"></a><span class="fu">head</span>(housing)  <span class="co"># look at first 6 rows</span></span></code></pre></div>
 <pre><code>##      Sat   Infl  Type Cont Freq
 ## 1    Low    Low Tower  Low   21
 ## 2 Medium    Low Tower  Low   21
@@ -452,7 +454,7 @@ data</p></li>
 ## 4    Low Medium Tower  Low   34
 ## 5 Medium Medium Tower  Low   22
 ## 6   High Medium Tower  Low   36</code></pre>
-<div class="sourceCode" id="cb311"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb311-1"><a href="ordinal-regression.html#cb311-1" tabindex="-1"></a><span class="fu">dim</span>(housing)  <span class="co"># 72 rows and 5 variables</span></span></code></pre></div>
+<div class="sourceCode" id="cb313"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb313-1"><a href="ordinal-regression.html#cb313-1" tabindex="-1"></a><span class="fu">dim</span>(housing)  <span class="co"># 72 rows and 5 variables</span></span></code></pre></div>
 <pre><code>## [1] 72  5</code></pre>
 <hr />
 <ul>
@@ -460,7 +462,7 @@ data</p></li>
 <li><p>The main thing to be aware of when using <code>polr</code> is that the response
 variable should be an <strong>ordered factor</strong>.</p></li>
 </ul>
-<div class="sourceCode" id="cb313"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb313-1"><a href="ordinal-regression.html#cb313-1" tabindex="-1"></a><span class="fu">str</span>(housing)</span></code></pre></div>
+<div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="ordinal-regression.html#cb315-1" tabindex="-1"></a><span class="fu">str</span>(housing)</span></code></pre></div>
 <pre><code>## &#39;data.frame&#39;:    72 obs. of  5 variables:
 ##  $ Sat : Ord.factor w/ 3 levels &quot;Low&quot;&lt;&quot;Medium&quot;&lt;..: 1 2 3 1 2 3 1 2 3 1 ...
 ##  $ Infl: Factor w/ 3 levels &quot;Low&quot;,&quot;Medium&quot;,..: 1 1 1 2 2 2 3 3 3 1 ...
@@ -475,7 +477,7 @@ householder satisfaction.</p>
 <strong>“High”</strong>.</p></li>
 <li><p>This is a categorical variable with a natural ordering (“Low” is worse than “Medium” which is worse than “High”).</p></li>
 </ul>
-<div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="ordinal-regression.html#cb315-1" tabindex="-1"></a><span class="fu">table</span>(housing<span class="sc">$</span>Sat)</span></code></pre></div>
+<div class="sourceCode" id="cb317"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb317-1"><a href="ordinal-regression.html#cb317-1" tabindex="-1"></a><span class="fu">table</span>(housing<span class="sc">$</span>Sat)</span></code></pre></div>
 <pre><code>## 
 ##    Low Medium   High 
 ##     24     24     24</code></pre></li>
@@ -498,7 +500,7 @@ values of <code>Freq</code> as <strong>weights</strong> in an ordinal logistic r
 <li>If we want to fit an ordinal logistic regression with <code>Sat</code> as the
 <strong>response</strong> and <code>Infl</code> as a <strong>covariate</strong>, we can use the following code:</li>
 </ul>
-<div class="sourceCode" id="cb317"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb317-1"><a href="ordinal-regression.html#cb317-1" tabindex="-1"></a>infl.plr <span class="ot">&lt;-</span> <span class="fu">polr</span>(Sat <span class="sc">~</span> Infl, <span class="at">weight=</span>Freq, <span class="at">data =</span> housing)</span></code></pre></div>
+<div class="sourceCode" id="cb319"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb319-1"><a href="ordinal-regression.html#cb319-1" tabindex="-1"></a>infl.plr <span class="ot">&lt;-</span> <span class="fu">polr</span>(Sat <span class="sc">~</span> Infl, <span class="at">weight=</span>Freq, <span class="at">data =</span> housing)</span></code></pre></div>
 <ul>
 <li>The above <strong>R code</strong> is going to fit the model <span class="math display">\[\begin{equation}
 \log \left( \frac{ P(Y_{i} \leq c|\mathbf{x}_{i}) }{1 - P(Y_{i} \leq c|\mathbf{x}_{i})} \right) = \alpha_{c} - \beta_{1}x_{i1} - \beta_{2}x_{i2},
@@ -514,7 +516,7 @@ values of <code>Freq</code> as <strong>weights</strong> in an ordinal logistic r
 <li>To see the <strong>estimates</strong> of these parameters use the <code>summary</code>
 function:</li>
 </ul>
-<div class="sourceCode" id="cb318"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb318-1"><a href="ordinal-regression.html#cb318-1" tabindex="-1"></a><span class="fu">summary</span>(infl.plr)</span></code></pre></div>
+<div class="sourceCode" id="cb320"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb320-1"><a href="ordinal-regression.html#cb320-1" tabindex="-1"></a><span class="fu">summary</span>(infl.plr)</span></code></pre></div>
 <pre><code>## 
 ## Re-fitting to get Hessian</code></pre>
 <pre><code>## Call:
@@ -580,17 +582,17 @@ the following ratio <span class="math display">\[\begin{equation}
 \end{equation}\]</span></p></li>
 <li><p>This can be computed with the <strong>R</strong> code</p></li>
 </ul>
-<div class="sourceCode" id="cb321"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb321-1"><a href="ordinal-regression.html#cb321-1" tabindex="-1"></a>N_ll <span class="ot">&lt;-</span> <span class="fu">sum</span>(housing<span class="sc">$</span>Freq[housing<span class="sc">$</span>Sat<span class="sc">==</span><span class="st">&quot;Low&quot;</span> <span class="sc">&amp;</span> housing<span class="sc">$</span>Infl<span class="sc">==</span><span class="st">&quot;Low&quot;</span>])</span>
-<span id="cb321-2"><a href="ordinal-regression.html#cb321-2" tabindex="-1"></a>N_l <span class="ot">&lt;-</span> <span class="fu">sum</span>(housing<span class="sc">$</span>Freq[housing<span class="sc">$</span>Infl<span class="sc">==</span><span class="st">&quot;Low&quot;</span>])</span>
-<span id="cb321-3"><a href="ordinal-regression.html#cb321-3" tabindex="-1"></a>N_ll<span class="sc">/</span>N_l</span></code></pre></div>
+<div class="sourceCode" id="cb323"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb323-1"><a href="ordinal-regression.html#cb323-1" tabindex="-1"></a>N_ll <span class="ot">&lt;-</span> <span class="fu">sum</span>(housing<span class="sc">$</span>Freq[housing<span class="sc">$</span>Sat<span class="sc">==</span><span class="st">&quot;Low&quot;</span> <span class="sc">&amp;</span> housing<span class="sc">$</span>Infl<span class="sc">==</span><span class="st">&quot;Low&quot;</span>])</span>
+<span id="cb323-2"><a href="ordinal-regression.html#cb323-2" tabindex="-1"></a>N_l <span class="ot">&lt;-</span> <span class="fu">sum</span>(housing<span class="sc">$</span>Freq[housing<span class="sc">$</span>Infl<span class="sc">==</span><span class="st">&quot;Low&quot;</span>])</span>
+<span id="cb323-3"><a href="ordinal-regression.html#cb323-3" tabindex="-1"></a>N_ll<span class="sc">/</span>N_l</span></code></pre></div>
 <pre><code>## [1] 0.4497608</code></pre>
 <ul>
 <li>A direct estimate of <span class="math inline">\(\hat{P}(Y_{i} \leq 1| \text{InflMed})\)</span> can be
 computed with the following <strong>R</strong> code</li>
 </ul>
-<div class="sourceCode" id="cb323"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb323-1"><a href="ordinal-regression.html#cb323-1" tabindex="-1"></a>N_lm <span class="ot">&lt;-</span> <span class="fu">sum</span>(housing<span class="sc">$</span>Freq[housing<span class="sc">$</span>Sat<span class="sc">==</span><span class="st">&quot;Low&quot;</span> <span class="sc">&amp;</span> housing<span class="sc">$</span>Infl<span class="sc">==</span><span class="st">&quot;Medium&quot;</span>])</span>
-<span id="cb323-2"><a href="ordinal-regression.html#cb323-2" tabindex="-1"></a>N_m <span class="ot">&lt;-</span> <span class="fu">sum</span>(housing<span class="sc">$</span>Freq[housing<span class="sc">$</span>Infl<span class="sc">==</span><span class="st">&quot;Medium&quot;</span>])</span>
-<span id="cb323-3"><a href="ordinal-regression.html#cb323-3" tabindex="-1"></a>N_lm<span class="sc">/</span>N_m</span></code></pre></div>
+<div class="sourceCode" id="cb325"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb325-1"><a href="ordinal-regression.html#cb325-1" tabindex="-1"></a>N_lm <span class="ot">&lt;-</span> <span class="fu">sum</span>(housing<span class="sc">$</span>Freq[housing<span class="sc">$</span>Sat<span class="sc">==</span><span class="st">&quot;Low&quot;</span> <span class="sc">&amp;</span> housing<span class="sc">$</span>Infl<span class="sc">==</span><span class="st">&quot;Medium&quot;</span>])</span>
+<span id="cb325-2"><a href="ordinal-regression.html#cb325-2" tabindex="-1"></a>N_m <span class="ot">&lt;-</span> <span class="fu">sum</span>(housing<span class="sc">$</span>Freq[housing<span class="sc">$</span>Infl<span class="sc">==</span><span class="st">&quot;Medium&quot;</span>])</span>
+<span id="cb325-3"><a href="ordinal-regression.html#cb325-3" tabindex="-1"></a>N_lm<span class="sc">/</span>N_m</span></code></pre></div>
 <pre><code>## [1] 0.3125948</code></pre>
 </div>
 <div id="the-respdis-data" class="section level3 hasAnchor" number="7.2.2">
@@ -599,8 +601,8 @@ computed with the following <strong>R</strong> code</li>
 <li>As another example, let’s look at the <code>respdis</code> data from the
 <code>geepack</code> package</li>
 </ul>
-<div class="sourceCode" id="cb325"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb325-1"><a href="ordinal-regression.html#cb325-1" tabindex="-1"></a><span class="fu">library</span>(geepack)</span>
-<span id="cb325-2"><a href="ordinal-regression.html#cb325-2" tabindex="-1"></a><span class="fu">head</span>(respdis)</span></code></pre></div>
+<div class="sourceCode" id="cb327"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb327-1"><a href="ordinal-regression.html#cb327-1" tabindex="-1"></a><span class="fu">library</span>(geepack)</span>
+<span id="cb327-2"><a href="ordinal-regression.html#cb327-2" tabindex="-1"></a><span class="fu">head</span>(respdis)</span></code></pre></div>
 <pre><code>##   y1 y2 y3 y4 trt
 ## 1  1  1  1  1   1
 ## 2  1  1  1  1   0
@@ -612,8 +614,8 @@ computed with the following <strong>R</strong> code</li>
 <li>This is a <strong>longitudinal dataset</strong>. For this analysis,
 we will only look at the outcome at the <strong>first visit</strong></li>
 </ul>
-<div class="sourceCode" id="cb327"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb327-1"><a href="ordinal-regression.html#cb327-1" tabindex="-1"></a>respdis_first <span class="ot">&lt;-</span> respdis[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>)]</span>
-<span id="cb327-2"><a href="ordinal-regression.html#cb327-2" tabindex="-1"></a><span class="fu">head</span>(respdis_first)</span></code></pre></div>
+<div class="sourceCode" id="cb329"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb329-1"><a href="ordinal-regression.html#cb329-1" tabindex="-1"></a>respdis_first <span class="ot">&lt;-</span> respdis[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>)]</span>
+<span id="cb329-2"><a href="ordinal-regression.html#cb329-2" tabindex="-1"></a><span class="fu">head</span>(respdis_first)</span></code></pre></div>
 <pre><code>##   y1 trt
 ## 1  1   1
 ## 2  1   0
@@ -625,7 +627,7 @@ we will only look at the outcome at the <strong>first visit</strong></li>
 <li><p>The <code>y1</code> variable represents an <strong>ordinal outcome</strong> (poor, good, or excellent) at the first visit</p></li>
 <li><p>The outcomes are coded as 1,2,3 in the <code>respdis_first</code> dataset</p></li>
 </ul>
-<div class="sourceCode" id="cb329"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb329-1"><a href="ordinal-regression.html#cb329-1" tabindex="-1"></a><span class="fu">table</span>(respdis<span class="sc">$</span>y1)</span></code></pre></div>
+<div class="sourceCode" id="cb331"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb331-1"><a href="ordinal-regression.html#cb331-1" tabindex="-1"></a><span class="fu">table</span>(respdis<span class="sc">$</span>y1)</span></code></pre></div>
 <pre><code>## 
 ##  1  2  3 
 ## 14 63 34</code></pre>
@@ -636,7 +638,7 @@ we will only look at the outcome at the <strong>first visit</strong></li>
 <li>We need to put <code>ordered(y1)</code> in the model formula since y1 is not stored as a <strong>factor</strong> in <code>respdis_first</code></li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb331"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb331-1"><a href="ordinal-regression.html#cb331-1" tabindex="-1"></a>respmod_first <span class="ot">&lt;-</span> <span class="fu">polr</span>(<span class="fu">ordered</span>(y1) <span class="sc">~</span> trt, <span class="at">data=</span>respdis_first)</span></code></pre></div>
+<div class="sourceCode" id="cb333"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb333-1"><a href="ordinal-regression.html#cb333-1" tabindex="-1"></a>respmod_first <span class="ot">&lt;-</span> <span class="fu">polr</span>(<span class="fu">ordered</span>(y1) <span class="sc">~</span> trt, <span class="at">data=</span>respdis_first)</span></code></pre></div>
 <ul>
 <li>The above <strong>R code</strong> is going to fit the model
 <span class="math display">\[\begin{equation}
@@ -649,7 +651,7 @@ we will only look at the outcome at the <strong>first visit</strong></li>
 <ul>
 <li>Let’s look at the <strong>summary output</strong> from <code>respmod_first</code>:</li>
 </ul>
-<div class="sourceCode" id="cb332"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb332-1"><a href="ordinal-regression.html#cb332-1" tabindex="-1"></a><span class="fu">summary</span>(respmod_first)</span></code></pre></div>
+<div class="sourceCode" id="cb334"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb334-1"><a href="ordinal-regression.html#cb334-1" tabindex="-1"></a><span class="fu">summary</span>(respmod_first)</span></code></pre></div>
 <pre><code>## 
 ## Re-fitting to get Hessian</code></pre>
 <pre><code>## Call:
@@ -744,12 +746,12 @@ GEE with <strong>ordinal responses</strong>.</p></li>
 <li><p>To show how to use <code>ordgee</code>, we can look at the <code>respdis</code> dataset
 from the <code>geepack</code> package</p></li>
 </ul>
-<div class="sourceCode" id="cb335"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb335-1"><a href="ordinal-regression.html#cb335-1" tabindex="-1"></a><span class="fu">library</span>(geepack)</span>
-<span id="cb335-2"><a href="ordinal-regression.html#cb335-2" tabindex="-1"></a><span class="fu">data</span>(respdis)</span>
-<span id="cb335-3"><a href="ordinal-regression.html#cb335-3" tabindex="-1"></a>resp.l <span class="ot">&lt;-</span> <span class="fu">reshape</span>(respdis, <span class="at">varying =</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">&quot;y1&quot;</span>, <span class="st">&quot;y2&quot;</span>, <span class="st">&quot;y3&quot;</span>, <span class="st">&quot;y4&quot;</span>)),</span>
-<span id="cb335-4"><a href="ordinal-regression.html#cb335-4" tabindex="-1"></a>                  <span class="at">v.names =</span> <span class="st">&quot;resp&quot;</span>, <span class="at">direction =</span> <span class="st">&quot;long&quot;</span>)</span>
-<span id="cb335-5"><a href="ordinal-regression.html#cb335-5" tabindex="-1"></a>resp.l <span class="ot">&lt;-</span> resp.l[<span class="fu">order</span>(resp.l<span class="sc">$</span>id, resp.l<span class="sc">$</span>time),]</span>
-<span id="cb335-6"><a href="ordinal-regression.html#cb335-6" tabindex="-1"></a><span class="fu">head</span>(resp.l)</span></code></pre></div>
+<div class="sourceCode" id="cb337"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb337-1"><a href="ordinal-regression.html#cb337-1" tabindex="-1"></a><span class="fu">library</span>(geepack)</span>
+<span id="cb337-2"><a href="ordinal-regression.html#cb337-2" tabindex="-1"></a><span class="fu">data</span>(respdis)</span>
+<span id="cb337-3"><a href="ordinal-regression.html#cb337-3" tabindex="-1"></a>resp.l <span class="ot">&lt;-</span> <span class="fu">reshape</span>(respdis, <span class="at">varying =</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="st">&quot;y1&quot;</span>, <span class="st">&quot;y2&quot;</span>, <span class="st">&quot;y3&quot;</span>, <span class="st">&quot;y4&quot;</span>)),</span>
+<span id="cb337-4"><a href="ordinal-regression.html#cb337-4" tabindex="-1"></a>                  <span class="at">v.names =</span> <span class="st">&quot;resp&quot;</span>, <span class="at">direction =</span> <span class="st">&quot;long&quot;</span>)</span>
+<span id="cb337-5"><a href="ordinal-regression.html#cb337-5" tabindex="-1"></a>resp.l <span class="ot">&lt;-</span> resp.l[<span class="fu">order</span>(resp.l<span class="sc">$</span>id, resp.l<span class="sc">$</span>time),]</span>
+<span id="cb337-6"><a href="ordinal-regression.html#cb337-6" tabindex="-1"></a><span class="fu">head</span>(resp.l)</span></code></pre></div>
 <pre><code>##     trt time resp id
 ## 1.1   1    1    1  1
 ## 1.2   1    2    1  1
@@ -761,7 +763,7 @@ from the <code>geepack</code> package</p></li>
 <li>The response of interest here is the variable <code>resp</code> which has 3
 possible values:</li>
 </ul>
-<div class="sourceCode" id="cb337"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb337-1"><a href="ordinal-regression.html#cb337-1" tabindex="-1"></a><span class="fu">table</span>(resp.l<span class="sc">$</span>resp)</span></code></pre></div>
+<div class="sourceCode" id="cb339"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb339-1"><a href="ordinal-regression.html#cb339-1" tabindex="-1"></a><span class="fu">table</span>(resp.l<span class="sc">$</span>resp)</span></code></pre></div>
 <pre><code>## 
 ##   1   2   3 
 ##  80 212 152</code></pre>
@@ -774,10 +776,10 @@ possible values:</li>
 and <strong>“exchangeable”</strong>.</p></li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb339"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb339-1"><a href="ordinal-regression.html#cb339-1" tabindex="-1"></a><span class="do">## Fit GEE with just trt as a covariate</span></span>
-<span id="cb339-2"><a href="ordinal-regression.html#cb339-2" tabindex="-1"></a>fit.indep <span class="ot">&lt;-</span> <span class="fu">ordgee</span>(<span class="fu">ordered</span>(resp) <span class="sc">~</span> trt, <span class="at">id=</span>id, <span class="at">corstr=</span><span class="st">&quot;independence&quot;</span>,</span>
-<span id="cb339-3"><a href="ordinal-regression.html#cb339-3" tabindex="-1"></a>                    <span class="at">data=</span>resp.l)</span>
-<span id="cb339-4"><a href="ordinal-regression.html#cb339-4" tabindex="-1"></a><span class="fu">summary</span>(fit.indep)</span></code></pre></div>
+<div class="sourceCode" id="cb341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb341-1"><a href="ordinal-regression.html#cb341-1" tabindex="-1"></a><span class="do">## Fit GEE with just trt as a covariate</span></span>
+<span id="cb341-2"><a href="ordinal-regression.html#cb341-2" tabindex="-1"></a>fit.indep <span class="ot">&lt;-</span> <span class="fu">ordgee</span>(<span class="fu">ordered</span>(resp) <span class="sc">~</span> trt, <span class="at">id=</span>id, <span class="at">corstr=</span><span class="st">&quot;independence&quot;</span>,</span>
+<span id="cb341-3"><a href="ordinal-regression.html#cb341-3" tabindex="-1"></a>                    <span class="at">data=</span>resp.l)</span>
+<span id="cb341-4"><a href="ordinal-regression.html#cb341-4" tabindex="-1"></a><span class="fu">summary</span>(fit.indep)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## ordgee(formula = ordered(resp) ~ trt, id = id, data = resp.l, 
@@ -814,10 +816,10 @@ outcome is roughly <span class="math inline">\(2.6\)</span> <span class="math di
 <li>To fit the same model with an <strong>exchangeable</strong> correlation
 structure, just use the <code>corstr = exchangeable</code> argument:</li>
 </ul>
-<div class="sourceCode" id="cb341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb341-1"><a href="ordinal-regression.html#cb341-1" tabindex="-1"></a><span class="do">## Fit GEE with just trt as a covariate</span></span>
-<span id="cb341-2"><a href="ordinal-regression.html#cb341-2" tabindex="-1"></a>fit.ex <span class="ot">&lt;-</span> <span class="fu">ordgee</span>(<span class="fu">ordered</span>(resp) <span class="sc">~</span> trt, <span class="at">id=</span>id, <span class="at">corstr=</span><span class="st">&quot;exchangeable&quot;</span>,</span>
-<span id="cb341-3"><a href="ordinal-regression.html#cb341-3" tabindex="-1"></a>                    <span class="at">data=</span>resp.l)</span>
-<span id="cb341-4"><a href="ordinal-regression.html#cb341-4" tabindex="-1"></a><span class="fu">summary</span>(fit.ex)</span></code></pre></div>
+<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="ordinal-regression.html#cb343-1" tabindex="-1"></a><span class="do">## Fit GEE with just trt as a covariate</span></span>
+<span id="cb343-2"><a href="ordinal-regression.html#cb343-2" tabindex="-1"></a>fit.ex <span class="ot">&lt;-</span> <span class="fu">ordgee</span>(<span class="fu">ordered</span>(resp) <span class="sc">~</span> trt, <span class="at">id=</span>id, <span class="at">corstr=</span><span class="st">&quot;exchangeable&quot;</span>,</span>
+<span id="cb343-3"><a href="ordinal-regression.html#cb343-3" tabindex="-1"></a>                    <span class="at">data=</span>resp.l)</span>
+<span id="cb343-4"><a href="ordinal-regression.html#cb343-4" tabindex="-1"></a><span class="fu">summary</span>(fit.ex)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## ordgee(formula = ordered(resp) ~ trt, id = id, data = resp.l, 
@@ -859,10 +861,10 @@ regression for <strong>ordinal</strong> outcomes.</li>
 <li>To use <code>ordinalgmifs</code>, we will use the <code>eyedisease</code> dataset in the
 package.</li>
 </ul>
-<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="ordinal-regression.html#cb343-1" tabindex="-1"></a><span class="fu">library</span>(ordinalgmifs)</span></code></pre></div>
+<div class="sourceCode" id="cb345"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb345-1"><a href="ordinal-regression.html#cb345-1" tabindex="-1"></a><span class="fu">library</span>(ordinalgmifs)</span></code></pre></div>
 <pre><code>## Loading required package: survival</code></pre>
-<div class="sourceCode" id="cb345"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb345-1"><a href="ordinal-regression.html#cb345-1" tabindex="-1"></a><span class="fu">data</span>(eyedisease)</span>
-<span id="cb345-2"><a href="ordinal-regression.html#cb345-2" tabindex="-1"></a><span class="fu">names</span>(eyedisease)</span></code></pre></div>
+<div class="sourceCode" id="cb347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb347-1"><a href="ordinal-regression.html#cb347-1" tabindex="-1"></a><span class="fu">data</span>(eyedisease)</span>
+<span id="cb347-2"><a href="ordinal-regression.html#cb347-2" tabindex="-1"></a><span class="fu">names</span>(eyedisease)</span></code></pre></div>
 <pre><code>##  [1] &quot;rme&quot;  &quot;lme&quot;  &quot;rre&quot;  &quot;lre&quot;  &quot;riop&quot; &quot;liop&quot; &quot;age&quot;  &quot;diab&quot; &quot;gh&quot;   &quot;sbp&quot; 
 ## [11] &quot;dbp&quot;  &quot;bmi&quot;  &quot;pr&quot;   &quot;sex&quot;  &quot;prot&quot; &quot;dose&quot; &quot;rerl&quot; &quot;lerl&quot; &quot;id&quot;</code></pre>
 <ul>
@@ -873,7 +875,7 @@ package.</li>
 “Moderate”, and “Proliferative”.</p></li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb347-1"><a href="ordinal-regression.html#cb347-1" tabindex="-1"></a><span class="fu">table</span>( eyedisease<span class="sc">$</span>rerl )</span></code></pre></div>
+<div class="sourceCode" id="cb349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb349-1"><a href="ordinal-regression.html#cb349-1" tabindex="-1"></a><span class="fu">table</span>( eyedisease<span class="sc">$</span>rerl )</span></code></pre></div>
 <pre><code>## 
 ##          None          Mild      Moderate Proliferative 
 ##           275           270           128            47</code></pre>
@@ -882,15 +884,15 @@ package.</li>
 <li>To fit a <strong>penalized ordinal regression</strong> where we can penalize all
 variables, use the following code:</li>
 </ul>
-<div class="sourceCode" id="cb349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb349-1"><a href="ordinal-regression.html#cb349-1" tabindex="-1"></a><span class="do">## Fit ordinal logistic regression with covariates </span></span>
-<span id="cb349-2"><a href="ordinal-regression.html#cb349-2" tabindex="-1"></a><span class="do">## dose, prot, sex, bmi, dbp, sbp, pr, age</span></span>
-<span id="cb349-3"><a href="ordinal-regression.html#cb349-3" tabindex="-1"></a>eye.fit <span class="ot">&lt;-</span> <span class="fu">ordinalgmifs</span>(rerl <span class="sc">~</span> <span class="dv">1</span>, <span class="at">x=</span><span class="fu">c</span>(<span class="st">&quot;dose&quot;</span>, <span class="st">&quot;prot&quot;</span>, <span class="st">&quot;sex&quot;</span>, </span>
-<span id="cb349-4"><a href="ordinal-regression.html#cb349-4" tabindex="-1"></a>                        <span class="st">&quot;bmi&quot;</span>, <span class="st">&quot;dbp&quot;</span>, <span class="st">&quot;sbp&quot;</span>, <span class="st">&quot;pr&quot;</span>, <span class="st">&quot;age&quot;</span>), <span class="at">data=</span>eyedisease)</span></code></pre></div>
+<div class="sourceCode" id="cb351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb351-1"><a href="ordinal-regression.html#cb351-1" tabindex="-1"></a><span class="do">## Fit ordinal logistic regression with covariates </span></span>
+<span id="cb351-2"><a href="ordinal-regression.html#cb351-2" tabindex="-1"></a><span class="do">## dose, prot, sex, bmi, dbp, sbp, pr, age</span></span>
+<span id="cb351-3"><a href="ordinal-regression.html#cb351-3" tabindex="-1"></a>eye.fit <span class="ot">&lt;-</span> <span class="fu">ordinalgmifs</span>(rerl <span class="sc">~</span> <span class="dv">1</span>, <span class="at">x=</span><span class="fu">c</span>(<span class="st">&quot;dose&quot;</span>, <span class="st">&quot;prot&quot;</span>, <span class="st">&quot;sex&quot;</span>, </span>
+<span id="cb351-4"><a href="ordinal-regression.html#cb351-4" tabindex="-1"></a>                        <span class="st">&quot;bmi&quot;</span>, <span class="st">&quot;dbp&quot;</span>, <span class="st">&quot;sbp&quot;</span>, <span class="st">&quot;pr&quot;</span>, <span class="st">&quot;age&quot;</span>), <span class="at">data=</span>eyedisease)</span></code></pre></div>
 <ul>
 <li>If we look at a <code>summary</code> of <code>eye.fit</code> it will display the best
 regression coefficient estimates according to an <strong>AIC</strong> criterion:</li>
 </ul>
-<div class="sourceCode" id="cb350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb350-1"><a href="ordinal-regression.html#cb350-1" tabindex="-1"></a><span class="fu">summary</span>(eye.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="ordinal-regression.html#cb352-1" tabindex="-1"></a><span class="fu">summary</span>(eye.fit)</span></code></pre></div>
 <pre><code>## Cumulative model using a  logit  link 
 ## at step    =  1339 
 ## logLik     =  -813.1043 
@@ -917,26 +919,26 @@ coefficients at step <span class="math inline">\(k\)</span></p></li>
 coefficient at step <span class="math inline">\(k\)</span></p></li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb353-1"><a href="ordinal-regression.html#cb353-1" tabindex="-1"></a><span class="fu">dim</span>(eye.fit<span class="sc">$</span>beta)</span></code></pre></div>
+<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb355-1"><a href="ordinal-regression.html#cb355-1" tabindex="-1"></a><span class="fu">dim</span>(eye.fit<span class="sc">$</span>beta)</span></code></pre></div>
 <pre><code>## [1] 1453    8</code></pre>
-<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb355-1"><a href="ordinal-regression.html#cb355-1" tabindex="-1"></a><span class="do">## Look at an &quot;early&quot; row of eye.fit$beta</span></span>
-<span id="cb355-2"><a href="ordinal-regression.html#cb355-2" tabindex="-1"></a><span class="do">## Most of the coefficients here should be zero</span></span>
-<span id="cb355-3"><a href="ordinal-regression.html#cb355-3" tabindex="-1"></a>eye.fit<span class="sc">$</span>beta[<span class="dv">10</span>,]</span></code></pre></div>
+<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb357-1"><a href="ordinal-regression.html#cb357-1" tabindex="-1"></a><span class="do">## Look at an &quot;early&quot; row of eye.fit$beta</span></span>
+<span id="cb357-2"><a href="ordinal-regression.html#cb357-2" tabindex="-1"></a><span class="do">## Most of the coefficients here should be zero</span></span>
+<span id="cb357-3"><a href="ordinal-regression.html#cb357-3" tabindex="-1"></a>eye.fit<span class="sc">$</span>beta[<span class="dv">10</span>,]</span></code></pre></div>
 <pre><code>##  dose  prot   sex   bmi   dbp   sbp    pr   age 
 ##  0.00  0.00  0.00  0.00  0.00 -0.01  0.00  0.00</code></pre>
 <ul>
 <li>If we look at a later row, we should have more non-zero coefficients</li>
 </ul>
-<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb357-1"><a href="ordinal-regression.html#cb357-1" tabindex="-1"></a>eye.fit<span class="sc">$</span>beta[<span class="dv">800</span>,]</span></code></pre></div>
+<div class="sourceCode" id="cb359"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb359-1"><a href="ordinal-regression.html#cb359-1" tabindex="-1"></a>eye.fit<span class="sc">$</span>beta[<span class="dv">800</span>,]</span></code></pre></div>
 <pre><code>##   dose   prot    sex    bmi    dbp    sbp     pr    age 
 ##  0.000 -0.202  0.000 -0.022 -0.188 -0.388  0.000  0.000</code></pre>
 <ul>
 <li>The <code>model.select</code> component gives the row index of the <strong>selected
 model</strong></li>
 </ul>
-<div class="sourceCode" id="cb359"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb359-1"><a href="ordinal-regression.html#cb359-1" tabindex="-1"></a>eye.fit<span class="sc">$</span>model.select </span></code></pre></div>
+<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="ordinal-regression.html#cb361-1" tabindex="-1"></a>eye.fit<span class="sc">$</span>model.select </span></code></pre></div>
 <pre><code>## [1] 1339</code></pre>
-<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="ordinal-regression.html#cb361-1" tabindex="-1"></a>eye.fit<span class="sc">$</span>beta[eye.fit<span class="sc">$</span>model.select,]</span></code></pre></div>
+<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="ordinal-regression.html#cb363-1" tabindex="-1"></a>eye.fit<span class="sc">$</span>beta[eye.fit<span class="sc">$</span>model.select,]</span></code></pre></div>
 <pre><code>##   dose   prot    sex    bmi    dbp    sbp     pr    age 
 ##  0.108 -0.296  0.000 -0.141 -0.235 -0.437 -0.072  0.050</code></pre>
 <hr />
@@ -944,7 +946,7 @@ model</strong></li>
 <li>You can plot the “lasso path” for the regression coefficient
 estimates:</li>
 </ul>
-<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="ordinal-regression.html#cb363-1" tabindex="-1"></a><span class="fu">plot</span>( eye.fit )</span></code></pre></div>
+<div class="sourceCode" id="cb365"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb365-1"><a href="ordinal-regression.html#cb365-1" tabindex="-1"></a><span class="fu">plot</span>( eye.fit )</span></code></pre></div>
 <p><img src="07-OrdinalRegression_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 
 </div>

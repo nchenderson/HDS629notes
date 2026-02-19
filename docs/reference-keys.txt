@@ -95,6 +95,8 @@ risk-prediction2
 the-brier-score
 brier-scores-for-biopsy-data
 out-of-sample-comparisons
+brier-scores-with-survival-data
+the-integrated-brier-score-in-r
 brier-scores-with-longitudinal-data
 option-1
 option-2

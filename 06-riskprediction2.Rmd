@@ -206,7 +206,7 @@ until
 * If we could observe $T_{i}$, we could define the following binary variables
 (for a pre-specified value of $t$). 
 \begin{equation}
-Y_i(t) = \mathbb{I}(T_i > t)
+Y_i(t) = I(T_i > t)
 \end{equation}
 
 * $Y_i(t) = 1$: Subject is alive at time $t$.
@@ -217,9 +217,9 @@ Y_i(t) = \mathbb{I}(T_i > t)
 * If we could observe $T_{i}$, we could use the same form of the Brier score
 as for binary outcomes:
 \begin{align}
-BS_{\textrm{naive}}(t; S) &= \frac{1}{n} \sum_{i=1}^{N} \left( Y_{i}(t) - P\{Y_{i}(t)=1 | \mathbf{x}_{i} \}  \right)^2 \nonumber \\
-&= \frac{1}{n} \sum_{i=1}^{n} \left( I(T_{i} > t) - S(t|\mathbf{x}_{i}) \right)^2
-\end{equation}
+BS_{\textrm{naive}}(t; S) &= \frac{1}{n} \sum_{i=1}^{n} \Big( Y_{i}(t) - P\{Y_{i}(t)=1 | \mathbf{x}_{i} \}  \Big)^2 \nonumber \\
+&= \frac{1}{n} \sum_{i=1}^{n} \Big( I(T_{i} > t) - S(t|\mathbf{x}_{i}) \Big)^2
+\end{align}
 
 * $\hat{S}(t|\mathbf{x}_{i}) = P(T_{i} > t| \mathbf{x}_{i})$: survival probability given covariates.
 

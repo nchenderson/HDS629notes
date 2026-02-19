@@ -391,7 +391,7 @@ of constructed confidence intervals <span class="math inline">\(\hat{CI}(Y_{1s},
 <span id="cb399-16"><a href="conformal-prediction.html#cb399-16" tabindex="-1"></a>  cover[s] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(beta1 <span class="sc">&gt;=</span> lower_ci <span class="sc">&amp;</span> beta1 <span class="sc">&lt;=</span> upper_ci, <span class="dv">1</span>, <span class="dv">0</span>)</span>
 <span id="cb399-17"><a href="conformal-prediction.html#cb399-17" tabindex="-1"></a>}</span>
 <span id="cb399-18"><a href="conformal-prediction.html#cb399-18" tabindex="-1"></a><span class="fu">mean</span>(cover) <span class="do">## Should be close to 0.95</span></span></code></pre></div>
-<pre><code>## [1] 0.943</code></pre>
+<pre><code>## [1] 0.954</code></pre>
 <hr />
 <ul>
 <li><p><strong>Prediction intervals</strong> for regression are a bit different than confidence intervals.</p></li>
@@ -518,13 +518,13 @@ and that the joint distribution of <span class="math inline">\((Y_{n+1}, \mathbf
 <span id="cb407-13"><a href="conformal-prediction.html#cb407-13" tabindex="-1"></a>ConformalInterval[,<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">predict</span>(proper_mod, <span class="at">newdat=</span>newdataset) <span class="sc">+</span> qhat</span>
 <span id="cb407-14"><a href="conformal-prediction.html#cb407-14" tabindex="-1"></a></span>
 <span id="cb407-15"><a href="conformal-prediction.html#cb407-15" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(ConformalInterval))</span></code></pre></div>
-<pre><code>##           [,1]     [,2]
-## [1,] -1.067649 2.946444
-## [2,] -1.149487 2.864606
-## [3,] -1.159910 2.854183
-## [4,] -1.118410 2.895683
-## [5,] -1.109877 2.904217
-## [6,] -1.064901 2.949192</code></pre>
+<pre><code>##            [,1]     [,2]
+## [1,] -0.8609572 2.790568
+## [2,] -0.7828134 2.868712
+## [3,] -0.5142924 3.137233
+## [4,] -0.7739474 2.877578
+## [5,] -0.6960592 2.955466
+## [6,] -0.6318200 3.019705</code></pre>
 <ul>
 <li><p>Plot fitted values and prediction intervals:
 <img src="09-ConformalPrediction_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p></li>
@@ -533,7 +533,7 @@ and that the joint distribution of <span class="math inline">\((Y_{n+1}, \mathbf
 <div class="sourceCode" id="cb409"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb409-1"><a href="conformal-prediction.html#cb409-1" tabindex="-1"></a><span class="do">## This shouldn&#39;t be that far off 0.95, but there will be </span></span>
 <span id="cb409-2"><a href="conformal-prediction.html#cb409-2" tabindex="-1"></a><span class="do">## considerable variability since this is not a very large dataset</span></span>
 <span id="cb409-3"><a href="conformal-prediction.html#cb409-3" tabindex="-1"></a><span class="fu">mean</span>(Y_new <span class="sc">&gt;</span> ConformalInterval[,<span class="dv">1</span>] <span class="sc">&amp;</span> Y_new <span class="sc">&lt;</span> ConformalInterval[,<span class="dv">2</span>])</span></code></pre></div>
-<pre><code>## [1] 0.95</code></pre>
+<pre><code>## [1] 0.94</code></pre>
 </div>
 <div id="why-does-this-work" class="section level2 hasAnchor" number="9.3">
 <h2><span class="header-section-number">9.3</span> Why does this work?<a href="conformal-prediction.html#why-does-this-work" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -642,7 +642,7 @@ P\Big( Y_{n+1} \in \hat{C}_{n}(\mathbf{x}_{n+1}) \Big| \mathcal{D}_{1} \Big)
 <div class="sourceCode" id="cb428"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb428-1"><a href="conformal-prediction.html#cb428-1" tabindex="-1"></a><span class="do">## This shouldn&#39;t be that far off 0.95, but there will be </span></span>
 <span id="cb428-2"><a href="conformal-prediction.html#cb428-2" tabindex="-1"></a><span class="do">## considerable variability since this is not a very large dataset</span></span>
 <span id="cb428-3"><a href="conformal-prediction.html#cb428-3" tabindex="-1"></a><span class="fu">mean</span>(Y_new <span class="sc">&gt;</span> ConformalInterval[,<span class="dv">1</span>] <span class="sc">&amp;</span> Y_new <span class="sc">&lt;</span> ConformalInterval[,<span class="dv">2</span>])</span></code></pre></div>
-<pre><code>## [1] 0.952</code></pre>
+<pre><code>## [1] 0.947</code></pre>
 <hr />
 
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
